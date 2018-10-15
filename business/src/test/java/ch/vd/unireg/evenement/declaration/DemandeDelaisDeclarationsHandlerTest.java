@@ -21,6 +21,7 @@ import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 import ch.vd.unireg.mandataire.DemandeDelaisMandataireDAO;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
@@ -33,6 +34,7 @@ import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeGroupee;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeUnitaire;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DonneesMetier;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Mandataire;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Population;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Supervision;
 
 import static org.junit.Assert.assertEquals;
@@ -640,7 +642,10 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final DemandeGroupee demandeGroupee = new DemandeGroupee();
 		demandeGroupee.setMandataire(new Mandataire(numeroIde, raisonSociale, mandataireId));
 		Arrays.stream(delais)
-				.forEach(d -> demandeGroupee.getDelais().add(new Delai(d.ctbId, null, XmlUtils.regdate2xmlcal(d.delai), d.codeRefus, null)));
+				.forEach(d -> {
+					final Population population = d.ctbId > Entreprise.LAST_ID ? Population.PP : Population.PM;
+					demandeGroupee.getDelais().add(new Delai(d.ctbId, population, null, XmlUtils.regdate2xmlcal(d.delai), d.codeRefus, null));
+				});
 
 		final DonneesMetier donneesMetier = new DonneesMetier();
 		donneesMetier.setPeriodeFiscale(periodeFiscale);
@@ -657,9 +662,10 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 
 		final XMLGregorianCalendar calObtention = XmlUtils.regdate2xmlcal(dateObtention);
 		final XMLGregorianCalendar calDelai = XmlUtils.regdate2xmlcal(nouveauDelai);
+		final Population population = ctbId > Entreprise.LAST_ID ? Population.PP : Population.PM;
 
 		final DemandeUnitaire demandeUnitaire = new DemandeUnitaire();
-		demandeUnitaire.setDelai(new Delai(ctbId.intValue(), null, calDelai, codeRefus, null));
+		demandeUnitaire.setDelai(new Delai(ctbId.intValue(), population, null, calDelai, codeRefus, null));
 
 		final DonneesMetier donneesMetier = new DonneesMetier();
 		donneesMetier.setPeriodeFiscale(periodeFiscale);

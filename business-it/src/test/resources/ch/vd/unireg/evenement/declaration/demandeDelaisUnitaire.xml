@@ -17,6 +17,7 @@
 		<ns:demandeUnitaire>
 			<ns:delai>
 				<ns:numeroContribuable>10000010</ns:numeroContribuable>
+				<ns:population>PP</ns:population>
 				<ns:dateAccordee>2025-06-30</ns:dateAccordee>
 			</ns:delai>
 		</ns:demandeUnitaire>
