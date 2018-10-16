@@ -829,6 +829,7 @@
 		<!-- Parametres de Testing -->
 		<surefire.useFile>false</surefire.useFile>
 		<surefire.argline>-Xms256m -Xmx512m -DUseSunHttpHandler=true -Dfile.encoding=UTF-8 -Duser.language=en -Duser.country=US -Duser.variant=US</surefire.argline>
+		<wit.tomcat.uri>http://localhost:8580/manager/text</wit.tomcat.uri> <!-- ssh unireg_slave2@slv1948v.etat-de-vaud.ch -->
 
 		<!-- Editique -->
 		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
