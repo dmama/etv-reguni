@@ -755,29 +755,32 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		result.setTaxDeclaration(new TaxDeclarationInfo(DataHelper.coreToWeb(declaration.getDateDebut()), DataHelper.coreToWeb(declaration.getDateFin()), declaration.getNumero(), null));
 
 		final TypeEtatDocumentFiscal etat = declaration.getDernierEtat().getEtat();
-		final RegDate dateDelai = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
+		final RegDate delaiDejaAccorde = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
 
 		if (etat != TypeEtatDocumentFiscal.EMIS) {
 			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat, periodeFiscale));
 		}
-		else if (dateDelai.isAfter(RegDate.get(periodeFiscale + 1, 6, 30))) {                                  // FIXME (msi) rendre ce délai paramètrable
-			result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(dateDelai) + ".", null));
-		}
 		else {
-			final RegDate delai;
+			final RegDate delaiMaximalAccordable;
 			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-				delai = RegDate.get(periodeFiscale + 1, 6, 30);
+				delaiMaximalAccordable = RegDate.get(periodeFiscale + 1, 6, 30); // FIXME (msi) rendre ce délai paramètrable
 			}
 			else if (tiers instanceof Entreprise) {
 				if (dateProchainBouclement == null) {
 					throw new IllegalArgumentException("La date de prochain bouclement n'est pas renseignée sur le PM n°" + tiers.getNumero());
 				}
-				delai = dateProchainBouclement.addDays(255);
+				delaiMaximalAccordable = dateProchainBouclement.addDays(255);   // FIXME (msi) rendre ce délai paramètrable
 			}
 			else {
 				throw new IllegalArgumentException("Type de tiers non supporté [" + tiers.getClass() + "]");
 			}
-			result.getProposedDeadlines().add(DataHelper.coreToWeb(delai));
+
+			if (delaiDejaAccorde.isAfter(delaiMaximalAccordable)) {
+				result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
+			}
+			else {
+				result.getProposedDeadlines().add(DataHelper.coreToWeb(delaiMaximalAccordable));
+			}
 		}
 
 		return result;

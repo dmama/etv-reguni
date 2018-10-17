@@ -5259,7 +5259,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testValidateDeadlineRequestContribuableAvecUneDeclarationAvecUnDelaiDejaOctroye() throws Exception {
+	public void testValidateDeadlineRequestPPAvecUneDeclarationAvecUnDelaiDejaOctroye() throws Exception {
 
 		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
 		service.setTiersDAO(tiersDAO);
@@ -5286,6 +5286,49 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "09", "Il y a déjà un délai accordé au 01.11.2018.",
+			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-753] Ce test vérifie qu'une erreur est retournée s'il existe déjà un délai au-delà du délai par défaut sur une PM.
+	 */
+	@Test
+	public void testValidateDeadlineRequestPMAvecUneDeclarationAvecUnDelaiDejaOctroye() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+
+		final RegDate dateBouclement = RegDate.get(2017, 10, 1);
+
+		// on crée un contribuable PM vaudois avec un délai déjà octroyé au-délà de la valeur par défaut
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addBouclement(pm, date(2009, 7, 15), DayMonth.get(9, 30), 12);              // bouclements aux 30 septembre depuis 2009
+			addRegimeFiscalVD(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode2017);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(pm, periode2017, date(2017, 1, 1), date(2017, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di.addDelai(newDelaiDeclaration(date(2018, 4, 16), dateBouclement.addDays(255)));   // <-- délai par défaut (2018-06-12)
+			di.addDelai(newDelaiDeclaration(date(2018, 5, 1), RegDate.get(2018, 6, 25)));       // <-- délai supplémentaire au-delà du delai défaut
+
+			return pm.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationError(ctbId, PartyType.CORPORATION, "09", "Il y a déjà un délai accordé au 25.06.2018.",
 			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
 		});
