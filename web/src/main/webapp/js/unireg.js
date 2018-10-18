@@ -2846,7 +2846,7 @@ var Decl = {
 				info += '<tr class="odd"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateFin) + '</td></tr></table></fieldset>\n';
 
 				var delais = Decl._buildDelaisPPISTable(qsnc.delais);
-				var etats = Decl._buidlEtatsTable(qsnc.etats, true);
+				var etats = Decl._buidlEtatsTable(qsnc.etats, false);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
 				dialog.html(info + delais + etats);
