@@ -221,7 +221,6 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// Y a-t-il des choses à faire au niveau de l'entreprise elle-même ?
 		final RegDate dateReference = extractDateReference(retour);
 		final InformationsEntreprise infosEntreprise = retour.getEntreprise();
-		final boolean isAPM = tiersService.getCategorieEntreprise(entreprise, null) == CategorieEntreprise.APM;
 
 		if (infosEntreprise != null) {
 			traiterFinExerciceCommercial(entreprise, declarationIdentifiee, infosEntreprise.getDateFinExerciceCommercial());
