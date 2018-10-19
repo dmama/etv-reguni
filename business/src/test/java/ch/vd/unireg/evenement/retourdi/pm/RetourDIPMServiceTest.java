@@ -561,6 +561,111 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testChangementDateFinExerciceCommercialMemeAnneePlusTardAPM() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final int annee = today.year() - 1;
+		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
+		final RegDate ancienneFinExerciceCommercial = date(annee, 3, 31);
+		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise APM SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.FONDS_PLACEMENT);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.FONDS_PLACEMENT);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+			addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
+
+			return entreprise.getNumero();
+		});
+
+		// réception des données de retour
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification du résulat...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+
+				// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
+				// courante est maintenant échue
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+				if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
+					Assert.assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+					Assert.assertNull(tache.getCommentaire());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertFalse(tache.isAnnule());
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
+					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
+					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
+					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
+				}
+				else {
+					Assert.assertEquals(Collections.emptyList(), taches);
+				}
+
+				// la déclaration
+				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+				Assert.assertNotNull(dis);
+				Assert.assertEquals(1, dis.size());
+				final DeclarationImpotOrdinairePM di = dis.get(0);
+				Assert.assertFalse(di.isAnnule());
+				Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
+				Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+				Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+
+				// les bouclements
+				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+				bouclements.sort(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare));
+				Assert.assertEquals(2, bouclements.size());
+				{
+					final Bouclement bouclement = bouclements.get(0);
+					Assert.assertNotNull(bouclement);
+					Assert.assertTrue(bouclement.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+					Assert.assertEquals(12, bouclement.getPeriodeMois());
+				}
+				{
+					final Bouclement bouclement = bouclements.get(1);
+					Assert.assertNotNull(bouclement);
+					Assert.assertFalse(bouclement.isAnnule());
+					Assert.assertEquals(date(annee, 6, 1), bouclement.getDateDebut());
+					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+					Assert.assertEquals(12, bouclement.getPeriodeMois());
+				}
+			}
+		});
+	}
+
+	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTot() throws Exception {
 
 		final int annee = RegDate.get().year() - 2;
@@ -1819,59 +1924,6 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 	}
 
-	@Test
-	public void testChangementExerciceCommercialNonPrisEnComptePourAPM() throws Exception {
-
-		final int anneeInitiale = 2015;
-		final int anneeFinale = 2016;
-		final RegDate dateDebutEntreprise = date(Math.min(anneeInitiale, anneeFinale), 2, 1);
-		final RegDate nouvelleFinExerciceCommercial = date(anneeFinale, 6, 30);
-
-		final RegDate dateQuittance = date(anneeInitiale + 1, 5, 13);
-
-		// mise en place fiscale
-		final long pmId = getEntrepriseAPMAvecMandataire(anneeInitiale, dateDebutEntreprise, dateQuittance);
-
-		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
-
-		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
-		});
-
-		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(1, bouclements.size());
-
-				final Bouclement bouclement = bouclements.get(0);
-				Assert.assertNotNull(bouclement);
-				Assert.assertFalse(bouclement.isAnnule());
-				Assert.assertEquals(12, bouclement.getPeriodeMois());
-
-
-				// Aucune tâches de contrôle de dossier
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(entreprise);
-				criterion.setInclureTachesAnnulees(true);
-				criterion.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(criterion);
-				Assert.assertEquals(0, tachesControle.size());
-			}
-		});
-	}
 
 	@Test
 	public void testChangementDateFinExerciceCommercialAnneeDifferenteApresAvecDeclarationNonRetourneeUlterieure() throws Exception {
@@ -2992,6 +3044,120 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
 			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
+
+			// surcharge d'adresse courrier permanente (pour vérifier que même en présence d'une adresse permanente, la raison sociale est inspectée)
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
+			surcharge.setPermanente(true);
+			surcharge.setNumeroMaison("12");
+
+			return entreprise.getNumero();
+		});
+
+		// réception des données de retour
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma grande entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null, "1003", "Lausanne");
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification du résultat obtenu
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				// l'adresse permanente ne doit pas avoir été touchée
+				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+				Assert.assertNotNull(surcharges);
+				Assert.assertEquals(1, surcharges.size());
+				{
+					final AdresseTiers surcharge = surcharges.get(0);
+					Assert.assertNotNull(surcharge);
+					Assert.assertFalse(surcharge.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+					Assert.assertNull(surcharge.getDateFin());
+					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+					Assert.assertTrue(adresseSuisse.isPermanente());
+					Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+					Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
+				}
+
+				// deux tâches de contrôle de dossier et deux remarques (1 pour l'adresse permanente, 1 pour le changement de raison sociale)
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setNumeroCTB(idEntreprise);
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				tacheCriteria.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(2, taches.size());
+				final List<Tache> tachesTriees = new ArrayList<>(taches);
+				tachesTriees.sort(Comparator.comparingLong(Tache::getId));      // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
+				{
+					final Tache tache = tachesTriees.get(0);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+				}
+				{
+					final Tache tache = tachesTriees.get(1);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals("Retour DI - Changement de raison sociale", tache.getCommentaire());
+				}
+
+				// et les remarques ?
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(2, remarques.size());
+				final List<Remarque> remarquesTriees = new ArrayList<>(remarques);
+				remarquesTriees.sort(Comparator.comparingLong(Remarque::getId));    // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
+				{
+					final Remarque remarque = remarquesTriees.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals(
+							"L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
+							remarque.getTexte());
+				}
+				{
+					final Remarque remarque = remarquesTriees.get(1);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("Nouvelle raison sociale annoncée (Ma grande entreprise SARL) dans la DI 2015/1.", remarque.getTexte());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testAnnonceChangementRaisonSocialeAPM() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2015, 2, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 13);
+
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.FONDATION);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.FONDS_PLACEMENT);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.FONDS_PLACEMENT);
 			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
 			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
