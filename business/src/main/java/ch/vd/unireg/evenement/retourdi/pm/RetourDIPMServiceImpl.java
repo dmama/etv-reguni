@@ -224,11 +224,10 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final boolean isAPM = tiersService.getCategorieEntreprise(entreprise, null) == CategorieEntreprise.APM;
 
 		if (infosEntreprise != null) {
-			if (!isAPM) {
-				traiterFinExerciceCommercial(entreprise, declarationIdentifiee, infosEntreprise.getDateFinExerciceCommercial());
-				traiterSiege(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getSiege());
-				traiterAdministrationEffective(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdministrationEffective());
-			}
+			traiterFinExerciceCommercial(entreprise, declarationIdentifiee, infosEntreprise.getDateFinExerciceCommercial());
+			traiterSiege(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getSiege());
+			traiterAdministrationEffective(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdministrationEffective());
+
 			traiterAdresseCourrierEtRaisonSociale(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdresseCourrier(), infosEntreprise.getNoTelContact());
 			traiterInformationsBancaires(entreprise, retour.getPf(), retour.getNoSequence(), infosEntreprise.getIban(), infosEntreprise.getTitulaireCompteBancaire());
 		}
