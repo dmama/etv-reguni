@@ -44,7 +44,7 @@ public class UniregWsTomcatRunner {
 		// Propriétés normallement configurées par Maven et qu'on spécifie à la main parce qu'on pointe vers le répertoire sources (et non pas target).
 
 		// BEGIN_LVERSION
-		System.setProperty("project.version", "18R4.B.0");
+		System.setProperty("project.version", "18R4.C.0-SNAPSHOT");
 		// END_LVERSION
 
 		System.setProperty("project.name", "Unireg - Webservices");
