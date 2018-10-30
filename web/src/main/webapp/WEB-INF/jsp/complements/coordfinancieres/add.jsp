@@ -36,8 +36,8 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-						    <span class="mandatory">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
@@ -88,7 +88,7 @@
 			<!-- Debut Boutons -->
 			<div style="margin-top: 1em;">
 				<unireg:buttonTo method="get" action="/complements/coordfinancieres/list.do" params="{tiersId:${tiersId}}" name="label.bouton.retour"/>
-				<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver"/>" tabindex="5"/>
+				<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver"/>" tabindex="0"/>
 			</div>
 			<!-- Fin Boutons -->
 
