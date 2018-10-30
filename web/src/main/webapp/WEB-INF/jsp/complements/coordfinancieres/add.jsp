@@ -52,7 +52,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
 						<td>
-							<form:input path="iban"  size ="${lengthnumcompte}"  maxlength="${lengthnumcompte}"/>
+							<form:input path="iban" cssErrorClass="input-with-errors" size ="${lengthnumcompte}"  maxlength="${lengthnumcompte}"/>
 							<span class="mandatory">*</span>
 							<span class="jTip formInfo" title="<c:url value="/htm/iban.htm?width=375"/>" id="tipIban">?</span>
 							<form:errors path="iban" cssClass="error"/>
