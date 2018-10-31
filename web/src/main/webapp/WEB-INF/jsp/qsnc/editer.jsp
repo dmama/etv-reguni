@@ -43,14 +43,14 @@
 				<display:column titleKey="label.date.demande" style="width: 20%;">
 					<unireg:regdate regdate="${delai.dateDemande}" />
 				</display:column>
-				<display:column titleKey="label.date.delai.accorde" style="width: 20%;">
-					<unireg:regdate regdate="${delai.delaiAccordeAu}" />
+				<display:column titleKey="label.date.traitement" style="width: 20%;">
+					<unireg:regdate regdate="${delai.dateTraitement}" />
 				</display:column>
 				<display:column titleKey="label.decision" style="width: 20%;">
 					<fmt:message key="option.etat.delai.${delai.etat}"/>
 				</display:column>
-				<display:column titleKey="label.date.traitement" style="width: 20%;">
-					<unireg:regdate regdate="${delai.dateTraitement}" />
+				<display:column titleKey="label.date.delai.accorde" style="width: 20%;">
+					<unireg:regdate regdate="${delai.delaiAccordeAu}" />
 				</display:column>
 				<display:column style="action">
 					<unireg:consulterLog entityNature="DelaiDeclaration" entityId="${delai.id}"/>
