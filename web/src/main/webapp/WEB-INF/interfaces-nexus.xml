@@ -11,7 +11,7 @@
 		<property name="maxTotalConnections" value="${extprop.remoting.unireg.nexus.maxTotalConnections}" />
 		<property name="connectTimeout" value="${extprop.remoting.unireg.nexus.connectTimeout:5000}" />
 		<property name="connectionRequestTimeout" value="${extprop.remoting.unireg.nexus.connectionRequestTimeout:5000}" />
-		<property name="socketTimeout" value="${extprop.remoting.unireg.nexus.socketTimeout:60000}" />
+		<property name="socketTimeout" value="${extprop.remoting.unireg.nexus.socketTimeout:600000}" />
 		<property name="braveHttpTracing" ref="braveHttpTracing"/>
 		<property name="preAuthHosts">
 			<list>
