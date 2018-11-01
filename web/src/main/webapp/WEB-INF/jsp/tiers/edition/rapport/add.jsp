@@ -154,7 +154,7 @@
 								autorite = "a pour héritier";
 								break;
 							case 'LIENS_ASSOCIES_ET_SNC':
-								autorite = sens.val() === 'OBJET' ? "est associé commanditaire" : "possède comme associé/commanditaire";
+								autorite = sens.val() === 'OBJET' ? "est associé / commanditaire" : "possède comme associé / commanditaire";
 								break;
 							}
 
