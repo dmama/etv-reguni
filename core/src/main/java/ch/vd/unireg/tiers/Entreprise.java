@@ -542,6 +542,9 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public RegDate getDateDebutForFiscalSnc(RegDate dateDebut) {
 		final List<ForFiscalPrincipal> forFiscalPrincipals = getForsFiscauxPrincipauxOuvertsApres(dateDebut, Boolean.FALSE);
+		if (forFiscalPrincipals.isEmpty()) {
+			return dateDebut;
+		}
 		final ForFiscalPrincipal forFiscalDateDebutLaplusAncienne = Collections.min(forFiscalPrincipals);
 		return isSNC() && forFiscalDateDebutLaplusAncienne.getDateDebut() != null && forFiscalDateDebutLaplusAncienne.getDateDebut().isAfter(dateDebut) ? forFiscalDateDebutLaplusAncienne.getDateDebut() : dateDebut;
 	}
