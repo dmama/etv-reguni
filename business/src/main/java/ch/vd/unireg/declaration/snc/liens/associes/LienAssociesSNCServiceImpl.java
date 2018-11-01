@@ -33,13 +33,13 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE,
 			                                     String.format("Le tiers associé  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero()), sujet.getClass().getSimpleName()));
 		}
-		if (!(sujet instanceof Entreprise)) {
+		if (!(objet instanceof Entreprise)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
-			                                     String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero()), sujet.getClass().getSimpleName()));
+			                                     String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero()), objet.getClass().getSimpleName()));
 		}
 
-		if (!((Entreprise) sujet).isSNC()) {
-			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC, String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+		if (!((Entreprise) objet).isSNC()) {
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC, String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 		if (tiersService.existRapportEntreTiers(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, objet, sujet, dateDebut)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN, "Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps");
