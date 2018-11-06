@@ -131,6 +131,8 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		assertEquals("Alfred", pp.getFirstName());
 		assertEquals(Sex.MALE, pp.getSex());
 		assertEquals(dateNaissance, DataHelper.xmlToCore(pp.getDateOfBirth()));
+		assertEquals("Monsieur", pp.getSalutation());
+		assertEquals("Monsieur", pp.getFormalGreeting());
 
 		final List<FamilyStatus> familyStatuses = pp.getFamilyStatuses();
 		assertNotNull(familyStatuses);

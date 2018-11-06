@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -76,6 +77,7 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		context.registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
 		context.ibanValidator = getBean(IbanValidator.class,"ibanValidator");
 		context.infraService = getBean(ServiceInfrastructureService.class,"serviceInfrastructureService");
+		context.adresseService = getBean(AdresseService.class, "adresseService");
 	}
 
 	/**
@@ -382,6 +384,43 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		final LandOwnershipRight toReference0 = (LandOwnershipRight) toLandRight0.getReference();
 		assertNotNull(toReference0);
 		assertEquals(222L, toReference0.getId());
+	}
+
+	/**
+	 * [SIFISC-29739] Vérifie que les salutations sont bien retournées.
+	 */
+	@Test
+	public void testGetSalutation() throws Exception {
+
+		final RegDate dateDeces = RegDate.get(2005, 1, 1);
+
+		class Ids {
+			Long decede;
+			Long heritier;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			// données fiscales
+			final PersonnePhysique decede = addNonHabitant("Rodolf", "Laplancha", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			decede.setDateDeces(dateDeces);
+			final PersonnePhysique heritier = addNonHabitant("Gudule", "Laplancha", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			addHeritage(heritier, decede, dateDeces.getOneDayAfter(), null, true);
+
+			ids.decede = decede.getId();
+			ids.heritier = heritier.getId();
+			return null;
+		});
+
+		final NaturalPerson decede = newFrom(ids.decede);
+		assertNotNull(decede);
+		assertEquals("Aux héritiers de", decede.getSalutation());
+		assertEquals("Madame, Monsieur", decede.getFormalGreeting());
+
+		final NaturalPerson heritier = newFrom(ids.heritier);
+		assertNotNull(heritier);
+		assertEquals("Madame", heritier.getSalutation());
+		assertEquals("Madame", heritier.getFormalGreeting());
 	}
 
 	private NaturalPerson newFrom(long id, InternalPartyPart... parts) throws Exception {

@@ -86,6 +86,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals("Tummers-De Wit Wouter", ((NaturalPerson) party).getOfficialName());
 			Assert.assertEquals("Elisabeth", ((NaturalPerson) party).getFirstName());
 			Assert.assertEquals("Elisabeth Astrid Mary", ((NaturalPerson) party).getFirstNames());
+			Assert.assertEquals("Madame, Monsieur", ((NaturalPerson) party).getSalutation());
+			Assert.assertEquals("Madame, Monsieur", ((NaturalPerson) party).getFormalGreeting());
 		}
 		{
 			final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, null);
@@ -105,6 +107,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 
 			Assert.assertEquals("Tummers-De Wit Wouter", partyContainer.naturalPerson.getOfficialName());
 			Assert.assertEquals("Elisabeth", partyContainer.naturalPerson.getFirstName());
+			Assert.assertEquals("Madame, Monsieur", partyContainer.naturalPerson.getSalutation());
+			Assert.assertEquals("Madame, Monsieur", partyContainer.naturalPerson.getFormalGreeting());
 		}
 	}
 
@@ -122,6 +126,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
 			Assert.assertEquals("Allora", ((NaturalPerson) party).getOfficialName());
 			Assert.assertEquals("Cédric", ((NaturalPerson) party).getFirstName());
+			Assert.assertEquals("Monsieur", ((NaturalPerson) party).getSalutation());
+			Assert.assertEquals("Monsieur", ((NaturalPerson) party).getFormalGreeting());
 			final List<BankAccount> bankAccounts = party.getBankAccounts();
 			Assert.assertEquals(1, bankAccounts.size());
 			Assert.assertEquals("CH7400243243G15379860", bankAccounts.get(0).getIban());
@@ -144,6 +150,8 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 
 			Assert.assertEquals("Allora", partyContainer.naturalPerson.getOfficialName());
 			Assert.assertEquals("Cédric", partyContainer.naturalPerson.getFirstName());
+			Assert.assertEquals("Monsieur", partyContainer.naturalPerson.getSalutation());
+			Assert.assertEquals("Monsieur", partyContainer.naturalPerson.getFormalGreeting());
 			Assert.assertEquals("CH7400243243G15379860", partyContainer.naturalPerson.getBankAccounts().get(0).getIban());
 		}
 	}

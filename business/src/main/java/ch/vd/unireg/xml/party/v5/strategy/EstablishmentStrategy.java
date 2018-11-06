@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.party.establishment.v2.Establishment;
@@ -48,13 +49,19 @@ public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 		}
 
 		to.setSign(etb.getEnseigne());
+
+		// [SIFISC-29739]
+		final FormulePolitesse formule = context.adresseService.getFormulePolitesse(etb, null);
+		if (formule != null) {
+			to.setFormalGreeting(formule.getFormuleAppel());
+		}
 	}
 
 	@Override
 	protected void copyBase(Establishment to, Establishment from) {
 		super.copyBase(to, from);
-
 		to.setName(from.getName());
 		to.setSign(from.getSign());
+		to.setFormalGreeting(from.getFormalGreeting());
 	}
 }

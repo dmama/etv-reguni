@@ -23,6 +23,7 @@ import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
@@ -49,6 +50,25 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 		copyBase(menage, right);
 		copyParts(menage, right, parts, CopyMode.EXCLUSIVE);
 		return menage;
+	}
+
+	@Override
+	protected void initBase(CommonHousehold to, Tiers from, Context context) throws ServiceException {
+		super.initBase(to, from, context);
+
+		// [SIFISC-29739]
+		final FormulePolitesse formule = context.adresseService.getFormulePolitesse(from, null);
+		if (formule != null) {
+			to.setSalutation(formule.getSalutations());
+			to.setFormalGreeting(formule.getFormuleAppel());
+		}
+	}
+
+	@Override
+	protected void copyBase(CommonHousehold to, CommonHousehold from) {
+		super.copyBase(to, from);
+		to.setSalutation(from.getSalutation());
+		to.setFormalGreeting(from.getFormalGreeting());
 	}
 
 	@Override

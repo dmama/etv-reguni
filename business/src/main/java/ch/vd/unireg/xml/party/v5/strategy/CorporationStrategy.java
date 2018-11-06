@@ -44,6 +44,7 @@ import ch.vd.unireg.tiers.IdentificationEntreprise;
 import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
@@ -112,6 +113,12 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				}
 				to.setUidNumbers(new UidNumberList(ideList));
 			}
+		}
+
+		// [SIFISC-29739]
+		final FormulePolitesse formule = context.adresseService.getFormulePolitesse(entreprise, null);
+		if (formule != null) {
+			to.setFormalGreeting(formule.getFormuleAppel());
 		}
 	}
 
@@ -383,6 +390,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.copyBase(to, from);
 		to.setName(from.getName());
 		to.setUidNumbers(from.getUidNumbers());
+		to.setFormalGreeting(from.getFormalGreeting());
 	}
 
 	@Override

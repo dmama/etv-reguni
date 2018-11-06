@@ -1483,6 +1483,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			assertEquals("Dufoin", pp.getOfficialName());
 			assertEquals("Balthazar", pp.getFirstName());
 			assertEquals(Sex.MALE, pp.getSex());
+			assertEquals("Monsieur", pp.getSalutation());
+			assertEquals("Monsieur", pp.getFormalGreeting());
 
 			final List<NaturalPersonCategory> categories = pp.getCategories();
 			assertNotNull(categories);
@@ -2039,18 +2041,24 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final CommonHousehold mcSans = (CommonHousehold) partySans;
 		assertNull(mcSans.getMainTaxpayer());
 		assertNull(mcSans.getSecondaryTaxpayer());
+		assertEquals("Monsieur et Madame", mcSans.getSalutation());
+		assertEquals("Monsieur et Madame", mcSans.getFormalGreeting());
 
 		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.HOUSEHOLD_MEMBERS));
 		assertNotNull(partyAvec);
 		assertEquals(CommonHousehold.class, partyAvec.getClass());
 
 		final CommonHousehold mcAvec = (CommonHousehold) partyAvec;
+		assertEquals("Monsieur et Madame", mcAvec.getSalutation());
+		assertEquals("Monsieur et Madame", mcAvec.getFormalGreeting());
 		{
 			final NaturalPerson pp = mcAvec.getMainTaxpayer();
 			assertNotNull(pp);
 			assertEquals(Sex.MALE, pp.getSex());
 			assertEquals("Delagrange", pp.getOfficialName());
 			assertEquals("Marcel", pp.getFirstName());
+			assertEquals("Monsieur", pp.getSalutation());
+			assertEquals("Monsieur", pp.getFormalGreeting());
 			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(pp.getDateOfBirth()));
 			assertEquals(ids.lui, pp.getNumber());
 		}
@@ -2060,6 +2068,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			assertEquals(Sex.FEMALE, pp.getSex());
 			assertEquals("Delagrange", pp.getOfficialName());
 			assertEquals("Marceline", pp.getFirstName());
+			assertEquals("Madame", pp.getSalutation());
+			assertEquals("Madame", pp.getFormalGreeting());
 			assertNull(pp.getDateOfBirth());
 			assertEquals(ids.elle, pp.getNumber());
 		}
@@ -2974,6 +2984,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			assertEquals("Gautier", np.getOfficialName());
 			assertEquals("Dupont", np.getBirthName());
 			assertEquals(Sex.FEMALE, np.getSex());
+			assertEquals("Madame", np.getSalutation());
+			assertEquals("Madame", np.getFormalGreeting());
 
 			final List<Nationality> nationalities = np.getNationalities();
 			assertNotNull(nationalities);
@@ -3937,6 +3949,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			assertEquals("Mafalda", np.getFirstName());
 			assertEquals("Gautier", np.getOfficialName());
 			assertEquals(Sex.FEMALE, np.getSex());
+			assertEquals("Madame", np.getSalutation());
+			assertEquals("Madame", np.getFormalGreeting());
 
 			final List<TaxDeclaration> decls = np.getTaxDeclarations();
 			assertNotNull(decls);

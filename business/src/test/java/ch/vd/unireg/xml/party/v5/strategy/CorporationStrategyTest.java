@@ -12,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
 import ch.vd.unireg.foncier.DegrevementICI;
@@ -75,6 +76,7 @@ public class CorporationStrategyTest extends BusinessTest {
 		context.tiersService = getBean(TiersService.class, "tiersService");
 		context.regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 		context.registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
+		context.adresseService = getBean(AdresseService.class, "adresseService");
 	}
 
 	/**
@@ -258,6 +260,84 @@ public class CorporationStrategyTest extends BusinessTest {
 		assertEquals(222L, toReference0.getId());
 	}
 
+
+	/**
+	 * [SIFISC-24467] porblème apparu pour les formes juridiques dont la date de début est très antérieure à la date
+	 * de début du premier régime fiscal vaudois... la catégorie d'entreprise, tirée du régime fiscal, n'était alors
+	 * pas déterminée et BOOM...
+	 */
+	@Test
+	public void testFormesLegalesEtCategoriesEntreprise() throws Exception {
+
+		final RegDate dateDebut = date(1974, 2, 5);
+		final RegDate dateDebutRegimeFiscal = date(1994, 1, 1);
+
+		// mise en place civile
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
+			@Override
+			protected void init() {
+				// non, rien...
+			}
+		});
+
+		// mise en place fiscale
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Les joyeux lurons");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalCH(entreprise, dateDebutRegimeFiscal, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalVD(entreprise, dateDebutRegimeFiscal, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			return entreprise.getNumero();
+		});
+
+		// appel de la stratégie
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+				assertNotNull(entreprise);
+
+				final Corporation corp = new Corporation();
+				strategy.initBase(corp, entreprise, context);
+				strategy.initParts(corp, entreprise, EnumSet.of(InternalPartyPart.LEGAL_FORMS), context);
+
+				// vérifions les formes légales
+				final List<LegalForm> legalForms = corp.getLegalForms();
+				assertNotNull(legalForms);
+				assertEquals(2, legalForms.size());
+				{
+					final LegalForm lf = legalForms.get(0);
+					assertNotNull(lf);
+					assertEquals(dateDebut, DataHelper.xmlToCore(lf.getDateFrom()));
+					assertEquals(dateDebutRegimeFiscal.getOneDayBefore(), DataHelper.xmlToCore(lf.getDateTo()));
+					assertEquals(LegalFormCategory.OTHER, lf.getLegalFormCategory());       // pas de catégorie définie -> AUTRE
+					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
+				}
+				{
+					final LegalForm lf = legalForms.get(1);
+					assertNotNull(lf);
+					assertEquals(dateDebutRegimeFiscal, DataHelper.xmlToCore(lf.getDateFrom()));
+					assertNull(lf.getDateTo());
+					assertEquals(LegalFormCategory.ASSOCIATION_FOUNDATION, lf.getLegalFormCategory());
+					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-29739] Vérifie que les salutations sont bien retournées.
+	 */
+	@Test
+	public void testGetSalutation() throws Exception {
+
+		final Long id = doInNewTransaction(status -> addEntrepriseInconnueAuCivil().getId());
+
+		final Corporation corp = newFrom(id);
+		assertNotNull(corp);
+		assertEquals("Madame, Monsieur", corp.getFormalGreeting());
+	}
+
 	private Corporation newFrom(long id, InternalPartyPart... parts) throws Exception {
 		return doInNewTransaction(status -> {
 			final Entreprise pm = hibernateTemplate.get(Entreprise.class, id);
@@ -327,69 +407,5 @@ public class CorporationStrategyTest extends BusinessTest {
 		exo0.setDateFin(dateFin);
 		exo0.setImmeuble(immeuble);
 		return exo0;
-	}
-
-	/**
-	 * [SIFISC-24467] porblème apparu pour les formes juridiques dont la date de début est très antérieure à la date
-	 * de début du premier régime fiscal vaudois... la catégorie d'entreprise, tirée du régime fiscal, n'était alors
-	 * pas déterminée et BOOM...
-	 */
-	@Test
-	public void testFormesLegalesEtCategoriesEntreprise() throws Exception {
-
-		final RegDate dateDebut = date(1974, 2, 5);
-		final RegDate dateDebutRegimeFiscal = date(1994, 1, 1);
-
-		// mise en place civile
-		serviceEntreprise.setUp(new MockServiceEntreprise() {
-			@Override
-			protected void init() {
-				// non, rien...
-			}
-		});
-
-		// mise en place fiscale
-		final long idpm = doInNewTransactionAndSession(status -> {
-			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addRaisonSociale(entreprise, dateDebut, null, "Les joyeux lurons");
-			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-			addRegimeFiscalCH(entreprise, dateDebutRegimeFiscal, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-			addRegimeFiscalVD(entreprise, dateDebutRegimeFiscal, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-			return entreprise.getNumero();
-		});
-
-		// appel de la stratégie
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
-				assertNotNull(entreprise);
-
-				final Corporation corp = new Corporation();
-				strategy.initBase(corp, entreprise, context);
-				strategy.initParts(corp, entreprise, EnumSet.of(InternalPartyPart.LEGAL_FORMS), context);
-
-				// vérifions les formes légales
-				final List<LegalForm> legalForms = corp.getLegalForms();
-				assertNotNull(legalForms);
-				assertEquals(2, legalForms.size());
-				{
-					final LegalForm lf = legalForms.get(0);
-					assertNotNull(lf);
-					assertEquals(dateDebut, DataHelper.xmlToCore(lf.getDateFrom()));
-					assertEquals(dateDebutRegimeFiscal.getOneDayBefore(), DataHelper.xmlToCore(lf.getDateTo()));
-					assertEquals(LegalFormCategory.OTHER, lf.getLegalFormCategory());       // pas de catégorie définie -> AUTRE
-					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
-				}
-				{
-					final LegalForm lf = legalForms.get(1);
-					assertNotNull(lf);
-					assertEquals(dateDebutRegimeFiscal, DataHelper.xmlToCore(lf.getDateFrom()));
-					assertNull(lf.getDateTo());
-					assertEquals(LegalFormCategory.ASSOCIATION_FOUNDATION, lf.getLegalFormCategory());
-					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
-				}
-			}
-		});
 	}
 }

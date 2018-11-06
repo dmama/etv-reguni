@@ -37,6 +37,7 @@ import ch.vd.unireg.tiers.IndividuNotFoundException;
 import ch.vd.unireg.tiers.OriginePersonnePhysique;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
@@ -198,6 +199,13 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			}
 		}
 
+		// [SIFISC-29739]
+		final FormulePolitesse formule = context.adresseService.getFormulePolitesse(personne, null);
+		if (formule != null) {
+			to.setSalutation(formule.getSalutations());
+			to.setFormalGreeting(formule.getFormuleAppel());
+		}
+
 		//L'exposition du numéro IDE
 		final Set<IdentificationEntreprise> ides = personne.getIdentificationsEntreprise();
 		if (ides != null && !ides.isEmpty()) {
@@ -236,6 +244,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 		// la liste des IDE
 		to.setUidNumbers(from.getUidNumbers());
+
+		to.setSalutation(from.getSalutation());
+		to.setFormalGreeting(from.getFormalGreeting());
 	}
 
 	@Override
