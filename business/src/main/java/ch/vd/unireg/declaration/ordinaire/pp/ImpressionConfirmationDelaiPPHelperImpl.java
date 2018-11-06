@@ -94,7 +94,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 		final ImpCcn impCcn = entete.addNewImpCcn();
 		impCcn.setPrefixe(EditiquePrefixeHelper.buildPrefixeImpCcnEntete(typeDocumentEditique));
 		impCcn.setLibImpCcn(String.format("Délai pour le dépôt de la déclaration d'impôt %d", params.getDi().getPeriode().getAnnee()));
-		final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
+		final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers(), null).getFormuleAppel();
 		confirmationDelai.setCivil(formuleAppel);
 		confirmationDelai.setOFS(legacyEditiqueHelper.getCommune(params.getDi()));
 		return confirmationDelai;

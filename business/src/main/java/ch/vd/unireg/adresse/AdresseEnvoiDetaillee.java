@@ -11,15 +11,16 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
 import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.unireg.common.NpaEtLocalite;
-import ch.vd.unireg.common.RueEtNumero;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 
 /**
  * Adresse d'envoi du courrier avec détail des valeurs.
@@ -109,19 +110,19 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 		return destinataire;
 	}
 
-	public void addFormulePolitesse(CiviliteSupplier civilite) {
-		addFormulePolitesse(civilite.getSalutations(), civilite.getFormuleAppel());
-	}
-
-	public void addFormulePolitesse(CiviliteSupplier civilite, int optionalite) {
-		addFormulePolitesse(civilite.getSalutations(), civilite.getFormuleAppel(), optionalite);
-	}
-
 	public void addFormulePolitesse(FormulePolitesse formule) {
-		addFormulePolitesse(formule.salutations(), formule.formuleAppel());
+		addFormulePolitesse(formule.getSalutations(), formule.getFormuleAppel());
 	}
 
 	public void addFormulePolitesse(FormulePolitesse formule, int optionalite) {
+		addFormulePolitesse(formule.getSalutations(), formule.getFormuleAppel(), optionalite);
+	}
+
+	public void addFormulePolitesse(TypeFormulePolitesse formule) {
+		addFormulePolitesse(formule.salutations(), formule.formuleAppel());
+	}
+
+	public void addFormulePolitesse(TypeFormulePolitesse formule, int optionalite) {
 		addFormulePolitesse(formule.salutations(), formule.formuleAppel(), optionalite);
 	}
 

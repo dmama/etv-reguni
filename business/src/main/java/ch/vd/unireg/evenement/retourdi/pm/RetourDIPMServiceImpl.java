@@ -86,7 +86,6 @@ import ch.vd.unireg.tiers.Remarque;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -475,7 +474,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				final Adresse nouvelleAdresseFournie = raisonSocialeEtAdresseFournies.getRight();
 				final NomAvecCivilite nomEtCivilite = raisonSocialeEtAdresseFournies.getLeft();
 				final String raisonSociale = mandataireFourni != null ? tiersService.getNomRaisonSociale(mandataireFourni) : nomEtCivilite.getNomRaisonSociale();
-				final String salutations = mandataireFourni != null ? Optional.ofNullable(adresseService.getFormulePolitesse(mandataireFourni)).map(FormulePolitesse::salutations).orElse(null) : nomEtCivilite.getCivilite();
+				final String salutations = mandataireFourni != null ? Optional.ofNullable(adresseService.getFormulePolitesse(mandataireFourni, null)).map(FormulePolitesse::getSalutations).orElse(null) : nomEtCivilite.getCivilite();
 				final String complement = mandataireFourni != null ? StringUtils.trimToNull(nomEtCivilite.merge()) : null;
 
 				// c'est une "simple" adresse mandataire qu'il faut faire...

@@ -1,8 +1,10 @@
 package ch.vd.unireg.adresse;
 
+import ch.vd.unireg.type.TypeFormulePolitesse;
+
 /**
  * Interface implémentée par les tiers pour lesquels on veut expliciter les salutations
- * @see ch.vd.unireg.type.FormulePolitesse pour la signification de "salutations" et "formule d'appel"
+ * @see TypeFormulePolitesse pour la signification de "salutations" et "formule d'appel"
  */
 public interface CiviliteSupplier {
 

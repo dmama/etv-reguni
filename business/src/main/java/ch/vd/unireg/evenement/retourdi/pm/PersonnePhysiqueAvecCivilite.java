@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.adresse.CiviliteSupplier;
 import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 
 final class PersonnePhysiqueAvecCivilite extends PersonnePhysique implements CiviliteSupplier {
 
@@ -28,6 +28,6 @@ final class PersonnePhysiqueAvecCivilite extends PersonnePhysique implements Civ
 
 	@Override
 	public String getFormuleAppel() {
-		return FormulePolitesse.MADAME_MONSIEUR.formuleAppel();
+		return TypeFormulePolitesse.MADAME_MONSIEUR.formuleAppel();
 	}
 }

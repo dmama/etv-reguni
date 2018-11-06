@@ -23,10 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
@@ -41,6 +37,10 @@ import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.impl.ExpediteurNillableValuesFiller;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -303,7 +303,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 
 			final LettreSom lettreSom = sommationDI.addNewLettreSom();
 			lettreSom.setOFS(legacyEditiqueHelper.getCommune(di));
-			final String formuleAppel = adresseService.getFormulePolitesse(di.getTiers()).formuleAppel();
+			final String formuleAppel = adresseService.getFormulePolitesse(di.getTiers(), null).getFormuleAppel();
 			lettreSom.setCivil(formuleAppel);
 			lettreSom.setPeriodeFiscal(pfStr);
 			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));

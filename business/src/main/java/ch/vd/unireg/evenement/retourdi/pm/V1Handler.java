@@ -21,8 +21,8 @@ import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.jms.EsbBusinessException;
-import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.AddressInformation;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.DeclarationIBC;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.DeclarationImpots;
@@ -50,8 +50,8 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 
 	private static Map<String, String> buildCiviliteMapping() {
 		final Map<String, String> map = new HashMap<>();
-		map.put("Mme", FormulePolitesse.MADAME.salutations());
-		map.put("M.", FormulePolitesse.MONSIEUR.salutations());
+		map.put("Mme", TypeFormulePolitesse.MADAME.salutations());
+		map.put("M.", TypeFormulePolitesse.MONSIEUR.salutations());
 		return Collections.unmodifiableMap(map);
 	}
 

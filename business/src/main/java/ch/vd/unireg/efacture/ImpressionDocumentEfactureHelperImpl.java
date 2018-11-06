@@ -108,7 +108,7 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacy
 			precedente.setDateInscriptionPrecedente(RegDateHelper.toIndexString(params.getDateDemandePrecedente()));
 			precedente.setNumAdherPrecedent(params.getNoAdherentPrecedent());
 		}
-		final String politesse = adresseService.getFormulePolitesse(params.getTiers()).formuleAppel();
+		final String politesse = adresseService.getFormulePolitesse(params.getTiers(), null).getFormuleAppel();
 		lettresEFacture.setPolitesse(politesse);
 		return lettresEFacture;
 	}

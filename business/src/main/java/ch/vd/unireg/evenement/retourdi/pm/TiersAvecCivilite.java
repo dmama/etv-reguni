@@ -5,7 +5,7 @@ import java.util.Collections;
 import ch.vd.unireg.adresse.CiviliteSupplier;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 
 final class TiersAvecCivilite extends Entreprise implements CiviliteSupplier {
 
@@ -23,6 +23,6 @@ final class TiersAvecCivilite extends Entreprise implements CiviliteSupplier {
 
 	@Override
 	public String getFormuleAppel() {
-		return FormulePolitesse.MADAME_MONSIEUR.formuleAppel();
+		return TypeFormulePolitesse.MADAME_MONSIEUR.formuleAppel();
 	}
 }

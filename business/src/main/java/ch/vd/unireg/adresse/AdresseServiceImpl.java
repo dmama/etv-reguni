@@ -66,6 +66,7 @@ import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class AdresseServiceImpl implements AdresseService {
@@ -432,16 +433,15 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, @Nullable Tiers tiersPourAdresse, @Nullable RegDate date, boolean fillFormulePolitesse) {
 
-		final boolean civiliteSpecifique = tiers instanceof CiviliteSupplier;
-		if (fillFormulePolitesse && civiliteSpecifique) {
-			adresse.addFormulePolitesse((CiviliteSupplier) tiers);
+		if (fillFormulePolitesse) {
+			final FormulePolitesse formulePolitesse = getFormulePolitesse(tiers, date);
+			if (formulePolitesse != null) {
+				adresse.addFormulePolitesse(formulePolitesse);
+			}
 		}
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) tiers;
-			if (fillFormulePolitesse && !civiliteSpecifique) {
-				adresse.addFormulePolitesse(getFormulePolitesse(personne, date));
-			}
 			adresse.addNomPrenom(getNomPrenom(personne, date));
 		}
 		else if (tiers instanceof MenageCommun) {
@@ -451,9 +451,6 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				if (fillFormulePolitesse && !civiliteSpecifique) {
-					adresse.addFormulePolitesse(getFormulePolitesse(ensemble, date));
-				}
 				adresse.addNomPrenom(getNomPrenom(principal, date));
 			}
 
@@ -465,13 +462,14 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 			final Contribuable ctb = tiersService.getContribuable(debiteur);
-			if (getFormulePolitesse(ctb) == FormulePolitesse.HERITIERS) {
-				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse && !civiliteSpecifique);
+			final FormulePolitesse formuleCtb = getFormulePolitesse(ctb, date);
+			if (formuleCtb != null && formuleCtb.getType() == TypeFormulePolitesse.HERITIERS) {
+				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse);
 			}
 			else if (ctb != null) {
 				final AdresseEnvoiDetaillee sub = new AdresseEnvoiDetaillee(adresse.getDestinataire(), adresse.getSource(), adresse.getDateDebut(), adresse.getDateFin(), adresse.isArtificelle(),
 				                                                            localiteInvalideMatcherService);
-				fillDestinataire(sub, ctb, null, date, fillFormulePolitesse && !civiliteSpecifique);
+				fillDestinataire(sub, ctb, null, date, fillFormulePolitesse);
 				for (String ligneRaisonSociale : sub.getRaisonsSociales()) {
 					adresse.addRaisonSociale(ligneRaisonSociale);
 				}
@@ -502,9 +500,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
-			if (fillFormulePolitesse && !civiliteSpecifique) {
-				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
-			}
 			final List<String> lignesRaisonSociale = segmenteRaisonSocialeSurPlusieursLignes(getRaisonSociale(entreprise));
 			for (String ligne : lignesRaisonSociale) {
 				adresse.addRaisonSociale(ligne);
@@ -512,9 +507,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
-			if (fillFormulePolitesse && !civiliteSpecifique) {
-				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
-			}
 
 			// [SIFISC-16876] On n'utilise que la raison sociale pour l'adresse, l'enseigne ne sert que pour la recherche
 			final List<String> lignesRaisonSociale = segmenteRaisonSocialeSurPlusieursLignes(getRaisonSociale(etb));
@@ -597,9 +589,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 *
 	 * @param adresse            l'adresse d'envoi détaillée à remplir
 	 * @param adresseDestination l'adresse générique pré-calculée
-	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination) {
 
 		if (adresseDestination != null) {
 			fillAdresseEnvoi(adresse, adresseDestination);
@@ -625,7 +616,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
 			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE_PERS, date, date, adresseCourrier == null, localiteInvalideMatcherService);
-			adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
+			adresse.addFormulePolitesse(getTypeFormulePolitesse(individu, date));
 			adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
 			if (adresseCourrier != null) {
@@ -642,25 +633,34 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
-	public FormulePolitesse getFormulePolitesse(Tiers tiers) {
+	public FormulePolitesse getFormulePolitesse(Tiers tiers, @Nullable RegDate date) {
 
-		final FormulePolitesse salutations;
+		final FormulePolitesse formulePolitesse;
 
-		if (tiers instanceof PersonnePhysique) {
-			salutations = getFormulePolitesse((PersonnePhysique) tiers, null);
+		if (tiers instanceof CiviliteSupplier) {
+			final CiviliteSupplier supplier = (CiviliteSupplier) tiers;
+			formulePolitesse = new FormulePolitesse(supplier.getSalutations(), supplier.getFormuleAppel());
+		}
+		else if (tiers instanceof PersonnePhysique) {
+			formulePolitesse = new FormulePolitesse(getTypeFormulePolitesse((PersonnePhysique) tiers, date));
 		}
 		else if (tiers instanceof MenageCommun) {
+			// Récupère la vue historique complète du ménage (date = null)
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
-			salutations = getFormulePolitesse(ensemble, null);
+			final TypeFormulePolitesse type = getTypeFormulePolitesse(ensemble, date);
+			formulePolitesse = (type == null ? null : new FormulePolitesse(type));
+		}
+		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+			formulePolitesse = new FormulePolitesse(TypeFormulePolitesse.PERSONNE_MORALE);
 		}
 		else {
-			// TODO (msi) ajouter la formule politesse pour les entreprises et les établissements (voir le UNIREG-2302 ailleurs dans cette classe)
 			// pas de formule de politesse pour les autres types de tiers
-			salutations = null;
+			formulePolitesse = null;
 		}
 
-		return salutations;
+		return formulePolitesse;
 	}
 
 	/**
@@ -668,41 +668,42 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage d'une personne physique
 	 */
-	private FormulePolitesse getFormulePolitesse(PersonnePhysique personne, @Nullable RegDate date) {
+	@NotNull
+	private TypeFormulePolitesse getTypeFormulePolitesse(PersonnePhysique personne, @Nullable RegDate date) {
 
-		FormulePolitesse salutations;
+		TypeFormulePolitesse salutations;
 
 		final boolean estDecede = estDecedeAt(personne, date);
 
 		if (personne.isHabitantVD()) {
 			if (!estDecede) {
 				if (tiersService.getSexe(personne) == Sexe.MASCULIN) {
-					salutations = FormulePolitesse.MONSIEUR;
+					salutations = TypeFormulePolitesse.MONSIEUR;
 				}
 				else {
-					salutations = FormulePolitesse.MADAME;
+					salutations = TypeFormulePolitesse.MADAME;
 				}
 			}
 			else {
-				salutations = FormulePolitesse.HERITIERS;
+				salutations = TypeFormulePolitesse.HERITIERS;
 			}
 		}
 		else {
 			if (!estDecede) {
 				if (personne.getSexe() != null) {
 					if (personne.getSexe() == Sexe.MASCULIN) {
-						salutations = FormulePolitesse.MONSIEUR;
+						salutations = TypeFormulePolitesse.MONSIEUR;
 					}
 					else {
-						salutations = FormulePolitesse.MADAME;
+						salutations = TypeFormulePolitesse.MADAME;
 					}
 				}
 				else {
-					salutations = FormulePolitesse.MADAME_MONSIEUR;
+					salutations = TypeFormulePolitesse.MADAME_MONSIEUR;
 				}
 			}
 			else {
-				salutations = FormulePolitesse.HERITIERS;
+				salutations = TypeFormulePolitesse.HERITIERS;
 			}
 		}
 
@@ -726,8 +727,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage d'un individu
 	 */
-	private FormulePolitesse getFormulePolitesse(Individu individu, RegDate date) {
-		FormulePolitesse salutations;
+	private TypeFormulePolitesse getTypeFormulePolitesse(Individu individu, RegDate date) {
+		TypeFormulePolitesse salutations;
 
 		final RegDate dateDeces = individu.getDateDeces();
 		final boolean estDecede = (dateDeces != null && (date == null || dateDeces.isBeforeOrEqual(date)));
@@ -735,17 +736,17 @@ public class AdresseServiceImpl implements AdresseService {
 		if (!estDecede) {
 			final Sexe sexe = individu.getSexe();
 			if (sexe == Sexe.MASCULIN) {
-				salutations = FormulePolitesse.MONSIEUR;
+				salutations = TypeFormulePolitesse.MONSIEUR;
 			}
 			else if (sexe == Sexe.FEMININ) {
-				salutations = FormulePolitesse.MADAME;
+				salutations = TypeFormulePolitesse.MADAME;
 			}
 			else {
-				salutations = FormulePolitesse.MADAME_MONSIEUR;
+				salutations = TypeFormulePolitesse.MADAME_MONSIEUR;
 			}
 		}
 		else {
-			salutations = FormulePolitesse.HERITIERS;
+			salutations = TypeFormulePolitesse.HERITIERS;
 		}
 		return salutations;
 	}
@@ -757,10 +758,15 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage des parties d'un ménage commun
 	 */
-	protected FormulePolitesse getFormulePolitesse(EnsembleTiersCouple ensemble, @Nullable RegDate date) {
+	@Nullable
+	protected TypeFormulePolitesse getTypeFormulePolitesse(@NotNull EnsembleTiersCouple ensemble, @Nullable RegDate date) {
 
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
+		if (principal == null) {
+			// le ménage n'est pas actif à la date demandée, pas de formule de politesse
+			return null;
+		}
 
 		final Sexe sexePrincipal = tiersService.getSexe(principal);
 		final Sexe sexeConjoint = (conjoint == null ? null : tiersService.getSexe(conjoint));
@@ -770,38 +776,38 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// [UNIREG-749] la formule de politesse 'aux héritiers de' s'applique dès qu'un des deux tiers est décédé.
 		if (principalEstDecede || secondaireEstDecede) {
-			return FormulePolitesse.HERITIERS;
+			return TypeFormulePolitesse.HERITIERS;
 		}
 
 		if (conjoint == null) {
 			if (sexePrincipal == null) {
-				return FormulePolitesse.MADAME_MONSIEUR;
+				return TypeFormulePolitesse.MADAME_MONSIEUR;
 			}
 			else {
 				if (Sexe.MASCULIN == sexePrincipal) {
-					return FormulePolitesse.MONSIEUR;
+					return TypeFormulePolitesse.MONSIEUR;
 				}
 				else {
-					return FormulePolitesse.MADAME;
+					return TypeFormulePolitesse.MADAME;
 				}
 			}
 		}
 		else {
 			if (sexePrincipal == null || sexeConjoint == null) {
-				return FormulePolitesse.MADAME_MONSIEUR;
+				return TypeFormulePolitesse.MADAME_MONSIEUR;
 			}
 			else {
 				boolean principalMasculin = Sexe.MASCULIN == sexePrincipal;
 				boolean conjointMasculin = Sexe.MASCULIN == sexeConjoint;
 
 				if (principalMasculin && conjointMasculin) {
-					return FormulePolitesse.MESSIEURS;
+					return TypeFormulePolitesse.MESSIEURS;
 				}
 				else if (principalMasculin && !conjointMasculin) {
-					return FormulePolitesse.MONSIEUR_ET_MADAME;
+					return TypeFormulePolitesse.MONSIEUR_ET_MADAME;
 				}
 				else if (!conjointMasculin) {
-					return FormulePolitesse.MESDAMES;
+					return TypeFormulePolitesse.MESDAMES;
 				}
 				else {
 					throw new IllegalArgumentException("Il n'est pas possible d'avoir un principal féminin avec un conjoint masculin");
@@ -2148,7 +2154,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
+	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) {
 
 		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null, date, date, true, localiteInvalideMatcherService);
 		fillDestinataire(adresse, tiers, null, date, false);

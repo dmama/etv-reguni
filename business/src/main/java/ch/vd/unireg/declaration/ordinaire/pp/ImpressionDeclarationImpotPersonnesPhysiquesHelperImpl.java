@@ -918,7 +918,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 			if (noms.size() != 1) {
 				throw new IllegalArgumentException();
 			}
-			return adresseService.getFormulePolitesse(pp).salutations() + ' ' + noms.get(0);
+			return adresseService.getFormulePolitesse(pp, null).getSalutations() + ' ' + noms.get(0);
 		}
 		catch (AdresseException e) {
 			throw new EditiqueException(e);

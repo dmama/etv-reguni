@@ -51,6 +51,7 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 
 import static ch.vd.unireg.adresse.AdresseTestCase.assertAdresse;
 import static ch.vd.unireg.adresse.AdresseTestCase.assertAdressesEquals;
@@ -3645,7 +3646,7 @@ public class AdresseServiceTest extends BusinessTest {
 			nolwen.setSexe(Sexe.FEMININ);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, arnold, nolwen);
-			assertEquals("Monsieur et Madame", service.getFormulePolitesse(ensemble, null).salutations());
+			assertEquals("Monsieur et Madame", service.getTypeFormulePolitesse(ensemble, null).salutations());
 		}
 
 		// Ménage femme-femme
@@ -3661,7 +3662,7 @@ public class AdresseServiceTest extends BusinessTest {
 			nolwen.setSexe(Sexe.FEMININ);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, cora, nolwen);
-			assertEquals("Mesdames", service.getFormulePolitesse(ensemble, null).salutations());
+			assertEquals("Mesdames", service.getTypeFormulePolitesse(ensemble, null).salutations());
 		}
 
 		// Ménage homme-homme
@@ -3677,7 +3678,7 @@ public class AdresseServiceTest extends BusinessTest {
 			roch.setSexe(Sexe.MASCULIN);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, arnold, roch);
-			assertEquals("Messieurs", service.getFormulePolitesse(ensemble, null).salutations());
+			assertEquals("Messieurs", service.getTypeFormulePolitesse(ensemble, null).salutations());
 		}
 
 		// Ménage homme-<sexe inconnu>
@@ -3693,7 +3694,7 @@ public class AdresseServiceTest extends BusinessTest {
 			alf.setSexe(null);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, arnold, alf);
-			assertEquals("Madame, Monsieur", service.getFormulePolitesse(ensemble, null).salutations());
+			assertEquals("Madame, Monsieur", service.getTypeFormulePolitesse(ensemble, null).salutations());
 		}
 
 		// Ménage femme-<sexe inconnu>
@@ -3709,7 +3710,7 @@ public class AdresseServiceTest extends BusinessTest {
 			alf.setSexe(null);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, cora, alf);
-			assertEquals("Madame, Monsieur", service.getFormulePolitesse(ensemble, null).salutations());
+			assertEquals("Madame, Monsieur", service.getTypeFormulePolitesse(ensemble, null).salutations());
 		}
 
 		// Ménage <sexe inconnu>-<sexe inconnu>
@@ -3725,7 +3726,7 @@ public class AdresseServiceTest extends BusinessTest {
 			alf.setSexe(null);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, esc, alf);
-			assertEquals("Madame, Monsieur", service.getFormulePolitesse(ensemble, null).salutations());
+			assertEquals("Madame, Monsieur", service.getTypeFormulePolitesse(ensemble, null).salutations());
 		}
 	}
 
@@ -7337,14 +7338,19 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1398] Types de tiers qui n'ont pas de formule de politesse
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetFormulePolitesseTiersSansFormule() {
+		assertNull(adresseService.getFormulePolitesse(new AutreCommunaute(), null));
+		assertNull(adresseService.getFormulePolitesse(new CollectiviteAdministrative(), null));
+		assertNull(adresseService.getFormulePolitesse(new DebiteurPrestationImposable(), null));
+	}
 
-		assertNull(adresseService.getFormulePolitesse(new AutreCommunaute()));
-		assertNull(adresseService.getFormulePolitesse(new CollectiviteAdministrative()));
-		assertNull(adresseService.getFormulePolitesse(new Entreprise()));
-		assertNull(adresseService.getFormulePolitesse(new Etablissement()));
-		assertNull(adresseService.getFormulePolitesse(new DebiteurPrestationImposable()));
+	/**
+	 * [SIFISC-29739] Cas des entreprises et des établissements
+	 */
+	@Test
+	public void testGetFormulePolitesseEntreprisesEtEtablissements() {
+		assertFormulePolitesse(TypeFormulePolitesse.PERSONNE_MORALE, adresseService.getFormulePolitesse(new Entreprise(), null));
+		assertFormulePolitesse(TypeFormulePolitesse.PERSONNE_MORALE, adresseService.getFormulePolitesse(new Etablissement(), null));
 	}
 
 	/**
@@ -7356,13 +7362,13 @@ public class AdresseServiceTest extends BusinessTest {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setSexe(Sexe.MASCULIN);
-		assertEquals(FormulePolitesse.MONSIEUR, adresseService.getFormulePolitesse(pp));
+		assertFormulePolitesse(TypeFormulePolitesse.MONSIEUR, adresseService.getFormulePolitesse(pp, null));
 
 		pp.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.MADAME, adresseService.getFormulePolitesse(pp));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME, adresseService.getFormulePolitesse(pp, null));
 
 		pp.setSexe(null);
-		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(pp));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(pp, null));
 	}
 
 	/**
@@ -7375,13 +7381,13 @@ public class AdresseServiceTest extends BusinessTest {
 		PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setDateDeces(date(2000, 1, 1));
 		pp.setSexe(Sexe.MASCULIN);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp, null));
 
 		pp.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp, null));
 
 		pp.setSexe(null);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp, null));
 	}
 
 	/**
@@ -7399,44 +7405,44 @@ public class AdresseServiceTest extends BusinessTest {
 		// couple mixte
 		pp1.setSexe(Sexe.MASCULIN);
 		pp2.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc, null));
 
 		// couple mixte (variante)
 		pp1.setSexe(Sexe.FEMININ);
 		pp2.setSexe(Sexe.MASCULIN);
-		assertEquals(FormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc, null));
 
 		// couple homosexuel
 		pp1.setSexe(Sexe.MASCULIN);
 		pp2.setSexe(Sexe.MASCULIN);
-		assertEquals(FormulePolitesse.MESSIEURS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MESSIEURS, adresseService.getFormulePolitesse(mc, null));
 
 		// couple homosexuel féminin
 		pp1.setSexe(Sexe.FEMININ);
 		pp2.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.MESDAMES, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MESDAMES, adresseService.getFormulePolitesse(mc, null));
 
 		// couples partiellement indéterminés (les 4 variantes)
 		pp1.setSexe(Sexe.MASCULIN);
 		pp2.setSexe(null);
-		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.FEMININ);
 		pp2.setSexe(null);
-		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(null);
 		pp2.setSexe(Sexe.MASCULIN);
-		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(null);
 		pp2.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc, null));
 
 		// couple complétement indéterminé
 		pp1.setSexe(null);
 		pp2.setSexe(null);
-		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc, null));
 	}
 
 	/**
@@ -7455,69 +7461,69 @@ public class AdresseServiceTest extends BusinessTest {
 		pp1.setSexe(Sexe.MASCULIN);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.MASCULIN);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(Sexe.FEMININ);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		// couple homosexuel
 		pp1.setSexe(Sexe.MASCULIN);
 		pp2.setSexe(Sexe.MASCULIN);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.MASCULIN);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(Sexe.MASCULIN);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		// couple homosexuel féminin
 		pp1.setSexe(Sexe.FEMININ);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(Sexe.FEMININ);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.FEMININ);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(Sexe.FEMININ);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		// couples partiellement indéterminés
 		pp1.setSexe(Sexe.MASCULIN);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(null);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.MASCULIN);
 		pp2.setSexe(null);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.FEMININ);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(null);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(Sexe.FEMININ);
 		pp2.setSexe(null);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		// couple complétement indéterminé
 		pp1.setSexe(null);
 		pp1.setDateDeces(date(2000, 1, 1));
 		pp2.setSexe(null);
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 
 		pp1.setSexe(null);
 		pp2.setSexe(null);
 		pp2.setDateDeces(date(2000, 1, 1));
-		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		assertFormulePolitesse(TypeFormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc, null));
 	}
 
 	private void assertAdressesByTypeEquals(final AdressesFiscales adresses, Tiers tiers, @Nullable RegDate date) throws AdresseException {
@@ -8284,5 +8290,11 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(Arrays.asList("Ma petite entreprise bien de chez nous-", "de derrière la colline"), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("Ma petite entreprise bien de chez nous-de derrière la colline"));
 		assertEquals(Arrays.asList("1234567890123456789012345678901234567890", "123456789012345"), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("1234567890123456789012345678901234567890123456789012345"));
 		assertEquals(Arrays.asList("Fonds prévoyance en faveur du personnel", "Sté électrique intercommunale de la Côte"), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("Fonds prévoyance en faveur du personnel Sté électrique intercommunale de la Côte"));
+	}
+
+	private static void assertFormulePolitesse(TypeFormulePolitesse expectedType, FormulePolitesse formule) {
+		assertNotNull(formule);
+		assertEquals(expectedType.salutations(), formule.getSalutations());
+		assertEquals(expectedType.formuleAppel(), formule.getFormuleAppel());
 	}
 }

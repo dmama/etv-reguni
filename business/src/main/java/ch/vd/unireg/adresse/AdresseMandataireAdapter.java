@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.DonneeCivileEntreprise;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 
 /*
  * Cette classe permet d'adapter une adresse supplémentaire (= spécialité Unireg) à l'interface d'adresse générique.
@@ -47,7 +47,7 @@ public class AdresseMandataireAdapter extends AdresseFiscaleAdapter<AdresseManda
 			// j'ai cru voir des salutations en "Maître", "Gérance"... dans les données issues de TAO qui doivent être reprises dans Unireg :
 			// si, dans le cas de "Maître" (notaire...), on peut imaginer reprendre la même chose en formule d'appel, cela me paraît très étrange
 			// dans le cas "Gérance"... Dans le doute, on prend "Madame, Monsieur"
-			return FormulePolitesse.MADAME_MONSIEUR.formuleAppel();
+			return TypeFormulePolitesse.MADAME_MONSIEUR.formuleAppel();
 		}
 	}
 

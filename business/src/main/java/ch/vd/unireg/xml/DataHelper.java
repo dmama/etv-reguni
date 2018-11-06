@@ -43,7 +43,7 @@ import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
-import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TypeFormulePolitesse;
 import ch.vd.unireg.xml.address.AddressBuilder;
 import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -1212,10 +1212,10 @@ public abstract class DataHelper {
 	}
 
 	public static String salutations2MrMrs(String salutations) {
-		if (FormulePolitesse.MADAME.salutations().equals(salutations)) {
+		if (TypeFormulePolitesse.MADAME.salutations().equals(salutations)) {
 			return "1";
 		}
-		if (FormulePolitesse.MONSIEUR.salutations().equals(salutations)) {
+		if (TypeFormulePolitesse.MONSIEUR.salutations().equals(salutations)) {
 			return "2";
 		}
 		else {

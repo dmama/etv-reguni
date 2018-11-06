@@ -5,8 +5,8 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.tiers.Contribuable;
@@ -229,9 +229,11 @@ public interface AdresseService {
 	 * Calcule et retourne la formule de politesse pour le tiers spécifié.
 	 *
 	 * @param tiers le tiers dont on veut connaître la formule de politesse.
+	 * @param date  la date de valeur de la formule de politesse.
 	 * @return une formule de politesse; ou <b>null</b> si aucune formule ne s'applique sur le tiers.
 	 */
-	FormulePolitesse getFormulePolitesse(Tiers tiers);
+	@Nullable
+	FormulePolitesse getFormulePolitesse(Tiers tiers, @Nullable RegDate date);
 
 	/**
 	 * Recherche la dernière adresse vaudoise d'un tiers
