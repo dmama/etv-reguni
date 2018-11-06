@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -129,14 +128,11 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesNonHabitantAvecAdressesAnnulees() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique axelle = addNonHabitant("Axelle", "Herren Clot", date(1970, 1, 1), Sexe.FEMININ);
-				final AdresseSuisse adresse = addAdresseSuisse(axelle, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Geneve.AvenueGuiseppeMotta);
-				adresse.setAnnule(true); // <------ l'adresse est annulée
-				return axelle.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique axelle = addNonHabitant("Axelle", "Herren Clot", date(1970, 1, 1), Sexe.FEMININ);
+			final AdresseSuisse adresse = addAdresseSuisse(axelle, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Geneve.AvenueGuiseppeMotta);
+			adresse.setAnnule(true); // <------ l'adresse est annulée
+			return axelle.getNumero();
 		});
 
 		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(id);
@@ -1000,7 +996,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée l'autre habitant
 				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
@@ -1116,7 +1112,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée l'autre habitant
 				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
@@ -1829,7 +1825,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants dont le principal possède une adresse fiscale surchargée
 		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				addAdresseSuisse(principal, TypeAdresseTiers.COURRIER, date(2008, 1, 1), null, MockRue.Renens.QuatorzeAvril);
 				final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
@@ -1871,7 +1867,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				PersonnePhysique principal = new PersonnePhysique(false);
 				principal.setPrenomUsuel("Tommy");
 				principal.setNom("Zrwg");
@@ -2021,7 +2017,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long numeroContribuablePupille = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée le pupille et le tuteru
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
@@ -2129,7 +2125,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				// Crée le pupille, le tuteur et la tutelle
 				final PersonnePhysique pupille = addHabitant(noPupille);
 				ids.pupille = pupille.getId();
@@ -2236,7 +2232,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final Numeros numeros = new Numeros();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				// Crée le ménage
 				PersonnePhysique conjoint = new PersonnePhysique(true);
 				conjoint.setNumeroIndividu(noConjoint);
@@ -2403,7 +2399,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				// Crée le ménage
 				final PersonnePhysique conjoint = addHabitant(noConjoint);
@@ -2529,7 +2525,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final Numeros numeros = new Numeros();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				// Crée le ménage
 				final PersonnePhysique conjoint = addHabitant(noConjoint);
@@ -2692,7 +2688,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final Numeros numeros = new Numeros();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				// Crée le ménage
 				PersonnePhysique conjoint = new PersonnePhysique(true);
 				conjoint.setNumeroIndividu(noConjoint);
@@ -2881,7 +2877,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final Numeros numeros = new Numeros();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				// Crée le ménage
 				PersonnePhysique conjoint = new PersonnePhysique(true);
 				conjoint.setNumeroIndividu(noConjoint);
@@ -3034,7 +3030,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long numeroContribuablePupille = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée le pupille et le tuteur
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
@@ -3122,7 +3118,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long numeroContribuableTuteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée le pupille et le tuteur
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
@@ -3590,13 +3586,10 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// Crée une entreprise sans adresse fiscale surchargée
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getId();
-			}
+		final long idpm = doInNewTransactionAndSession(status -> {
+			// Crée une entreprise sans adresse fiscale surchargée
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3646,7 +3639,9 @@ public class AdresseServiceTest extends BusinessTest {
 			nolwen.setSexe(Sexe.FEMININ);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, arnold, nolwen);
-			assertEquals("Monsieur et Madame", service.getTypeFormulePolitesse(ensemble, null).salutations());
+			final TypeFormulePolitesse politesse = service.getTypeFormulePolitesse(ensemble, null);
+			assertNotNull(politesse);
+			assertEquals("Monsieur et Madame", politesse.salutations());
 		}
 
 		// Ménage femme-femme
@@ -3662,7 +3657,9 @@ public class AdresseServiceTest extends BusinessTest {
 			nolwen.setSexe(Sexe.FEMININ);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, cora, nolwen);
-			assertEquals("Mesdames", service.getTypeFormulePolitesse(ensemble, null).salutations());
+			final TypeFormulePolitesse politesse = service.getTypeFormulePolitesse(ensemble, null);
+			assertNotNull(politesse);
+			assertEquals("Mesdames", politesse.salutations());
 		}
 
 		// Ménage homme-homme
@@ -3678,7 +3675,9 @@ public class AdresseServiceTest extends BusinessTest {
 			roch.setSexe(Sexe.MASCULIN);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, arnold, roch);
-			assertEquals("Messieurs", service.getTypeFormulePolitesse(ensemble, null).salutations());
+			final TypeFormulePolitesse politesse = service.getTypeFormulePolitesse(ensemble, null);
+			assertNotNull(politesse);
+			assertEquals("Messieurs", politesse.salutations());
 		}
 
 		// Ménage homme-<sexe inconnu>
@@ -3694,7 +3693,9 @@ public class AdresseServiceTest extends BusinessTest {
 			alf.setSexe(null);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, arnold, alf);
-			assertEquals("Madame, Monsieur", service.getTypeFormulePolitesse(ensemble, null).salutations());
+			final TypeFormulePolitesse politesse = service.getTypeFormulePolitesse(ensemble, null);
+			assertNotNull(politesse);
+			assertEquals("Madame, Monsieur", politesse.salutations());
 		}
 
 		// Ménage femme-<sexe inconnu>
@@ -3710,7 +3711,9 @@ public class AdresseServiceTest extends BusinessTest {
 			alf.setSexe(null);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, cora, alf);
-			assertEquals("Madame, Monsieur", service.getTypeFormulePolitesse(ensemble, null).salutations());
+			final TypeFormulePolitesse politesse = service.getTypeFormulePolitesse(ensemble, null);
+			assertNotNull(politesse);
+			assertEquals("Madame, Monsieur", politesse.salutations());
 		}
 
 		// Ménage <sexe inconnu>-<sexe inconnu>
@@ -3726,7 +3729,9 @@ public class AdresseServiceTest extends BusinessTest {
 			alf.setSexe(null);
 
 			EnsembleTiersCouple ensemble = new EnsembleTiersCouple(null, esc, alf);
-			assertEquals("Madame, Monsieur", service.getTypeFormulePolitesse(ensemble, null).salutations());
+			final TypeFormulePolitesse politesse = service.getTypeFormulePolitesse(ensemble, null);
+			assertNotNull(politesse);
+			assertEquals("Madame, Monsieur", politesse.salutations());
 		}
 	}
 
@@ -3972,7 +3977,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
@@ -4012,7 +4017,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
@@ -4084,7 +4089,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresseService.annulerAdresse(adresse1);
 
 			// Teste des adresses résultantes
-			AdressesFiscalesHisto adressesHisto = null;
+			AdressesFiscalesHisto adressesHisto;
 			try {
 				adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
 			}
@@ -4105,7 +4110,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Données d'entrées
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Pauly");
@@ -4176,7 +4181,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Données d'entrées
 				// Crée un habitant sans adresse fiscale surchargée
 				PersonnePhysique habitant = new PersonnePhysique(true);
@@ -4235,7 +4240,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Données d'entrées
 				// Crée un habitant sans adresse fiscale surchargée
 				PersonnePhysique habitant = new PersonnePhysique(true);
@@ -4303,7 +4308,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
 				PersonnePhysique conjoint = new PersonnePhysique(true);
@@ -4396,7 +4401,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
@@ -4501,7 +4506,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
@@ -4593,7 +4598,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
@@ -4691,7 +4696,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal et un autre sur le ménage
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique representantMenage = addHabitant(noIndividuRepresentantMenage);
 				PersonnePhysique representantPrincipal = addHabitant(noIndividuRepresentantPrincipal);
@@ -4803,7 +4808,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 				PersonnePhysique tuteur = addHabitant(noIndividuTuteur);
@@ -4911,7 +4916,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
 
@@ -5019,7 +5024,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
 
@@ -5130,7 +5135,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique curateurPrincipal = addHabitant(noIndividuCurateurPrincipal);
 				PersonnePhysique curateurConjoint = addHabitant(noIndividuCurateurConjoint);
@@ -5313,7 +5318,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants avec un représentant
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique curateurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 				PersonnePhysique curateurConjoint = addHabitant(noIndividuTuteurConjoint);
@@ -5494,7 +5499,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
@@ -5647,7 +5652,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
@@ -5787,7 +5792,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
@@ -5932,7 +5937,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				final PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
@@ -7128,17 +7133,15 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() { // pas de validation : pour permettre l'ajout d'une curatelle avec date de début nulle
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique tiia = addHabitant(noIndividuTiia);
-				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
-				ids.tiia = tiia.getId();
-				PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
-				ids.sylvie = sylvie.getId();
-				addCuratelle(tiia, sylvie, null, null);
-				return null;
-			}
+		// pas de validation : pour permettre l'ajout d'une curatelle avec date de début nulle
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			PersonnePhysique tiia = addHabitant(noIndividuTiia);
+			addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+			ids.tiia = tiia.getId();
+			PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+			ids.sylvie = sylvie.getId();
+			addCuratelle(tiia, sylvie, null, null);
+			return null;
 		});
 
 		final PersonnePhysique tiia = (PersonnePhysique) tiersDAO.get(ids.tiia);
@@ -7590,15 +7593,12 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividuM);
-				final PersonnePhysique mme = addHabitant(noIndividuMme);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividuM);
+			final PersonnePhysique mme = addHabitant(noIndividuMme);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			return mc.getNumero();
 		});
 
 		// vérification du nom complet du ménage et assignation de la surcharge d'adresse
@@ -7653,12 +7653,12 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		/**
+		/*
 		 * Crée deux contribuable Jean (A) et Jacques (B) et ajoute une adresse 'autre tiers' sur Jean qui pointe vers Jacques.
 		 */
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique jean = addNonHabitant("Jean", "A", date(1980, 1, 1), Sexe.MASCULIN);
 				addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
@@ -7724,7 +7724,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants dont monsieur est sous tutelle et madame possède un représentant conventionnel, qui se séparent puis se réconcilient
 		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 				PersonnePhysique representantConjoint = addHabitant(noIndividuRepresentantConjoint);
@@ -8143,10 +8143,7 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesEnvoiDetailleeLocaliteInvalide() throws Exception {
 
-		final RegDate dateDeces = date(2008, 5, 23);
-
 		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
-		CasePostale casePostale = new CasePostale(TexteCasePostale.CASE_POSTALE,5123);
 		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(1987, 2, 12), null,"inconnu","Partie en France",MockPays.France);
 
 		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);

@@ -74,8 +74,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				                                 RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -160,18 +160,18 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
 
 				// adresses courriers
-				MockAdresse adressePierre = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adressePierre = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                       null, RegDate.get(1980, 1, 1), null);
 				adressePierre.setNumero("3bis");
-				MockAdresse adresseMarie = (MockAdresse) addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adresseMarie = addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                      null, RegDate.get(1980, 1, 1), null);
 				adresseMarie.setNumero("3bis");
 			}
 		});
 
 		long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
@@ -260,7 +260,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
 
 				// adresses courriers
-				MockAdresse adressePierre = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adressePierre = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
 				adressePierre.setNumero("3bis");
 				addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.BoulevardGrancy, null, RegDate.get(1980, 1, 1), null);
 			}
@@ -268,7 +268,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée un ménage composé de deux habitants divorcé en 2004
 				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
@@ -340,8 +340,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				                                 RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 				adresse.setTitre("chez Popol");
 			}
@@ -423,8 +423,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                 new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -505,8 +505,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                 new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 				adresse.setTitre("chez Popol");
 			}
@@ -593,8 +593,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                 new CasePostale(TexteCasePostale.CASE_POSTALE, 144), RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 				adresse.setTitre("chez Popol");
 			}
@@ -602,7 +602,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
@@ -684,15 +684,15 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				                                 RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
 
 		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée un habitant et un débiteur associé
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				debiteur.setComplementNom("Ma petite entreprise");
@@ -776,8 +776,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						RegDate.get(1980, 1, 1), null);
+				MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+				                                 RegDate.get(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -785,7 +785,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un habitant et un débiteur associé
 		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				{
 					debiteur.setComplementNom("Ma petite entreprise");
@@ -920,7 +920,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée un habitant et un débiteur associé
 				DebiteurPrestationImposable tribunal = new DebiteurPrestationImposable();
 				tribunal.setComplementNom("Service du Personnel");
@@ -1005,7 +1005,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// Crée un habitant et un débiteur associé
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				debiteur.setComplementNom("Usine d'Orbe");
@@ -1123,7 +1123,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un habitant et un débiteur associé
 		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
 				{
 					debiteur.setComplementNom("Usine d'Orbe");
@@ -1395,16 +1395,16 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noPupille, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				{
 					// adresses courriers
-					MockAdresse adresse = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-							null, RegDate.get(1980, 1, 1), null);
+					MockAdresse adresse = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+					                                 null, RegDate.get(1980, 1, 1), null);
 					adresse.setNumero("3bis");
 				}
 
 				MockIndividu paul = addIndividu(noTuteur, RegDate.get(1953, 11, 2), "Durand", "Paul", true);
 				{
 					// adresses courriers
-					MockAdresse adresse = (MockAdresse) addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
-							RegDate.get(1980, 1, 1), null);
+					MockAdresse adresse = addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
+					                                 RegDate.get(1980, 1, 1), null);
 					adresse.setNumero("14");
 				}
 			}
@@ -1413,7 +1413,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un le pupille et son tuteur
 		final long noCtbPupille = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				PersonnePhysique pupille = new PersonnePhysique(true);
 				pupille.setNumeroIndividu(noPupille);
 
@@ -1543,18 +1543,18 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
 
 				// adresses courriers
-				MockAdresse adressePierre = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adressePierre = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                       null, RegDate.get(1980, 1, 1), null);
 				adressePierre.setNumero("3bis");
-				MockAdresse adresseMarie = (MockAdresse) addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adresseMarie = addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont,
+				                                      null, RegDate.get(1980, 1, 1), null);
 				adresseMarie.setNumero("23");
 
 				MockIndividu paul = addIndividu(noTuteur, RegDate.get(1953, 11, 2), "Durand", "Paul", true);
 				{
 					// adresses courriers
-					MockAdresse adresse = (MockAdresse) addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
-							RegDate.get(1980, 1, 1), null);
+					MockAdresse adresse = addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
+					                                 RegDate.get(1980, 1, 1), null);
 					adresse.setNumero("14");
 				}
 			}
@@ -1563,7 +1563,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// ménage
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
@@ -1705,18 +1705,18 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
 
 				// adresses courriers
-				MockAdresse adressePierre = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adressePierre = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                       null, RegDate.get(1980, 1, 1), null);
 				adressePierre.setNumero("3bis");
-				MockAdresse adresseMarie = (MockAdresse) addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adresseMarie = addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont,
+				                                      null, RegDate.get(1980, 1, 1), null);
 				adresseMarie.setNumero("23");
 
 				MockIndividu paul = addIndividu(noTuteur, RegDate.get(1953, 11, 2), "Durand", "Paul", true);
 				{
 					// adresses courriers
-					MockAdresse adresse = (MockAdresse) addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
-							RegDate.get(1980, 1, 1), null);
+					MockAdresse adresse = addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
+					                                 RegDate.get(1980, 1, 1), null);
 					adresse.setNumero("14");
 				}
 			}
@@ -1725,7 +1725,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// ménage
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
@@ -1828,18 +1828,18 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
 
 				// adresses courriers
-				MockAdresse adressePierre = (MockAdresse) addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adressePierre = addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu,
+				                                       null, RegDate.get(1980, 1, 1), null);
 				adressePierre.setNumero("3bis");
-				MockAdresse adresseMarie = (MockAdresse) addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont,
-						null, RegDate.get(1980, 1, 1), null);
+				MockAdresse adresseMarie = addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont,
+				                                      null, RegDate.get(1980, 1, 1), null);
 				adresseMarie.setNumero("23");
 
 				MockIndividu paul = addIndividu(noTuteurPrincipal, RegDate.get(1953, 11, 2), "Durand", "Paul", true);
 				{
 					// adresses courriers
-					MockAdresse adresse = (MockAdresse) addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
-							RegDate.get(1980, 1, 1), null);
+					MockAdresse adresse = addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
+					                                 RegDate.get(1980, 1, 1), null);
 					adresse.setNumero("14");
 				}
 
@@ -1855,7 +1855,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				// ménage
 				PersonnePhysique principal = new PersonnePhysique(true);
 				principal.setNumeroIndividu(noIndividuPrincipal);
@@ -2035,7 +2035,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique principal = addHabitant(idPrincipal, noIndPrincipal);
 				final PersonnePhysique conjoint = addHabitant(idConjoint, noIndConjoint);
