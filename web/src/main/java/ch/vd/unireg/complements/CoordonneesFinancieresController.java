@@ -1,6 +1,7 @@
 package ch.vd.unireg.complements;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
@@ -128,8 +132,11 @@ public class CoordonneesFinancieresController {
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
+		final Date now = DateHelper.getCurrentDate();
+		view.setDateDebut(RegDateHelper.get(now));
 		model.addAttribute("addCoords", view);
 		model.addAttribute("tiersId", tiersId);
+		model.addAttribute("tiersNumeroFormatter", FormatNumeroHelper.numeroCTBToDisplay(tiersId));
 
 		return "complements/coordfinancieres/add";
 	}
@@ -194,6 +201,7 @@ public class CoordonneesFinancieresController {
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView(coords);
 		model.addAttribute("editCoords", view);
 		model.addAttribute("tiersId", tiersId);
+		model.addAttribute("tiersNumeroFormatter", FormatNumeroHelper.numeroCTBToDisplay(tiersId));
 
 		return "complements/coordfinancieres/edit";
 	}
