@@ -223,7 +223,9 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		                   EnumSet.of(TypeDocumentSortant.ACCORD_DELAI_PM,
 		                              TypeDocumentSortant.REFUS_DELAI_PM,
 		                              TypeDocumentSortant.SURSIS,
-		                              TypeDocumentSortant.CONFIRMATION_DELAI),
+		                              TypeDocumentSortant.CONFIRMATION_DELAI,
+		                              TypeDocumentSortant.ACCORD_DELAI_QSNC,
+		                              TypeDocumentSortant.REFUS_DELAI_QSNC),
 		                   new TraitementRetourImpl<>(new HibernateEntityFetcherById<>(hibernateTemplate, DelaiDeclaration.class),
 		                                              new DelaiDeclarationKeyAssignator()));
 
