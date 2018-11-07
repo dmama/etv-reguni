@@ -137,6 +137,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionDelaiQuestionnaireSNC() {
+		return container.getDelaiCadevImpressionQuestionnaireSNC();
+	}
+
+	@Override
 	public Integer getDelaiCadevImpressionDemandeDegrevementICI() {
 		return container.getDelaiCadevImpressionDemandeDegrevementICI();
 	}

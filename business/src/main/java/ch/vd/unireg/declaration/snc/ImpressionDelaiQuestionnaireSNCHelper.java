@@ -1,6 +1,7 @@
 package ch.vd.unireg.declaration.snc;
 
 import ch.vd.editique.unireg.FichierImpression;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.editique.EditiqueAbstractHelper;
 import ch.vd.unireg.editique.EditiqueException;
@@ -10,10 +11,11 @@ public interface ImpressionDelaiQuestionnaireSNCHelper extends EditiqueAbstractH
 
 	/**
 	 * @param delai                de déclaration du questionnaire SNC
-	 * @param cleArchivageDocument
+	 * @param cleArchivageDocument clé d'archivage du document
+	 * @param dateExpedition date expedition du document
 	 * @return un document Editique correspondant à cette déclaration
 	 */
-	FichierImpression.Document buildDocument(DelaiDeclaration delai, String cleArchivageDocument) throws EditiqueException;
+	FichierImpression.Document buildDocument(DelaiDeclaration delai, String cleArchivageDocument, RegDate dateExpedition) throws EditiqueException;
 
 	/**
 	 * @param delai de déclaration du questionnaire SNC

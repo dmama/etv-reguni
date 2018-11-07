@@ -46,7 +46,7 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 
 
 	@Override
-	public FichierImpression.Document buildDocument(DelaiDeclaration delai, String cleArchivageDocument) throws EditiqueException {
+	public FichierImpression.Document buildDocument(DelaiDeclaration delai, String cleArchivageDocument, RegDate dateExpedition) throws EditiqueException {
 		try {
 			LOGGER.info("construction ");
 			final Entreprise snc = (Entreprise) delai.getDeclaration().getTiers();
@@ -57,7 +57,7 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 			                                                            cleArchivageDocument, snc.getNumero(), RegDate.get());
 			final String titre = String.format("QUESTIONNAIRE SNC/SC %d ",
 			                                   questionnaire.getPeriode().getAnnee());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(snc, RegDate.get(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(snc, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);

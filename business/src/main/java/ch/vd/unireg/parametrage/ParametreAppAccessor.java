@@ -18,6 +18,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiCadevImpressionQuestionnaireSNC();
 
+	Integer getDelaiCadevImpressionDelaiQuestionnaireSNC();
+
 	Integer getDelaiCadevImpressionDemandeDegrevementICI();
 
 	Integer getDelaiEcheanceSommationDeclarationImpotPP();

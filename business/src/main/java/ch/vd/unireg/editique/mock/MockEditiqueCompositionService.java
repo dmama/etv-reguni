@@ -226,7 +226,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public Pair<String, String> imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException {
+	public Pair<String, String> imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai, RegDate dateExpeditionc) throws EditiqueException {
 		throw new NotYetImplementedException("imprimeLettreDecisionDelaiQSNCBatch");
 	}
 

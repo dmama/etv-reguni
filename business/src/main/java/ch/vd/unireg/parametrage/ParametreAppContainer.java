@@ -122,6 +122,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionDelaiQuestionnaireSNC() {
+		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionDelaiQuestionnaireSNC));
+	}
+
+	@Override
 	public Integer getDelaiCadevImpressionDemandeDegrevementICI() {
 		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionDemandeDegrevementICI));
 	}
