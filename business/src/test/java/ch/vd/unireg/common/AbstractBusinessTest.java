@@ -64,6 +64,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 import ch.vd.unireg.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -1397,7 +1398,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return addDeclarationImpot(tiers, periode, debut, fin, cedi, typeC, modele);
     }
 
-    @Override
+	protected DemandeDelaisMandataire addDemandeMandataire(String numeroIDE, String businessId, String raisonSociale) {
+		final DemandeDelaisMandataire demande = new DemandeDelaisMandataire();
+		demande.setNumeroIDE(numeroIDE);
+		demande.setBusinessId(businessId);
+		demande.setRaisonSociale(raisonSociale);
+		return hibernateTemplate.merge(demande);
+	}
+
+	@Override
     protected <T extends DeclarationAvecNumeroSequence> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
         if (useTiersServiceToCreateDeclarationImpot()) {
             return tiersDAO.addAndSave(ctb, di);
