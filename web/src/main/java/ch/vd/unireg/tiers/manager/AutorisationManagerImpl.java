@@ -536,13 +536,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			return map;
 		}
 
-		// Donner accès dès la présence de la procédure
-		if (SecurityHelper.isGranted(securityProvider, Role.GEST_SNC, visa, oid)) {
-			map.put(MODIF_RAPPORT, Boolean.TRUE);
-			map.put(MODIF_DOSSIER, Boolean.TRUE);
-			map.put(DOSSIER_NO_TRAVAIL, Boolean.TRUE);
-		}
-
 		if (tiers instanceof PersonnePhysique) {
 			// pour le moment, on ne peut les modifier que sur les personnes physiques...
 			if (SecurityHelper.isGranted(securityProvider, Role.GEST_ETIQUETTES, visa, oid)) {
@@ -710,6 +703,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 			}
 
+			if (SecurityHelper.isGranted(securityProvider, Role.GEST_SNC, visa, oid)) {
+				map.put(MODIF_RAPPORT, Boolean.TRUE);
+				map.put(MODIF_DOSSIER, Boolean.TRUE);
+				map.put(DOSSIER_NO_TRAVAIL, Boolean.TRUE);
+			}
 			if (SecurityHelper.isGranted(securityProvider, Role.ETAT_PM, visa, oid)) {
 				map.put(MODIF_ETATS_PM, Boolean.TRUE);
 			}
