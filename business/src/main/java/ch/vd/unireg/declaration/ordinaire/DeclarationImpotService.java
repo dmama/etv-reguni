@@ -16,6 +16,7 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMResults;
@@ -41,6 +42,7 @@ import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 
 public interface DeclarationImpotService {
@@ -206,6 +208,18 @@ public interface DeclarationImpotService {
 	 * @throws AjoutDelaiDeclarationException en cas d'erreur qui empêche l'ajout d'un délai
 	 */
 	void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @Nullable RegDate dateDelai, EtatDelaiDocumentFiscal etatDelai, DemandeDelaisMandataire demandeMandataire) throws AjoutDelaiDeclarationException;
+
+	/**
+	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission, qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
+	 *
+	 * @param typeContribuable type de contribuable : VD, HC, HS
+	 * @param dateBouclement   date de bouclement (= date de fin de la période d'imposition)
+	 * @param dateEmission     date de l'émission de la DI
+	 * @param pf               la période fiscale de la DI émise
+	 * @return le couple de date (imprimée/effective) à utiliser pour le délai initial de retour
+	 */
+	@NotNull
+	DatesDelaiInitialDI getDelaiInitialRetourDIPM(@NotNull TypeContribuable typeContribuable, @NotNull RegDate dateBouclement, @NotNull RegDate dateEmission, @NotNull PeriodeFiscale pf) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,
