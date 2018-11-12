@@ -35,6 +35,8 @@ import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
@@ -105,6 +107,7 @@ import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
@@ -539,6 +542,62 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		delai.setDelaiAccordeAu(etatDelai == EtatDelaiDocumentFiscal.ACCORDE ? dateDelai : null);
 		delai.setDemandeMandataire(demandeMandataire);
 		declaration.addDelai(delai);
+	}
+
+	@Override
+	@NotNull
+	public DatesDelaiInitialDI getDelaiInitialRetourDIPM(@NotNull TypeContribuable typeContribuable, @NotNull RegDate dateBouclement, @NotNull RegDate dateEmission, @NotNull PeriodeFiscale pf) throws DeclarationException {
+		final RegDate dateMinimale = dateEmission.addMonths(parametres.getDelaiMinimalRetourDeclarationImpotPM());
+		final DatesDelaiInitialDI brut = getDelaiInitialBrutRetourDIPM(typeContribuable, dateEmission, dateBouclement, pf);
+		return brut.auPlusTot(dateMinimale);
+	}
+
+	@NotNull
+	private DatesDelaiInitialDI getDelaiInitialBrutRetourDIPM(@NotNull TypeContribuable typeContribuable, @NotNull RegDate dateEmission, @NotNull RegDate dateBouclement, @NotNull PeriodeFiscale pf) throws DeclarationException {
+		final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(typeContribuable);
+		if (params == null) {
+			throw new DeclarationException("Pas de paramètrage trouvé pour le type de contribuable " + typeContribuable + " et la PF " + pf.getAnnee());
+		}
+		final RegDate dateReferenceDelaiInitial;
+		switch (params.getReferenceDelaiInitial()) {
+		case EMISSION:
+			dateReferenceDelaiInitial = dateEmission;
+			break;
+		case FIN_PERIODE:
+			dateReferenceDelaiInitial = dateBouclement;
+			break;
+		default:
+			throw new IllegalArgumentException("Valeur inconnue pour le type de référence du délai initial : " + params.getReferenceDelaiInitial());
+		}
+		final RegDate delaiImprime = appliquerDelaiEnMois(dateReferenceDelaiInitial, params.getDelaiImprimeMois(), params.isDelaiImprimeRepousseFinDeMois());
+		final RegDate delaiEffectif = appliquerDelaiEnJour(delaiImprime, params.getDelaiToleranceJoursEffective(), params.isDelaiTolereRepousseFinDeMois());
+		return new DatesDelaiInitialDI(delaiImprime, delaiEffectif);
+	}
+
+	/**
+	 * Applique le délai donné (en jours) et se place ensuite à la fin du mois si nécessaire
+	 * @param dateSource date de départ du délai
+	 * @param jours nombre de jours à utiliser
+	 * @param reportFinMois <code>true</code> si un report à la fin du mois doit être appliqué
+	 * @return date à utiliser comme date limite
+	 */
+	@NotNull
+	private static RegDate appliquerDelaiEnJour(RegDate dateSource, int jours, boolean reportFinMois) {
+		final RegDate dateDecalee = dateSource.addDays(jours);
+		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
+	}
+
+	/**
+	 * Applique le délai donné (en mois) et se place ensuite à la fin du mois si nécessaire
+	 * @param dateSource date de départ du délai
+	 * @param mois nombre de mois à utiliser
+	 * @param reportFinMois <code>true</code> si un report à la fin du mois doit être appliqué
+	 * @return date à utiliser comme date limite
+	 */
+	@NotNull
+	private static RegDate appliquerDelaiEnMois(RegDate dateSource, int mois, boolean reportFinMois) {
+		final RegDate dateDecalee = dateSource.addMonths(mois);
+		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
 	}
 
 	@Override

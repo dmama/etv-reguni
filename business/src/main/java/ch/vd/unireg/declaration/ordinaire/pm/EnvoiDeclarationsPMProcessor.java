@@ -45,9 +45,9 @@ import ch.vd.unireg.declaration.DeclarationGenerationOperation;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEmise;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.declaration.ordinaire.DatesDelaiInitialDI;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -61,7 +61,6 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
-import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeEtatTache;
 
 public class EnvoiDeclarationsPMProcessor {
@@ -286,7 +285,7 @@ public class EnvoiDeclarationsPMProcessor {
 		di.addEtat(new EtatDeclarationEmise(dateTraitement));
 
 		// ajout du délai initial de retour
-		final DatesDelaiInitial datesDelaiInitial = getDelaiInitialRetour(tache.getTypeContribuable(), tache.getDateFin(), dateTraitement, periodeFiscale);
+		final DatesDelaiInitialDI datesDelaiInitial = declarationImpotService.getDelaiInitialRetourDIPM(tache.getTypeContribuable(), tache.getDateFin(), dateTraitement, periodeFiscale);
 		di.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
 
 		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
@@ -304,116 +303,6 @@ public class EnvoiDeclarationsPMProcessor {
 		informationsFiscales.addNouvelleDeclaration(pm, savedDi);
 		rapport.addDiEnvoyee(pm.getNumero(), tache.getDateDebut(), tache.getDateFin());
 		tache.setEtat(TypeEtatTache.TRAITE);
-	}
-
-	/**
-	 * Structure de données qui contient les deux dates importantes dans le délai initial :
-	 * la date imprimée sur le document et la date effective, qui peuvent être (ou pas) différentes
-	 */
-	private static class DatesDelaiInitial {
-
-		private final RegDate dateImprimee;
-		private final RegDate dateEffective;
-
-		public DatesDelaiInitial(@NotNull RegDate dateImprimee, @NotNull RegDate dateEffective) {
-			this.dateImprimee = dateImprimee;
-			this.dateEffective = dateEffective;
-		}
-
-		/**
-		 * @param seuil date minimale acceptable
-		 * @return une nouvelle instance (ou pas, selon nécessité) qui prend en compte le seuil
-		 */
-		public DatesDelaiInitial auPlusTot(@NotNull RegDate seuil) {
-			if (seuil.isAfter(dateImprimee) || seuil.isAfter(dateEffective)) {
-				return new DatesDelaiInitial(RegDateHelper.maximum(dateImprimee, seuil, NullDateBehavior.EARLIEST),
-				                             RegDateHelper.maximum(dateEffective, seuil, NullDateBehavior.EARLIEST));
-			}
-			else {
-				return this;
-			}
-		}
-
-		public RegDate getDateImprimee() {
-			return dateImprimee;
-		}
-
-		public RegDate getDateEffective() {
-			return dateEffective;
-		}
-	}
-
-	/**
-	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission,
-	 * qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
-	 * @param typeContribuable type de contribuable : VD, HC, HS
-	 * @param dateEmission date d'émission du document
-	 * @param dateBouclement date de bouclement (= date de fin de la période d'imposition)
-	 * @param pf la période fiscale de la DI émise
-	 * @return le couple de date (imprimée/effective) à utiliser pour le délai initial de retour
-	 */
-	@NotNull
-	private DatesDelaiInitial getDelaiInitialBrutRetour(TypeContribuable typeContribuable, RegDate dateEmission, RegDate dateBouclement, PeriodeFiscale pf) throws DeclarationException {
-		final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(typeContribuable);
-		if (params == null) {
-			throw new DeclarationException("Pas de paramètrage trouvé pour le type de contribuable " + typeContribuable + " et la PF " + pf.getAnnee());
-		}
-		final RegDate dateReferenceDelaiInitial;
-		switch (params.getReferenceDelaiInitial()) {
-		case EMISSION:
-			dateReferenceDelaiInitial = dateEmission;
-			break;
-		case FIN_PERIODE:
-			dateReferenceDelaiInitial = dateBouclement;
-			break;
-		default:
-			throw new IllegalArgumentException("Valeur inconnue pour le type de référence du délai initial : " + params.getReferenceDelaiInitial());
-		}
-		final RegDate delaiImprime = appliquerDelaiEnMois(dateReferenceDelaiInitial, params.getDelaiImprimeMois(), params.isDelaiImprimeRepousseFinDeMois());
-		final RegDate delaiEffectif = appliquerDelaiEnJour(delaiImprime, params.getDelaiToleranceJoursEffective(), params.isDelaiTolereRepousseFinDeMois());
-		return new DatesDelaiInitial(delaiImprime, delaiEffectif);
-	}
-
-	/**
-	 * Applique le délai donné (en jours) et se place ensuite à la fin du mois si nécessaire
-	 * @param dateSource date de départ du délai
-	 * @param jours nombre de jours à utiliser
-	 * @param reportFinMois <code>true</code> si un report à la fin du mois doit être appliqué
-	 * @return date à utiliser comme date limite
-	 */
-	@NotNull
-	private static RegDate appliquerDelaiEnJour(RegDate dateSource, int jours, boolean reportFinMois) {
-		final RegDate dateDecalee = dateSource.addDays(jours);
-		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
-	}
-
-	/**
-	 * Applique le délai donné (en mois) et se place ensuite à la fin du mois si nécessaire
-	 * @param dateSource date de départ du délai
-	 * @param mois nombre de mois à utiliser
-	 * @param reportFinMois <code>true</code> si un report à la fin du mois doit être appliqué
-	 * @return date à utiliser comme date limite
-	 */
-	@NotNull
-	private static RegDate appliquerDelaiEnMois(RegDate dateSource, int mois, boolean reportFinMois) {
-		final RegDate dateDecalee = dateSource.addMonths(mois);
-		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
-	}
-
-	/**
-	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission,
-	 * qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
-	 * @param typeContribuable type de contribuable : VD, HC, HS
-	 * @param dateBouclement date de bouclement (= date de fin de la période d'imposition)
-	 * @param dateEmission date de l'émission de la DI
-	 * @param pf la période fiscale de la DI émise
-	 * @return le couple de date (imprimée/effective) à utiliser pour le délai initial de retour
-	 */
-	@NotNull
-	private DatesDelaiInitial getDelaiInitialRetour(TypeContribuable typeContribuable, RegDate dateBouclement, RegDate dateEmission, PeriodeFiscale pf) throws DeclarationException {
-		final RegDate dateMinimale = dateEmission.addMonths(parametres.getDelaiMinimalRetourDeclarationImpotPM());
-		final DatesDelaiInitial brut = getDelaiInitialBrutRetour(typeContribuable, dateEmission, dateBouclement, pf);
-		return brut.auPlusTot(dateMinimale);
 	}
 
 	/**
