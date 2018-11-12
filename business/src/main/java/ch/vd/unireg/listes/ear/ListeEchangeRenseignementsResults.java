@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +20,9 @@ import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.HorsCanton;
+import ch.vd.unireg.metier.assujettissement.HorsSuisse;
+import ch.vd.unireg.metier.assujettissement.Sourcier;
 import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -64,7 +69,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 	}
 
 
-	public static class InfoIdentifiantCtb extends InfoCtb<InfoIdentifiantCtb> {
+	public static class InfoIdentifiantCtb extends InfoCtb<InfoIdentifiantCtb>{
 
 		public final String identifiant;
 
@@ -77,12 +82,12 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 	public enum CauseIgnorance {
 		NON_ASSUJETTI("Non assujetti"),
+		NON_ASSUJETTI_VAUDOIS("Pas d'assujettissement vaudois sur la période"),
 		ABSENCE_FOR_VAUDOIS("Pas de for vaudois à la date de fin de l'assujetissement calculé"),
 		ABSENCE_RAPPORT_TRAVAIL_SOURCIER("Pas de rapport de travail pour le ctb source"),
 		ABSENCE_DOMICILE_VAUDOIS("Pas de Domicile vaudois sur la période pour le ctb source"),
 		ABSENCE_NAVS("Pas de numéro AVS trouvé pour ce contribuable"),
 		ABSENCE_IDE("Pas de numéro IDE trouvé pour cette entreprise");
-
 		public String getDescription() {
 			return description;
 		}
@@ -181,19 +186,31 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 
 	public CauseIgnorance determineCauseIgnorance(Contribuable ctb) throws AssujettissementException, DonneesCivilesException {
-		CauseIgnorance causeIgnorance = null;
+
 		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, anneeFiscale);
 
+
+
 		//Presence d'un assujetissement sur la PF
-		if (assujettissements == null || assujettissements.isEmpty()) {
+		if (CollectionUtils.isEmpty(assujettissements)) {
 			return CauseIgnorance.NON_ASSUJETTI;
 		}
+		//Il faut que ça soit un assujettissement vaudois
+	//	final List<Assujettissement> assujettissementsVaudois = assujettissements;
+		final List<Assujettissement> assujettissementsVaudois = assujettissements.stream()
+				.filter(this::isAutoriteVaudoise)
+				.collect(Collectors.toList());
+
+		//SIFISC-29785
+		if (assujettissementsVaudois.isEmpty()) {
+			return CauseIgnorance.NON_ASSUJETTI_VAUDOIS;
+		}
 		//On va trier les assujettissements pour choper la date de fin du dernier qui peut être null
-		assujettissements.sort(DateRangeComparator::compareRanges);
-		final Assujettissement lastAssujetissement = assujettissements.get(assujettissements.size() - 1);
+		assujettissementsVaudois.sort(DateRangeComparator::compareRanges);
+		final Assujettissement lastAssujetissement = assujettissementsVaudois.get(assujettissementsVaudois.size() - 1);
 		//vérifcation de la présence d'un for en date de fin de l'assujetissement, peut être null
 		List<ForFiscal> forValides = ctb.getForsFiscauxValidAt(lastAssujetissement.getDateFin());
-		if (absenceForVaudois(forValides)) {
+		if (absenceForPrincipalVaudois(forValides)) {
 			return CauseIgnorance.ABSENCE_FOR_VAUDOIS;
 		}
 
@@ -210,12 +227,31 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		}
 
 		//aucune cause trouvée, on a un assujetti dont les informations vont être transmises
-		return causeIgnorance;
+		return null;
 	}
 
-	private boolean absenceForVaudois(List<ForFiscal> forValides) {
+	/**
+	 * Permet de savoir su l'assujettissement analysé à un type d'autorité fiscale vaudois
+	 * @param a l'assujettissement analysé
+	 * @return true si l'autorité est vaudoise, false sinon
+	 */
+	private boolean isAutoriteVaudoise(Assujettissement a){
+		if (a instanceof HorsCanton || a instanceof HorsSuisse) {
+			return false;
+		}
+		if (a instanceof Sourcier) {
+			Sourcier assujSource = (Sourcier)a;
+			return ((Sourcier) a).getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		}
+
+		//Les autres types d'assujettissements sont forcement vaudois(Diplomate, Indigent, dépense, Ordianaire)
+		return true;
+	}
+
+	private boolean absenceForPrincipalVaudois(List<ForFiscal> forValides) {
 		return forValides.stream()
-				.noneMatch(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				.filter(ForFiscal::isPrincipal)
+				.noneMatch(f->f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 
 	}
 
@@ -268,9 +304,10 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		final RegDate fin = RegDate.get(pf, 12, 31);
 		final DateRange rangePeriode = new DateRangeHelper.Range(debut, fin);
 		final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
-		return rapports == null || !rapports.stream()
+		return rapports == null || rapports.stream()
+				.filter(r->!r.isAnnule())
 				.filter(r -> r instanceof RapportPrestationImposable)
-				.findFirst().filter(prestation -> DateRangeHelper.intersect(prestation, rangePeriode)).isPresent();
+				.noneMatch(prestation -> DateRangeHelper.intersect(prestation, rangePeriode));
 
 	}
 
@@ -339,6 +376,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 	public int getNbCtbPmIgnores() {
 		return pmIgnores.size();
 	}
+
 
 	public int getNbContribuablesInspectes() {
 		return nbCtbPpIdentifies + nbCtbPmIdentifies + getNbCtbPpIgnores() + getNbCtbPmIgnores() + getListeErreurs().size();

@@ -10,10 +10,13 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
@@ -28,7 +31,7 @@ public class ListeEchangeRenseignementsResultsTest extends BusinessTest
 {
 
 	private final RegDate dateTraitement = RegDate.get();
-	private final int anneeEar = dateTraitement.year() - 1;
+	private final int anneeEar = 2017;
 
 	private AdresseService adresseService;
 	private TiersService tiersService;
@@ -64,16 +67,17 @@ public class ListeEchangeRenseignementsResultsTest extends BusinessTest
 			final PersonnePhysique armand = addNonHabitant("Armand", "tutu", date(1987, 12, 12), Sexe.MASCULIN);
 			addForPrincipal(armand, date(2005, 12, 12), MotifFor.ARRIVEE_HS, MockCommune.Bern);
 			addForSecondaire(armand, date(2015, 5, 5), MotifFor.ACHAT_IMMOBILIER, date(2017, 5, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-			Assert.assertEquals(ListeEchangeRenseignementsResults.CauseIgnorance.ABSENCE_FOR_VAUDOIS, results.determineCauseIgnorance(armand));
+			Assert.assertEquals(ListeEchangeRenseignementsResults.CauseIgnorance.NON_ASSUJETTI_VAUDOIS, results.determineCauseIgnorance(armand));
 
 		}
 		//Notre chère armand a toujours sa maison sur vaud
+			// Hors-canton avec une maison sur vaud
 
 		{
 			final PersonnePhysique armand = addNonHabitant("Armand", "tutu", date(1987, 12, 12), Sexe.MASCULIN);
 			addForPrincipal(armand, date(2005, 12, 12), MotifFor.ARRIVEE_HS, MockCommune.Bern);
 			addForSecondaire(armand, date(2015, 5, 5), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-			Assert.assertNull(results.determineCauseIgnorance(armand));
+			Assert.assertEquals(ListeEchangeRenseignementsResults.CauseIgnorance.NON_ASSUJETTI_VAUDOIS,results.determineCauseIgnorance(armand));
 
 		}
 
@@ -133,7 +137,51 @@ public class ListeEchangeRenseignementsResultsTest extends BusinessTest
 			Assert.assertNull(results.determineCauseIgnorance(armand));
 
 		}
+			// Ménage commun HC avec un immeuble
+			{
+				final PersonnePhysique armand = addNonHabitant("Armand", "tutu", date(1987, 12, 12), Sexe.MASCULIN);
+				final PersonnePhysique armande = addNonHabitant("Armande", "tutu", date(1987, 12, 12), Sexe.FEMININ);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(armand, armande, date(2005, 1, 1), null);
+				final MenageCommun menage = ensemble.getMenage();
 
+				addAdresseSuisse(menage, TypeAdresseTiers.COURRIER, date(1987, 12, 12), null, MockRue.Lausanne.AvenueDeBeaulieu);
+				addForPrincipal(menage, date(2005, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve, ModeImposition.ORDINAIRE);
+				addForSecondaire(menage, date(2005, 1, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+
+	Assert.assertEquals(ListeEchangeRenseignementsResults.CauseIgnorance.NON_ASSUJETTI_VAUDOIS, results.determineCauseIgnorance(menage));
+			}
+
+		// Sourcière assujetti hors suisse SIFISC-29785
+		{
+
+			final long noIndividu = 1254732L;
+			final RegDate dateNaissance = date(1987, 12, 12);
+			final PersonnePhysique armand = addHabitant(noIndividu);
+			final RegDate dateDebut = date(2014, 12, 16);
+			final RegDate dateFin = date(2017, 8, 5);
+
+			// mise en place civile
+			serviceCivil.setUp(new MockServiceCivil() {
+				@Override
+				protected void init() {
+					final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Armande", "Tutu", Sexe.FEMININ);
+					addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebut, dateFin);
+				}
+			});
+
+			final PersonnePhysique armande = addHabitant(noIndividu);
+
+			addForPrincipal(armande, dateDebut, MotifFor.ARRIVEE_HS,
+					dateFin,MotifFor.DEPART_HS,MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(armande, date(2017, 8, 6), MotifFor.DEPART_HS,
+					date(2018, 6, 19),MotifFor.ARRIVEE_HS, MockPays.Maroc, ModeImposition.SOURCE);
+			addForPrincipal(armande, date(2018, 6, 20), MotifFor.ARRIVEE_HS,
+					MockCommune.Lausanne, ModeImposition.SOURCE);
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			addRapportPrestationImposable(dpi, armande, date(2017, 2, 1), date(2017, 10, 31), false);
+			addRapportPrestationImposable(dpi, armande, date(2018, 7, 9), date(2018, 8, 31), false);
+			Assert.assertNull(results.determineCauseIgnorance(armande));
+		}
 
 	}
 }
