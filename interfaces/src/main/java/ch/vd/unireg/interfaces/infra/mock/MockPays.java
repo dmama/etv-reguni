@@ -29,6 +29,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Japon = new MockPays(8515, "Japon", "JP", "JP", "JPN", TypeAffranchissement.MONDE);
 	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR", "KR", "KOR", TypeAffranchissement.MONDE);
 	public static final MockPays Kosovo = new MockPays(8256, "Kosovo", null, null, null, TypeAffranchissement.EUROPE);
+	public static final MockPays Maroc = new MockPays(8331, "Maroc", "MA", "MA", "MAR", TypeAffranchissement.MONDE);
 
 	//
 	// les territoires
