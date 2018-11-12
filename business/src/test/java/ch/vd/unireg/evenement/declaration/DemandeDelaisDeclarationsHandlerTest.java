@@ -8,10 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
@@ -39,7 +41,6 @@ import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Supervision;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
@@ -119,6 +120,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
 
 		// mise en place
+		setAuthentication("testHandleDemandeUnitaireDelaiAvecDelaiIdentiqueDejaExistant");
 		final Long ctbId = doInNewTransaction(status -> {
 			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
 			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
@@ -135,6 +137,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final RegDate dateObtention = RegDate.get();
 
 		// ajout du délai
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
 		doInNewTransaction(status -> {
 			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
 
@@ -161,6 +164,131 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
 			assertEquals(1, delais.size());
 			assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
+
+			// [FISCPROJ-816] Vérifie que le LOG_MUSER est mis-à-jour dans ce cas-là.
+			assertEquals(DemandeDelaisDeclarationsHandler.PRINCIPAL, delais.get(0).getLogModifUser());
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-816] Teste le cas particulier de l'ajout d'un délai sur une déclaration avec un délai identique déjà existant ayant été créé/modifié par e-Délai.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiAvecDelaiIdentiqueDejaExistantSourceEDelai() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		// mise en place
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
+		});
+
+		//noinspection UnnecessaryLocalVariable
+		final RegDate nouveauDelai = dateDelaiExistant;
+		final RegDate dateObtention = RegDate.get();
+
+		// le traitement de la demande doit lever une exception car le délai existant ne peut être mis-à-jour puisqu'il est déjà lié à une demande mandataire
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Il y a déjà un délai explicite accordé au " + RegDateHelper.dateToDisplayString(dateDelaiExistant) + " sur le contribuable n°" + ctbId + ".", e.getMessage());
+			}
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-816] Teste le cas particulier de l'ajout d'un délai sur une déclaration avec un délai identique déjà existant ayant été créé/modifié par un opérateur de l'ACI.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiAvecDelaiIdentiqueDejaExistantSourceZaixxx() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		// mise en place
+		setAuthentication("zaixxx");
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
+		});
+
+		//noinspection UnnecessaryLocalVariable
+		final RegDate nouveauDelai = dateDelaiExistant;
+		final RegDate dateObtention = RegDate.get();
+
+		// le traitement de la demande doit lever une exception car le délai existant ne peut être mis-à-jour puisqu'il est déjà lié à une demande mandataire
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Il y a déjà un délai explicite accordé au " + RegDateHelper.dateToDisplayString(dateDelaiExistant) + " sur le contribuable n°" + ctbId + ".", e.getMessage());
+			}
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-816] Teste le cas particulier de l'ajout d'un délai sur une déclaration avec un délai identique déjà existant *et* avec une demande mandataire liée.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiAvecDelaiIdentiqueDejaExistantEtDemandeMandataireExistante() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		// mise en place
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			final DelaiDeclaration delai = addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+			delai.setDemandeMandataire(addDemandeMandataire("CHE1", "11111", "test"));
+			return pp.getNumero();
+		});
+
+		//noinspection UnnecessaryLocalVariable
+		final RegDate nouveauDelai = dateDelaiExistant;
+		final RegDate dateObtention = RegDate.get();
+
+		// le traitement de la demande doit lever une exception car le délai existant ne peut être mis-à-jour puisqu'il est déjà lié à une demande mandataire
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Il y a déjà une demande mandataire sur le délai accordé au " + RegDateHelper.dateToDisplayString(dateDelaiExistant) + " sur le contribuable n°" + ctbId + ".", e.getMessage());
+			}
 			return null;
 		});
 	}
@@ -374,7 +502,6 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		});
 	}
 
-
 	/**
 	 * [FISCPROJ-754] Teste le cas passant d'ajout d'un délai sur une déclaration avec un délai identique qui existe déjà.
 	 */
@@ -392,6 +519,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		}
 
 		// mise en place, 3 pp avec chacun une déclaration
+		setAuthentication("testHandleDemandeGroupeeAvecDelaiIdentiqueDejaExistant");
 		final Ids ids = doInNewTransaction(status -> {
 			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
 			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
@@ -409,6 +537,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final RegDate dateObtention = RegDate.get();
 
 		// traitement de la demande
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
 		doInNewTransaction(status -> {
 
 			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
@@ -436,10 +565,142 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 
 				final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
 				assertEquals(1, delais.size());
-				assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
-				assertNull(delais.get(0).getDemandeMandataire());   // le délai existait déjà -> pas de référence sur la demande du mandataire
+				final DelaiDocumentFiscal delai0 = delais.get(0);
+				assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai0);
+
+				// [FISCPROJ-816] La demande mandataire doit être maintenant renseignée sur le délai
+				final DemandeDelaisMandataire demandeMandataire = delai0.getDemandeMandataire();
+				assertNotNull(demandeMandataire);
+				assertEquals("CHE1", demandeMandataire.getNumeroIDE());
+
+				// [FISCPROJ-816] Vérifie que le LOG_MUSER est mis-à-jour dans ce cas-là.
+				assertEquals(DemandeDelaisDeclarationsHandler.PRINCIPAL, delai0.getLogModifUser());
 			}
 
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-816] Teste le cas particulier de l'ajout d'un délai sur une déclaration avec un délai identique déjà existant ayant été créé/modifié par e-Délai.
+	 */
+	@Test
+	public void testHandleDemandeGroupeeAvecDelaiIdentiqueDejaExistantSourceEDelai() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp1 = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			{
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp1, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+				addEtatDeclarationEmise(di, date(2017, 1, 15));
+				final DelaiDeclaration delai = addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);  // <--- délai avec un LOG_MUSER égal à JMS-EvtDelaisDeclaration
+				delai.setDemandeMandataire(addDemandeMandataire("CHE1", "11111", "test"));
+			}
+
+			return pp1.getNumero();
+		});
+
+		final RegDate dateObtention = RegDate.get();
+
+		// le traitement de la demande doit lever une exception car le délai existant ne peut être mis-à-jour puisqu'il est déjà lié à une demande mandataire
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
+			                                                    new DelaiData(id, dateDelaiExistant, null));
+			try {
+				handler.handle(demandeDelai);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Il y a déjà un délai explicite accordé au " + RegDateHelper.dateToDisplayString(dateDelaiExistant) + " sur le contribuable n°" + id + ".", e.getMessage());
+			}
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-816] Teste le cas particulier de l'ajout d'un délai sur une déclaration avec un délai identique déjà existant ayant été créé/modifié par un opérateur de l'ACI.
+	 */
+	@Test
+	public void testHandleDemandeGroupeeAvecDelaiIdentiqueDejaExistantSourceZaixxx() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		setAuthentication("zaixxx");
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp1 = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			{
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp1, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+				addEtatDeclarationEmise(di, date(2017, 1, 15));
+				addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE); // <--- délai avec un LOG_MUSER égal à zaixxx
+			}
+
+			return pp1.getNumero();
+		});
+
+		final RegDate dateObtention = RegDate.get();
+
+		// le traitement de la demande doit lever une exception car le délai existant ne peut être mis-à-jour puisqu'il est déjà lié à une demande mandataire
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
+			                                                    new DelaiData(id, dateDelaiExistant, null));
+			try {
+				handler.handle(demandeDelai);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Il y a déjà un délai explicite accordé au " + RegDateHelper.dateToDisplayString(dateDelaiExistant) + " sur le contribuable n°" + id + ".", e.getMessage());
+			}
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-816] Teste le cas particulier de l'ajout d'un délai sur une déclaration avec un délai identique déjà existant *et* avec une demande mandataire liée.
+	 */
+	@Test
+	public void testHandleDemandeGroupeeAvecDelaiIdentiqueDejaExistantEtDemandeMandataireExistante() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp1 = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			{
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp1, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+				addEtatDeclarationEmise(di, date(2017, 1, 15));
+				final DelaiDeclaration delai = addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+				delai.setDemandeMandataire(addDemandeMandataire("CHE1", "11111", "test"));
+			}
+
+			return pp1.getNumero();
+		});
+
+		final RegDate dateObtention = RegDate.get();
+
+		// le traitement de la demande doit lever une exception car le délai existant ne peut être mis-à-jour puisqu'il est déjà lié à une demande mandataire
+		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
+			                                                    new DelaiData(id, dateDelaiExistant, null));
+			try {
+				handler.handle(demandeDelai);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Il y a déjà une demande mandataire sur le délai accordé au " + RegDateHelper.dateToDisplayString(dateDelaiExistant) + " sur le contribuable n°" + id + ".", e.getMessage());
+			}
 			return null;
 		});
 	}
