@@ -5,10 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +21,7 @@ import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.unireg.common.PaginationHelper;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
 import ch.vd.unireg.interfaces.entreprise.WrongEntrepriseReceivedException;
@@ -38,6 +42,7 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 	private final RcEntClient client;
 	private final RCEntAdapter adapter;
 	private final ServiceInfrastructureRaw infraService;
+	public static final Logger LOGGER = LoggerFactory.getLogger(ServiceEntrepriseRCEnt.class);
 
 	public ServiceEntrepriseRCEnt(RCEntAdapter adapter, RcEntClient client, ServiceInfrastructureRaw infraService) {
 		this.adapter = adapter;
@@ -147,14 +152,10 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			}
 			else {
 				// on adapte les réponses
-				final List<AnnonceIDE> annonces = new ArrayList<>(notices.getNumberOfElements());
-				for (NoticeRequestReport n : notices.getContent()) {
-					if (n.getNoticeRequest().getNoticeRequestHeader() != null) {    // SIFISC-27766 on ignore les annonces REE pour l'instant
-						final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
-						annonces.add(a);
-					}
-				}
-				return new PageImpl<>(annonces, pageable, notices.getTotalElements());
+				// SIFISC-27766 on ignore les annonces REE pour l'instant
+				final List<AnnonceIDE> annonces = notices.getContent().stream().filter(n -> n.getNoticeRequest().getNoticeRequestHeader() != null).map(RCEntAnnonceIDEHelper::buildAnnonceIDE).collect(Collectors.toList());
+				final Page<AnnonceIDE> page = PaginationHelper.buildPage(annonces, pageNumber, resultsPerPage, notices.getTotalElements(), sort);
+				return page;
 			}
 		}
 		catch (RcEntClientException e) {

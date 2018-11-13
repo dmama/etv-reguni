@@ -2,10 +2,13 @@ package ch.vd.unireg.annonceIDE;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
 
 /**
  * Vue web qui contient les paramètres de recherche pour les annonces à l'IDE.
@@ -122,7 +125,7 @@ public class AnnonceIDEQueryView {
 		query.setType(type);
 		query.setStatus(status == null || status.isEmpty() ? null : status.toArray(new StatutAnnonce[status.size()]));
 		query.setCantonalId(cantonalId);
-		query.setUserId(userId);
+		query.setUserId(StringUtils.isEmpty(userId) ? RCEntAnnonceIDEHelper.UNIREG_USER : userId);
 		query.setName(name);
 		query.setDateFrom(dateFrom);
 		query.setDateTo(dateTo);

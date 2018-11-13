@@ -33,6 +33,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.PaginationHelper;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.ParamSorting;
 import ch.vd.unireg.common.pagination.WebParamPagination;
@@ -167,6 +168,9 @@ public class AnnonceIDEController {
 					if (noCantonalToUse != null) {
 						final AnnonceIDEQuery query = new AnnonceIDEQuery();
 						query.setCantonalId(noCantonalToUse);
+						if (StringUtils.isEmpty(query.getUserId())) {
+							query.setUserId(RCEntAnnonceIDEHelper.UNIREG_USER);
+						}
 						final List<AnnonceIDE> annoncesPourEtablissement = serviceEntreprise.findAnnoncesIDE(query, null, 0, 1000).getContent();
 						for (AnnonceIDE annonceIDE : annoncesPourEtablissement) {
 							map.put(annonceIDE.getUniqueKey(), annonceIDE);
@@ -226,8 +230,7 @@ public class AnnonceIDEController {
 		}
 
 		// on renseigne le modèle
-		final PageRequest pageable = new PageRequest(pageNumber, pageSize, order == null ? null : new Sort(order));
-		final Page<AnnonceIDEView> page = new PageImpl<>(content, pageable, annonces.getTotalElements());
+		final Page<AnnonceIDEView> page = PaginationHelper.buildPage(content, pageNumber, pageSize, annonces.getTotalElements(), new Sort(order));
 		model.addAttribute("page", page);
 		model.addAttribute("totalElements", (int) page.getTotalElements());
 
