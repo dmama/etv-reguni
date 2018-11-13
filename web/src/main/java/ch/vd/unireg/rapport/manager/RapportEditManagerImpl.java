@@ -252,17 +252,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		if (rapport instanceof LienAssociesEtSNC) {
 
-			if (sens == SensRapportEntreTiers.SUJET) {
-				sujet = tiersService.getTiers(rapportView.getTiers().getNumero());
-				objet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
-			}
-			else {
-				objet = tiersService.getTiers(rapportView.getTiers().getNumero());
-				sujet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
-			}
-
 			try {
-				lienAssociesSNCService.isAllowed((Contribuable) objet, (Contribuable) sujet, rapportView.getDateDebut());
+				lienAssociesSNCService.isAllowed( (Contribuable) sujet,(Contribuable) objet, rapportView.getDateDebut());
 			}
 			catch (LienAssociesEtSNCException e) {
 				throw new IllegalArgumentException(e.getMessage());
