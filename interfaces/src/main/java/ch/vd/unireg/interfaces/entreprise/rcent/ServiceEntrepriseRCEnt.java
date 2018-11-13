@@ -153,9 +153,11 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			else {
 				// on adapte les réponses
 				// SIFISC-27766 on ignore les annonces REE pour l'instant
-				final List<AnnonceIDE> annonces = notices.getContent().stream().filter(n -> n.getNoticeRequest().getNoticeRequestHeader() != null).map(RCEntAnnonceIDEHelper::buildAnnonceIDE).collect(Collectors.toList());
-				final Page<AnnonceIDE> page = PaginationHelper.buildPage(annonces, pageNumber, resultsPerPage, notices.getTotalElements(), sort);
-				return page;
+				final List<AnnonceIDE> annonces = notices.getContent().stream()
+						.filter(n -> n.getNoticeRequest().getNoticeRequestHeader() != null)
+						.map(RCEntAnnonceIDEHelper::buildAnnonceIDE)
+						.collect(Collectors.toList());
+				return PaginationHelper.buildPage(annonces, pageNumber, resultsPerPage, notices.getTotalElements(), sort);
 			}
 		}
 		catch (RcEntClientException e) {
