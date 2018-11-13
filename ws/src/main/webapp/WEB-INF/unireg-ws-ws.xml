@@ -368,6 +368,7 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 		<property name="validationService" ref="validationService"/>
 		<property name="bouclementService" ref="bouclementService"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 	</bean>
 
 </beans>

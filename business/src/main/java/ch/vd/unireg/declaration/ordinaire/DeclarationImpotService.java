@@ -210,7 +210,7 @@ public interface DeclarationImpotService {
 	void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @Nullable RegDate dateDelai, EtatDelaiDocumentFiscal etatDelai, DemandeDelaisMandataire demandeMandataire) throws AjoutDelaiDeclarationException;
 
 	/**
-	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission, qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
+	 * Calcule les dates de délai initiales d'une déclaration d'impôt PM (en fonction de la paramétrisation de l'application).
 	 *
 	 * @param typeContribuable type de contribuable : VD, HC, HS
 	 * @param dateBouclement   date de bouclement (= date de fin de la période d'imposition)

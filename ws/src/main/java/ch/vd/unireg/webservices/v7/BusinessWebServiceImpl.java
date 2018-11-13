@@ -60,9 +60,13 @@ import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
+import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.declaration.ordinaire.DatesDelaiInitialDI;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
@@ -321,6 +325,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setBouclementService(BouclementService bouclementService) {
 		context.bouclementService = bouclementService;
+	}
+
+	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeDAO) {
+		context.periodeDAO = periodeDAO;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -735,7 +743,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		// on détermine un résultat pour la déclaration valide
 		final DeclarationImpotOrdinaire declarationValide = declarationValides.get(declarationValides.size() - 1);
-		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide, dateProchainBouclement);
+		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide, dateProchainBouclement, periodeImposition);
 	}
 
 	/**
@@ -745,10 +753,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	 * @param tiers                  le tiers qui possède la déclaration
 	 * @param declaration            la déclaration considérée
 	 * @param dateProchainBouclement la date de prochain bouclement (par rapport à la période d'imposition de la déclaration). Obligatoire pour les PMs, null pour les PPs.
+	 * @param periodeImposition      la période d'imposition du tiers
 	 * @return le résultat de la validation
 	 */
 	@NotNull
-	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale, @NotNull Tiers tiers, @NotNull DeclarationImpotOrdinaire declaration, @Nullable RegDate dateProchainBouclement) {
+	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale, @NotNull Tiers tiers, @NotNull DeclarationImpotOrdinaire declaration, @Nullable RegDate dateProchainBouclement,
+	                                                        @NotNull PeriodeImposition periodeImposition) {
 
 		final ValidationResult result = new ValidationResult();
 		result.setTaxPayerNumber(tiers.getNumero().intValue());
@@ -766,13 +776,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		else {
 			final RegDate delaiMaximalAccordable;
 			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-				delaiMaximalAccordable = RegDate.get(periodeFiscale + 1, 6, 30); // FIXME (msi) rendre ce délai paramètrable
+				delaiMaximalAccordable = getDelaiMaximalAccordablePP(periodeFiscale);
 			}
 			else if (tiers instanceof Entreprise) {
 				if (dateProchainBouclement == null) {
 					throw new IllegalArgumentException("La date de prochain bouclement n'est pas renseignée sur le PM n°" + tiers.getNumero());
 				}
-				delaiMaximalAccordable = dateProchainBouclement.addDays(255);   // FIXME (msi) rendre ce délai paramètrable
+				delaiMaximalAccordable = getDelaiMaximalAccordablePM(periodeFiscale, declaration, dateProchainBouclement, periodeImposition);
 			}
 			else {
 				throw new IllegalArgumentException("Type de tiers non supporté [" + tiers.getClass() + "]");
@@ -796,6 +806,44 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Calcule le délai maximal qui peut être accordé sur une DI d'une personne physique.
+	 *
+	 * @param periodeFiscale la période fiscale considéré
+	 * @return le délai maximal calculé
+	 */
+	@NotNull
+	private RegDate getDelaiMaximalAccordablePP(int periodeFiscale) {
+		return RegDate.get(periodeFiscale + 1, 6, 30); // FIXME (msi) rendre ce délai paramètrable
+	}
+
+	/**
+	 * Calcule le délai maximal qui peut être accordé sur une DI d'une personne morale.
+	 *
+	 * @param periodeFiscale         la période fiscale considéré
+	 * @param declaration            la déclaration d'impôt considérée
+	 * @param dateProchainBouclement la prochaine date de bouclement
+	 * @param periodeImposition      la période d'imposition qui correspond à la déclaration spécifiée
+	 * @return le délai maximal calculé
+	 */
+	@NotNull
+	private RegDate getDelaiMaximalAccordablePM(int periodeFiscale, @NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateProchainBouclement, @NotNull PeriodeImposition periodeImposition) {
+
+		final PeriodeFiscale pf = context.periodeDAO.getPeriodeFiscaleByYear(periodeFiscale);
+		final RegDate dateEmission = declaration.getDateExpedition();
+
+		final DatesDelaiInitialDI delaiInitial;
+		try {
+			// [FISCPROJ-862] On utilise la même méthode de calcul des délais que celle utilisée pour l'envoi des DIs PM en masse
+			delaiInitial = context.diService.getDelaiInitialRetourDIPM(periodeImposition.getTypeContribuable(), dateProchainBouclement, dateEmission, pf);
+		}
+		catch (DeclarationException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		return delaiInitial.getDateEffective();
 	}
 
 	/**

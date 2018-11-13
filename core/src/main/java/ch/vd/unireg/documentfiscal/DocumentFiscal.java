@@ -148,6 +148,9 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 		return null;
 	}
 
+	/**
+	 * @return la date d'expédition de la déclaration; c'est-à-dire la date d'obtention de l'état 'émis'.
+	 */
 	@Transient
 	public RegDate getDateExpedition() {
 		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.EMIS);
