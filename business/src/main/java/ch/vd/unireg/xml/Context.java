@@ -3,6 +3,7 @@ package ch.vd.unireg.xml;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
 import ch.vd.unireg.efacture.EFactureService;
@@ -84,4 +85,6 @@ public class Context {
 	public ValidationService validationService;
 
 	public BouclementService bouclementService;
+
+	public PeriodeFiscaleDAO periodeDAO;
 }

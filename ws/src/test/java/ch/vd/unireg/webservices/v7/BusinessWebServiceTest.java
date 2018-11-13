@@ -44,7 +44,9 @@ import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.efacture.EFactureServiceProxy;
 import ch.vd.unireg.efacture.MockEFactureService;
@@ -262,6 +264,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	private ValidationService validationService;
 	private PeriodeImpositionService periodeImpositionService;
 	private BouclementService bouclementService;
+	private PeriodeFiscaleDAO periodeFiscaleDAO;
+	private DeclarationImpotService diService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -272,6 +276,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		validationService = getBean(ValidationService.class, "validationService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		bouclementService = getBean(BouclementService.class, "bouclementService");
+		periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
+		diService = getBean(DeclarationImpotService.class, "diService");
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
@@ -5420,6 +5426,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service.setValidationService(validationService);
 		service.setPeriodeImpositionService(periodeImpositionService);
 		service.setBouclementService(bouclementService);
+		service.setPeriodeFiscaleDAO(periodeFiscaleDAO);
+		service.setDiService(diService);
 
 		final RegDate dateBouclement = RegDate.get(2017, 10, 1);
 
@@ -5484,16 +5492,153 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	/**
-	 * [FISCPROJ-753] Ce test vérifie que le délai accordé pour une PM est : date de bouclement + 255 jours calendaires.
+	 * [FISCPROJ-753][FISCPROJ-862] Ce test vérifie que le délai accordé pour une PM est : date de bouclement + 6 mois + 75 jours calendaires.
 	 */
 	@Test
-	public void testValidateDeadlineRequestPMAvecUneDeclarationEmise() throws Exception {
+	public void testValidateDeadlineRequestPMBouclement31Mars() throws Exception {
 
 		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
 		service.setTiersDAO(tiersDAO);
 		service.setValidationService(validationService);
 		service.setPeriodeImpositionService(periodeImpositionService);
 		service.setBouclementService(bouclementService);
+		service.setPeriodeFiscaleDAO(periodeFiscaleDAO);
+		service.setDiService(diService);
+
+		// on crée un contribuable PM vaudois
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addBouclement(pm, date(2000, 2, 1), DayMonth.get(3, 31), 12);              // tous les 31.03 depuis 2000
+			addRegimeFiscalVD(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode2017);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(pm, periode2017, date(2016, 4, 1), date(2017, 3, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2017, 5, 1)));
+			di.addDelai(newDelaiDeclaration(date(2017, 5, 1), date(2017, 8, 1)));
+
+			return pm.getNumero();
+		});
+
+		// [FISCPROJ-862] le délai proposé doit être le 14.12.2017 (31.3.2017 + 6 mois = 30.09.2017 ; 30.09.2017 + 75 jours = 14.12.2017)
+		final RegDate dateBouclement = RegDate.get(2017, 3, 31);
+		final RegDate dateDelai = dateBouclement.addMonths(6).addDays(75);
+		assertEquals(RegDate.get(2017, 12, 14), dateDelai);
+
+		doInNewTransaction(status -> {
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2016, 4, 1), date(2017, 3, 31), 1, Collections.singletonList(dateDelai), results);
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-753][FISCPROJ-862] Ce test vérifie que le délai accordé pour une PM est : date de bouclement + 6 mois + 75 jours calendaires.
+	 */
+	@Test
+	public void testValidateDeadlineRequestPMBouclement30Juin() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+		service.setPeriodeFiscaleDAO(periodeFiscaleDAO);
+		service.setDiService(diService);
+
+		// on crée un contribuable PM vaudois
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addBouclement(pm, date(2000, 2, 1), DayMonth.get(6, 30), 12);              // tous les 30.06 depuis 2000
+			addRegimeFiscalVD(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode2017);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(pm, periode2017, date(2016, 7, 1), date(2017, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2017, 7, 1)));
+			di.addDelai(newDelaiDeclaration(date(2017, 7, 1), date(2017, 10, 1)));
+
+			return pm.getNumero();
+		});
+
+		// [FISCPROJ-862] le délai proposé doit être le 15.03.2018 (30.06.2017 + 6 mois = 30.12.2017 ; 30.12.2017 + 75 jours = 15.03.2018)
+		final RegDate dateBouclement = RegDate.get(2017, 6, 30);
+		final RegDate dateDelai = dateBouclement.addMonths(6).addDays(75);
+		assertEquals(RegDate.get(2018, 3, 15), dateDelai);
+
+		doInNewTransaction(status -> {
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2016, 7, 1), date(2017, 6, 30), 1, Collections.singletonList(dateDelai), results);
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-753][FISCPROJ-862] Ce test vérifie que le délai accordé pour une PM est : date de bouclement + 6 mois + 75 jours calendaires.
+	 */
+	@Test
+	public void testValidateDeadlineRequestPMBouclement30Septembre() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+		service.setPeriodeFiscaleDAO(periodeFiscaleDAO);
+		service.setDiService(diService);
+
+		// on crée un contribuable PM vaudois
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addBouclement(pm, date(2000, 2, 1), DayMonth.get(9, 30), 12);              // tous les 30.09 depuis 2000
+			addRegimeFiscalVD(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode2017);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(pm, periode2017, date(2016, 10, 1), date(2017, 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2017, 10, 1)));
+			di.addDelai(newDelaiDeclaration(date(2017, 10, 1), date(2018, 1, 1)));
+
+			return pm.getNumero();
+		});
+
+		// [FISCPROJ-862] le délai proposé doit être le 13.06.2018 (30.09.2017 + 6 mois = 30.03.2018 ; 30.03.2018 + 75 jours = 13.06.2018)
+		final RegDate dateBouclement = RegDate.get(2017, 9, 30);
+		final RegDate dateDelai = dateBouclement.addMonths(6).addDays(75);
+		assertEquals(RegDate.get(2018, 6, 13), dateDelai);
+
+		doInNewTransaction(status -> {
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2016, 10, 1), date(2017, 9, 30), 1, Collections.singletonList(dateDelai), results);
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-753][FISCPROJ-862] Ce test vérifie que le délai accordé pour une PM est : date de bouclement + 6 mois + 75 jours calendaires.
+	 */
+	@Test
+	public void testValidateDeadlineRequestPMBouclement31Decembre() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+		service.setPeriodeFiscaleDAO(periodeFiscaleDAO);
+		service.setDiService(diService);
 
 		// on crée un contribuable PM vaudois
 		final long ctbId = doInNewTransaction(status -> {
@@ -5514,11 +5659,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			return pm.getNumero();
 		});
 
-		// il doit être possible de demander un délai
+		// [FISCPROJ-862] le délai proposé doit être le 13.09.2018 (31.12.2017 + 6 mois = 30.06.2018 ; 30.06.2018 + 75 jours = 13.09.2018)
+		final RegDate dateBouclement = RegDate.get(2017, 12, 31);
+		final RegDate dateDelai = dateBouclement.addMonths(6).addDays(75);
+		assertEquals(RegDate.get(2018, 9, 13), dateDelai);
+
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
-			final RegDate dateBouclement = RegDate.get(2017, 12, 31);
-			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(dateBouclement.addDays(255)), results);
+			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(dateDelai), results);
 			return null;
 		});
 	}
