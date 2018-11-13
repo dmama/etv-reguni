@@ -27,7 +27,7 @@ public class ServiceSecuriteTest extends BusinessItTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetCollectivitesUtilisateur() throws Exception {
-		final List<?> collectivites = service.getCollectivitesUtilisateur("ZAIPTF");
+		final List<?> collectivites = service.getCollectivitesUtilisateur("ZAIZZT");
 		assertNotNull(collectivites);
 		assertTrue(collectivites.size() >= 1);
 	}
