@@ -230,7 +230,7 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 		// TODO: check le contenu
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = 300000)
 	public void testValidateAnnonceIDEUnPeuMoinsPourrie() {
 		final ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION,
 		                                                                          DateHelper.getCurrentDate(),
