@@ -3,18 +3,24 @@ package ch.vd.unireg.webservice.rcent;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.evd0022.v3.NoticeRequestReport;
+import ch.vd.evd0022.v3.NoticeRequestStatusCode;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.TypeOfLocation;
+import ch.vd.evd0022.v3.TypeOfNoticeRequest;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
+import ch.vd.unireg.wsclient.URLKeeperInterceptor;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
@@ -30,12 +36,16 @@ import static org.junit.Assert.fail;
 
 public class RcEntClientItTest extends BusinessItTest {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RcEntClientItTest.class);
+
 	private static final String USER_ID = "unireg";
 	private static final int RCENT_ERROR_NO_DATA_BEFORE = 9;
 	private static final int RCENT_ERROR_NOT_FOUND = 2;
 
 	private static final long ID_BCV = 101544776L;
 	private static final String NOM_BCV = "Banque Cantonale Vaudoise";
+
+	public static final int TIMEOUT = 60000;
 
 	private WebClientPool wcPool;
 
@@ -58,7 +68,7 @@ public class RcEntClientItTest extends BusinessItTest {
 		wcPool.close();
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = TIMEOUT)
 	public void testGetOrganisationWithoutValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(false);
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
@@ -77,7 +87,7 @@ public class RcEntClientItTest extends BusinessItTest {
 		assertTrue(foundPrincipal);
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = TIMEOUT)
 	public void testGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
@@ -96,7 +106,7 @@ public class RcEntClientItTest extends BusinessItTest {
 		assertTrue(foundPrincipal);
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = TIMEOUT)
 	public void testGetAnnonceIDE() throws Exception {
 
 		final long ID_ANNONCE = 180007882L;
@@ -115,7 +125,7 @@ public class RcEntClientItTest extends BusinessItTest {
 
 
 	//Notice not found
-	@Test(timeout = 30000)
+	@Test(timeout = TIMEOUT)
 	public void testGetOrganisationOfNoticeNotFound() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
 		try {
@@ -132,7 +142,7 @@ public class RcEntClientItTest extends BusinessItTest {
 	}
 
 	//Erreur 400
-	@Test(timeout = 30000)
+	@Test(timeout = TIMEOUT)
 	public void testGetOrganisationOfNoticeWithoutBefore() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
 		try {
@@ -149,89 +159,71 @@ public class RcEntClientItTest extends BusinessItTest {
 	}
 
 	/**
-	 * [SIFISCBS-83] Teste que le tri par défaut est bien par id de notification décroissant
+	 * [SIFISCBS-83] Teste le tri par id de notice fonctionne bien
 	 */
-	@Test(timeout = 30000)
-	public void testDefaultTri() throws Exception {
+	@Test(timeout = TIMEOUT)
+	public void testTriParNoticeId() throws Exception {
+
 		final RcEntClient client = createRCEntClient(false);
-		// the order
+
 		final Sort.Order order = new Sort.Order(Sort.Direction.DESC, "noticeRequestId");
-		// the query params
+
+		// on demande quelques annonces
 		RcEntNoticeQuery query = new RcEntNoticeQuery();
+		query.setUserId(RCEntAnnonceIDEHelper.UNIREG_USER);
+		query.setType(TypeOfNoticeRequest.CREATION);
+		query.setStatus(new NoticeRequestStatusCode[]{NoticeRequestStatusCode.ACCEPTE_IDE});
+		query.setDateFrom(RegDate.get(2016, 12, 1));
+		query.setDateTo(RegDate.get(2016, 12, 31));
 
-		Page<NoticeRequestReport> page = client.findNotices( query, order, 1, 20);
-
-		// Il faut filtrer pour ne garder que les annonces IDE (pas REE)
-		List<NoticeRequestReport> annoncesIDE = page.getContent().stream()
-				.filter( a -> a.getNoticeRequest().getNoticeRequestHeader() != null && a.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification() != null)
-				.collect(Collectors.toList());
-
-		List<NoticeRequestReport> sortedList = annoncesIDE.stream().sorted((b, a) -> a.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId()
-				.compareTo(b.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId())).collect(Collectors.toList());
-
+		Page<NoticeRequestReport> page = client.findNotices(query, order, 1, 20);
+		LOGGER.info("URL appelée : " + URLKeeperInterceptor.getLastUrl());
 		assertNotNull(page);
+		assertTrue(page.getContent().size() > 1);
 
 		// Vérification que l'ordre est bien par "notification id" décroissant
-		NoticeRequestReport reports[] = annoncesIDE.toArray(new NoticeRequestReport[annoncesIDE.size()]);
-		NoticeRequestReport sortedReports[] = sortedList.toArray(new NoticeRequestReport[annoncesIDE.size()]);
-
-		String unsortedTabId = "";
-		String sortedTabId = "";
-		boolean isSameOrder = true;
-
-		for( int i= 0; i<reports.length; i++ ) {
-			unsortedTabId = reports[i].getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId();
-			sortedTabId = sortedReports[i].getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId();
-			if (!unsortedTabId.equals(sortedTabId)) {
-				isSameOrder = false;
-				break;
+		Integer previousId = null;
+		for (NoticeRequestReport notice : page.getContent()) {
+			final int currentId = Integer.parseInt(notice.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
+			if (previousId != null) {
+				assertTrue(currentId < previousId);
 			}
+			previousId = currentId;
 		}
-
-		assertTrue(isSameOrder);
 	}
 
 	/**
 	 * [SIFISCBS-83] Teste qu'il est possible de trier sur une colonne du tableau: "date" croissant
 	 */
-	@Test(timeout = 30000)
-	public void testTriDateAscColonne() throws Exception {
+	@Test(timeout = TIMEOUT)
+	public void testTriParDate() throws Exception {
+
 		final RcEntClient client = createRCEntClient(false);
-		// the order
-		final Sort.Order order = new Sort.Order(Sort.Direction.ASC, "date");
-		// the query params
+
+		final Sort.Order order = new Sort.Order(Sort.Direction.ASC, "dateFrom");
+
+		// on demande quelques annonces
 		RcEntNoticeQuery query = new RcEntNoticeQuery();
+		query.setUserId(RCEntAnnonceIDEHelper.UNIREG_USER);
+		query.setType(TypeOfNoticeRequest.CREATION);
+		query.setStatus(new NoticeRequestStatusCode[]{NoticeRequestStatusCode.ACCEPTE_IDE});
+		query.setDateFrom(RegDate.get(2016, 12, 1));
+		query.setDateTo(RegDate.get(2016, 12, 31));
 
-		Page<NoticeRequestReport> page = client.findNotices( query, order, 1, 20);
-
-		// Il faut filtrer pour ne garder que les annonces IDE (pas REE)
-		List<NoticeRequestReport> annoncesIDE = page.getContent().stream()
-				.filter( a -> a.getNoticeRequest().getNoticeRequestHeader() != null && a.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification() != null)
-				.collect(Collectors.toList());
-
-		List<NoticeRequestReport> sortedList = annoncesIDE.stream().sorted((a, b) -> a.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestDateTime()
-				.compareTo(b.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestDateTime())).collect(Collectors.toList());
-
+		Page<NoticeRequestReport> page = client.findNotices(query, order, 1, 20);
+		LOGGER.warn("URL appelée : " + URLKeeperInterceptor.getLastUrl());
 		assertNotNull(page);
+		assertTrue(page.getContent().size() > 1);
 
 		// Vérification que l'ordre est bien par "date" croissant
-		NoticeRequestReport reports[] = annoncesIDE.toArray(new NoticeRequestReport[annoncesIDE.size()]);
-		NoticeRequestReport sortedReports[] = sortedList.toArray(new NoticeRequestReport[annoncesIDE.size()]);
-
-		Date unsortedTabDate;
-		Date sortedTabDate;
-		boolean isSameOrder = true;
-
-		for( int i= 0; i<reports.length; i++ ) {
-			unsortedTabDate = reports[i].getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestDateTime();
-			sortedTabDate = sortedReports[i].getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestDateTime();
-			if (!unsortedTabDate.equals(sortedTabDate)) {
-				isSameOrder = false;
-				break;
+		Date previousDate = null;
+		for (NoticeRequestReport notice : page.getContent()) {
+			final Date currentDate = notice.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestDateTime();
+			if (previousDate != null) {
+				assertTrue(currentDate.equals(previousDate) || currentDate.after(previousDate));
 			}
+			previousDate = currentDate;
 		}
-
-		assertTrue(isSameOrder);
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {
