@@ -17,7 +17,14 @@ public class TypeRegimeFiscalTest {
 
 	@Test
 	public void testSansExoneration() {
-		final RegimeFiscal rf = new RegimeFiscal("7487", "Test", true, false, new CategorieEntreprise("PM", "Personne morale", Collections.emptyList()), null, null, null, null, null, 2015, null);
+		final RegimeFiscal rf = new RegimeFiscal();
+		rf.setCode("7487");
+		rf.setLibelle("Test");
+		rf.setCantonal(true);
+		rf.setFederal(false);
+		rf.setCategorieEntreprise(new CategorieEntreprise("PM", "Personne morale", Collections.emptyList()));
+		rf.setPeriodeFiscaleDebutValidite(2015);
+
 		final TypeRegimeFiscal type = TypeRegimeFiscalFidor.get(rf);
 		Assert.assertNotNull(type);
 		Assert.assertEquals("7487", type.getCode());
@@ -35,8 +42,25 @@ public class TypeRegimeFiscalTest {
 
 	@Test
 	public void testAvecExoneration() {
-		final List<Exoneration> exos = Arrays.asList(new Exoneration(2000, 1995, new GenreImpot("IBC", "Impôt fonc.", "Impôt foncier", null), ModeExoneration.EXONERATION_DE_FAIT, null), new Exoneration(null, 2004, new GenreImpot("IBC", "Impôt fonc.", "Impôt foncier", null), ModeExoneration.EXONERATION_DE_FAIT, null));
-		final RegimeFiscal rf = new RegimeFiscal("7487", "Test", true, true, new CategorieEntreprise("APM", "Autre personne morale", Collections.emptyList()), exos, null, null, null, null, 1995, null);
+		final List<Exoneration> exos = Arrays.asList(new Exoneration(2000,
+		                                                             1995,
+		                                                             new GenreImpot("IBC", "Impôt fonc.", "Impôt foncier", null),
+		                                                             ModeExoneration.EXONERATION_DE_FAIT,
+		                                                             null),
+		                                             new Exoneration(null,
+		                                                             2004,
+		                                                             new GenreImpot("IBC", "Impôt fonc.", "Impôt foncier", null),
+		                                                             ModeExoneration.EXONERATION_DE_FAIT,
+		                                                             null));
+		final RegimeFiscal rf = new RegimeFiscal();
+		rf.setCode("7487");
+		rf.setLibelle("Test");
+		rf.setCantonal(true);
+		rf.setFederal(true);
+		rf.setCategorieEntreprise(new CategorieEntreprise("APM", "Autre personne morale", Collections.emptyList()));
+		rf.getExoneration().addAll(exos);
+		rf.setPeriodeFiscaleDebutValidite(1995);
+
 		final TypeRegimeFiscal type = TypeRegimeFiscalFidor.get(rf);
 		Assert.assertNotNull(type);
 		Assert.assertEquals("7487", type.getCode());

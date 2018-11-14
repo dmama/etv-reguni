@@ -81,6 +81,12 @@ public class ServiceInfrastructureFidorTest {
 	}
 
 	private static RegimeFiscal newRegimeFiscal(String code) {
-		return new RegimeFiscal(code, null, false, false, new CategorieEntreprise("PM", null, null), null, null, null, null, null, 0, null);
+		final RegimeFiscal rf = new RegimeFiscal();
+		rf.setCode(code);
+		rf.setCantonal(false);
+		rf.setFederal(false);
+		rf.setCategorieEntreprise(new CategorieEntreprise("PM", null, null));
+		rf.setPeriodeFiscaleDebutValidite(0);
+		return rf;
 	}
 }
