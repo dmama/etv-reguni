@@ -49,7 +49,6 @@
 		<property name="resourceResolver" ref="catalogResolver"/>
 		<property name="sources">
 			<list>
-				<value>classpath*:ws/*.xsd</value>
 				<value>classpath*:party/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
