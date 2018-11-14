@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.UrlEncodedQueryString;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
 /**
@@ -60,9 +59,9 @@ public class ChooseOIDController {
 	/**
 	 * @return les offices d'impôt autorisés pour l'utilisateur courant
 	 */
-	private List<CollectiviteAdministrativeUtilisateur> getOfficesImpot() {
+	private List<CollectiviteAdministrative> getOfficesImpot() {
 		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
-		List<CollectiviteAdministrativeUtilisateur> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 		if (list != null && list.size() > 1) {
 			// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
 			list = new ArrayList<>(list);

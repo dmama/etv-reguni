@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.IfoSecProfil;
@@ -20,7 +20,7 @@ public interface ServiceSecuriteService {
 	 *            le visa de l'opérateur.
 	 * @return la liste des collectivités administrative de l'opérateur.
 	 */
-	List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur);
+	List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur);
 
 	/**
 	 * Retourne le profil que possède un opérateur pour une collectivité administrative.

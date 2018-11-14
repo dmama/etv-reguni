@@ -17,7 +17,6 @@ import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -113,7 +112,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	private String buildOfficeImpot(String visa) {
 		String officeImpot;
 		try {
-			final List<CollectiviteAdministrativeUtilisateur> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(visa);
+			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(visa);
 			final StringRenderer<CollectiviteAdministrative> nomsCourts = CollectiviteAdministrative::getNomCourt;
 			officeImpot = CollectionsUtils.toString(collectivitesAdministratives, nomsCourts, ", ", null);
 		}

@@ -16,10 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.URLHelper;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
@@ -48,7 +47,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				throw new IllegalArgumentException();
 			}
 
-			final List<CollectiviteAdministrativeUtilisateur> collectivites;
+			final List<CollectiviteAdministrative> collectivites;
 			try {
 				collectivites = serviceSecurite.getCollectivitesUtilisateur(username);
 			}

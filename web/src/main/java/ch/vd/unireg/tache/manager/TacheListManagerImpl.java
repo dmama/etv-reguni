@@ -30,7 +30,6 @@ import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatDocument;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -272,7 +271,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				// collectivités dans lesquelles l'utilisateur à des droits
 				final Integer loggedInOid = AuthenticationHelper.getCurrentOID();
 				if (loggedInOid == null || loggedInOid != ServiceInfrastructureService.noACI) {
-					List<CollectiviteAdministrativeUtilisateur> collectivites;
+					List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative> collectivites;
 					try {
 						collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 						if (collectivites == null) {

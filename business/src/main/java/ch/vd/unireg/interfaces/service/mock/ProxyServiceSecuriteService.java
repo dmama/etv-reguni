@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -23,7 +23,7 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	}
 
 	@Override
-	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		return target.getCollectivitesUtilisateur(visaOperateur);
 	}
 

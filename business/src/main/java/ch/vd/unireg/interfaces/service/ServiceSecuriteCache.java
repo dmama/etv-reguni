@@ -20,7 +20,6 @@ import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.IfoSecProcedure;
@@ -145,8 +144,8 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
-		final List<CollectiviteAdministrativeUtilisateur>  resultat;
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+		final List<CollectiviteAdministrative>  resultat;
 		final KeyGetCollectivitesUtilisateurVisaOperateur key = new KeyGetCollectivitesUtilisateurVisaOperateur(visaOperateur);
 		final Element element = cache.get(key);
 		if (element == null) {
@@ -156,7 +155,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 			}
 		}
 		else {
-			resultat = (List<CollectiviteAdministrativeUtilisateur>) element.getObjectValue();
+			resultat = (List<CollectiviteAdministrative>) element.getObjectValue();
 		}
 
 		return resultat;

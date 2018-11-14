@@ -7,7 +7,7 @@ import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
 
-public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativeUtilisateur, Serializable {
+public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
 	private static final long serialVersionUID = -4299360772030801769L;
 
@@ -28,9 +28,6 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	private final boolean aci;
 	private final boolean oid;
 	private final boolean valide;
-	private final boolean parDefaut;
-
-	private static final String IS_ACTIVE = "O";
 
 	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target, ServiceInfrastructureClient client) {
 		if (target == null) {
@@ -66,7 +63,6 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.aci = target.isACI();
 		this.oid = target.isOID();
 		this.valide = target.isValide();
-		this.parDefaut = IS_ACTIVE.equals(target.getCodeActivite());
 	}
 
 	@Override
@@ -150,13 +146,8 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	}
 
 	@Override
-	public boolean isCollectiviteParDefaut() {
-		return parDefaut;
-	}
-
-	@Override
 	public String toString() {
-		return String.format("CollectiviteAdministrativeImpl{nomCourt='%s', noColAdm=%d, aci=%b, oid=%b, valide=%b, parDefaut=%b}", nomCourt, noColAdm, aci, oid, valide, parDefaut);
+		return String.format("CollectiviteAdministrativeImpl{nomCourt='%s', noColAdm=%d, aci=%b, oid=%b, valide=%b}", nomCourt, noColAdm, aci, oid, valide);
 	}
 
 }

@@ -16,15 +16,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.common.ApplicationConfig;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CommonMapHelper;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.security.SecurityDebugConfig;
@@ -122,7 +121,7 @@ public class TacheMapHelper extends CommonMapHelper {
 
 		final Map<Integer, String> map = new HashMap<>();
 		if (!SecurityDebugConfig.isIfoSecDebug()) {
-			final List<CollectiviteAdministrativeUtilisateur> collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+			final List<CollectiviteAdministrative> collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 			if (collectivites != null) {
 				for (CollectiviteAdministrative collectivite : collectivites) {
 					map.put(collectivite.getNoColAdm(), collectivite.getNomCourt());

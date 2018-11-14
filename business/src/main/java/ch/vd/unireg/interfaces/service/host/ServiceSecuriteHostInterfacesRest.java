@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.infrastructure.model.rest.ListeCollectiviteAdministrative;
 import ch.vd.securite.model.rest.ListeOperateurs;
 import ch.vd.securite.model.rest.ProfilOperateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -38,11 +38,11 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		try {
 			final ListeCollectiviteAdministrative collectivitesUtilisateurCommunicationTier = client.getCollectivitesUtilisateurCommunicationTier(visaOperateur);
 			final List<ch.vd.infrastructure.model.rest.CollectiviteAdministrative> collectiviteAdministrative = collectivitesUtilisateurCommunicationTier.getCollectiviteAdministrative();
-			final List<CollectiviteAdministrativeUtilisateur> collectivites = new ArrayList<>();
+			final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(collectiviteAdministrative)) {
 
 				for (ch.vd.infrastructure.model.rest.CollectiviteAdministrative administrative : collectiviteAdministrative) {

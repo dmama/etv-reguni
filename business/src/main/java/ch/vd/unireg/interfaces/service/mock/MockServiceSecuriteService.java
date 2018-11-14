@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
@@ -30,7 +30,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	protected abstract void init();
 
 	@Override
-	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
 		return null;
 	}
 

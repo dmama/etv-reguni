@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.general.view.UtilisateurView;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 
@@ -38,8 +37,8 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 				prenomNom = prenomNom + ' ' + operateur.getNom();
 			}
 			utilisateurView.setPrenomNom(prenomNom);
-			List<CollectiviteAdministrativeUtilisateur> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
-			Iterator<CollectiviteAdministrativeUtilisateur> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
+			List<CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
+			Iterator<CollectiviteAdministrative> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
 			String officeImpot = null;
 			while (itCollectiviteAdministrative.hasNext()) {
 				CollectiviteAdministrative collectiviteAdministrative = itCollectiviteAdministrative.next();

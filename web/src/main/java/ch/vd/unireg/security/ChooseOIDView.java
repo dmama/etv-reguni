@@ -2,21 +2,21 @@ package ch.vd.unireg.security;
 
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class ChooseOIDView {
 
-	private List<CollectiviteAdministrativeUtilisateur> officesImpot;
+	private List<CollectiviteAdministrative> officesImpot;
 	private String initialUrl;
 	private Integer selectedOID;
 
-	public List<CollectiviteAdministrativeUtilisateur> getOfficesImpot() {
+	public List<CollectiviteAdministrative> getOfficesImpot() {
 		return officesImpot;
 	}
 
-	public void setOfficesImpot(List<CollectiviteAdministrativeUtilisateur> officesImpot) {
+	public void setOfficesImpot(List<CollectiviteAdministrative> officesImpot) {
 		this.officesImpot = officesImpot;
 	}
 
