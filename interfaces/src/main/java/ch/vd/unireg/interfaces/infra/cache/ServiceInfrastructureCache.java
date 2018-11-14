@@ -34,7 +34,6 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -1359,121 +1358,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 		else {
 			resultat = (List<Rue>) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetInstitutionFinanciere {
-
-		final int id;
-
-		public KeyGetInstitutionFinanciere(int id) {
-			this.id = id;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + id;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetInstitutionFinanciere other = (KeyGetInstitutionFinanciere) obj;
-			return id == other.id;
-		}
-
-		@Override
-		public String toString() {
-			return "KeyGetInstitutionFinanciere{" +
-					"id=" + id +
-					'}';
-		}
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-
-		final InstitutionFinanciere resultat;
-
-		final KeyGetInstitutionFinanciere key = new KeyGetInstitutionFinanciere(id);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getInstitutionFinanciere(id);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (InstitutionFinanciere) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetInstitutionsFinancieres {
-
-		final String noClearing;
-
-		public KeyGetInstitutionsFinancieres(String noClearing) {
-			this.noClearing = noClearing;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((noClearing == null) ? 0 : noClearing.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetInstitutionsFinancieres other = (KeyGetInstitutionsFinancieres) obj;
-			if (noClearing == null) {
-				if (other.noClearing != null)
-					return false;
-			}
-			else if (!noClearing.equals(other.noClearing))
-				return false;
-			return true;
-		}
-
-		@Override
-		public String toString() {
-			return "KeyGetInstitutionsFinancieres{" +
-					"noClearing='" + noClearing + '\'' +
-					'}';
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-
-		final List<InstitutionFinanciere> resultat;
-
-		final KeyGetInstitutionsFinancieres key = new KeyGetInstitutionsFinancieres(noClearing);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getInstitutionsFinancieres(noClearing);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<InstitutionFinanciere>) element.getObjectValue();
 		}
 
 		return resultat;

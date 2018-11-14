@@ -19,7 +19,6 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -449,16 +448,6 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		return target.getCollectivitesAdministratives(typesCollectivite);
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		return target.getInstitutionFinanciere(id);
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		return target.getInstitutionsFinancieres(noClearing);
 	}
 
 	@Override

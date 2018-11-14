@@ -49,7 +49,6 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 		forceLoad(MockLocalite.class);
 		forceLoad(MockRue.class);
 		forceLoad(MockCollectiviteAdministrative.class);
-		forceLoad(MockInstitutionFinanciere.class);
 		//SIFISC-3468
 		//Essayez de faire ce qui a dessous en static pour voir ...
 		//La Vallee avait urgemment besoin d'une adresse avec Localité donc ...
@@ -83,9 +82,5 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 
 	public static void addColAdm(MockCollectiviteAdministrative collectiviteAdministrative) {
 		staticInstance.add(collectiviteAdministrative);
-	}
-
-	public static void addInstitutionFinanciere(MockInstitutionFinanciere instit) {
-		staticInstance.add(instit);
 	}
 }

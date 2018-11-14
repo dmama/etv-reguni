@@ -1,11 +1,7 @@
 package ch.vd.unireg.xml.party.v1;
 
-import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
@@ -41,18 +37,5 @@ public class BankAccountBuilder {
 			c.setBicAddress(cf.getBicSwift());
 		}
 		c.setFormat(AccountNumberFormat.IBAN); // par définition, on ne stocke que le format IBAN dans Unireg
-
-		try {
-			final List<InstitutionFinanciere> list = context.infraService.getInstitutionsFinancieres(c.getClearing());
-			if (list != null && !list.isEmpty()) {
-				// on peut trouver plusieurs institutions, mais laquelle choisir ?
-				// la première ne semble pas un choix plus bête qu'un autre...
-				final InstitutionFinanciere institution = list.get(0);
-				c.setBankName(institution.getNomInstitutionFinanciere());
-			}
-		}
-		catch (ServiceInfrastructureException ignored) {
-			// que faire de cette exception ?
-		}
 	}
 }

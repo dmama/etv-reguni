@@ -46,7 +46,6 @@ import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.DistrictImpl;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataireImpl;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.LocaliteImpl;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -511,16 +510,6 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 

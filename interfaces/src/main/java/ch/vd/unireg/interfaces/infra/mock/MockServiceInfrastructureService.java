@@ -22,7 +22,6 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -67,7 +66,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	protected final Map<Integer, CollectiviteAdministrative> collectivitesAdministrative = new HashMap<>();
 	protected final List<OfficeImpot> officesImpot = new ArrayList<>();
 	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
-	protected final Map<Integer, InstitutionFinanciere> institutionFinancieres = new HashMap<>();
 
 	public MockServiceInfrastructureService() {
 		init();
@@ -85,9 +83,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		this.rues.addAll(right.rues);
 		for (Map.Entry<Integer, CollectiviteAdministrative> entry : right.collectivitesAdministrative.entrySet()) {
 			add((MockCollectiviteAdministrative) entry.getValue());
-		}
-		for (Map.Entry<Integer, InstitutionFinanciere> entry : right.institutionFinancieres.entrySet()) {
-			this.institutionFinancieres.put(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -451,20 +446,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			}
 		}
 		return list;
-	}
-
-	public void add(InstitutionFinanciere instit) {
-		institutionFinancieres.put(instit.getCode(), instit);
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		return institutionFinancieres.get(id);
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		return null;
 	}
 
 	@Override

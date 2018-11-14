@@ -1,11 +1,7 @@
 package ch.vd.unireg.xml.party.v4;
 
-import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
@@ -39,19 +35,6 @@ public class BankAccountBuilder {
 			bankAccount.setIban(cf.getIban());
 			bankAccount.setClearing(context.ibanValidator.getClearing(cf.getIban()));
 			bankAccount.setBicAddress(cf.getBicSwift());
-		}
-
-		try {
-			final List<InstitutionFinanciere> list = context.infraService.getInstitutionsFinancieres(bankAccount.getClearing());
-			if (list != null && !list.isEmpty()) {
-				// on peut trouver plusieurs institutions, mais laquelle choisir ?
-				// la première ne semble pas un choix plus bête qu'un autre...
-				final InstitutionFinanciere institution = list.get(0);
-				bankAccount.setBankName(institution.getNomInstitutionFinanciere());
-			}
-		}
-		catch (ServiceInfrastructureException ignored) {
-			// que faire de cette exception ?
 		}
 	}
 }

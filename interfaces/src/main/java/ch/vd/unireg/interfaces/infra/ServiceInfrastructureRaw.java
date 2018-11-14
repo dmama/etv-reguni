@@ -13,7 +13,6 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -211,26 +210,6 @@ public interface ServiceInfrastructureRaw {
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException;
-
-	/**
-	 * Retourne l'institution financière spécifiée par son id technique.
-	 *
-	 * @param id l'id de l'institution financière
-	 * @return une institution financière ou <code>null</code> si aucune institution ne correspond à l'id spécifié.
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException;
-
-	/**
-	 * La ou les institutions financière enregistrées sous le numéro de clearing spécifié.
-	 * <p/>
-	 * <b>Note:</b> logiquement, on ne devrait retourner qu'une institution financière pour un clearing donné, mais il se trouve que cette contrainte n'est pas respectée dans la base.
-	 *
-	 * @param noClearing un numéro de clearing
-	 * @return 0, 1 ou plusieurs institutions financières.
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException;
 
 	/**
 	 * Permet de retourner une plusieurs localités à partir d'un npa

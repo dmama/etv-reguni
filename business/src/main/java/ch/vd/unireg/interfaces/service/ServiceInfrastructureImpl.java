@@ -31,7 +31,6 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
@@ -746,16 +745,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Pays getPaysInconnu() throws ServiceInfrastructureException {
 		return getPays(ServiceInfrastructureService.noPaysInconnu, null);
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		return rawService.getInstitutionFinanciere(id);
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		return rawService.getInstitutionsFinancieres(noClearing);
 	}
 
 	@Override

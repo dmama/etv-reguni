@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -16,7 +17,6 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
@@ -26,7 +26,6 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -304,16 +303,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
 		return target.getCollectivitesAdministratives();
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		return target.getInstitutionFinanciere(id);
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		return target.getInstitutionsFinancieres(noClearing);
 	}
 
 	@Override

@@ -10,13 +10,14 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -25,8 +26,6 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 
@@ -439,41 +438,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 		finally {
 			tracing.end(time, t, "getRuesHisto", items, () -> String.format("numero=%d", numero));
-		}
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws ServiceInfrastructureException {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getInstitutionFinanciere(id);
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getInstitutionFinanciere", () -> String.format("id=%d", id));
-		}
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws ServiceInfrastructureException {
-		Throwable t = null;
-		int items = 0;
-		final long time = tracing.start();
-		try {
-			final List<InstitutionFinanciere> list = target.getInstitutionsFinancieres(noClearing);
-			items = list == null ? 0 : list.size();
-			return list;
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getInstitutionsFinancieres", items, () -> String.format("noClearing=%s", noClearing));
 		}
 	}
 

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -15,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
@@ -24,7 +24,6 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.adresse.AdresseGenerique;
 
 public interface ServiceInfrastructureService {
 
@@ -495,26 +494,6 @@ public interface ServiceInfrastructureService {
 	 * @return la liste de tous les logiciels certifiés associés au domaine métier spécifié.
 	 */
 	List<Logiciel> getLogicielsCertifiesPour(LogicielMetier metier);
-
-	/**
-	 * Retourne l'institution financière spécifiée par son id technique.
-	 *
-	 * @param id l'id de l'institution financière
-	 * @return une institution financière ou <code>null</code> si aucune institution ne correspond à l'id spécifié.
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException;
-
-	/**
-	 * La ou les institutions financière enregistrées sous le numéro de clearing spécifié.
-	 * <p/>
-	 * <b>Note:</b> logiquement, on ne devrait retourner qu'une institution financière pour un clearing donné, mais il se trouve que cette contrainte n'est pas respectée dans la base.
-	 *
-	 * @param noClearing un numéro de clearing
-	 * @return 0, 1 ou plusieurs institutions financières.
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException;
 
 	/**
 	 * @return l'ensemble des différents régimes fiscaux disponibles

@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.rest.ListeCollectiviteAdministrative;
 import ch.vd.infrastructure.model.rest.TypeCollectivite;
-import ch.vd.infrastructure.registre.common.model.rest.ListeInstitutionsFinancieres;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -26,8 +25,6 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciereImpl;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -293,37 +290,6 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 		}
 		return Collections.unmodifiableList(collectivites);
 
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-
-		try {
-			return InstitutionFinanciereImpl.get(client.getInstitutionFinanciere(id));
-
-		}
-		catch (ServiceInfrastructureClientException e) {
-			throw new ServiceInfrastructureException("Accès à l'institut financière " + id, e);
-		}
-
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		if (noClearing == null) {
-			return Collections.emptyList();
-		}
-		final List<InstitutionFinanciere> institutions = new ArrayList<>();
-		try {
-			final ListeInstitutionsFinancieres listeInstitutionsFinancieres = client.getInstitutionsFinancieres(noClearing);
-			for (ch.vd.infrastructure.registre.common.model.rest.InstitutionFinanciere ifin : listeInstitutionsFinancieres.getInstitutionFinanciere()) {
-				institutions.add(InstitutionFinanciereImpl.get(ifin));
-			}
-		}
-		catch (ServiceInfrastructureClientException e) {
-			throw new ServiceInfrastructureException("Acces aux institutions financières " +noClearing, e);
-		}
-		return Collections.unmodifiableList(institutions);
 	}
 
 	@Override

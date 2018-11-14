@@ -8,13 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -23,8 +24,6 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.load.DetailedLoadMeter;
 import ch.vd.unireg.load.MethodCallDescriptor;
 import ch.vd.unireg.stats.DetailedLoadMonitorable;
@@ -277,28 +276,6 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 		loadMeter.start(new MethodCallDescriptor("getCollectivitesAdministratives", "typesCollectivites", typesCollectivite));
 		try {
 			return target.getCollectivitesAdministratives(typesCollectivite);
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
-	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getInstitutionFinanciere", "id", id));
-		try {
-			return target.getInstitutionFinanciere(id);
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
-	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getInstitutionsFinancieres", "noClearing", noClearing));
-		try {
-			return target.getInstitutionsFinancieres(noClearing);
 		}
 		finally {
 			loadMeter.end();
