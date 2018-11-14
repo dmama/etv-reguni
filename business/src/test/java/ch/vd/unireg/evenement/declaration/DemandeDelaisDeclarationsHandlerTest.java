@@ -504,6 +504,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 
 	/**
 	 * [FISCPROJ-754] Teste le cas passant d'ajout d'un délai sur une déclaration avec un délai identique qui existe déjà.
+	 * [FISCPROJ-880] On vérifie que toutes les demandes sont bien traitées...
 	 */
 	@Test
 	public void testHandleDemandeGroupeeAvecDelaiIdentiqueDejaExistant() throws Exception {
@@ -511,10 +512,12 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
 
 		class Ids {
-			Long pp1;
+			final Long pp1;
+			final Long pp2;
 
-			public Ids(Long pp1) {
+			public Ids(Long pp1, Long pp2) {
 				this.pp1 = pp1;
+				this.pp2 = pp2;
 			}
 		}
 
@@ -531,7 +534,14 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 				addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
 			}
 
-			return new Ids(pp1.getNumero());
+			final PersonnePhysique pp2 = addNonHabitant("Huguette", "Viola", date(1970, 1, 1), Sexe.FEMININ);
+			{
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp2, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+				addEtatDeclarationEmise(di, date(2017, 1, 15));
+				addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+			}
+
+			return new Ids(pp1.getNumero(), pp2.getNumero());
 		});
 
 		final RegDate dateObtention = RegDate.get();
@@ -541,7 +551,8 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		doInNewTransaction(status -> {
 
 			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
-			                                                    new DelaiData(ids.pp1, dateDelaiExistant, null));
+			                                                    new DelaiData(ids.pp1, dateDelaiExistant, null),
+			                                                    new DelaiData(ids.pp2, dateDelaiExistant, null));
 			try {
 				handler.handle(demandeDelai);
 			}
@@ -551,13 +562,36 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			return null;
 		});
 
-		// vérification que le délai a été accepté, mais comme c'est le même que le délai existant, rien n'a changé.
+		// vérification que les délais ont été acceptés, mais comme c'est les mêmes que les délais existants, seul le lien vers la demande groupée est ajouté
 		doInNewTransaction(status -> {
 
 			final Tiers tiers1 = tiersDAO.get(ids.pp1);
 			assertNotNull(tiers1);
 			{
 				final List<DeclarationImpotOrdinairePP> declarations = tiers1.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+				assertEquals(1, declarations.size());
+
+				final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+				assertNotNull(declaration2016);
+
+				final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+				assertEquals(1, delais.size());
+				final DelaiDocumentFiscal delai0 = delais.get(0);
+				assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai0);
+
+				// [FISCPROJ-816] La demande mandataire doit être maintenant renseignée sur le délai
+				final DemandeDelaisMandataire demandeMandataire = delai0.getDemandeMandataire();
+				assertNotNull(demandeMandataire);
+				assertEquals("CHE1", demandeMandataire.getNumeroIDE());
+
+				// [FISCPROJ-816] Vérifie que le LOG_MUSER est mis-à-jour dans ce cas-là.
+				assertEquals(DemandeDelaisDeclarationsHandler.PRINCIPAL, delai0.getLogModifUser());
+			}
+
+			final Tiers tiers2 = tiersDAO.get(ids.pp2);
+			assertNotNull(tiers2);
+			{
+				final List<DeclarationImpotOrdinairePP> declarations = tiers2.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
 				assertEquals(1, declarations.size());
 
 				final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
