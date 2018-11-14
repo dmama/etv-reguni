@@ -172,6 +172,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getLocaliteByONRP", "onrp", onrp, "dateReference", dateReference));
+		try {
+			return target.getLocaliteByONRP(onrp, dateReference);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getRues", "localite", localite == null ? null : localite.getNom()));
 		try {

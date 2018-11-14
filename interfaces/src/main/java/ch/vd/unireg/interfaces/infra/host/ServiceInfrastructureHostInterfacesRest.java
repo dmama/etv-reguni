@@ -188,6 +188,11 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 		throw new NotImplementedException("La méthode 'getLocalitesByONRP' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
+	@Override
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		throw new NotImplementedException("La méthode 'getLocaliteByONRP' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

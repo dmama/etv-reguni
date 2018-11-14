@@ -400,6 +400,11 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		return target.getLocaliteByONRP(onrp, dateReference);
+	}
+
+	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		return target.getRues(localite);
 	}

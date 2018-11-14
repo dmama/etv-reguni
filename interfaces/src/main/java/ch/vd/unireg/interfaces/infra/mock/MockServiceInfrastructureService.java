@@ -222,6 +222,16 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		for (Localite loc : getLocalites()) {
+			if (loc.getNoOrdre() == onrp) {
+				return loc;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
 		final List<Localite> localites = new ArrayList<>();
 		for (Localite loc : getLocalites()) {

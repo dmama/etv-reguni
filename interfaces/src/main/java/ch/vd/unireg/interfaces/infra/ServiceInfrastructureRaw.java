@@ -133,6 +133,14 @@ public interface ServiceInfrastructureRaw {
 	List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException;
 
 	/**
+	 * @param onrp          le numéro technique de la localité
+	 * @param dateReference on cherche une localité valide à la date donnée, ou en tout cas la plus proche
+	 * @return la localité qui corresponds à numéro technique spécifié
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException;
+
+	/**
 	 * @param localite une localité
 	 * @return les rues de la localité spécifiée
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure

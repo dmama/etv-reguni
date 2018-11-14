@@ -742,6 +742,49 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
+	private static class KeyGetLocaliteByONRP {
+		private final int onrp;
+		@Nullable
+		private final RegDate dateReference;
+
+		public KeyGetLocaliteByONRP(int onrp, @Nullable RegDate dateReference) {
+			this.onrp = onrp;
+			this.dateReference = dateReference;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final KeyGetLocaliteByONRP that = (KeyGetLocaliteByONRP) o;
+			return onrp == that.onrp &&
+					Objects.equals(dateReference, that.dateReference);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(onrp, dateReference);
+		}
+	}
+
+	@Override
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		final Localite resultat;
+
+		final KeyGetLocaliteByONRP key = new KeyGetLocaliteByONRP(onrp, dateReference);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getLocaliteByONRP(onrp, dateReference);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			//noinspection unchecked
+			resultat = (Localite) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
 	private static class KeyGetLocalites {
 
 		@Override

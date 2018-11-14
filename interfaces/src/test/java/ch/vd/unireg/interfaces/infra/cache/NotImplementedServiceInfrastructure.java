@@ -88,6 +88,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}

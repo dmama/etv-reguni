@@ -17,9 +17,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -158,71 +156,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getLocalites();
 	}
 
-	private static final class Warner {
-		private final ThreadLocal<String> lastMsg = new ThreadLocal<>();
-		public void warn(String msg) {
-			final String previousMsg = lastMsg.get();
-			if (previousMsg == null || !previousMsg.equals(msg)) {
-				LOGGER.warn(msg);
-				lastMsg.set(msg);
-			}
-		}
-	}
-	private final Warner warner = new Warner();
-
 	@Override
 	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
-		if (dateReference == null) {
-			dateReference = RegDate.get();
-		}
-
-		final List<Localite> candidates = rawService.getLocalitesByONRP(onrp);
-		if (candidates == null || candidates.isEmpty()) {
-			LOGGER.warn("Aucune localité trouvée pour le numéro " + onrp);
-			return null;
-		}
-		if (candidates.size() == 1) {
-			// il n'y en a qu'une, c'est la bonne
-			final Localite seule = candidates.get(0);
-			if (!seule.isValidAt(dateReference)) {
-				warner.warn("La validité de la seule localité avec le numéro " + onrp + " (" + DateRangeHelper.toDisplayString(seule) + ") a été étendue au " + RegDateHelper.dateToDisplayString(dateReference));
-			}
-			return seule;
-		}
-
-		// si la date correspond exactement à une localité, pas de question à se poser, c'est la bonne
-		final Localite exactOne = DateRangeHelper.rangeAt(candidates, dateReference);
-		if (exactOne != null) {
-			return exactOne;
-		}
-
-		// il faut prendre la plus proche... Les localités étant triées dans l'ordre chronologique, on peut facilement trouver la localité avant et celle après
-		Localite before = null;
-		Localite after = null;
-		for (Localite candidate : candidates) {
-			if (RegDateHelper.isBefore(candidate.getDateFin(), dateReference, NullDateBehavior.LATEST)) {
-				before = candidate;
-			}
-			else if (RegDateHelper.isAfter(candidate.getDateDebut(), dateReference, NullDateBehavior.EARLIEST)) {
-				after = candidate;
-				break;      // puisque les candidats sont triés, on peut (= on doit !) s'arrêter là...
-			}
-		}
-
-		final Localite res;
-		if (before == null) {
-			res = after;
-		}
-		else if (after == null) {
-			res = before;
-		}
-		else {
-			final int diffBefore = RegDateHelper.getDaysBetween(before.getDateFin(), dateReference) - 1;      // -1 car la date de fin est entièrement comprise dans l'intervale
-			final int diffAfter = RegDateHelper.getDaysBetween(dateReference, after.getDateDebut());
-			res = (diffBefore < diffAfter ? before : after);
-		}
-		warner.warn("Localité la plus proche du " + RegDateHelper.dateToDisplayString(dateReference) + " pour le numéro " + onrp + " trouvée pour la période " + DateRangeHelper.toDisplayString(res));
-		return res;
+		return rawService.getLocaliteByONRP(onrp, dateReference);
 	}
 
 	@Override
