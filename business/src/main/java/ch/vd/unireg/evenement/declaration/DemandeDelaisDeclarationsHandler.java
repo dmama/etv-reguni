@@ -190,16 +190,17 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		}
 		catch (AjoutDelaiDeclarationException e) {
 			if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
-				// [FISCPROJ-754] le délai existe déjà à la date demandée, rien à faire
+				// [FISCPROJ-754] le délai existe déjà à la date demandée, rien à faire, on continue normalement (il s'agit d'un cas valide)
 				// [FISCPROJ-816] on vérifie que le délai existant n'est pas lié à une demande mandataire (auquel cas il ne peut pas être mis-à-jour selon les règles)
 				final DelaiDocumentFiscal dernierDelaiAccorde = declaration.getDernierDelaiAccorde();
 				validateDelaiImplicite(dernierDelaiAccorde);
 				// [FISCPROJ-816] hack : on force le changement sur le LOG_MUSER comme manière de rendre explicite ce délai (voir la méthode validateDeadlineForDeclaration de la classe BusinessWebServiceImpl)
 				// FIXME (msi) : supprimer cette ligne lorsqu'un champ 'source' sera ajouté sur les délais de manière à pouvoir vérifier correctement cet état implicite/explicite
 				dernierDelaiAccorde.setLogModifUser(PRINCIPAL);
-				return;
 			}
-			throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
+			else {
+				throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
+			}
 		}
 	}
 
@@ -258,13 +259,14 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 			}
 			catch (AjoutDelaiDeclarationException e) {
 				if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
-					// [FISCPROJ-816] on renseigne la demande de délai du mandataire sur le délai existant
+					// [FISCPROJ-816] on renseigne la demande de délai du mandataire sur le délai existant et on continue normalement (il s'agit d'un cas valide)
 					final DelaiDocumentFiscal dernierDelaiAccorde = declaration.getDernierDelaiAccorde();
 					validateDelaiImplicite(dernierDelaiAccorde);
 					dernierDelaiAccorde.setDemandeMandataire(demandeMandataire);
-					return;
 				}
-				throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), "Contribuable n°" + numeroContribuable + " : " + e.getMessage(), e);
+				else {
+					throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), "Contribuable n°" + numeroContribuable + " : " + e.getMessage(), e);
+				}
 			}
 		}
 	}
