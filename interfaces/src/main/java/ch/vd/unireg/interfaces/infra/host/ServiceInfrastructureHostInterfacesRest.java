@@ -199,7 +199,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		try {
-			return CollectiviteAdministrativeImpl.get(client.getCollectivite(noColAdm), client);
+			return CollectiviteAdministrativeImpl.get(client.getCollectivite(noColAdm));
 		}
 		catch (ServiceInfrastructureClientException e) {
 			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
@@ -214,13 +214,13 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 
 		List<OfficeImpot> offices = new ArrayList<>();
 		try {
-			TypeCollectivite type = new TypeCollectivite(CollectiviteAdministrativeImpl.SIGLE_CIR,null,null,0);
+			TypeCollectivite type = new TypeCollectivite(CollectiviteAdministrativeImpl.SIGLE_OID, null, null, 0);
 			TypeCollectivite[] types = new TypeCollectivite[1];
 			types[0] = type;
 			final ListeCollectiviteAdministrative collectivitesAdministratives = client.getCollectivitesAdministratives(types);
 			for (ch.vd.infrastructure.model.rest.CollectiviteAdministrative c : collectivitesAdministratives.getCollectiviteAdministrative()) {
 				if (isValid(XmlUtils.cal2date(c.getDateFinValidite()))) {
-					CollectiviteAdministrative oid = CollectiviteAdministrativeImpl.get(c, client);
+					CollectiviteAdministrative oid = CollectiviteAdministrativeImpl.get(c);
 					offices.add((OfficeImpot) oid);
 				}
 			}
@@ -256,7 +256,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 		try {
 			final ListeCollectiviteAdministrative collectivitesAdministratives = client.getCollectivitesAdministratives(ServiceInfrastructureRaw.SIGLE_CANTON_VD);
 			for (ch.vd.infrastructure.model.rest.CollectiviteAdministrative c : collectivitesAdministratives.getCollectiviteAdministrative()) {
-				collectivites.add(CollectiviteAdministrativeImpl.get(c, client));
+				collectivites.add(CollectiviteAdministrativeImpl.get(c));
 			}
 		}
 		catch (ServiceInfrastructureClientException e) {
@@ -287,7 +287,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 
 			final ListeCollectiviteAdministrative listeCollectiviteAdministrative = client.getCollectivitesAdministratives(tabTypesCollectivite);
 			for (ch.vd.infrastructure.model.rest.CollectiviteAdministrative c : listeCollectiviteAdministrative.getCollectiviteAdministrative()) {
-				collectivites.add(CollectiviteAdministrativeImpl.get(c, client));
+				collectivites.add(CollectiviteAdministrativeImpl.get(c));
 			}
 		}
 		catch (ServiceInfrastructureClientException e) {

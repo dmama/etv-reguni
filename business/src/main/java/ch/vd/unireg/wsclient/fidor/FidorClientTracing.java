@@ -1,7 +1,9 @@
 package ch.vd.unireg.wsclient.fidor;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +17,9 @@ import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
 import ch.vd.fidor.xml.categorieentreprise.v1.CategorieEntreprise;
+import ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative;
+import ch.vd.fidor.xml.colladm.v1.LienCommune;
+import ch.vd.fidor.xml.colladm.v1.TypeCollectiviteAdministrative;
 import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
@@ -622,6 +627,154 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		}
 		finally {
 			tracing.end(time, t, "getImpotsSpeciaux", items, null);
+		}
+	}
+
+	@Override
+	public @NotNull List<TypeCollectiviteAdministrative> getCollectiviteAdministrativeTypes() {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<TypeCollectiviteAdministrative> res = target.getCollectiviteAdministrativeTypes();
+			items = res.size();
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCollectiviteAdministrativeTypes", items, null);
+		}
+	}
+
+	@Override
+	public @Nullable CollectiviteAdministrative getCollectiviteAdministrative(int id) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final CollectiviteAdministrative res = target.getCollectiviteAdministrative(id);
+			if (res != null) {
+				items = 1;
+			}
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCollectiviteAdministrative", items, () -> "id=" + id);
+		}
+	}
+
+	@Override
+	public @Nullable CollectiviteAdministrative getACI(String sigleCanton) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final CollectiviteAdministrative res = target.getACI(sigleCanton);
+			if (res != null) {
+				items = 1;
+			}
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getACI", items, () -> "sigleCanton=" + sigleCanton);
+		}
+	}
+
+	@Override
+	public @Nullable CollectiviteAdministrative getOfficeImpotDeCommune(int noOfsCommune) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final CollectiviteAdministrative res = target.getOfficeImpotDeCommune(noOfsCommune);
+			if (res != null) {
+				items = 1;
+			}
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getOfficeImpotDeCommune", items, () -> "noOfsCommune=" + noOfsCommune);
+		}
+	}
+
+	@Override
+	public @NotNull List<CollectiviteAdministrative> findCollectivitesAdministratives(@Nullable Collection<Integer> ids, @Nullable String sigleCanton, @Nullable Collection<String> typesCodes, @Nullable String typeCommunication,
+	                                                                                  boolean inclureInactives) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<CollectiviteAdministrative> res = target.findCollectivitesAdministratives(ids, sigleCanton, typesCodes, typeCommunication, inclureInactives);
+			items = res.size();
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "findCollectivitesAdministratives", items, () -> {
+
+				final String idsAsString = ids == null ? null : ids.stream()
+						.map(String::valueOf)
+						.collect(Collectors.joining(","));
+				final String codesAsString = typesCodes == null ? null : String.join(",", typesCodes);
+
+				return "ids=" + idsAsString + ", sigleCanton=" + sigleCanton + ", typesCodes=" + codesAsString + ", typeCommunication=" + typeCommunication + ", inclureInactives=" + inclureInactives;
+			});
+		}
+	}
+
+	@Override
+	public @NotNull List<LienCommune> getCollectivitesAdministrativesDeCommune(int noOfsCommune) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<LienCommune> res = target.getCollectivitesAdministrativesDeCommune(noOfsCommune);
+			items = res.size();
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCollectivitesAdministrativesDeCommune", items, () -> "noOfsCommune=" + noOfsCommune);
+		}
+	}
+
+	@Override
+	public @NotNull List<LienCommune> getCommunesDeCollectiviteAdministrative(int collAdmId) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<LienCommune> res = target.getCommunesDeCollectiviteAdministrative(collAdmId);
+			items = res.size();
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCommunesDeCollectiviteAdministrative", items, () -> "noOfsCommune=" + collAdmId);
 		}
 	}
 

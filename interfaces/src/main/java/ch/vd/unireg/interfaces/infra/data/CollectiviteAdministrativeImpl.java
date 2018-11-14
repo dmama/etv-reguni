@@ -1,17 +1,23 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
+import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
+import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
 	private static final long serialVersionUID = -4299360772030801769L;
 
-	public static final String SIGLE_CIR = "CIR";
+	public static final String SIGLE_OID = "CIR";
+	public static final String SIGLE_ACI = "ACI";
+
 	private final Adresse adresse;
 	private final RegDate dateFin;
 	private final String adresseEmail;
@@ -29,25 +35,33 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	private final boolean oid;
 	private final boolean valide;
 
-	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target, ServiceInfrastructureClient client) {
+	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target) {
 		if (target == null) {
 			return null;
 		}
-		if (SIGLE_CIR.equals(target.getType().getCodeTypeCollectivite())) {
-			return new OfficeImpotImpl(target, client);
+		if (SIGLE_OID.equals(target.getType().getCodeTypeCollectivite())) {
+			return new OfficeImpotImpl(target);
 		}
 		else {
-			return new CollectiviteAdministrativeImpl(target, client);
+			return new CollectiviteAdministrativeImpl(target);
 		}
-
 	}
 
-	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target) {
-		return get(target,null);
+	@Nullable
+	public static CollectiviteAdministrative get(@Nullable ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureFidor service) {
+		if (right == null) {
+			return null;
+		}
+		if (SIGLE_OID.equals(right.getCodeType())) {
+			return new OfficeImpotImpl(right, service);
+		}
+		else {
+			return new CollectiviteAdministrativeImpl(right, service);
+		}
 	}
 
-	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target, ServiceInfrastructureClient client) {
-		this.adresse = AdresseImpl.get(target.getAdresse(), client);
+	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target) {
+		this.adresse = AdresseImpl.get(target.getAdresse());
 		this.dateFin = XmlUtils.cal2regdate(target.getDateFinValidite());
 		this.adresseEmail = target.getAdresseEmail();
 		this.noCCP = target.getNoCCP();
@@ -63,6 +77,25 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.aci = target.isACI();
 		this.oid = target.isOID();
 		this.valide = target.isValide();
+	}
+
+	protected CollectiviteAdministrativeImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureFidor service) {
+		this.adresse = AdresseImpl.getAt(right.getAdresses(), null, service);
+		this.dateFin = XmlUtils.cal2regdate(right.getDateFin());
+		this.adresseEmail = right.getEmail();
+		this.noCCP = null;
+		this.noColAdm = right.getId();
+		this.noFax = null;
+		this.noTelephone = right.getNoTelephone();
+		this.nomComplet1 = right.getNomComplet();   // TODO (msi) vérifier les utilisations du nom complet (longueur !)
+		this.nomComplet2 = null;
+		this.nomComplet3 = null;
+		this.nomCourt = right.getNomCourt();
+		this.sigle = null;
+		this.sigleCanton = right.getCanton();
+		this.aci = Objects.equals(right.getCodeType(), SIGLE_ACI);
+		this.oid = Objects.equals(right.getCodeType(), SIGLE_OID);
+		this.valide = right.getDateFin() == null;
 	}
 
 	@Override

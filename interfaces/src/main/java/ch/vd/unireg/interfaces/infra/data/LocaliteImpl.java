@@ -11,7 +11,7 @@ import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
+import ch.vd.unireg.interfaces.infra.fidor.FidorXmlUtils;
 
 public class LocaliteImpl implements Localite, Serializable {
 
@@ -42,7 +42,7 @@ public class LocaliteImpl implements Localite, Serializable {
 			rangeLocalite = null;
 		}
 		else {
-			rangeLocalite = new DateRangeHelper.Range(XmlUtils.toRegDate(validiteLocalite.getDateFrom()), XmlUtils.toRegDate(validiteLocalite.getDateTo()));
+			rangeLocalite = new DateRangeHelper.Range(FidorXmlUtils.toRegDate(validiteLocalite.getDateFrom()), FidorXmlUtils.toRegDate(validiteLocalite.getDateTo()));
 		}
 		this.commune = findCommune(target.getMainMunicipalityId(), rangeLocalite, communesByOfsId.get(target.getMainMunicipalityId()));
 		this.dateDebut = rangeLocalite != null ? rangeLocalite.getDateDebut() : null;

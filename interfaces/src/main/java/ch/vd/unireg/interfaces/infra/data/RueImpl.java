@@ -7,7 +7,7 @@ import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
+import ch.vd.unireg.interfaces.infra.fidor.FidorXmlUtils;
 
 public class RueImpl implements Rue, Serializable {
 
@@ -32,7 +32,7 @@ public class RueImpl implements Rue, Serializable {
 
 		final Range validity = target.getValidity();
 		if (validity != null) {
-			this.validite = new DateRangeHelper.Range(XmlUtils.toRegDate(validity.getDateFrom()), XmlUtils.toRegDate(validity.getDateTo()));
+			this.validite = new DateRangeHelper.Range(FidorXmlUtils.toRegDate(validity.getDateFrom()), FidorXmlUtils.toRegDate(validity.getDateTo()));
 		}
 		else {
 			this.validite = null;

@@ -2,8 +2,11 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -13,7 +16,8 @@ import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
+import ch.vd.unireg.interfaces.infra.fidor.FidorXmlUtils;
+import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
@@ -38,7 +42,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final Integer egid;
 	private final Integer ewid;
 
-	public static Adresse get(ch.vd.common.model.rest.AdresseImpl target, ServiceInfrastructureClient client) {
+	public static Adresse get(ch.vd.common.model.rest.AdresseImpl target) {
 		if (target == null) {
 			return null;
 		}
@@ -48,10 +52,47 @@ public class AdresseImpl implements Adresse, Serializable {
 		if (dateFinValidite != null && DateHelper.isNullDate(dateFinValidite)) {
 			return null;
 		}
-		return new AdresseImpl(target, client);
+		return new AdresseImpl(target);
 	}
 
-	public AdresseImpl(ch.vd.common.model.rest.AdresseImpl target, ServiceInfrastructureClient client) {
+	@Nullable
+	public static Adresse getAt(@NotNull List<ch.vd.fidor.xml.colladm.v1.Adresse> adresses, RegDate date, @NotNull ServiceInfrastructureFidor service) {
+		return adresses.stream()
+				.filter(a -> FidorXmlUtils.isValid(a, date))
+				.findFirst()
+				.map(a -> new AdresseImpl(a, service))
+				.orElse(null);
+	}
+
+	public AdresseImpl(@NotNull ch.vd.fidor.xml.colladm.v1.Adresse right, @NotNull ServiceInfrastructureFidor service) {
+
+		final RegDate dateDebut = XmlUtils.cal2regdate(right.getDateDebut());
+		final Optional<Rue> rue = Optional.ofNullable(right.getEstrid())
+				.map(estrid -> service.getRueByNumero(estrid, dateDebut));
+		final Optional<Localite> localite = Optional.of(right.getNoOrdrePoste())
+				.filter(onrp -> onrp > 0)
+				.map(onrp -> service.getLocaliteByONRP(onrp, dateDebut));
+
+		this.dateDebut = dateDebut;
+		this.dateFin = XmlUtils.cal2regdate(right.getDateFin());
+		this.casePostale = CasePostale.get(right.getCasePostale(), right.getNumeroCasePostale());
+		this.localiteAbregeMinuscule = localite.map(Localite::getNomAbrege).orElse(null);
+		this.numero = right.getNumeroMaison();
+		this.numeroAppartement = null;
+		this.numeroRue = right.getEstrid();
+		this.numeroOrdrePostal = (right.getNoOrdrePoste() > 0 ? right.getNoOrdrePoste() : null);
+		this.numeroPostal = localite.map(Localite::getNPA).map(String::valueOf).orElse(null);
+		this.numeroPostalComplementaire = localite.map(Localite::getComplementNPA).filter(compl -> compl > 0).map(String::valueOf).orElse(null);
+		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse;  // les collectivités administratives étrangères ne sont pas stockées
+		this.rue = rue.map(Rue::getDesignationCourrier).orElse(null);
+		this.titre = null;
+		this.typeAdresse = TypeAdresseCivil.COURRIER;
+		this.noOfsCommuneAdresse = right.getNoOfsCommune();
+		this.egid = null;
+		this.ewid = null;
+	}
+
+	public AdresseImpl(ch.vd.common.model.rest.AdresseImpl target) {
 		this.dateDebut = XmlUtils.cal2regdate(target.getDateDebutValidite());
 		this.dateFin = XmlUtils.cal2regdate(target.getDateFinValidite());
 		this.casePostale = CasePostale.parse(target.getCasePostale());

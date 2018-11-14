@@ -32,7 +32,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.SimpleCacheStats;
 import ch.vd.unireg.cache.UniregCacheInterface;
@@ -43,6 +42,7 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CantonImpl;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.CommuneImpl;
 import ch.vd.unireg.interfaces.infra.data.District;
@@ -54,6 +54,7 @@ import ch.vd.unireg.interfaces.infra.data.LocaliteImpl;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielImpl;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpotImpl;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 import ch.vd.unireg.interfaces.infra.data.Region;
@@ -65,6 +66,8 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
 import ch.vd.unireg.webservice.fidor.v5.FidorClient;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientException;
+
+import static ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl.SIGLE_OID;
 
 /**
  * Implémentation Fidor du service d'infrastructure [UNIREG-2187].
@@ -201,7 +204,13 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative collAdm = fidorClient.getCollectiviteAdministrative(noColAdm);
+			return CollectiviteAdministrativeImpl.get(collAdm, this);
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
@@ -570,17 +579,41 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			return fidorClient.findCollectivitesAdministratives(null, null, Collections.singletonList(SIGLE_OID), null, true).stream()
+					.map(right -> new OfficeImpotImpl(right, this))
+					.collect(Collectors.toList());
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			return fidorClient.findCollectivitesAdministratives(null, null, null, null, true).stream()
+					.map(right -> CollectiviteAdministrativeImpl.get(right, this))
+					.collect(Collectors.toList());
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<String> codes = typesCollectivite.stream()
+					.map(TypeCollectivite::getCode)
+					.collect(Collectors.toList());
+			return fidorClient.findCollectivitesAdministratives(null, null, codes, null, true).stream()
+					.map(right -> CollectiviteAdministrativeImpl.get(right, this))
+					.collect(Collectors.toList());
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
@@ -642,12 +675,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		while (matcher.find()) {
 			final String varName = matcher.group(1);
 			final String replacement = replacements.getOrDefault(varName, StringUtils.EMPTY);
-			b.append(url.substring(start, matcher.start()));
+			b.append(url, start, matcher.start());
 			b.append(replacement);
 			start = matcher.end();
 		}
 
-		b.append(url.substring(start, url.length()));
+		b.append(url.substring(start));
 		return b.toString();
 	}
 

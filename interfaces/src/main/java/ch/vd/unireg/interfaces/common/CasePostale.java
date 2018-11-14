@@ -47,6 +47,21 @@ public class CasePostale implements Serializable {
 		this.npa = npa;
 	}
 
+	public static CasePostale get(@Nullable String casePostale, @Nullable String numeroCasePostale) {
+		Integer numero = null;
+		if (StringUtils.isNotBlank(numeroCasePostale)) {
+			try {
+				numero = Integer.valueOf(numeroCasePostale.trim());
+			}
+			catch (NumberFormatException ignored) {
+			}
+		}
+		if (StringUtils.isBlank(casePostale) && numero == null) {
+			return null;
+		}
+		return new CasePostale(casePostale, numero);
+	}
+
 	public TexteCasePostale getType() {
 		return type;
 	}
