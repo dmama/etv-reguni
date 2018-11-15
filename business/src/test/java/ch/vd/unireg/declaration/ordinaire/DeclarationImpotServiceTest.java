@@ -2717,7 +2717,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			addForPrincipal(apm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
-			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_LOCAL, periode2017);
 
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 			final DeclarationImpotOrdinairePM di = addDeclarationImpot(apm, periode2017, date(2017, 1, 1), date(2017, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
