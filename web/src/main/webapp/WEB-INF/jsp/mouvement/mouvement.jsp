@@ -22,23 +22,23 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.destination" />&nbsp;:</td>
 			<td width="25%">
-				<form:radiobutton path="destinationEnvoi" value="utilisateurEnvoi" onclick="selectEnvoi('utilisateurEnvoi');" id="radioUtil" /><label for="radioUtil"><fmt:message key="label.utilisateur" /></label>
+				<form:radiobutton path="destinationEnvoi" value="UTILISATEUR_ENVOI" onclick="selectEnvoi('UTILISATEUR_ENVOI');" id="radioUtil" /><label for="radioUtil"><fmt:message key="label.utilisateur" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="utilisateursEnvoi" <c:if test="${param.depuisTache == 'true'}">style="display:none;"</c:if> >
-					<form:input path="utilisateurEnvoi" id="utilisateurEnvoi" />
+					<form:input path="nomUtilisateurEnvoi" id="nomUtilisateurEnvoi" />
 					<span class="mandatory">*</span>
-					<form:errors path="utilisateurEnvoi" cssClass="error"/>
-					<form:hidden path="numeroUtilisateurEnvoi" id="numeroUtilisateurEnvoi"  />
+					<form:errors path="visaUtilisateurEnvoi" cssClass="error"/>
+					<form:hidden path="visaUtilisateurEnvoi" id="visaUtilisateurEnvoi"  />
 					<script>
 						$(function() {
-							Autocomplete.security('user', '#utilisateurEnvoi', false, function(item) {
+							Autocomplete.security('user', '#nomUtilisateurEnvoi', false, function(item) {
 								if (item) {
-									$('#numeroUtilisateurEnvoi').val(item.id2); // le numéro technique
+									$('#visaUtilisateurEnvoi').val(item.id1); // le visa de l'opérateur
 								}
 								else {
-									$('#utilisateurEnvoi').val(null);
-									$('#numeroUtilisateurEnvoi').val(null);
+									$('#nomUtilisateurEnvoi').val(null);
+									$('#visaUtilisateurEnvoi').val(null);
 								}
 							});
 						});
@@ -49,13 +49,13 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<form:radiobutton path="destinationEnvoi" value="collectivite" onclick="selectEnvoi('collectivite');" id="radioColl"/><label for="radioColl"><fmt:message key="label.collectivite.administrative" /></label>
+				<form:radiobutton path="destinationEnvoi" value="COLLECTIVITE" onclick="selectEnvoi('COLLECTIVITE');" id="radioColl"/><label for="radioColl"><fmt:message key="label.collectivite.administrative" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="collectivites" <c:if test="${param.depuisTache != 'true'}">style="display:none;"</c:if> >
 					<form:input path="collAdmDestinataireEnvoi" id="collAdmDestinataireEnvoi" />
 					<span class="mandatory">*</span>
-					<form:errors path="utilisateurEnvoi" cssClass="error"/>
+					<form:errors path="noCollAdmDestinataireEnvoi" cssClass="error"/>
 					<form:hidden path="noCollAdmDestinataireEnvoi" id="noCollAdmDestinataireEnvoi"  />
 					<script>
 						$(function() {
@@ -70,7 +70,7 @@
 	</table>
 	<script>
 		$(function() { <%-- [SIFISC-4823]fix l'état du formulaire incoherent en cas d'erreur --%>
-			selectEnvoi($('input[@name=destinationEnvoi]:checked').attr('id') == 'radioColl' ? 'collectivite': 'utilisateurEnvoi');
+			selectEnvoi($('input[@name=destinationEnvoi]:checked').attr('id') == 'radioColl' ? 'COLLECTIVITE': 'UTILISATEUR_ENVOI');
 		});
     </script>
 	</div>
@@ -84,19 +84,19 @@
 			</td>
 			<td width="50%" colspan="2">
 				<div id="utilisateursReception">
-					<form:input path="utilisateurReception" id="utilisateurReception" />
+					<form:input path="nomUtilisateurReception" id="nomUtilisateurReception" />
 					<span class="mandatory">*</span>
-					<form:errors path="utilisateurReception" cssClass="error"/>
-					<form:hidden path="numeroUtilisateurReception" id="numeroUtilisateurReception"  />
+					<form:errors path="visaUtilisateurReception" cssClass="error"/>
+					<form:hidden path="visaUtilisateurReception" id="visaUtilisateurReception"  />
 					<script>
 						$(function() {
-							Autocomplete.security('user', '#utilisateurReception', false, function(item) {
+							Autocomplete.security('user', '#nomUtilisateurReception', false, function(item) {
 								if (item) {
-									$('#numeroUtilisateurReception').val(item.id2); // le numéro technique
+									$('#visaUtilisateurReception').val(item.id1); // le visa de l'opérateur
 								}
 								else {
-									$('#utilisateurReception').val(null);
-									$('#numeroUtilisateurReception').val(null);
+									$('#nomUtilisateurReception').val(null);
+									$('#visaUtilisateurReception').val(null);
 								}
 							});
 						});

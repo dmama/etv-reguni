@@ -4,6 +4,7 @@ import java.util.Date;
 
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.BaseComparator;
+import ch.vd.unireg.mouvement.DestinationEnvoi;
 import ch.vd.unireg.mouvement.EtatMouvementDossier;
 import ch.vd.unireg.type.Localisation;
 import ch.vd.unireg.type.TypeMouvement;
@@ -109,19 +110,19 @@ public class MouvementDetailView implements Comparable<MouvementDetailView>, Ann
 	private String collAdmDestinataireEnvoi;
 
 	/**
-	 * Numéro d'invididu de l'utilisateur destinataire d'un mouvement d'envoi
+	 * Visa de l'utilisateur destinataire d'un mouvement d'envoi
 	 */
-	private Long numeroUtilisateurEnvoi;
+	private String visaUtilisateurEnvoi;
 
 	/**
-	 * visa de l'utilisateur destination de l'envoi
+	 * Nom de l'utilisateur destination de l'envoi
 	 */
-	private String utilisateurEnvoi;
+	private String nomUtilisateurEnvoi;
 
 	/**
-	 * Type de mouvement d'envoi (édition) : utilisateurEnvoi ou collectivite
+	 * Type de mouvement d'envoi (édition)
 	 */
-	private String destinationEnvoi;
+	private DestinationEnvoi destinationEnvoi;
 
 
 	//
@@ -129,14 +130,14 @@ public class MouvementDetailView implements Comparable<MouvementDetailView>, Ann
 	//
 
 	/**
-	 * Numéro d'individu de l'utilisateur recepteur d'un mouvement de réception personnel
+	 * Visa de l'utilisateur recepteur d'un mouvement de réception personnel
 	 */
-	private Long numeroUtilisateurReception;
+	private String visaUtilisateurReception;
 
 	/**
-	 * visa de l'utilisateur qui réceptionne l'envoi
+	 * Nom de l'utilisateur qui réceptionne l'envoi
 	 */
-	private String utilisateurReception;
+	private String nomUtilisateurReception;
 
 	/**
 	 * Type de mouvement de réception
@@ -233,20 +234,20 @@ public class MouvementDetailView implements Comparable<MouvementDetailView>, Ann
 		this.annulable = annulable;
 	}
 
-	public Long getNumeroUtilisateurEnvoi() {
-		return numeroUtilisateurEnvoi;
+	public String getVisaUtilisateurEnvoi() {
+		return visaUtilisateurEnvoi;
 	}
 
-	public void setNumeroUtilisateurEnvoi(Long numeroUtilisateurEnvoi) {
-		this.numeroUtilisateurEnvoi = numeroUtilisateurEnvoi;
+	public void setVisaUtilisateurEnvoi(String visaUtilisateurEnvoi) {
+		this.visaUtilisateurEnvoi = visaUtilisateurEnvoi;
 	}
 
-	public Long getNumeroUtilisateurReception() {
-		return numeroUtilisateurReception;
+	public String getVisaUtilisateurReception() {
+		return visaUtilisateurReception;
 	}
 
-	public void setNumeroUtilisateurReception(Long numeroUtilisateurReception) {
-		this.numeroUtilisateurReception = numeroUtilisateurReception;
+	public void setVisaUtilisateurReception(String visaUtilisateurReception) {
+		this.visaUtilisateurReception = visaUtilisateurReception;
 	}
 
 	public EtatMouvementDossier getEtatMouvement() {
@@ -289,11 +290,11 @@ public class MouvementDetailView implements Comparable<MouvementDetailView>, Ann
 		this.numeroTelephoneUtilisateur = numeroTelephoneUtilisateur;
 	}
 
-	public String getDestinationEnvoi() {
+	public DestinationEnvoi getDestinationEnvoi() {
 		return destinationEnvoi;
 	}
 
-	public void setDestinationEnvoi(String destinationEnvoi) {
+	public void setDestinationEnvoi(DestinationEnvoi destinationEnvoi) {
 		this.destinationEnvoi = destinationEnvoi;
 	}
 
@@ -313,19 +314,19 @@ public class MouvementDetailView implements Comparable<MouvementDetailView>, Ann
 		this.executant = executant;
 	}
 
-	public String getUtilisateurEnvoi() {
-		return utilisateurEnvoi;
+	public String getNomUtilisateurEnvoi() {
+		return nomUtilisateurEnvoi;
 	}
 
-	public void setUtilisateurEnvoi(String utilisateurEnvoi) {
-		this.utilisateurEnvoi = utilisateurEnvoi;
+	public void setNomUtilisateurEnvoi(String nomUtilisateurEnvoi) {
+		this.nomUtilisateurEnvoi = nomUtilisateurEnvoi;
 	}
 
-	public String getUtilisateurReception() {
-		return utilisateurReception;
+	public String getNomUtilisateurReception() {
+		return nomUtilisateurReception;
 	}
 
-	public void setUtilisateurReception(String utilisateurReception) {
-		this.utilisateurReception = utilisateurReception;
+	public void setNomUtilisateurReception(String nomUtilisateurReception) {
+		this.nomUtilisateurReception = nomUtilisateurReception;
 	}
 }

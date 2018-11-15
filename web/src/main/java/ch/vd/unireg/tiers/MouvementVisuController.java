@@ -1,5 +1,6 @@
 package ch.vd.unireg.tiers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.mouvement.DestinationEnvoi;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 import ch.vd.unireg.tiers.manager.MouvementVisuManager;
 import ch.vd.unireg.utils.WebContextUtils;
@@ -92,12 +94,12 @@ public class MouvementVisuController implements MessageSourceAware {
 			return view.getIdTache() == null ? "" : view.getIdTache().toString();
 		}
 
-		public String getNumeroUtilisateurEnvoi() {
-			return view.getNumeroUtilisateurEnvoi() == null ? "" : view.getNumeroUtilisateurEnvoi().toString();
+		public String getVisaUtilisateurEnvoi() {
+			return StringUtils.trimToEmpty(view.getVisaUtilisateurEnvoi());
 		}
 
-		public String getNumeroUtilisateurReception() {
-			return view.getNumeroUtilisateurReception() == null ? "" : view.getNumeroUtilisateurReception().toString();
+		public String getVisaUtilisateurReception() {
+			return StringUtils.trimToEmpty(view.getVisaUtilisateurReception());
 		}
 
 		public String getEtatMouvement() {
@@ -127,8 +129,8 @@ public class MouvementVisuController implements MessageSourceAware {
 			return view.getNumeroTelephoneUtilisateur() == null ? "" : view.getNumeroTelephoneUtilisateur();
 		}
 
-		public String getDestinationEnvoi() {
-			return view.getDestinationEnvoi() == null ? "" : view.getDestinationEnvoi();
+		public DestinationEnvoi getDestinationEnvoi() {
+			return view.getDestinationEnvoi();
 		}
 
 		public String getDateExecution() {
@@ -140,11 +142,11 @@ public class MouvementVisuController implements MessageSourceAware {
 		}
 
 		public String getUtilisateurEnvoi() {
-			return view.getUtilisateurEnvoi() == null ? "" : view.getUtilisateurEnvoi();
+			return view.getNomUtilisateurEnvoi() == null ? "" : view.getNomUtilisateurEnvoi();
 		}
 
 		public String getUtilisateurReception() {
-			return view.getUtilisateurReception() == null ? "" : view.getUtilisateurReception();
+			return view.getNomUtilisateurReception() == null ? "" : view.getNomUtilisateurReception();
 		}
 	}
 }

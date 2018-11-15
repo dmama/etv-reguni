@@ -19,15 +19,15 @@ public class MouvementEditValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		MouvementDetailView mvtView = (MouvementDetailView) obj;
 		if (mvtView.getTypeMouvement() == TypeMouvement.EnvoiDossier) {
-			if (		(mvtView.getNumeroUtilisateurEnvoi() == null)
+			if (		(mvtView.getVisaUtilisateurEnvoi() == null)
 					&& 	(mvtView.getNoCollAdmDestinataireEnvoi() == null)) {
-				errors.rejectValue("utilisateurEnvoi", "error.utilisateur.collectivite.vide");
+				errors.rejectValue("visaUtilisateurEnvoi", "error.utilisateur.collectivite.vide");
 			}
 		}
 		else if  (mvtView.getTypeMouvement() == TypeMouvement.ReceptionDossier) {
 			if (		(mvtView.getLocalisation() == Localisation.PERSONNE)
-					&& (mvtView.getNumeroUtilisateurReception() == null)) {
-				errors.rejectValue("utilisateurReception", "error.utilisateur.vide");
+					&& (mvtView.getVisaUtilisateurReception() == null)) {
+				errors.rejectValue("visaUtilisateurReception", "error.utilisateur.vide");
 			}
 		}
 	}

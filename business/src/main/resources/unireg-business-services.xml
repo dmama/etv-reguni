@@ -364,6 +364,7 @@
 		<property name="editiqueService" ref="editiqueCompositionService"/>
 		<property name="assujettissementService" ref="assujettissementService"/>
 		<property name="adresseService" ref="adresseService"/>
+		<property name="serviceSecuriteService" ref="serviceSecuriteService"/>
 	</bean>
 
 	<bean id="impressionBordereauMouvementDossierHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.unireg.mouvement.ImpressionBordereauMouvementDossierHelperImpl">

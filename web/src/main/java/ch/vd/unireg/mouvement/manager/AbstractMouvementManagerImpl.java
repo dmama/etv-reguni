@@ -271,11 +271,6 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	private static class InfoCollaborateur {
 		/**
-		 * Numéro d'individu du collaborateur
-		 */
-		public final long noIndividu;
-
-		/**
 		 * Prénom et nom du collaborateur
 		 */
 		public final String nomPrenom;
@@ -290,17 +285,16 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		 */
 		public final String visaOperateur;
 
-		private InfoCollaborateur(long noIndividu, String nomPrenom, String noTelephoneDansOid, String visaOperateur) {
-			this.noIndividu = noIndividu;
+		private InfoCollaborateur(String nomPrenom, String noTelephoneDansOid, String visaOperateur) {
 			this.nomPrenom = nomPrenom;
 			this.noTelephoneDansOid = noTelephoneDansOid;
 			this.visaOperateur = visaOperateur;
 		}
 	}
 
-	private InfoCollaborateur getInfosCollaborateur(long noIndividu) {
+	private InfoCollaborateur getInfosCollaborateur(String visa) {
 
-		final Operateur operateur = serviceSecuriteService.getOperateur(noIndividu);
+		final Operateur operateur = serviceSecuriteService.getOperateur(visa);
 		final String nomUtilisateur;
 		final String visaOperateur;
 		final String noTelephone;
@@ -328,7 +322,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			noTelephone = null;
 			nomUtilisateur = null;
 		}
-		return new InfoCollaborateur(noIndividu, nomUtilisateur, noTelephone, visaOperateur);
+		return new InfoCollaborateur(nomUtilisateur, noTelephone, visaOperateur);
 	}
 
 	private void fillEnvoiDossier(EnvoiDossier envoi, MouvementDetailView view) throws ServiceInfrastructureException {
@@ -336,12 +330,13 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setCollectiviteAdministrative(getNomCollectiviteAdministrative(envoi.getCollectiviteAdministrativeEmettrice()));
 
 		if (envoi instanceof EnvoiDossierVersCollaborateur) {
-			final long noIndividu = ((EnvoiDossierVersCollaborateur) envoi).getNoIndividuDestinataire();
-			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(noIndividu);
+			final String visaDestinataire = ((EnvoiDossierVersCollaborateur) envoi).getVisaDestinataire();
+			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(visaDestinataire);
 			view.setDestinationUtilisateur(infoCollaborateur.nomPrenom);
 			view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
 			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
-			view.setUtilisateurEnvoi(infoCollaborateur.visaOperateur);
+			view.setVisaUtilisateurEnvoi(infoCollaborateur.visaOperateur);
+			view.setNomUtilisateurEnvoi(infoCollaborateur.nomPrenom);
 		}
 		else if (envoi instanceof EnvoiDossierVersCollectiviteAdministrative) {
 			final String nomCollectiviteAdm = getNomCollectiviteAdministrative(((EnvoiDossierVersCollectiviteAdministrative) envoi).getCollectiviteAdministrativeDestinataire());
@@ -363,12 +358,13 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		final RegDate dateMeP11R1 = RegDate.get(2011, 3, 11);
 
 		if (reception instanceof ReceptionDossierPersonnel) {
-			final long noIndividu = ((ReceptionDossierPersonnel) reception).getNoIndividuRecepteur();
-			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(noIndividu);
+			final String visaRecepteur = ((ReceptionDossierPersonnel) reception).getVisaRecepteur();
+			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(visaRecepteur);
 			view.setDestinationUtilisateur(infoCollaborateur.nomPrenom);
 			view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
 			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
-			view.setUtilisateurReception(infoCollaborateur.visaOperateur);
+			view.setVisaUtilisateurReception(infoCollaborateur.visaOperateur);
+			view.setNomUtilisateurReception(infoCollaborateur.nomPrenom);
 		}
 		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null && RegDateHelper.get(reception.getLogCreationDate()).isAfter(dateMeP11R1)) {
 			final Object[] params = {Integer.toString(reception.getDateMouvement().year())};

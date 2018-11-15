@@ -18,15 +18,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.EditiqueErrorHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.MimeTypeHelper;
+import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.ParamSorting;
-import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatDocument;
@@ -35,6 +34,7 @@ import ch.vd.unireg.extraction.BaseExtractorImpl;
 import ch.vd.unireg.extraction.BatchableExtractor;
 import ch.vd.unireg.extraction.ExtractionJob;
 import ch.vd.unireg.extraction.ExtractionService;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.mouvement.BordereauMouvementDossier;
 import ch.vd.unireg.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -128,13 +128,13 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			if (view.getNoCollAdmDestinataire() != null) {
 				criteria.setIdCollAdministrativeDestinataire(getIdCollAdmFromNumeroCA(view.getNoCollAdmDestinataire()));
 			}
-			criteria.setNoIndividuDestinataire(view.getNoIndividuDestinataire());
+			criteria.setVisaDestinataire(view.getVisaDestinataire());
 		}
 		else if (typeMouvement == TypeMouvement.ReceptionDossier) {
 			final Localisation localisation = view.getLocalisationReception();
 			criteria.setLocalisation(localisation);
 			if (localisation == Localisation.PERSONNE) {
-				criteria.setNoIndividuRecepteur(view.getNoIndividuReception());
+				criteria.setVisaRecepteur(view.getVisaRecepteur());
 			}
 		}
 		criteria.setTypeMouvement(typeMouvement);
@@ -462,8 +462,8 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 				switch (criteria.getTypeMouvement()) {
 					case EnvoiDossier:
 						b.append("'envoi'");
-						if (criteria.getNoIndividuDestinataire() != null) {
-							b.append(" vers le collaborateur ").append(criteria.getNoIndividuDestinataire());
+						if (criteria.getVisaDestinataire() != null) {
+							b.append(" vers le collaborateur ").append(criteria.getVisaDestinataire().toLowerCase());
 						}
 						break;
 					case ReceptionDossier:
@@ -480,8 +480,8 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 									break;
 								case PERSONNE:
 									b.append("'réception personnelle'");
-									if (criteria.getNoIndividuRecepteur() != null) {
-										b.append(" par le collaborateur ").append(criteria.getNoIndividuRecepteur());
+									if (criteria.getVisaRecepteur() != null) {
+										b.append(" par le collaborateur ").append(criteria.getVisaRecepteur().toLowerCase());
 									}
 									break;
 							}

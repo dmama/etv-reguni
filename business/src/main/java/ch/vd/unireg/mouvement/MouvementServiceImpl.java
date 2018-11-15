@@ -5,20 +5,37 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplate;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 
-public class MouvementServiceImpl implements MouvementService {
+public class MouvementServiceImpl implements MouvementService, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MouvementServiceImpl.class);
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -28,6 +45,8 @@ public class MouvementServiceImpl implements MouvementService {
 	private EditiqueCompositionService editiqueService;
 	private AssujettissementService assujettissementService;
 	private AdresseService adresseService;
+	private ApplicationContext applicationContext;
+	private ServiceSecuriteService serviceSecuriteService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -62,6 +81,15 @@ public class MouvementServiceImpl implements MouvementService {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	public void setServiceSecuriteService(ServiceSecuriteService serviceSecuriteService) {
+		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
 	/**
@@ -109,6 +137,41 @@ public class MouvementServiceImpl implements MouvementService {
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);
+		}
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		// au démarrage de l'application, on renseigne les visas des opérateurs si nécessaire (migration)
+		// TODO (msi) supprimer cette méthode quand les visas auront été générés en production
+		if (event.getApplicationContext() == this.applicationContext) {
+			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
+			try {
+				final TransactionTemplate template = new TransactionTemplate(transactionManager);
+				final List<Long> ids = template.execute(status -> mouvementDossierDAO.getOperatorsIdsToMigrate());
+
+				final ParallelBatchTransactionTemplate<Long> t = new ParallelBatchTransactionTemplate<>(ids, 20, 8, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+				t.execute(new BatchCallback<Long>() {
+					@Override
+					public boolean doInTransaction(List<Long> batch) {
+						for (Long id : batch) {
+							final Operateur operateur = serviceSecuriteService.getOperateur(id);
+							if (operateur == null) {
+								LOGGER.warn("L'opérateur n°" + id + " n'existe pas dans Host-Interfaces. Ses mouvements de dossier seront annulés.");
+								mouvementDossierDAO.cancelOperateur(id);
+							}
+							else {
+								LOGGER.info("Mémorisation du visa [" + operateur.getCode() + "] pour l'opérateur n°" + id + ".");
+								mouvementDossierDAO.updateVisa(operateur.getIndividuNoTechnique(), operateur.getCode());
+							}
+						}
+						return true;
+					}
+				}, null);
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
 		}
 	}
 }

@@ -49,14 +49,14 @@ public abstract class MouvementMasseCriteriaView {
 	/**
 	 * Numéro d'individu de l'opérateur destinataire d'un envoi
 	 */
-	private Long noIndividuDestinataire;
-	private String individuDestinataire;
+	private String visaDestinataire;
+	private String nomDestinataire;
 
 	/**
 	 * Numéro d'individu de l'opérateur réceptioniste d'une réception "personne"
 	 */
-	private Long noIndividuReception;
-	private String individuReception;
+	private String visaRecepteur;
+	private String nomRecepteur;
 
 	/**
 	 * Type de réception
@@ -121,36 +121,36 @@ public abstract class MouvementMasseCriteriaView {
 		this.collAdmDestinataire = collAdmDestinataire;
 	}
 
-	public Long getNoIndividuDestinataire() {
-		return noIndividuDestinataire;
+	public String getVisaDestinataire() {
+		return visaDestinataire;
 	}
 
-	public void setNoIndividuDestinataire(Long noIndividuDestinataire) {
-		this.noIndividuDestinataire = noIndividuDestinataire;
+	public void setVisaDestinataire(String visaDestinataire) {
+		this.visaDestinataire = visaDestinataire;
 	}
 
-	public String getIndividuDestinataire() {
-		return individuDestinataire;
+	public String getNomDestinataire() {
+		return nomDestinataire;
 	}
 
-	public void setIndividuDestinataire(String individuDestinataire) {
-		this.individuDestinataire = individuDestinataire;
+	public void setNomDestinataire(String nomDestinataire) {
+		this.nomDestinataire = nomDestinataire;
 	}
 
-	public Long getNoIndividuReception() {
-		return noIndividuReception;
+	public String getVisaRecepteur() {
+		return visaRecepteur;
 	}
 
-	public void setNoIndividuReception(Long noIndividuReception) {
-		this.noIndividuReception = noIndividuReception;
+	public void setVisaRecepteur(String visaRecepteur) {
+		this.visaRecepteur = visaRecepteur;
 	}
 
-	public String getIndividuReception() {
-		return individuReception;
+	public String getNomRecepteur() {
+		return nomRecepteur;
 	}
 
-	public void setIndividuReception(String individuReception) {
-		this.individuReception = individuReception;
+	public void setNomRecepteur(String nomRecepteur) {
+		this.nomRecepteur = nomRecepteur;
 	}
 
 	public Localisation getLocalisationReception() {
@@ -202,13 +202,15 @@ public abstract class MouvementMasseCriteriaView {
 		this.collAdmDestinataire = null;
 		this.dateMouvementMax = null;
 		this.dateMouvementMin = null;
-		this.individuDestinataire = null;
+		this.visaDestinataire = null;
+		this.nomDestinataire = null;
+		this.visaRecepteur = null;
+		this.nomRecepteur = null;
 		this.localisationReception = null;
 		this.mouvementsAnnulesInclus = false;
 		this.noCollAdmDestinataire = null;
 		this.noCtb = null;
 		this.noCtbFormatte = null;
-		this.noIndividuDestinataire = null;
 		this.typeMouvement = null;
 	}
 

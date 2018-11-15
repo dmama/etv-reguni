@@ -251,7 +251,9 @@ create table MODELE_DOCUMENT (id number(19,0) not null, ANNULATION_DATE timestam
 
 create table MODELE_FEUILLE_DOC (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), SORT_INDEX number(10,0), INTITULE_FEUILLE nvarchar2(255), NO_CADEV number(4,0) not null, NO_FORMULAIRE_ACI number(5,0), PRINCIPAL NUMBER(1,0) NOT NULL, MODELE_ID number(19,0), primary key (id));
 
-create table MOUVEMENT_DOSSIER (MVT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_MOUVEMENT number(10,0), ETAT nvarchar2(15) not null, NUMERO_INDIVIDU number(19,0), CTB_ID number(19,0), COLL_ADMIN_EMETTRICE_ID number(19,0), BORDEREAU_ID number(19,0), COLL_ADMIN_DEST_ID number(19,0), COLL_ADMIN_RECEPTRICE_ID number(19,0), primary key (id));
+create table MOUVEMENT_DOSSIER (MVT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_MOUVEMENT number(10,0), ETAT nvarchar2(15) not null, NUMERO_INDIVIDU number(19,0), VISA_COLLABORATEUR NVARCHAR2(25), CTB_ID number(19,0), COLL_ADMIN_EMETTRICE_ID number(19,0), BORDEREAU_ID number(19,0), COLL_ADMIN_DEST_ID number(19,0), COLL_ADMIN_RECEPTRICE_ID number(19,0), primary key (id));
+
+CREATE INDEX IDX_VISA_COLLABORATEUR ON MOUVEMENT_DOSSIER (VISA_COLLABORATEUR ASC);
 
 create table PARAMETRE (nom nvarchar2(255) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), valeur nvarchar2(255), primary key (nom));
 

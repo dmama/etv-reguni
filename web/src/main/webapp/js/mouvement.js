@@ -22,11 +22,11 @@ function selectTypeMouvement(name) {
 * Selection d'un envoi
 */
 function selectEnvoi(name) {
-	if( name == 'utilisateurEnvoi' ){
+	if( name === 'UTILISATEUR_ENVOI' ){
 		$('#utilisateursEnvoi').show();
 		$('#collectivites').hide();	
 	}
-	if( name == 'collectivite' ){
+	if( name === 'COLLECTIVITE' ){
 		$('#collectivites').show();
 		$('#utilisateursEnvoi').hide();	
 	}

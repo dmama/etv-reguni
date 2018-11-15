@@ -66,17 +66,17 @@
         </td>
         <td><fmt:message key="label.envoi.utilisateur"/>&nbsp;:</td>
         <td>
-            <form:input path="individuDestinataire" id="individuDestinataire" />
-            <form:hidden path="noIndividuDestinataire" id="noIndividuDestinataire"  />
+            <form:input path="nomDestinataire" id="nomDestinataire" />
+            <form:hidden path="visaDestinataire" id="visaDestinataire"  />
 			<script>
 				$(function() {
-					Autocomplete.security('user', '#individuDestinataire', false, function(item) {
+					Autocomplete.security('user', '#nomDestinataire', false, function(item) {
 						if (item) {
-							$('#noIndividuDestinataire').val(item.id2); // le numéro technique
+							$('#visaDestinataire').val(item.id1); // le visa de l'opérateur
 						}
 						else {
-							$('#individuDestinataire').val(null);
-							$('#noIndividuDestinataire').val(null);
+							$('#nomDestinataire').val(null);
+							$('#visaDestinataire').val(null);
 						}
 					});
 				});
@@ -101,17 +101,17 @@
 	    </td>
 	    <td id="labelUtilisateurReception" width="25%"><fmt:message key="label.reception.utilisateur"/>&nbsp;:</td>
 	    <td id="choixUtilisateurReception" width="25%">
-            <form:input path="individuReception" id="individuReception" />
-            <form:hidden path="noIndividuReception" id="noIndividuReception"  />
+            <form:input path="nomRecepteur" id="nomRecepteur" />
+            <form:hidden path="visaRecepteur" id="visaRecepteur"  />
 			<script>
 				$(function() {
-					Autocomplete.security('user', '#individuReception', false, function(item) {
+					Autocomplete.security('user', '#nomRecepteur', false, function(item) {
 						if (item) {
-							$('#noIndividuReception').val(item.id2); // le numéro technique
+							$('#visaRecepteur').val(item.id1); // le visa de l'opérateur
 						}
 						else {
-							$('#individuReception').val(null);
-							$('#noIndividuReception').val(null);
+							$('#nomRecepteur').val(null);
+							$('#visaRecepteur').val(null);
 						}
 					});
 				});

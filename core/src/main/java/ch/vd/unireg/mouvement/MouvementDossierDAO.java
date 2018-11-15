@@ -2,6 +2,7 @@ package ch.vd.unireg.mouvement;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
@@ -57,4 +58,23 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 * @return liste des combinaisons trouvées, ou null si aucune
 	 */
 	List<ProtoBordereauMouvementDossier> getAllProtoBordereaux(@Nullable Integer noCollAdmInitiatrice);
+
+	/**
+	 * @return la liste des ids des opérateurs qui n'ont pas de visa associé.
+	 */
+	List<Long> getOperatorsIdsToMigrate();
+
+	/**
+	 * Renseigne le visa de l'opérateur spécifié sur tous les droits d'accès qui correspondent.
+	 *
+	 * @param noOperateur   le numéro technique de l'opérateur
+	 * @param visaOperateur le visa de l'opérateur
+	 */
+	void updateVisa(long noOperateur, @NotNull String visaOperateur);
+
+	/**
+	 * Annule tous les droits d'accès de l'opérateur spécifié.
+	 * @param noOperateur l'id d'un opérateur
+	 */
+	void cancelOperateur(Long noOperateur);
 }

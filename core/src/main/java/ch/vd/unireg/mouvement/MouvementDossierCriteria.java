@@ -39,14 +39,14 @@ public class MouvementDossierCriteria {
 	private Long idCollAdministrativeDestinataire;
 
 	/**
-	 * Numéro d'individu du collaborateur destinataire des mouvements d'envoi
+	 * Visa du collaborateur destinataire des mouvements d'envoi
 	 */
-	private Long noIndividuDestinataire;
+	private String visaDestinataire;
 
 	/**
-	 * Numéro d'individu du collaborateur récepteur des mouvements
+	 * Visa du collaborateur récepteur des mouvements
 	 */
-	private Long noIndividuRecepteur;
+	private String visaRecepteur;
 
 	/**
 	 * Type de mouvement de réception
@@ -103,20 +103,20 @@ public class MouvementDossierCriteria {
 		this.idCollAdministrativeDestinataire = idCollAdministrativeDestinataire;
 	}
 
-	public Long getNoIndividuDestinataire() {
-		return noIndividuDestinataire;
+	public String getVisaDestinataire() {
+		return visaDestinataire;
 	}
 
-	public void setNoIndividuDestinataire(Long noIndividuDestinataire) {
-		this.noIndividuDestinataire = noIndividuDestinataire;
+	public void setVisaDestinataire(String visaDestinataire) {
+		this.visaDestinataire = visaDestinataire;
 	}
 
-	public Long getNoIndividuRecepteur() {
-		return noIndividuRecepteur;
+	public String getVisaRecepteur() {
+		return visaRecepteur;
 	}
 
-	public void setNoIndividuRecepteur(Long noIndividuRecepteur) {
-		this.noIndividuRecepteur = noIndividuRecepteur;
+	public void setVisaRecepteur(String visaRecepteur) {
+		this.visaRecepteur = visaRecepteur;
 	}
 
 	public Localisation getLocalisation() {

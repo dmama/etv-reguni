@@ -8,16 +8,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.common.HibernateQueryHelper;
 import ch.vd.unireg.common.pagination.ParamPagination;
@@ -163,10 +169,10 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 	}
 
 	private static void buildWhereClausePartieIndividuDestinataire(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
-		if (criteria.getNoIndividuDestinataire() != null) {
+		if (StringUtils.isNotBlank(criteria.getVisaDestinataire())) {
 			b.append(" AND mvt.class = ").append(EnvoiDossierVersCollaborateur.class.getSimpleName());
-			b.append(" AND mvt.noIndividuDestinataire = :noIndDest");
-			params.put("noIndDest", criteria.getNoIndividuDestinataire());
+			b.append(" AND mvt.visaDestinataire = :visaDestinataire");
+			params.put("visaDestinataire", criteria.getVisaDestinataire().toLowerCase());
 		}
 	}
 
@@ -191,9 +197,9 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 			}
 
 			b.append(" AND mvt.class = ").append(clazz.getSimpleName());
-			if (criteria.getNoIndividuRecepteur() != null) {
-				b.append(" AND mvt.noIndividuRecepteur = :noIndRecepteur");
-				params.put("noIndRecepteur", criteria.getNoIndividuRecepteur());
+			if (StringUtils.isNotBlank(criteria.getVisaRecepteur())) {
+				b.append(" AND mvt.visaRecepteur = :visaRecepteur");
+				params.put("visaRecepteur", criteria.getVisaRecepteur().toLowerCase());
 			}
 		}
 	}
@@ -435,5 +441,51 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 		else {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Long> getOperatorsIdsToMigrate() {
+
+		final Query query1 = getCurrentSession().createQuery("select distinct noIndividuDestinataire from EnvoiDossierVersCollaborateur where visaDestinataire is null order by noIndividuDestinataire asc");
+		//noinspection unchecked
+		final List<Number> list1 = query1.list();
+		final Query query2 = getCurrentSession().createQuery("select distinct noIndividuRecepteur from ReceptionDossierPersonnel where visaRecepteur is null order by noIndividuRecepteur asc");
+		//noinspection unchecked
+		final List<Number> list2 = query2.list();
+
+		return Stream.concat(list1.stream(), list2.stream())
+				.filter(Objects::nonNull)
+				.map(Number::longValue)
+				.distinct()
+				.sorted()
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public void updateVisa(long noOperateur, @NotNull String visaOperateur) {
+		final Query query1 = getCurrentSession().createQuery("update EnvoiDossierVersCollaborateur set visaDestinataire = :visa where noIndividuDestinataire = :no");
+		query1.setParameter("visa", visaOperateur.toLowerCase());    // le visa est toujours stocké en minuscules
+		query1.setParameter("no", noOperateur);
+		query1.executeUpdate();
+
+		final Query query2 = getCurrentSession().createQuery("update ReceptionDossierPersonnel set visaRecepteur = :visa where noIndividuRecepteur = :no");
+		query2.setParameter("visa", visaOperateur.toLowerCase());    // le visa est toujours stocké en minuscules
+		query2.setParameter("no", noOperateur);
+		query2.executeUpdate();
+	}
+
+	@Override
+	public void cancelOperateur(Long noOperateur) {
+		final Query query1 = getCurrentSession().createQuery("update EnvoiDossierVersCollaborateur set annulationDate = :now, annulationUser = :user where annulationDate is null and noIndividuDestinataire = :no");
+		query1.setParameter("now", DateHelper.getCurrentDate());
+		query1.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
+		query1.setParameter("no", noOperateur);
+		query1.executeUpdate();
+
+		final Query query2 = getCurrentSession().createQuery("update ReceptionDossierPersonnel set annulationDate = :now, annulationUser = :user where annulationDate is null and noIndividuRecepteur = :no");
+		query2.setParameter("now", DateHelper.getCurrentDate());
+		query2.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
+		query2.setParameter("no", noOperateur);
+		query2.executeUpdate();
 	}
 }

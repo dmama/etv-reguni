@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.mouvement.DestinationEnvoi;
 import ch.vd.unireg.mouvement.EnvoiDossier;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollaborateur;
 import ch.vd.unireg.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -31,14 +34,9 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 
 	private static final int COLL_SUCC_ACI = 1344;
 
-	// private static final String UTILISATEUR_RECEPTION = "utilisateurReception";
-	private static final String UTILISATEUR_ENVOI = "utilisateurEnvoi";
-	private static final String COLLECTIVITE = "collectivite";
-
 	/**
 	 * Alimente la vue MouvementListView en fonction d'un contribuable
 	 * @return une vue MouvementListView
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -59,9 +57,6 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 
 	/**
 	 * Creer une vue pour le mvt de dossier
-	 *
-	 * @param numero
-	 * @return
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -69,14 +64,14 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
 		mvtDetailView.setContribuable(creerCtbView(numero));
 		mvtDetailView.setTypeMouvement(TypeMouvement.EnvoiDossier);
-		mvtDetailView.setDestinationEnvoi(UTILISATEUR_ENVOI);
+		mvtDetailView.setDestinationEnvoi(DestinationEnvoi.UTILISATEUR_ENVOI);
 		mvtDetailView.setLocalisation(Localisation.PERSONNE);
 
 		final String visaOperateur = AuthenticationHelper.getCurrentPrincipal();
 		final Operateur operateur = getServiceSecuriteService().getOperateur(visaOperateur);
 		if (operateur != null) {
-			mvtDetailView.setUtilisateurReception(visaOperateur);
-			mvtDetailView.setNumeroUtilisateurReception(operateur.getIndividuNoTechnique());
+			mvtDetailView.setNomUtilisateurReception(new NomPrenom(operateur.getNom(), operateur.getPrenom()).getNomPrenom());
+			mvtDetailView.setVisaUtilisateurReception(visaOperateur);
 		}
 		return mvtDetailView;
 	}
@@ -84,11 +79,6 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 
 	/**
 	 * Creer une vue pour le mvt de dossier depuis la tache transmission de dossier
-	 *
-	 * @param numero
-	 * @param idTache
-	 * @return
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -97,7 +87,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		mvtDetailView.setContribuable(creerCtbView(numero));
 		mvtDetailView.setIdTache(idTache);
 		mvtDetailView.setTypeMouvement(TypeMouvement.EnvoiDossier);
-		mvtDetailView.setDestinationEnvoi(COLLECTIVITE);
+		mvtDetailView.setDestinationEnvoi(DestinationEnvoi.COLLECTIVITE);
 		mvtDetailView.setNoCollAdmDestinataireEnvoi(COLL_SUCC_ACI);
 		final CollectiviteAdministrative collectiviteAdministrative = getServiceInfra().getCollectivite(COLL_SUCC_ACI);
 		mvtDetailView.setCollAdmDestinataireEnvoi(collectiviteAdministrative.getNomCourt());
@@ -107,13 +97,10 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 
 	/**
 	 * Persiste en base le nouveau mvt de dossier
-	 *
-	 * @param mvtDetailView
-	 * @throws Exception
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(MouvementDetailView mvtDetailView) throws Exception {
+	public void save(MouvementDetailView mvtDetailView) {
 		final Contribuable ctb = (Contribuable) getTiersService().getTiers(mvtDetailView.getContribuable().getNumero());
 
 		final MouvementDossier mvt;
@@ -122,9 +109,9 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 			final ReceptionDossier reception;
 			switch (mvtDetailView.getLocalisation()) {
 				case PERSONNE:
-					final Long noIndividu = mvtDetailView.getNumeroUtilisateurReception();
-					if (noIndividu != null) {
-						reception = new ReceptionDossierPersonnel(noIndividu);
+					final String visa = mvtDetailView.getVisaUtilisateurReception();
+					if (StringUtils.isNotBlank(visa)) {
+						reception = new ReceptionDossierPersonnel(visa);
 					}
 					else {
 						throw new RuntimeException("La donnée de l'utilisateur qui réceptionne le dossier est obligatoire!");
@@ -149,15 +136,16 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		else if (mvtDetailView.getTypeMouvement() == TypeMouvement.EnvoiDossier) {
 
 			final EnvoiDossier envoiDossier;
-			if (mvtDetailView.getNoCollAdmDestinataireEnvoi() != null) {
+			switch (mvtDetailView.getDestinationEnvoi()) {
+			case COLLECTIVITE:
 				final ch.vd.unireg.tiers.CollectiviteAdministrative ca = getTiersService().getOrCreateCollectiviteAdministrative(mvtDetailView.getNoCollAdmDestinataireEnvoi());
 				envoiDossier = new EnvoiDossierVersCollectiviteAdministrative(ca);
-			}
-			else if (mvtDetailView.getNumeroUtilisateurEnvoi() != null) {
-				envoiDossier = new EnvoiDossierVersCollaborateur(mvtDetailView.getNumeroUtilisateurEnvoi());
-			}
-			else {
-				throw new RuntimeException("Type de mouvement d'envoi de dossier non supporté");
+				break;
+			case UTILISATEUR_ENVOI:
+				envoiDossier = new EnvoiDossierVersCollaborateur(mvtDetailView.getVisaUtilisateurEnvoi());
+				break;
+			default:
+				throw new IllegalArgumentException("Type de destination d'envoi inconnu = [" + mvtDetailView.getDestinationEnvoi() + "]");
 			}
 			final ch.vd.unireg.tiers.CollectiviteAdministrative caEmettrice = getTiersService().getOrCreateCollectiviteAdministrative(AuthenticationHelper.getCurrentOID());
 			envoiDossier.setCollectiviteAdministrativeEmettrice(caEmettrice);
