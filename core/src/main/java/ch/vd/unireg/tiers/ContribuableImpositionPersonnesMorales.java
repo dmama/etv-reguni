@@ -10,9 +10,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -84,7 +86,7 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 		if (declaration instanceof DeclarationImpotOrdinairePM) {
 			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
 			if (shouldAssignCodeControle(di)) {
-				di.setCodeControle(generateNewCodeControle(getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true)));
+				di.setCodeControle(generateCodeControleForPM(getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true), declaration.getPeriode()));
 			}
 		}
 		if (declaration instanceof QuestionnaireSNC) {
@@ -117,10 +119,22 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 	}
 
 	/**
+	 * Génère un code de contrôle, il doit toujours être repris sur une PF dès le moment où il a été généré au moins une fois.
 	 * @param declarationsExistantes collection des déclarations existantes sur la PM
+	 * @param pf periode fiscale
 	 * @return un nouveau code de contrôle pour la déclaration (différent de tous les autres codes de contrôles des DI existantes, annulées ou pas)
 	 */
-	public static String generateNewCodeControle(Collection<DeclarationImpotOrdinairePM> declarationsExistantes) {
+	public static String generateCodeControleForPM(Collection<DeclarationImpotOrdinairePM> declarationsExistantes, PeriodeFiscale pf) {
+
+		final Optional<DeclarationImpotOrdinairePM> declarationAvecCodeControleSurPF = declarationsExistantes.stream()
+				.filter(declaration -> declaration.getPeriode().equals(pf))
+				.filter(declaration -> StringUtils.isNotBlank(declaration.getCodeControle()))
+				.findAny();
+
+		if (declarationAvecCodeControleSurPF.isPresent()) {
+			return declarationAvecCodeControleSurPF.get().getCodeControle();
+		}
+
 		// faisons le tour de tous les codes de contrôles existant afin de ne pas reprendre une deuxième fois le même
 		final Set<String> codesExistants = new HashSet<>(declarationsExistantes.size());
 		for (DeclarationImpotOrdinairePM di : declarationsExistantes) {
