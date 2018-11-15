@@ -70,7 +70,6 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 		clearQueue(OUTPUT_QUEUE);
 
 		buildEsbMessageValidator(new String[] {
-				"classpath*:ws/*.xsd",
 				"classpath*:party/*.xsd",
 				"unireg-common-2.xsd",
 				"event/fiscal/evt-fiscal-5.xsd",
