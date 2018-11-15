@@ -2759,7 +2759,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			di2016.addEtat(new EtatDeclarationEmise(date(2017, 1, 15)));
 
 			//Annulation de la demande
-			diService.annulationDI(apm, (DeclarationImpotOrdinairePM) apm.getDeclarations().iterator().next(), null, RegDate.get());
+			diService.annulationDI(apm, di2017_1, null, RegDate.get());
 
 			//2e DI sur 2017
 			final DeclarationImpotOrdinairePM di2017_2 = addDeclarationImpot(apm, periode2017, date(2017, 1, 1), date(2017, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
