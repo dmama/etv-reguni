@@ -214,8 +214,8 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 			return CauseIgnorance.ABSENCE_FOR_VAUDOIS;
 		}
 
-		//Pour les sourcier, on regarde en plus la présence d'un rapport de travail d'au moins 1 journée sur la PF ainsi que l'existence d'une adresse de domicile valide sur vaud au moins 1 jour sur la PF
-		if (isAssujettissementSourcier(lastAssujetissement)) {
+		//Pour les sourciers pures, on regarde en plus la présence d'un rapport de travail d'au moins 1 journée sur la PF ainsi que l'existence d'une adresse de domicile valide sur vaud au moins 1 jour sur la PF
+		if (isAssujettissementSourcierPur(lastAssujetissement)) {
 			if (absenceRapportTravail(ctb, anneeFiscale)) {
 				return CauseIgnorance.ABSENCE_RAPPORT_TRAVAIL_SOURCIER;
 			}
@@ -348,10 +348,8 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 	}
 
 
-	private boolean isAssujettissementSourcier(Assujettissement a) {
-		return a.getType() == TypeAssujettissement.SOURCE_PURE ||
-				a.getType() == TypeAssujettissement.MIXTE_137_1 ||
-				a.getType() == TypeAssujettissement.MIXTE_137_2;
+	private boolean isAssujettissementSourcierPur(Assujettissement a) {
+		return a.getType() == TypeAssujettissement.SOURCE_PURE;
 	}
 
 	public int getAnneeFiscale() {
