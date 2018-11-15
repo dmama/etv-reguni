@@ -183,5 +183,25 @@ public class ListeEchangeRenseignementsResultsTest extends BusinessTest
 			Assert.assertNull(results.determineCauseIgnorance(armande));
 		}
 
+		//Sourcier Mixte 1  et sans rapport de travail doit être pris en compte sur la PF
+		{
+			final PersonnePhysique armand = addNonHabitant("Armand", "tutu", date(1987, 12, 12), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			addForPrincipal(armand, date(2005, 12, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			//Il est pris en compte
+			Assert.assertNull(results.determineCauseIgnorance(armand));
+
+		}
+
+		//Sourcier Mixte 2  et sans rapport de travail doit être pris en compte sur la PF
+		{
+			final PersonnePhysique armand = addNonHabitant("Armand", "tutu", date(1987, 12, 12), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			addForPrincipal(armand, date(2005, 12, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+			//Il est pris en compte
+			Assert.assertNull(results.determineCauseIgnorance(armand));
+
+		}
+
 	}
 }
