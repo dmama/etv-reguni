@@ -33,6 +33,7 @@
 				<!-- PM -->
 				<ref bean="retourDiIbcHandlerV1"/>
 				<ref bean="retourDiIbcHandlerV2"/>
+				<ref bean="retourDiIbcHandlerV3"/>
 			</list>
 		</property>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
@@ -67,6 +68,10 @@
 	</bean>
 
 	<bean id="retourDiIbcHandlerV2" class="ch.vd.unireg.evenement.retourdi.pm.V2Handler" parent="abstractRetourDIIBCHandler">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="retourDiIbcHandlerV3" class="ch.vd.unireg.evenement.retourdi.pm.V3Handler" parent="abstractRetourDIIBCHandler">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
