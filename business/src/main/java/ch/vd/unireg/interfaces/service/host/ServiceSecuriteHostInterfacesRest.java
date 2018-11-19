@@ -51,7 +51,31 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 			}
 			return collectivites;
 		}
+		catch (ServiceSecuriteClientException e) {
+			if (isOperateurTermineException(e)) {
+				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null/vide, on
+				// corrige ce comportement ici
+				return null;
+			}
+			throw new ServiceSecuriteException("impossible de récupérer les collectivités de l'utilisateur " + visaOperateur, e);
+		}
+	}
 
+	private static final String IS_ACTIVE = "O";
+
+	@Override
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+		try {
+			final ListeCollectiviteAdministrative list = client.getCollectivitesUtilisateurCommunicationTier(visaOperateur);
+			if (list == null) {
+				return null;
+			}
+			return list.getCollectiviteAdministrative().stream()
+					.filter(c -> IS_ACTIVE.equals(c.getCodeActivite()))
+					.findFirst()
+					.map(ch.vd.infrastructure.model.rest.CollectiviteAdministrative::getNoColAdm)
+					.orElse(null);
+		}
 		catch (ServiceSecuriteClientException e) {
 			if (isOperateurTermineException(e)) {
 				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null/vide, on

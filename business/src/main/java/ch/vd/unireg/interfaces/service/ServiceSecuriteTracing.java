@@ -53,6 +53,25 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final Integer oid = target.getCollectiviteParDefaut(visaOperateur);
+			items = oid == null ? 0 : 1;
+			return oid;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCollectiviteParDefaut", items, () -> String.format("visaOperateur=%s", visaOperateur));
+		}
+	}
+
+	@Override
 	public Operateur getOperateur(final long individuNoTechnique) {
 		Throwable t = null;
 		int items = 0;

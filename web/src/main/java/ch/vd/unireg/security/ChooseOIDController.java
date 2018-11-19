@@ -5,9 +5,11 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -42,9 +44,14 @@ public class ChooseOIDController {
 			details.setIfoSecProfil(null);
 		}
 
+		final String initialUrl = getInitialUrl(session);
+		final List<CollectiviteAdministrative> officesImpot = getOfficesImpot();
+		final Integer defaultOID = serviceSecurite.getCollectiviteParDefaut(AuthenticationHelper.getCurrentPrincipal());
+
 		final ChooseOIDView view = new ChooseOIDView();
-		view.setInitialUrl(getInitialUrl(session));
-		view.setOfficesImpot(getOfficesImpot());
+		view.setInitialUrl(initialUrl);
+		view.setOfficesImpot(officesImpot);
+		view.setSelectedOID(defaultOID);
 		mav.addAttribute("command", view);
 
 		return "security/chooseOID";
@@ -59,20 +66,17 @@ public class ChooseOIDController {
 	/**
 	 * @return les offices d'impôt autorisés pour l'utilisateur courant
 	 */
+	@NotNull
 	private List<CollectiviteAdministrative> getOfficesImpot() {
 		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
-		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
-		if (list != null && list.size() > 1) {
-			// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
-			list = new ArrayList<>(list);
-			list.sort(new Comparator<CollectiviteAdministrative>() {
-				@Override
-				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
-					return o1.getNomCourt().compareTo(o2.getNomCourt());
-				}
-			});
+		final List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+		if (list == null) {
+			return Collections.emptyList();
 		}
-		return list;
+		// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
+		final List<CollectiviteAdministrative> sorted = new ArrayList<>(list);
+		sorted.sort(Comparator.comparing(CollectiviteAdministrative::getNomCourt));
+		return sorted;
 	}
 
 	/**

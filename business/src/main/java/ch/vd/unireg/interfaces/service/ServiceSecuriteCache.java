@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
@@ -156,6 +157,44 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 		else {
 			resultat = (List<CollectiviteAdministrative>) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyGetCollectiviteParDefaut {
+		@NotNull
+		private final String visaOperateur;
+
+		public KeyGetCollectiviteParDefaut(@NotNull String visaOperateur) {
+			this.visaOperateur = visaOperateur;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final KeyGetCollectiviteParDefaut that = (KeyGetCollectiviteParDefaut) o;
+			return Objects.equals(visaOperateur, that.visaOperateur);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(visaOperateur);
+		}
+	}
+
+	@Override
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+		final Integer resultat;
+		final KeyGetCollectiviteParDefaut key = new KeyGetCollectiviteParDefaut(visaOperateur);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getCollectiviteParDefaut(visaOperateur);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (Integer) element.getObjectValue();
 		}
 
 		return resultat;

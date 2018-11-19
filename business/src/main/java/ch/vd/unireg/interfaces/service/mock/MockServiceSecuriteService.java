@@ -35,6 +35,11 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	@Override
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+		return null;
+	}
+
+	@Override
 	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return profilesOperatorByIndividu.get(visaOperateur);
 	}

@@ -28,6 +28,11 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	}
 
 	@Override
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+		return target.getCollectiviteParDefaut(visaOperateur);
+	}
+
+	@Override
 	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return target.getProfileUtilisateur(visaOperateur, codeCollectivite);
 	}

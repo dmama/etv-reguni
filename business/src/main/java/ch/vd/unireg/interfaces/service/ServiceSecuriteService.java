@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.service;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
@@ -20,7 +21,17 @@ public interface ServiceSecuriteService {
 	 *            le visa de l'opérateur.
 	 * @return la liste des collectivités administrative de l'opérateur.
 	 */
+	// TODO : modifier cette méthode pour ne retourner que les liste des numéros de collectivités administratives (car les collectivités administratives
+	//        sont des données d'infrastructure, pas de sécurité. Seule la liste des numéros de collectivités administratives associée avec chaque opérateur
+	//        est une information de sécurité).
 	List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur);
+
+	/**
+	 * @param visaOperateur le visa d'un opérateur.
+	 * @return l'id de la collectivité administrative par défaut de l'opérateur spécifié ; ou <i>null</i> si l'opérateur est inconnu ou ne possède pas de collectivité administrative par défaut.
+	 */
+	@Nullable
+	Integer getCollectiviteParDefaut(@NotNull String visaOperateur);
 
 	/**
 	 * Retourne le profil que possède un opérateur pour une collectivité administrative.
