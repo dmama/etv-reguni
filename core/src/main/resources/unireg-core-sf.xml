@@ -51,12 +51,12 @@
 		<value>ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalRappele</value>
 		<value>ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalRetourne</value>
 		<value>ch.vd.unireg.declaration.PeriodeFiscale</value>
-		<value>ch.vd.unireg.declaration.ParametrePeriodeFiscale</value>
-		<value>ch.vd.unireg.declaration.ParametrePeriodeFiscaleDI</value>
-		<value>ch.vd.unireg.declaration.ParametrePeriodeFiscalePP</value>
-		<value>ch.vd.unireg.declaration.ParametrePeriodeFiscalePM</value>
-		<value>ch.vd.unireg.declaration.ParametrePeriodeFiscaleSNC</value>
-		<value>ch.vd.unireg.declaration.ParametrePeriodeFiscaleEmolument</value>
+		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscale</value>
+		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscaleDI</value>
+		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP</value>
+		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM</value>
+		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC</value>
+		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument</value>
 		<value>ch.vd.unireg.declaration.ModeleDocument</value>
 		<value>ch.vd.unireg.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.unireg.declaration.Periodicite</value>

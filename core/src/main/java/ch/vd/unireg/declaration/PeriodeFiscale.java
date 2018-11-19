@@ -20,6 +20,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscale;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeDocumentEmolument;

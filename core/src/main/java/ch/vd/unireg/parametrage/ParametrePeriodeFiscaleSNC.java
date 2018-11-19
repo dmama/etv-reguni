@@ -1,4 +1,4 @@
-package ch.vd.unireg.declaration;
+package ch.vd.unireg.parametrage;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 
 @Entity
 @DiscriminatorValue(value = "SNC")

@@ -1,4 +1,4 @@
-package ch.vd.unireg.declaration;
+package ch.vd.unireg.parametrage;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 
 @Entity
 @Table(name = "PARAMETRE_PERIODE_FISCALE")

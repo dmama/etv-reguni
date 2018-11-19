@@ -1,4 +1,4 @@
-package ch.vd.unireg.declaration;
+package ch.vd.unireg.parametrage;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,6 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.type.TypeContribuable;
 
 @Entity

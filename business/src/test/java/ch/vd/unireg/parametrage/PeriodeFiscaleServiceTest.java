@@ -6,8 +6,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscale;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -93,7 +91,7 @@ public class PeriodeFiscaleServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Verifie que la coherence ds {@link ch.vd.unireg.declaration.ParametrePeriodeFiscalePP} en fonction de leur {@link PeriodeFiscale}.
+	 * Verifie que la coherence ds {@link ParametrePeriodeFiscalePP} en fonction de leur {@link PeriodeFiscale}.
 	 * => les années des termes doivent bien être l'année suivante.
 	 */
 	private void checkParametresPeriodeFiscalePP(PeriodeFiscale pf) {

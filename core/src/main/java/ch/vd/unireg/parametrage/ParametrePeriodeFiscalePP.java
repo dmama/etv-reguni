@@ -1,4 +1,4 @@
-package ch.vd.unireg.declaration;
+package ch.vd.unireg.parametrage;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.type.TypeContribuable;
 
 @Entity

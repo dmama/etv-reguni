@@ -1,10 +1,11 @@
-package ch.vd.unireg.declaration;
+package ch.vd.unireg.parametrage;
 
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocumentEmolument;
 

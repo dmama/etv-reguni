@@ -6,16 +6,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscaleEmolument;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscaleSNC;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.param.view.ModeleDocumentView;
 import ch.vd.unireg.param.view.ModeleFeuilleDocumentView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePPEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC;
 import ch.vd.unireg.type.ModeleFeuille;
 
 public interface ParamPeriodeManager {

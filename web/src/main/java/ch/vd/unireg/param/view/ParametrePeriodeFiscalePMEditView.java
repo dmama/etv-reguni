@@ -1,6 +1,6 @@
 package ch.vd.unireg.param.view;
 
-import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
 
 public class ParametrePeriodeFiscalePMEditView {
 

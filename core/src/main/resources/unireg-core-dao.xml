@@ -60,7 +60,7 @@
 	</bean>
 	<bean id="modeleFeuilleDocumentDAO" class="ch.vd.unireg.declaration.ModeleFeuilleDocumentDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="parametrePeriodeFiscaleDAO" class="ch.vd.unireg.declaration.ParametrePeriodeFiscaleDAOImpl" parent="hibernateDao">
+	<bean id="parametrePeriodeFiscaleDAO" class="ch.vd.unireg.parametrage.ParametrePeriodeFiscaleDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="parametreAppDAO" class="ch.vd.unireg.parametrage.ParametreAppDAOImpl" parent="hibernateDao">
 	</bean>

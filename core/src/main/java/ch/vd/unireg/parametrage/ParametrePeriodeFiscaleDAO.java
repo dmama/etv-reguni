@@ -1,8 +1,9 @@
-package ch.vd.unireg.declaration;
+package ch.vd.unireg.parametrage;
 
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 
 /**
  * Gestion de l'acces aux données pour les objects {@link ParametrePeriodeFiscale} 

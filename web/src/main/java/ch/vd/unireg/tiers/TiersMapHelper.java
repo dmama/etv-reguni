@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.common.ApplicationConfig;
 import ch.vd.unireg.common.CommonMapHelper;
-import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.documentfiscal.TypeAutreDocumentFiscalEmettableManuellement;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
@@ -23,6 +22,7 @@ import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.reqdes.EtatTraitement;
 import ch.vd.unireg.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.unireg.tiers.TiersCriteria.TypeRechercheForFiscal;
