@@ -10,6 +10,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTestingConstants;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -19,12 +25,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.BusinessTestingConstants;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -54,11 +54,10 @@ import static org.junit.Assert.fail;
  * Tests unitaires du handler du déménagement.
  *
  * @author Céline GRAND
- *
  */
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
-	BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES
 })
 public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
@@ -189,17 +188,17 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
-		for ( RapportEntreTiers rapport : pierre.getRapportsSujet() ) {
+		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
 			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
-		assertEquals("le ménage commun de Pierre devrait posséder 3 fors fiscaux" , 3, menageCommun.getForsFiscaux().size());
+		assertEquals("le ménage commun de Pierre devrait posséder 3 fors fiscaux", 3, menageCommun.getForsFiscaux().size());
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("le for fiscal du ménage commun de Pierre n'existe plus", forCommun);
-		assertEquals("date d'ouverture du for incorrecte" , 0, forCommun.getDateDebut().compareTo(DATE_VALIDE));
+		assertEquals("date d'ouverture du for incorrecte", 0, forCommun.getDateDebut().compareTo(DATE_VALIDE));
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié seul OK");
 	}
@@ -225,17 +224,17 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		MenageCommun menageCommun = null;
 		int nbMenagesCommuns = 0;
-		for ( RapportEntreTiers rapport : momo.getRapportsSujet() ) {
+		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
 			if (rapport.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 				nbMenagesCommuns++;
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
-		assertEquals("le ménage commun de Maurice devrait posséder 2 fors fiscaux" , 2, menageCommun.getForsFiscaux().size());
+		assertEquals("le ménage commun de Maurice devrait posséder 2 fors fiscaux", 2, menageCommun.getForsFiscaux().size());
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("le for fiscal du ménage commun de Maurice n'existe plus", forCommun);
-		assertEquals("date d'ouverture du for incorrecte" , 0, forCommun.getDateDebut().compareTo(DATE_VALIDE));
+		assertEquals("date d'ouverture du for incorrecte", 0, forCommun.getDateDebut().compareTo(DATE_VALIDE));
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié OK");
 	}
@@ -263,16 +262,17 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(sophie);
 		assertEquals("Sophie doit avoir deux fors fiscaux", 2, sophie.getForsFiscaux().size());
 		assertNotNull("Sophie devrait encore avoir un for principal actif après le déménagement", sophie.getForFiscalPrincipalAt(null));
-		assertEquals("date d'ouverture du for incorrecte", 0, sophie.getForFiscalPrincipalAt(null).getDateDebut().compareTo(DATE_VALIDE) );
+		assertEquals("date d'ouverture du for incorrecte", 0, sophie.getForFiscalPrincipalAt(null).getDateDebut().compareTo(DATE_VALIDE));
 
 		int tachesApres = tacheDAO.count(sophie.getNumero());
-		assertEquals("Il aurait dû y avoir une nouvelle tâche de contrôle de dossier", 1, tachesApres - tachesAvant);
+		//[SIFISC-29770] :Ne plus générer de tâche de contrôle de dossier pour les PP lors d'un déménagement sur une PF échue avec changement d'OID
+		assertEquals("Il y a aucune une nouvelle tâche de contrôle de dossier", 0, tachesApres - tachesAvant);
 
 	}
 
 
-@Test
-@Transactional(rollbackFor = Throwable.class)
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDemenagementVaudoisAvecChangementOfficeImpot() throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
@@ -294,14 +294,15 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(sophie);
 		assertEquals("Sophie doit avoir deux fors fiscaux", 2, sophie.getForsFiscaux().size());
 		assertNotNull("Sophie devrait encore avoir un for principal actif après le déménagement", sophie.getForFiscalPrincipalAt(null));
-		assertEquals("date d'ouverture du for incorrecte", 0, sophie.getForFiscalPrincipalAt(null).getDateDebut().compareTo(DATE_VALIDE) );
+		assertEquals("date d'ouverture du for incorrecte", 0, sophie.getForFiscalPrincipalAt(null).getDateDebut().compareTo(DATE_VALIDE));
 
 		int tachesApres = tacheDAO.count(sophie.getNumero());
-		assertEquals("Il aurait dû y avoir une nouvelle tâche de contrôle de dossier", 1, tachesApres - tachesAvant);
-        List<Tache> mesTaches = tacheDAO.find(sophie.getNumero());
-        final CollectiviteAdministrative oidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+		//[SIFISC-29770] :Ne plus générer de tâche de contrôle de dossier pour les PP lors d'un déménagement sur une PF échue avec changement d'OID
+		assertEquals("Il aurait dû y avoir une nouvelle tâche de contrôle de dossier", 0, tachesApres - tachesAvant);
+		List<Tache> mesTaches = tacheDAO.find(sophie.getNumero());
+		final CollectiviteAdministrative oidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-        assertTrue("une tache de contrôle de dossier doit être rattachée à l'OID précédent", existTacheControlePourAncienOID(mesTaches, oidLausanne));
+		assertTrue("Aucune tache de contrôle de dossier n''est rattachée à l'OID précédent", !existTacheControlePourAncienOID(mesTaches, oidLausanne));
 
 	}
 
@@ -323,19 +324,19 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		return new Demenagement(individu, conjoint, dateEvenement, nouvelleCommune.getNoOFS(), nouvelleCommune, ancienneAdresse, nouvelleAdresse, context);
 	}
 
-	private boolean existTacheControlePourAncienOID(List<Tache> mesTaches,CollectiviteAdministrative collectiviteAttendue){
+	private boolean existTacheControlePourAncienOID(List<Tache> mesTaches, CollectiviteAdministrative collectiviteAttendue) {
 
-        for(Tache tache :mesTaches){
-            CollectiviteAdministrative maCollectivite = tache.getCollectiviteAdministrativeAssignee();
-            if(maCollectivite!=null){
-              if(collectiviteAttendue.equalsTo(maCollectivite) && tache instanceof TacheControleDossier){
-                 return true;
-              }
-            }
-        }
+		for (Tache tache : mesTaches) {
+			CollectiviteAdministrative maCollectivite = tache.getCollectiviteAdministrativeAssignee();
+			if (maCollectivite != null) {
+				if (collectiviteAttendue.equalsTo(maCollectivite) && tache instanceof TacheControleDossier) {
+					return true;
+				}
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
 	/**
 	 * Vérifie que les fors fiscaux restent inchangés lorsqu'un habitant déménage à l'intérieur de Bourg-en-Lavaux après la date de fusion fiscale.
@@ -366,7 +367,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		// Simule un événement de déménagement de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFS(), null);
+		                                                            MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, pas de surprise ici,
 		final EvenementCivilInterne interne = new DemenagementTranslationStrategy().create(externe, context, options);
@@ -388,8 +389,8 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(fors);
 		assertEquals(2, fors.size());
 		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
+		                   MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 		assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
+		                   ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
 	}
 }
