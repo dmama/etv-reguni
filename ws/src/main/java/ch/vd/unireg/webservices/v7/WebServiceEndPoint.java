@@ -514,7 +514,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response validateGroupDeadlineRequest(String user, GroupDeadlineValidationRequest request) {
 		final Supplier<String> params = () -> String.format("validateGroupDeadlineRequest{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
-		return execute(user, params, WRITE_ACCESS_LOG, () -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			final GroupDeadlineValidationResponse response = target.validateGroupDeadlineRequest(request);
 			return ExecutionResult.with(Response.ok(groupdeadlineObjectFactory.createGroupDeadlineValidationResponse(response)).build());
 		});
