@@ -64,14 +64,13 @@ import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DatesDelaiInitialDI;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
-import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.efacture.EFactureService;
-import ch.vd.unireg.evenement.declaration.DemandeDelaisDeclarationsHandler;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalV3Factory;
@@ -121,6 +120,7 @@ import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
@@ -767,7 +767,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		result.setTaxDeclaration(new TaxDeclarationInfo(DataHelper.coreToWeb(declaration.getDateDebut()), DataHelper.coreToWeb(declaration.getDateFin()), declaration.getNumero(), null));
 
 		final TypeEtatDocumentFiscal etat = declaration.getDernierEtat().getEtat();
-		final DelaiDocumentFiscal dernierDelaiAccorde = declaration.getDernierDelaiAccorde();
+		final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
 		final RegDate delaiDejaAccorde = dernierDelaiAccorde.getDelaiAccordeAu();
 
 		if (etat != TypeEtatDocumentFiscal.EMIS) {
@@ -791,13 +791,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			if (delaiDejaAccorde.isAfter(delaiMaximalAccordable)) {
 				result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
 			}
-			else if (delaiDejaAccorde == delaiMaximalAccordable && DemandeDelaisDeclarationsHandler.isDelaiExplicite(dernierDelaiAccorde)) {
-				// [FISCPROJ-816] hack : si le délai existant a été modifié par le DemandeDelaisDeclarationsHandler, c'est qu'une demande de délai explicite a déjà été faite et il ne faut pas en accorder une autre
-				// FIXME (msi) : remplacer ce test par l'ajout d'un champ 'source' sur les délais de manière à pouvoir vérifier correctement cet état implicite/explicite
-				result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
-			}
-			else if (delaiDejaAccorde == delaiMaximalAccordable && dernierDelaiAccorde.getDemandeMandataire() != null) {
-				// [FISCPROJ-816] blindage : s'il existe une demande de délai mandataire explicite, il ne faut pas en accorder une autre
+			else if (delaiDejaAccorde == delaiMaximalAccordable && dernierDelaiAccorde.getTypeDelai() == TypeDelaiDeclaration.EXPLICITE) {
+				// [FISCPROJ-816][FISCPROJ-873] une demande de délai explicite a déjà été faite : il ne faut pas en accorder une autre
 				result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
 			}
 			else {

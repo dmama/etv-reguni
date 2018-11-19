@@ -162,7 +162,7 @@
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
     <column>SURSIS</column>
-    <column>DELAI_TYPE</column>
+    <column>DISCRIMINATOR</column>
     <row>
       <value>2008-01-01</value>
       <value>31</value>

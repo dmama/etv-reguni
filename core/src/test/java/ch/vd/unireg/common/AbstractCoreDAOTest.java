@@ -171,6 +171,7 @@ import ch.vd.unireg.type.TarifImpotSource;
 import ch.vd.unireg.type.TypeAdresseRetour;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeDroitAcces;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -1310,11 +1311,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat) {
+		return addDelaiDeclaration(declaration, dateTraitement, delaiAccordeAu, etat, TypeDelaiDeclaration.IMPLICITE);
+	}
+
+	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat, TypeDelaiDeclaration typeDelai) {
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setEtat(etat);
 		delai.setDateTraitement(dateTraitement);
 		delai.setDateDemande(dateTraitement);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
+		delai.setTypeDelai(typeDelai);
 		declaration.addDelai(delai);
 		return delai;
 	}

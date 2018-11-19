@@ -43,6 +43,7 @@ import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.PeriodeDecompte;
 import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 
 public class ListeRecapServiceImpl implements ListeRecapService {
@@ -105,24 +106,11 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	}
 
 	/**
-	 * Impression d'une LR - Creation en base de donnée de la LR avec calcul de son nom de document - Alimentation de l'objet EditiqueListeRecap - Envoi des informations nécessaires à l'éditique
-	 *
-	 *
-	 * @param dpi
-	 * @param dateDebutPeriode
-	 * @param dateFinPeriode
-	 * @throws Exception
+	 * Impression d'une LR <b>en mode batch</b> - Creation en base de donnée de la LR avec calcul de son nom de document - Alimentation de l'objet EditiqueListeRecap - Envoi des informations nécessaires à l'éditique
 	 */
 	@Override
 	public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
 		final DeclarationImpotSource lrSaved = saveLR(dpi, dateDebutPeriode,dateFinPeriode);
-		/*
-		 * Set<Declaration> declarations = dpiSaved.getDeclarations(); Iterator<Declaration> itDec = declarations.iterator();
-		 * DeclarationImpotSource lr = null; while (itDec.hasNext()) { Declaration declaration = itDec.next(); if (declaration instanceof
-		 * DeclarationImpotSource) { DeclarationImpotSource lrCourante = (DeclarationImpotSource) declaration; if
-		 * (lrCourante.getDateDebut().equals(dateDebutPeriode)) { lr = lrCourante; } } }
-		 */
-
 		editiqueCompositionService.imprimeLRForBatch(lrSaved);
 		evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lrSaved, RegDate.get());
 	}
@@ -172,6 +160,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDateDemande(today);
 		delai.setDateTraitement(today);
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // [FISCPROJ-873] Par définition, les délais des envois en masse sont implicites
 
 		// si la date de traitement est avant la fin de la période, alors le délai est 1 mois après la fin de la période
 		// sinon, le délai est un mois après l'émission

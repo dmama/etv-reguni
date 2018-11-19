@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDeclaration> {
@@ -20,6 +21,7 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 	public void testDateTraitement() throws Exception {
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setEtat(EtatDelaiDocumentFiscal.DEMANDE);
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 
 		// pas de date de traitement -> c'est un problème
 		final ValidationResults invalide = validate(delai);
@@ -40,6 +42,7 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 	public void testEtat() throws Exception {
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 
 		// pas d'état -> c'est un problème
 		final ValidationResults invalide = validate(delai);
@@ -57,9 +60,31 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 	}
 
 	@Test
+	public void testTypeDelai() throws Exception {
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDocumentFiscal.DEMANDE);
+		delai.setDateTraitement(RegDate.get());
+
+		// pas d'état -> c'est un problème
+		final ValidationResults invalide = validate(delai);
+		Assert.assertNotNull(invalide);
+		Assert.assertFalse(invalide.hasWarnings());
+		Assert.assertEquals(1, invalide.errorsCount());
+		Assert.assertEquals("Le type de délai n'est pas renseigné sur le délai de la déclaration null (fin de période au ?).", invalide.getErrors().get(0));
+
+		// mais dès qu'on rajoute le type, ça va mieux
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
+		final ValidationResults valide = validate(delai);
+		Assert.assertNotNull(valide);
+		Assert.assertFalse(valide.hasErrors());
+		Assert.assertFalse(valide.hasWarnings());
+	}
+
+	@Test
 	public void testDateDelaiAccorde() throws Exception {
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 
 		final RegDate[] dates = { null, RegDate.get().addMonths(3) };
 		for (EtatDelaiDocumentFiscal etat : EtatDelaiDocumentFiscal.values()) {
@@ -93,6 +118,7 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
 		delai.setSursis(true);
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 
 		for (EtatDelaiDocumentFiscal etat : EtatDelaiDocumentFiscal.values()) {
 			// la date de délai accordé par rapport à l'état est un autre test...

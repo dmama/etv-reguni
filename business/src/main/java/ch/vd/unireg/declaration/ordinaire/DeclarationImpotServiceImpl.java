@@ -108,6 +108,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
@@ -541,6 +542,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		delai.setDateDemande(dateObtention);
 		delai.setDelaiAccordeAu(etatDelai == EtatDelaiDocumentFiscal.ACCORDE ? dateDelai : null);
 		delai.setDemandeMandataire(demandeMandataire);
+		delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire est explicite
 		declaration.addDelai(delai);
 	}
 

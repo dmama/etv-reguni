@@ -67,6 +67,12 @@ public class DelaiDeclarationValidator extends EntityValidatorImpl<DelaiDeclarat
 			}
 		}
 
+		if (delai.getTypeDelai() == null) {
+			vr.addError(String.format("Le type de délai n'est pas renseigné sur le délai de la déclaration %d (fin de période au %s).",
+			                          pf,
+			                          StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(dateFin), "?")));
+		}
+
 		return vr;
 	}
 }

@@ -26,6 +26,7 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
@@ -130,7 +131,7 @@ public class DemandeDelaiCollectiveProcessor {
 	}
 
 	/**
-	 * @return un nouveau délai avec la date spécifiée
+	 * @return un nouveau délai <b>explicite</b> avec la date spécifiée
 	 */
 	private static DelaiDeclaration newDelaiDeclaration(RegDate delai, RegDate dateTraitement) {
 		final DelaiDeclaration dd = new DelaiDeclaration();
@@ -140,6 +141,7 @@ public class DemandeDelaiCollectiveProcessor {
 		dd.setDateTraitement(dateTraitement);
 		dd.setDelaiAccordeAu(delai);
 		dd.setAnnule(false);
+		dd.setTypeDelai(TypeDelaiDeclaration.EXPLICITE);
 		return dd;
 	}
 

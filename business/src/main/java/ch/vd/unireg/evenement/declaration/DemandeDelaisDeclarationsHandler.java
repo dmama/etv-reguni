@@ -27,8 +27,8 @@ import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -39,6 +39,7 @@ import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Delai;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeDelai;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeGroupee;
@@ -58,7 +59,7 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemandeDelaisDeclarationsHandler.class);
 
-	public static final String PRINCIPAL = "JMS-EvtDelaisDeclaration";
+	private static final String PRINCIPAL = "JMS-EvtDelaisDeclaration";
 
 	private HibernateTemplate hibernateTemplate;
 	private JAXBContext jaxbContext;
@@ -190,26 +191,16 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		}
 		catch (AjoutDelaiDeclarationException e) {
 			if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
-				// [FISCPROJ-754] le délai existe déjà à la date demandée, rien à faire, on continue normalement (il s'agit d'un cas valide)
 				// [FISCPROJ-816] on vérifie que le délai existant n'est pas lié à une demande mandataire (auquel cas il ne peut pas être mis-à-jour selon les règles)
-				final DelaiDocumentFiscal dernierDelaiAccorde = declaration.getDernierDelaiAccorde();
+				final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
 				validateDelaiImplicite(dernierDelaiAccorde);
-				// [FISCPROJ-816] hack : on force le changement sur le LOG_MUSER comme manière de rendre explicite ce délai (voir la méthode validateDeadlineForDeclaration de la classe BusinessWebServiceImpl)
-				// FIXME (msi) : supprimer cette ligne lorsqu'un champ 'source' sera ajouté sur les délais de manière à pouvoir vérifier correctement cet état implicite/explicite
-				dernierDelaiAccorde.setLogModifUser(PRINCIPAL);
+				// [FISCPROJ-873] on promeut le type de délai à 'EXPLICIT'
+				dernierDelaiAccorde.setTypeDelai(TypeDelaiDeclaration.EXPLICITE);
 			}
 			else {
 				throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
 			}
 		}
-	}
-
-	/**
-	 * @return <i>vrai</i> si le délai a été explicitement demandé par un utilisateur (e-Délai) ou explicitement créé par un opérateur (zaixxx) ; <i>faux</i> dans les autres cas.
-	 */
-	public static boolean isDelaiExplicite(@NotNull DelaiDocumentFiscal delai) {
-		// FIXME (msi) : utiliser le champ 'source' losrqu'il sera ajouté sur les délais
-		return delai.getLogModifUser().equals(PRINCIPAL) || delai.getLogModifUser().toLowerCase().startsWith("zai");
 	}
 
 	/**
@@ -260,8 +251,10 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 			catch (AjoutDelaiDeclarationException e) {
 				if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
 					// [FISCPROJ-816] on renseigne la demande de délai du mandataire sur le délai existant et on continue normalement (il s'agit d'un cas valide)
-					final DelaiDocumentFiscal dernierDelaiAccorde = declaration.getDernierDelaiAccorde();
+					final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
 					validateDelaiImplicite(dernierDelaiAccorde);
+					// [FISCPROJ-873] on promeut le type de délai à 'EXPLICIT'
+					dernierDelaiAccorde.setTypeDelai(TypeDelaiDeclaration.EXPLICITE);
 					dernierDelaiAccorde.setDemandeMandataire(demandeMandataire);
 				}
 				else {
@@ -277,16 +270,11 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 	 * @param delai un délai
 	 * @throws EsbBusinessException si le délai spécifié est déjà un délai explicite.
 	 */
-	private void validateDelaiImplicite(DelaiDocumentFiscal delai) throws EsbBusinessException {
+	private void validateDelaiImplicite(DelaiDeclaration delai) throws EsbBusinessException {
 		long numeroContribuable = delai.getDocumentFiscal().getTiers().getNumero();
-		if (isDelaiExplicite(delai)) {
+		if (delai.getTypeDelai() == TypeDelaiDeclaration.EXPLICITE) {
 			throw new EsbBusinessException(EsbBusinessCode.DELAI_INVALIDE,
 			                               "Il y a déjà un délai explicite accordé au " + RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()) +
-					                               " sur le contribuable n°" + numeroContribuable + ".", null);
-		}
-		else if (delai.getDemandeMandataire() != null) {
-			throw new EsbBusinessException(EsbBusinessCode.DELAI_INVALIDE,
-			                               "Il y a déjà une demande mandataire sur le délai accordé au " + RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()) +
 					                               " sur le contribuable n°" + numeroContribuable + ".", null);
 		}
 	}

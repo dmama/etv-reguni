@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StatusManager;
@@ -131,7 +130,7 @@ public interface QuestionnaireSNCService {
 	void annulerQuestionnaire(QuestionnaireSNC questionnaire) throws DeclarationException;
 
 	/**
-	 * Ajoute un délai sur un questionnaire SNC.
+	 * Ajoute un délai <b>explicite</b> sur un questionnaire SNC.
 	 *
 	 * @param questionnaireId l'id du questionnaire SNC
 	 * @param dateDemande     la date de la demande

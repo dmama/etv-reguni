@@ -84,6 +84,7 @@ import ch.vd.unireg.tiers.manager.AutorisationManager;
 import ch.vd.unireg.tiers.manager.Autorisations;
 import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
@@ -417,6 +418,7 @@ public class QuestionnaireSNCController {
 			delai.setDateTraitement(dateTraitement);
 			delai.setDelaiAccordeAu(view.getDelaiAccorde());
 			delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+			delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // FIXME (msi) vérifier la réponse de David à ma question à ce propos
 			questionnaire.addDelai(delai);
 			questionnaire.setDelaiRetourImprime(view.getDelaiAccorde());
 			questionnaire.setCodeSegment(QuestionnaireSNCService.codeSegment);

@@ -67,6 +67,7 @@ import ch.vd.unireg.tiers.TiersDAO.Parts;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
@@ -791,6 +792,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		delai.setCleArchivageCourrier(null);
 		delai.setDateDemande(applicationDate);
 		delai.setDelaiAccordeAu(newDeadline);
+		delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire par un WS est explicite
 		declaration.addDelai(delai);
 
 		return ExtendDeadlineBuilder.newExtendDeadlineResponse(key, ExtendDeadlineCode.OK);

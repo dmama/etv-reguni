@@ -44,6 +44,7 @@ import ch.vd.unireg.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
@@ -202,6 +203,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 		delai.setDateDemande(dateTraitement);
 		delai.setDateTraitement(dateTraitement);
 		delai.setDelaiAccordeAu(parametres.getTermeGeneralRappelEffectif());
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // [FISCPROJ-873] Par définition, les délais des envois en masse sont implicites
 		questionnaire.setDelaiRetourImprime(parametres.getTermeGeneralRappelImprime());
 		questionnaire.addDelai(delai);
 	}

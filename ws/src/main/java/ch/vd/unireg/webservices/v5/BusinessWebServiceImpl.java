@@ -99,6 +99,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.UserLogin;
@@ -534,6 +535,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 									delai.setCleArchivageCourrier(null);
 									delai.setDateDemande(dateObtention);
 									delai.setDelaiAccordeAu(nouveauDelai);
+									delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire par un WS est explicite
 									di.addDelai(delai);
 
 									response = new DeadlineResponse(DeadlineStatus.OK, null);

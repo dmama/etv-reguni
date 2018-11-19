@@ -115,4 +115,20 @@ public abstract class AbstractWebServiceItTest extends WebitTest {
 			return e.getStatusCode();
 		}
 	}
+
+	protected <T> ResponseEntity<T> post(Class<T> clazz, String uri, Map<String, ?> params, Object data, @NotNull MediaType dataType) {
+		final RestTemplate template = buildTemplate();
+		final HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(dataType);
+		try {
+			final ResponseEntity<T> response = template.postForEntity(v7Url + uri, new HttpEntity<>(data, headers), clazz, params);
+			Assert.assertNotNull(response);
+			return response;
+		}
+		catch (HttpStatusCodeException e) {
+			final String msg = String.format("%s (%s)", e.getStatusText(), e.getResponseBodyAsString());
+			LOGGER.error(msg);
+			return new ResponseEntity<>(e.getStatusCode());
+		}
+	}
 }

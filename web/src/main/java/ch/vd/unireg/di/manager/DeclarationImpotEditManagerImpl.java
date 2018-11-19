@@ -84,6 +84,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeAdresseRetour;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeDocumentEmolument;
 import ch.vd.unireg.type.TypeEtatTache;
@@ -518,6 +519,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		delai.setDelaiAccordeAu(delaiAccorde);
 		delai.setDateDemande(RegDate.get());
 		delai.setDateTraitement(RegDate.get());
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // FIXME (msi) vérifier la réponse de David à ma question à ce propos
 		di.addDelai(delai);
 		di.setDelaiRetourImprime(delaiAccorde);     // pour les DI envoyées manuellement, il y a égalité des délais imprimés et effectifs
 
@@ -631,6 +633,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		delai.setEtat(etat);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
 		delai.setSursis(sursis);
+		delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire par l'IHM est explicite
 		delai = diService.addAndSave(di, delai);
 		return delai.getId();
 	}

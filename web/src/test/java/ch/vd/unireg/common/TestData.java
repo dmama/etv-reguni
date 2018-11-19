@@ -58,6 +58,7 @@ import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 
 @Ignore
@@ -1498,6 +1499,7 @@ public class TestData {
 		dd0.setDelaiAccordeAu(RegDate.get(2008, 4, 30));
 		dd0.setLogModifDate(new Timestamp(1199142000000L));
 		dd0.setDateTraitement(RegDate.get(2007, 4, 30));
+		dd0.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dis0.addDelai(dd0);
 		dis0 = hibernateTemplate.merge(dis0);
 
@@ -1507,6 +1509,7 @@ public class TestData {
 		dd1.setDelaiAccordeAu(RegDate.get(2008, 7, 31));
 		dd1.setLogModifDate(new Timestamp(1199142000000L));
 		dd1.setDateTraitement(RegDate.get(2007, 4, 30));
+		dd1.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dis1.addDelai(dd1);
 		dis1 = hibernateTemplate.merge(dis1);
 
@@ -1517,6 +1520,7 @@ public class TestData {
 		dd2.setDateTraitement(RegDate.get(2008, 6, 25));
 		dd2.setDelaiAccordeAu(RegDate.get(2008, 9, 30));
 		dd2.setLogModifDate(new Timestamp(1199142000000L));
+		dd2.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dis1.addDelai(dd2);
 		dis1 = hibernateTemplate.merge(dis1);
 
@@ -1526,6 +1530,7 @@ public class TestData {
 		dd3.setDelaiAccordeAu(RegDate.get(2006, 3, 15));
 		dd3.setLogModifDate(new Timestamp(1199142000000L));
 		dd3.setDateTraitement(RegDate.get(2007, 4, 30));
+		dd3.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dio0.addDelai(dd3);
 		dio0 = hibernateTemplate.merge(dio0);
 
@@ -1536,6 +1541,7 @@ public class TestData {
 		dd4.setDateTraitement(RegDate.get(2006, 2, 20));
 		dd4.setDelaiAccordeAu(RegDate.get(2006, 7, 31));
 		dd4.setLogModifDate(new Timestamp(1199142000000L));
+		dd4.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dio0.addDelai(dd4);
 		dio0 = hibernateTemplate.merge(dio0);
 
@@ -1545,6 +1551,7 @@ public class TestData {
 		dd5.setDelaiAccordeAu(RegDate.get(2007, 3, 15));
 		dd5.setLogModifDate(new Timestamp(1199142000000L));
 		dd5.setDateTraitement(RegDate.get(2007, 4, 30));
+		dd5.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dio1.addDelai(dd5);
 		dio1 = hibernateTemplate.merge(dio1);
 
@@ -1554,6 +1561,7 @@ public class TestData {
 		dd6.setDelaiAccordeAu(RegDate.get(2008, 3, 15));
 		dd6.setLogModifDate(new Timestamp(1199142000000L));
 		dd6.setDateTraitement(RegDate.get(2007, 4, 30));
+		dd6.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dio2.addDelai(dd6);
 		dio2 = hibernateTemplate.merge(dio2);
 
@@ -1564,6 +1572,7 @@ public class TestData {
 		dd7.setDateTraitement(RegDate.get(2008, 4, 12));
 		dd7.setDelaiAccordeAu(RegDate.get(2008, 9, 15));
 		dd7.setLogModifDate(new Timestamp(1199142000000L));
+		dd7.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 		dio2.addDelai(dd7);
 		dio2 = hibernateTemplate.merge(dio2);
 

@@ -51,6 +51,7 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.validation.ValidationService;
 
 public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
@@ -317,6 +318,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		delai.setDateDemande(dateDemande);
 		delai.setEtat(etatDelai);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
+		delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE);
 
 		delai = AddAndSaveHelper.addAndSave(qsnc, delai, questionnaireSNCDAO::save, new DelaiDocumentFiscalAddAndSaveAccessor<>());
 		return delai.getId();

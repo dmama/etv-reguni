@@ -514,7 +514,8 @@
     <column>ETAT</column>
     <column>SURSIS</column>
     <column>ANNULATION_DATE</column>
-    <column>DELAI_TYPE</column>
+    <column>DISCRIMINATOR</column>
+    <column>TYPE_DELAI</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -526,6 +527,7 @@
       <value>0</value>
       <null/>
       <value>DELAI_DECLARATION</value>
+      <value>IMPLICITE</value>
     </row>
     <row>
       <value>2008-01-01</value>

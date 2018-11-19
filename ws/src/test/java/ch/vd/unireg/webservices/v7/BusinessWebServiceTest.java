@@ -52,7 +52,6 @@ import ch.vd.unireg.efacture.EFactureServiceProxy;
 import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
-import ch.vd.unireg.evenement.declaration.DemandeDelaisDeclarationsHandler;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -114,6 +113,7 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeDroitAcces;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -5018,7 +5018,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testValidateGroupDeadlineRequestDelaiExistantImplicite() throws Exception {
+	public void testValidateGroupDeadlineRequestDelaiImpliciteExistant() throws Exception {
 
 		// on créé un tiers avec un délai implicite (par exemple : automatiquement créé par le batch d'émission des DIs) au 30 juin
 		final long ctbId = doInNewTransaction(status -> {
@@ -5030,7 +5030,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
-			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30)));  // <--- délai avec un LOG_MUSER différent de JMS-EvtDelaisDeclaration
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30), TypeDelaiDeclaration.IMPLICITE));
 			return pp.getNumero();
 		});
 
@@ -5046,10 +5046,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testValidateGroupDeadlineRequestDelaiExistantExpliciteEDelai() throws Exception {
+	public void testValidateGroupDeadlineRequestDelaiExpliciteExistant() throws Exception {
 
-		// on créé un tiers avec un délai explicite (c'est-à-dire déjà demandé par e-Délai) au 30 juin
-		setAuthentication(DemandeDelaisDeclarationsHandler.PRINCIPAL);
+		// on créé un tiers avec un délai explicite au 30 juin
 		final long ctbId = doInNewTransaction(status -> {
 			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
 			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
@@ -5059,7 +5058,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
-			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30))); // <--- délai avec un LOG_MUSER égal à JMS-EvtDelaisDeclaration
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30), TypeDelaiDeclaration.EXPLICITE));
 			return pp.getNumero();
 		});
 
@@ -5068,66 +5067,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertNotNull(response);
 
 		// Il ne doit pas être possible de demander un nouveau délai au 30 juin, car le délai est déjà explicite
-		final List<ValidationResult> results = response.getValidationResults();
-		assertNotNull(results);
-		assertEquals(1, results.size());
-		assertValidationError(ctbId, PartyType.NATURAL_PERSON, "09", "Il y a déjà un délai accordé au 30.06.2018.", date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
-	}
-
-	@Test
-	public void testValidateGroupDeadlineRequestDelaiExistantExpliciteZaixxx() throws Exception {
-
-		// on créé un tiers avec un délai explicite (c'est-à-dire déjà demandé par un utilisateur zaixxx) au 30 juin
-		setAuthentication("zaixxx");
-		final long ctbId = doInNewTransaction(status -> {
-			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
-			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
-
-			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
-			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
-
-			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
-			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30))); // <--- délai avec un LOG_MUSER égal à zaixxx
-			return pp.getNumero();
-		});
-
-		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Collections.singletonList((int) ctbId));
-		final GroupDeadlineValidationResponse response = service.validateGroupDeadlineRequest(request);
-		assertNotNull(response);
-
-		// Il ne doit pas être possible de demander un nouveau délai au 30 juin, car le délai est déjà explicite
-		final List<ValidationResult> results = response.getValidationResults();
-		assertNotNull(results);
-		assertEquals(1, results.size());
-		assertValidationError(ctbId, PartyType.NATURAL_PERSON, "09", "Il y a déjà un délai accordé au 30.06.2018.", date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
-	}
-
-	@Test
-	public void testValidateGroupDeadlineRequestDelaiExistantAvecDemandeMandataire() throws Exception {
-
-		// on créé un tiers avec un délai lié à une demande mandataire
-		final long ctbId = doInNewTransaction(status -> {
-			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
-			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
-
-			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
-			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
-
-			final DelaiDocumentFiscal delai = newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30));
-			delai.setDemandeMandataire(addDemandeMandataire("CHE1", "11111", "test"));
-
-			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
-			di.addDelai(delai);
-			return pp.getNumero();
-		});
-
-		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Collections.singletonList((int) ctbId));
-		final GroupDeadlineValidationResponse response = service.validateGroupDeadlineRequest(request);
-		assertNotNull(response);
-
-		// Il ne doit pas être possible de demander un nouveau délai au 30 juin, car le délai possède déjà une demande mandataire
 		final List<ValidationResult> results = response.getValidationResults();
 		assertNotNull(results);
 		assertEquals(1, results.size());
@@ -5758,10 +5697,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	private static DelaiDocumentFiscal newDelaiDeclaration(RegDate dateTraitement, RegDate dateDelai) {
+		return newDelaiDeclaration(dateTraitement, dateDelai, TypeDelaiDeclaration.IMPLICITE);
+	}
+
+	private static DelaiDocumentFiscal newDelaiDeclaration(RegDate dateTraitement, RegDate dateDelai, TypeDelaiDeclaration typeDelai) {
 		DelaiDeclaration d = new DelaiDeclaration();
 		d.setDateTraitement(dateTraitement);
 		d.setDelaiAccordeAu(dateDelai);
 		d.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		d.setTypeDelai(typeDelai);
 		return d;
 	}
 

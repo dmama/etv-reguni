@@ -61,6 +61,7 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeEtatTache;
 
 public class EnvoiDeclarationsPMProcessor {
@@ -294,6 +295,7 @@ public class EnvoiDeclarationsPMProcessor {
 		delaiInitial.setDateDemande(dateTraitement);
 		delaiInitial.setDateTraitement(dateTraitement);
 		delaiInitial.setDelaiAccordeAu(datesDelaiInitial.getDateEffective());
+		delaiInitial.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // [FISCPROJ-873] Par définition, les délais des envois en masse sont implicites
 		di.addDelai(delaiInitial);
 
 		// emvoyer le document à l'éditique

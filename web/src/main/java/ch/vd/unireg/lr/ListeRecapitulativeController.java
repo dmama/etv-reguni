@@ -80,6 +80,7 @@ import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.PeriodeDecompte;
 import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.utils.RegDateEditor;
 import ch.vd.unireg.utils.WebContextUtils;
@@ -368,6 +369,7 @@ public class ListeRecapitulativeController {
 		delai.setDateTraitement(RegDate.get());
 		delai.setDelaiAccordeAu(view.getDelaiAccorde());
 		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // FIXME (msi) vérifier la réponse de David à ma question à ce propos
 		lr.addDelai(delai);
 
 		lr.setTiers(dpi);
@@ -616,6 +618,7 @@ public class ListeRecapitulativeController {
 		nouveauDelai.setDateTraitement(RegDate.get());
 		nouveauDelai.setDelaiAccordeAu(view.getDelaiAccorde());
 		nouveauDelai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		nouveauDelai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire par l'IHM est explicite
 		lr.addDelai(nouveauDelai);
 
 		return "redirect:edit-lr.do?id=" + lr.getId();

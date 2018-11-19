@@ -4961,7 +4961,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>DOCUMENT_FISCAL_ID</column>
-    <column>DELAI_TYPE</column>
+    <column>DISCRIMINATOR</column>
     <row>
       <value>15791143</value>
       <null/>

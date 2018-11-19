@@ -59,6 +59,7 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypePermis;
@@ -545,6 +546,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				delai.setDateTraitement(dateEmission);
 				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+				delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 				di.addDelai(delai);
 
 				ids.ppId = pp.getNumero();
@@ -652,6 +654,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				delai.setDateTraitement(dateEmission);
 				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+				delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
 				di.addDelai(delai);
 				return di;
 			}

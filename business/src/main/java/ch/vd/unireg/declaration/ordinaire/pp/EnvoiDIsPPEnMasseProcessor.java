@@ -74,6 +74,7 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAdresseRetour;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatTache;
 
@@ -709,6 +710,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 		delai.setDateDemande(dateTraitement);
 		delai.setDateTraitement(dateTraitement);
 		delai.setDelaiAccordeAu(dateRetourAccorde);
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // [FISCPROJ-873] Par définition, les délais des envois en masse sont implicites
 
 		di.setDelaiRetourImprime(dateRetourImprime);
 		di.addDelai(delai);

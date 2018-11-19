@@ -198,7 +198,7 @@ public interface DeclarationImpotService {
 	void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
-	 * Ajoute un délai sur une déclaration d'impôt.
+	 * Ajoute un délai <b>explicite</b> sur une déclaration d'impôt.
 	 *
 	 * @param declaration       une déclaration d'impôt.
 	 * @param dateObtention     la date d'obtention de délai

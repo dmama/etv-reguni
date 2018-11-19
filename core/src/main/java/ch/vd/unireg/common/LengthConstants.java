@@ -143,6 +143,7 @@ public abstract class LengthConstants {
 
 	public static final int TYPE_ETAT_DOC = 31;
 	public static final int DELAI_DECL_ETAT = 10;
+	public static final int TYPE_DELAI_DECL = 9;
 
 	public static final int CLE_ARCHIVAGE_FOLDERS = 40;
 	public static final int CLE_DOCUMENT_DPERM = 256;
