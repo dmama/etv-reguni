@@ -338,11 +338,8 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		final TacheCriteria criterion2 = new TacheCriteria();
-		final List<Tache> taches = verifieControleDossier(criterion2, 1);
-		final Tache tache = taches.get(0);
-		Assert.assertNotNull(tache);
-		Assert.assertFalse(tache.isAnnule());
-		Assert.assertEquals("Déménagement dans une période échue avec changement d'OID", tache.getCommentaire());
+		final List<Tache> taches = verifieControleDossier(criterion2, 0);
+		Assert.assertEquals(0, taches.size());
 	}
 
 	@Test

@@ -522,23 +522,7 @@ public class TacheServiceImpl implements TacheService {
 			// du dossier est engendrée pour l’ancien office d’impôt gérant
 			// (déterminé par l’ancien for principal) s’il a changé.
 			// [SIFISC-14441] on évitera une NPE si on s'assure que les numéros OFS que l'on compare sont bien des communes (on sait déjà que le nouveau for est vaudois, mais quid de l'ancien?)
-			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(forFiscal.getDateDebut().getOneDayBefore());
-			final boolean changementOfficeImpot = ffp != null
-					&& ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
-					&& !ffp.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale());
-
-			if (FiscalDateHelper.isEnPeriodeEchue(forFiscal.getDateDebut()) && changementOfficeImpot) {
-				final OfficeImpot office = serviceInfra.getOfficeImpotDeCommune(ffp.getNumeroOfsAutoriteFiscale());
-				//UNIREG-1886 si l'office nest pas trouvé (cas hors canton, hors suisse) on ne génère pas de tâche
-				if (office != null) {
-					final CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm(), true);
-					if (collectivite == null) {
-						throw new ObjectNotFoundException("La collectivité administrative n°" + office.getNoColAdm() + " n'existe pas");
-					}
-					genereTacheControleDossier(contribuable, collectivite, "Déménagement dans une période échue avec changement d'OID");
-				}
-
-			}
+			// [SIFISC-29770] Ne plus générer de tâche de contrôle de dossier pour les PP lors d'un déménagement sur une PF échue avec changement d'OID
 			break;
 		}
 	}
