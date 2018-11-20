@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservice.v7;
 
+import javax.xml.bind.JAXBContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,13 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import ch.vd.unireg.common.JaxbElementHttpMessageConverter;
 import ch.vd.unireg.common.WebitTest;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 public abstract class AbstractWebServiceItTest extends WebitTest {
 
@@ -75,7 +80,14 @@ public abstract class AbstractWebServiceItTest extends WebitTest {
 	}
 
 	protected RestTemplate buildTemplate(MediaType... acceptedTypes) {
+		return buildTemplate(null, acceptedTypes);
+	}
+
+	protected RestTemplate buildTemplate(@Nullable HttpMessageConverter<?> messageConverter, MediaType... acceptedTypes) {
 		final RestTemplate template = new RestTemplate();
+		if (messageConverter != null) {
+			template.getMessageConverters().add(messageConverter);
+		}
 		final List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		if (acceptedTypes != null && acceptedTypes.length > 0) {
 			interceptors.add(new AcceptHeaderHttpRequestInterceptor(acceptedTypes));
@@ -117,7 +129,22 @@ public abstract class AbstractWebServiceItTest extends WebitTest {
 	}
 
 	protected <T> ResponseEntity<T> post(Class<T> clazz, String uri, Map<String, ?> params, Object data, @NotNull MediaType dataType) {
-		final RestTemplate template = buildTemplate();
+		return post(clazz, uri, params, data, dataType, null);
+	}
+
+	protected <T> ResponseEntity<T> post(Class<T> clazz, String uri, Map<String, ?> params, Object data, @NotNull MediaType dataType, @Nullable JAXBContext jaxbContext) {
+
+		final RestTemplate template;
+		if (jaxbContext != null) {
+			final JaxbElementHttpMessageConverter jaxbContextConverter = new JaxbElementHttpMessageConverter();
+			jaxbContextConverter.setJaxbContext(jaxbContext);
+			jaxbContextConverter.setEntityResolver(new ClasspathCatalogResolver());
+			template = buildTemplate(jaxbContextConverter);
+		}
+		else {
+			template = buildTemplate();
+		}
+
 		final HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(dataType);
 		try {
