@@ -3018,19 +3018,22 @@ var Decl = {
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
 			html +=
-				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Date traitement</th><th>Décision</th><th>Délai accordé</th><th>Confirmation écrite</th><th></th></tr></thead><tbody>';
+				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Type de délai</th><th>Date traitement</th><th>Décision</th><th>Délai accordé</th><th>Confirmation écrite</th><th></th></tr></thead><tbody>';
 			for (var i in delais) {
 				//noinspection JSUnfilteredForInLoop
 				var d = delais[i];
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
 				/** @namespace d.demandeDelaisMandataireId */
+				/** @namespace d.typeDelai */
 				/** @namespace d.confirmationEcrite */
 				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
 				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-				html += '<td>' + RegDate.format(d.dateDemande);
+				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
+				html += '<td><span title="' + (d.typeDelai === 'EXPLICITE' ? 'Ce délai a été demandé explicitement après la création de la DI' : 'Ce délai a été créé automatiquement à l\'émission de la DI') +'">' +
+					(d.typeDelai === 'EXPLICITE' ? 'Explicite' : 'Automatique') + '</span>';
 				if (d.demandeDelaisMandataireId) {
 					html += ' ' + Link.consulterMandataire(d.demandeDelaisMandataireId);
 				}
@@ -3067,7 +3070,7 @@ var Decl = {
 		var html = '';
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
-			html += '<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Date traitement</th>';
+			html += '<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Type de délai</th><th>Date traitement</th>';
 			if (avecDecision) {
 				html += '<th>Décision</th>';
 			}
@@ -3078,16 +3081,20 @@ var Decl = {
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
 				/** @namespace d.demandeDelaisMandataireId */
+				/** @namespace d.typeDelai */
 				/** @namespace d.confirmationEcrite */
 				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
 				/** @namespace d.sursis */
 				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-				html += '<td>' + RegDate.format(d.dateDemande);
+				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
+				html += '<td><span title="' + (d.typeDelai === 'EXPLICITE' ? 'Ce délai a été demandé explicitement après la création de la DI' : 'Ce délai a été créé automatiquement à l\'émission de la DI') +'">' +
+					(d.typeDelai === 'EXPLICITE' ? 'Explicite' : 'Automatique') + '</span>';
 				if (d.demandeDelaisMandataireId) {
 					html += ' ' + Link.consulterMandataire(d.demandeDelaisMandataireId);
 				}
+				html += '</td>';
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
 				if (avecDecision) {
 					html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';

@@ -10,11 +10,13 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.DocumentFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDelaiDeclaration;
 
 public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalView>, Annulable {
 
@@ -40,6 +42,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	private boolean lastOfState;
 	@Nullable
 	private Long demandeDelaisMandataireId;
+	private TypeDelaiDeclaration typeDelai;
 
 	public DelaiDocumentFiscalView() {
 	}
@@ -63,6 +66,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 		this.etatMessage = messageHelper.getMessage("option.etat.delai." + this.etat.name());
 		this.sursis = delai.isSursis();
 		this.demandeDelaisMandataireId = delai.getDemandeMandataire() == null ? null : delai.getDemandeMandataire().getId();
+		this.typeDelai = delai instanceof DelaiDeclaration ? ((DelaiDeclaration) delai).getTypeDelai() : null;
 	}
 
 	public Long getId() {
@@ -219,6 +223,13 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 		return demandeDelaisMandataireId;
 	}
 
+	public TypeDelaiDeclaration getTypeDelai() {
+		return typeDelai;
+	}
+
+	public void setTypeDelai(TypeDelaiDeclaration typeDelai) {
+		this.typeDelai = typeDelai;
+	}
 
 	/**
 	 * Compare d'apres la date de DelaiDeclarationView
