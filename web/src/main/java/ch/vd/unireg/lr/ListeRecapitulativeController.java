@@ -369,7 +369,7 @@ public class ListeRecapitulativeController {
 		delai.setDateTraitement(RegDate.get());
 		delai.setDelaiAccordeAu(view.getDelaiAccorde());
 		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // FIXME (msi) vérifier la réponse de David à ma question à ce propos
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // [FISCPROJ-873] Le premier délai est considéré implicite dans ce cas-là, même s'il est identique au délai imprimé
 		lr.addDelai(delai);
 
 		lr.setTiers(dpi);

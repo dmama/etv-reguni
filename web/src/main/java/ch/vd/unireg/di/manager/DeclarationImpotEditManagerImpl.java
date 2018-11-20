@@ -519,7 +519,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		delai.setDelaiAccordeAu(delaiAccorde);
 		delai.setDateDemande(RegDate.get());
 		delai.setDateTraitement(RegDate.get());
-		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // FIXME (msi) vérifier la réponse de David à ma question à ce propos
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE); // [FISCPROJ-873] Le premier délai est considéré implicite dans ce cas-là, même s'il est identique au délai imprimé
 		di.addDelai(delai);
 		di.setDelaiRetourImprime(delaiAccorde);     // pour les DI envoyées manuellement, il y a égalité des délais imprimés et effectifs
 
