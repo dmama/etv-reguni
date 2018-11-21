@@ -25,6 +25,7 @@ import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 
+import static ch.vd.unireg.evenement.entreprise.interne.demenagement.DemenagementSiegeStrategyTest.getEvenementEntreprise;
 import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
 import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 
@@ -152,13 +153,7 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 
 	@NotNull
 	private static EvenementEntreprise createEvent(Long noEvenement, Long noEntrepriseCivile, TypeEvenementEntreprise type, RegDate date, EtatEvenementEntreprise etat) {
-		final EvenementEntreprise event = new EvenementEntreprise();
-		event.setId(noEvenement);
-		event.setNoEntrepriseCivile(noEntrepriseCivile);
-		event.setType(type);
-		event.setDateEvenement(date);
-		event.setEtat(etat);
-		return event;
+		return getEvenementEntreprise(noEvenement, noEntrepriseCivile, type, date, etat);
 	}
 
 }

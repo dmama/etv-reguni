@@ -16,6 +16,7 @@ import ch.vd.unireg.stats.StatsServiceImpl;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 
+import static ch.vd.unireg.evenement.entreprise.interne.demenagement.DemenagementSiegeStrategyTest.getEvenementEntreprise;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -162,12 +163,6 @@ public class EvenementEntrepriseCivileReceptionHandlerTest extends BusinessTest 
 
 	@NotNull
 	protected static EvenementEntreprise createEvent(Long noEvenement, Long noEntrepriseCivile, TypeEvenementEntreprise type, RegDate date, EtatEvenementEntreprise etat) {
-		final EvenementEntreprise event = new EvenementEntreprise();
-		event.setNoEvenement(noEvenement);
-		event.setNoEntrepriseCivile(noEntrepriseCivile);
-		event.setType(type);
-		event.setDateEvenement(date);
-		event.setEtat(etat);
-		return event;
+		return getEvenementEntreprise(noEvenement, noEntrepriseCivile, type, date, etat);
 	}
 }
