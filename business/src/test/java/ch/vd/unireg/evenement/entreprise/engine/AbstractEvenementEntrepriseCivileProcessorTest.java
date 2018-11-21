@@ -147,7 +147,13 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 
 	@NotNull
 	protected static EvenementEntreprise createEvent(Long noEvenement, Long noEntrepriseCivile, TypeEvenementEntreprise type, RegDate date, EtatEvenementEntreprise etat) {
-		return getEvenementEntreprise(noEvenement, noEntrepriseCivile, type, date, etat);
+		final EvenementEntreprise event = new EvenementEntreprise();
+		event.setNoEvenement(noEvenement);
+		event.setNoEntrepriseCivile(noEntrepriseCivile);
+		event.setType(type);
+		event.setDateEvenement(date);
+		event.setEtat(etat);
+		return event;
 	}
 
 	/**
