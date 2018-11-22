@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,14 +21,19 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPM;
+import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPP;
+import ch.vd.unireg.parametrage.ParametreDemandeDelaisOnline;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscale;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC;
+import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeDocumentEmolument;
+import ch.vd.unireg.type.delai.Delai;
 
 @Entity
 @Table(name = "PERIODE_FISCALE")
@@ -66,8 +72,9 @@ public class PeriodeFiscale extends HibernateEntity {
 		annee = theAnnee;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "PERIODE_ID")
+	// configuration hibernate : la période fiscale possède les paramètres
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "PERIODE_ID", nullable = false)
 	@ForeignKey(name = "FK_PARAM_PF_ID")
 	public Set<ParametrePeriodeFiscale> getParametrePeriodeFiscale() {
 		return parametrePeriodeFiscale;
@@ -258,6 +265,55 @@ public class PeriodeFiscale extends HibernateEntity {
 		addPeriodeFiscaleParametreSNC(RegDate.get(this.getAnnee() + 1, 3, 15),      // valeur par défaut du terme réglementaire au 15 mars
 		                              RegDate.get(this.getAnnee() + 1, 8, 31));     // valeur par défaut du terme effectif au 31 août
 		addPeriodeFiscaleParametreEmolument(null);
+
+		addDefaultParametresDemandeDelaisOnlinePP();
+		addDefaultParametresDemandeDelaisOnlinePM();
+	}
+
+	private void addDefaultParametresDemandeDelaisOnlinePP() {
+
+		// configuration par défaut des délais pour les PP :
+		//
+		//  Période        | Délais unitaire | Délais groupée
+		// -----------------------------------------------------
+		//  01.01 - 15.05  | 30.06           | 30.06
+		//  16.05 - 15.06  | 30.06, 30.09    | 30.06, 30.09
+		//  16.06 - 30.08  | 30.09           | -
+		//  01.09 - 31.12  | -               | -
+		//
+		ParametreDemandeDelaisOnline params = new ParametreDemandeDelaisOnline();
+		params.setTypeTiers(ParametreDemandeDelaisOnline.Type.PP);
+		{
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPP(RegDate.get(annee + 1, 1, 1), RegDate.get(annee + 1, 5, 15), DayMonth.get(6, 30), DayMonth.get(6, 30)));
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPP(RegDate.get(annee + 1, 5, 16), RegDate.get(annee + 1, 6, 15),
+			                                                        Arrays.asList(DayMonth.get(6, 30), DayMonth.get(9, 30)),
+			                                                        Arrays.asList(DayMonth.get(6, 30), DayMonth.get(9, 30))));
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPP(RegDate.get(annee + 1, 6, 16), RegDate.get(annee + 1, 8, 31), DayMonth.get(9, 30), null));
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPP(RegDate.get(annee + 1, 9, 1), RegDate.get(annee + 1, 12, 31)));
+		}
+		addParametrePeriodeFiscale(params);
+	}
+
+	private void addDefaultParametresDemandeDelaisOnlinePM() {
+
+		// configuration par défaut des délais pour les PM :
+		//
+		//  Période   | Délais unitaire        | Délais groupée
+		// ---------------------------------------------------
+		//  + 0M      | + 6M + 75D             | + 7M + 75D
+		//  + 6M      | + 6M + 75D, + 9M + 75D | + 7M + 75D, + 10M + 75D
+		//  + 9M      | -                      | -
+		//
+		final ParametreDemandeDelaisOnline params = new ParametreDemandeDelaisOnline();
+		params.setTypeTiers(ParametreDemandeDelaisOnline.Type.PM);
+		{
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPM(0, Delai.fromString("0D"), Delai.fromString("6M + 75D"), Delai.fromString("7M + 75D")));
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPM(1, Delai.fromString("6M"),
+			                                                        Arrays.asList(Delai.fromString("6M + 75D"), Delai.fromString("9M + 75D")),
+			                                                        Arrays.asList(Delai.fromString("7M + 75D"), Delai.fromString("10M + 75D"))));
+			params.addPeriodeDelais(new DelaisAccordablesOnlineDIPM(2, Delai.fromString("9M")));
+		}
+		addParametrePeriodeFiscale(params);
 	}
 
 	/**

@@ -60,14 +60,12 @@ import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
-import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
-import ch.vd.unireg.declaration.ordinaire.DatesDelaiInitialDI;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
 import ch.vd.unireg.efacture.EFactureService;
@@ -94,7 +92,12 @@ import ch.vd.unireg.metier.bouclement.BouclementService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPM;
+import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPP;
 import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.parametrage.ParametreDemandeDelaisOnline;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleDAO;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -117,11 +120,13 @@ import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.delai.Delai;
 import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.EvenementFiscalDescriptionHelper;
@@ -209,6 +214,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	private GlobalTiersSearcher tiersSearcher;
 	private ExecutorService threadPool;
 	private AvatarService avatarService;
+	private ParametrePeriodeFiscaleDAO parametrePeriodeFiscaleDAO;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.context.securityProvider = securityProvider;
@@ -329,6 +335,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeDAO) {
 		context.periodeDAO = periodeDAO;
+	}
+
+	public void setParametrePeriodeFiscaleDAO(ParametrePeriodeFiscaleDAO parametrePeriodeFiscaleDAO) {
+		this.parametrePeriodeFiscaleDAO = parametrePeriodeFiscaleDAO;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -644,16 +654,31 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 	}
 
+	/**
+	 * Le type de demande de validation de délais
+	 */
+	enum TypeDemande {
+		UNITAIRE,
+		GROUPEE
+	}
+
 	@NotNull
 	@Override
 	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) {
+		final RegDate today = RegDate.get();
+		return validateGroupDeadlineRequest(request, today);
+	}
 
+	// package protected : pour le testing
+	@NotNull
+	GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, RegDate today) {
 		final int periodeFiscale = request.getTaxPeriod();
 		final List<Integer> ctbIds = request.getTaxPayerNumber();
+		final TypeDemande typeDemande = ctbIds.size() > 1 ? TypeDemande.GROUPEE : TypeDemande.UNITAIRE;
 
 		return doInTransaction(true, status -> {
 			final List<ValidationResult> validationResults = ctbIds.stream()
-					.map(id -> validateDeadlineRequest(periodeFiscale, id))
+					.map(id -> validateDeadlineRequest(periodeFiscale, id, typeDemande, today))
 					.collect(Collectors.toList());
 			return new GroupDeadlineValidationResponse(validationResults, 0, null);
 		});
@@ -664,10 +689,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	 *
 	 * @param periodeFiscale la période fiscale considérée
 	 * @param ctbId          le numéro de contribuable considéré
+	 * @param typeDemande    le type de demande concernée
+	 * @param today          la date du jour
 	 * @return la liste des résultats de validation (il y a un résultat par déclaration émise)
 	 */
 	@NotNull
-	ValidationResult validateDeadlineRequest(int periodeFiscale, int ctbId) {
+	ValidationResult validateDeadlineRequest(int periodeFiscale, int ctbId, @NotNull TypeDemande typeDemande, @NotNull RegDate today) {
 
 		// vérification sur le tiers lui-même
 		final Tiers tiers = context.tiersDAO.get((long) ctbId);
@@ -708,11 +735,16 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		final RegDate dateProchainBouclement;
+		final ParametreDemandeDelaisOnline paramsDemandeDelaisOnline;
 		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 			dateProchainBouclement = null;  // par définition, les PPs n'ont pas de date de bouclement
 			final RegDate finPeriode = RegDate.get(periodeFiscale, 12, 31);
 			if (periodeImposition.getDateFin().isBefore(finPeriode)) {
 				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale " + periodeFiscale + ".");
+			}
+			paramsDemandeDelaisOnline = parametrePeriodeFiscaleDAO.getParamsDemandeDelaisOnline(periodeFiscale, ParametreDemandeDelaisOnline.Type.PP);
+			if (paramsDemandeDelaisOnline == null) {
+				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'y a pas de délai configuré sur la période fiscale " + periodeFiscale + ".");
 			}
 		}
 		else {
@@ -720,6 +752,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			dateProchainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), periodeImposition.getDateFin(), true);
 			if (periodeImposition.getDateFin().isBefore(dateProchainBouclement)) {
 				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale " + periodeFiscale + ".");
+			}
+			paramsDemandeDelaisOnline = parametrePeriodeFiscaleDAO.getParamsDemandeDelaisOnline(periodeFiscale, ParametreDemandeDelaisOnline.Type.PM);
+			if (paramsDemandeDelaisOnline == null) {
+				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'y a pas de délai configuré sur la période fiscale " + periodeFiscale + ".");
 			}
 		}
 
@@ -743,22 +779,31 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		// on détermine un résultat pour la déclaration valide
 		final DeclarationImpotOrdinaire declarationValide = declarationValides.get(declarationValides.size() - 1);
-		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide, dateProchainBouclement, periodeImposition);
+		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide, dateProchainBouclement, periodeImposition, paramsDemandeDelaisOnline, typeDemande, today);
 	}
 
 	/**
 	 * Valide la demande de délai pour la déclaration spécifiée.
 	 *
-	 * @param periodeFiscale         la période fiscale considérée
-	 * @param tiers                  le tiers qui possède la déclaration
-	 * @param declaration            la déclaration considérée
-	 * @param dateProchainBouclement la date de prochain bouclement (par rapport à la période d'imposition de la déclaration). Obligatoire pour les PMs, null pour les PPs.
-	 * @param periodeImposition      la période d'imposition du tiers
+	 * @param periodeFiscale            la période fiscale considérée
+	 * @param tiers                     le tiers qui possède la déclaration
+	 * @param declaration               la déclaration considérée
+	 * @param dateProchainBouclement    la date de prochain bouclement (par rapport à la période d'imposition de la déclaration). Obligatoire pour les PMs, null pour les PPs.
+	 * @param periodeImposition         la période d'imposition du tiers
+	 * @param paramsDemandeDelaisOnline les paramètres de délais pour les demandes de délais online
+	 * @param typeDemande               le type de demande
+	 * @param today                     la date du jour
 	 * @return le résultat de la validation
 	 */
 	@NotNull
-	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale, @NotNull Tiers tiers, @NotNull DeclarationImpotOrdinaire declaration, @Nullable RegDate dateProchainBouclement,
-	                                                        @NotNull PeriodeImposition periodeImposition) {
+	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale,
+	                                                        @NotNull Tiers tiers,
+	                                                        @NotNull DeclarationImpotOrdinaire declaration,
+	                                                        @Nullable RegDate dateProchainBouclement,
+	                                                        @NotNull PeriodeImposition periodeImposition,
+	                                                        @NotNull ParametreDemandeDelaisOnline paramsDemandeDelaisOnline,
+	                                                        @NotNull TypeDemande typeDemande,
+	                                                        @NotNull RegDate today) {
 
 		final ValidationResult result = new ValidationResult();
 		result.setTaxPayerNumber(tiers.getNumero().intValue());
@@ -766,87 +811,192 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		result.setEligible(true);
 		result.setTaxDeclaration(new TaxDeclarationInfo(DataHelper.coreToWeb(declaration.getDateDebut()), DataHelper.coreToWeb(declaration.getDateFin()), declaration.getNumero(), null));
 
+		final RegDate dateEmissionDeclaration = declaration.getDateExpedition();
 		final TypeEtatDocumentFiscal etat = declaration.getDernierEtat().getEtat();
 		final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
 		final RegDate delaiDejaAccorde = dernierDelaiAccorde.getDelaiAccordeAu();
 
 		if (etat != TypeEtatDocumentFiscal.EMIS) {
+			// déclaration pas dans le bon état
 			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat, periodeFiscale));
+			return result;
+		}
+
+		// on va chercher les délais théoriques
+		final List<RegDate> delaisTheoriques;
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+			delaisTheoriques = getDelaisTheoriquesPP(typeDemande, paramsDemandeDelaisOnline, today);
+		}
+		else if (tiers instanceof Entreprise) {
+			if (dateProchainBouclement == null) {
+				throw new IllegalArgumentException("La date de prochain bouclement n'est pas renseignée sur le PM n°" + tiers.getNumero());
+			}
+			delaisTheoriques = getDelaisTheoriquesPM(dateEmissionDeclaration, dateProchainBouclement, periodeImposition, typeDemande, paramsDemandeDelaisOnline, today);
 		}
 		else {
-			final RegDate delaiMaximalAccordable;
-			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-				delaiMaximalAccordable = getDelaiMaximalAccordablePP(periodeFiscale);
-			}
-			else if (tiers instanceof Entreprise) {
-				if (dateProchainBouclement == null) {
-					throw new IllegalArgumentException("La date de prochain bouclement n'est pas renseignée sur le PM n°" + tiers.getNumero());
-				}
-				delaiMaximalAccordable = getDelaiMaximalAccordablePM(periodeFiscale, declaration, dateProchainBouclement, periodeImposition);
-			}
-			else {
-				throw new IllegalArgumentException("Type de tiers non supporté [" + tiers.getClass() + "]");
-			}
-
-			if (delaiDejaAccorde.isAfter(delaiMaximalAccordable)) {
-				result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
-			}
-			else if (delaiDejaAccorde == delaiMaximalAccordable && dernierDelaiAccorde.getTypeDelai() == TypeDelaiDeclaration.EXPLICITE) {
-				// [FISCPROJ-816][FISCPROJ-873] une demande de délai explicite a déjà été faite : il ne faut pas en accorder une autre
-				result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
-			}
-			else {
-				result.getProposedDeadlines().add(DataHelper.coreToWeb(delaiMaximalAccordable));
-			}
+			throw new IllegalArgumentException("Type de tiers non supporté [" + tiers.getClass() + "]");
+		}
+		if (delaisTheoriques.isEmpty()) {
+			// pas de délais théoriques, ce que la demande n'est pas valable (hors délai ou pas de délai configuré)
+			return buildIneligibleCtbResult(tiers.getNumero().intValue(), tiers,
+			                                "Le contribuable n'est pas éligible car il n'y a pas de délai accordable en date du " +
+					                                RegDateHelper.dateToDisplayString(today) + " pour la période fiscale " + periodeFiscale + ".");
 		}
 
+		// on ne garde que les délais qui sont réellement accordables
+		final List<RegDate> delaisAccordables = delaisTheoriques.stream()
+				.filter(delai -> isDelaiAccordable(delai, dernierDelaiAccorde))
+				.collect(Collectors.toList());
+		if (delaisAccordables.isEmpty()) {
+			// pas de nouveau délai accordable, ce que le délai déjà accordé est suffisant
+			result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(delaiDejaAccorde) + ".", null));
+			return result;
+		}
+
+		// on a un ou des délais accordables, tout va bien
+		result.getProposedDeadlines().addAll(delaisAccordables.stream()
+				                                     .map(DataHelper::coreToWeb)
+				                                     .collect(Collectors.toList()));
 		return result;
 	}
 
 	/**
-	 * Calcule le délai maximal qui peut être accordé sur une DI d'une personne physique.
-	 *
-	 * @param periodeFiscale la période fiscale considéré
-	 * @return le délai maximal calculé
+	 * Détermine si le délai spécifié peut réellement être accordé.
 	 */
-	@NotNull
-	private RegDate getDelaiMaximalAccordablePP(int periodeFiscale) {
-		return RegDate.get(periodeFiscale + 1, 6, 30); // FIXME (msi) rendre ce délai paramètrable
+	private static boolean isDelaiAccordable(@NotNull RegDate delaiCandidat, @NotNull DelaiDeclaration dernierDelaiAccorde) {
+		final RegDate delaiDejaAccorde = dernierDelaiAccorde.getDelaiAccordeAu();
+		// le délai candidat est plus loin que le dernier délai existant -> OK
+		return delaiCandidat.isAfter(delaiDejaAccorde) ||
+				// [FISCPROJ-873] le délai candidat est identique au délai existant *et* le délai existant est implicite -> OK aussi
+				(delaiCandidat == delaiDejaAccorde && dernierDelaiAccorde.getTypeDelai() == TypeDelaiDeclaration.IMPLICITE);
 	}
 
 	/**
-	 * Calcule le délai maximal qui peut être accordé sur une DI d'une personne morale.
+	 * Calcule les délais théoriques qui peuvent être accordés sur une DI d'une personne physique.
 	 *
-	 * @param periodeFiscale         la période fiscale considéré
-	 * @param declaration            la déclaration d'impôt considérée
-	 * @param dateProchainBouclement la prochaine date de bouclement
-	 * @param periodeImposition      la période d'imposition qui correspond à la déclaration spécifiée
-	 * @return le délai maximal calculé
+	 * @param typeDemande le type de demande
+	 * @param parametres  les paramètres de délais pour les demandes de délais online PP
+	 * @param today       la date du jour
+	 * @return les délais théoriques calculés
 	 */
 	@NotNull
-	private RegDate getDelaiMaximalAccordablePM(int periodeFiscale, @NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateProchainBouclement, @NotNull PeriodeImposition periodeImposition) {
+	private List<RegDate> getDelaisTheoriquesPP(@NotNull TypeDemande typeDemande, @NotNull ParametreDemandeDelaisOnline parametres, @NotNull RegDate today) {
 
-		final PeriodeFiscale pf = context.periodeDAO.getPeriodeFiscaleByYear(periodeFiscale);
-		final RegDate dateEmission = declaration.getDateExpedition();
-
-		final DatesDelaiInitialDI delaiInitial;
-		try {
-			// [FISCPROJ-862] On utilise la même méthode de calcul des délais que celle utilisée pour l'envoi des DIs PM en masse
-			delaiInitial = context.diService.getDelaiInitialRetourDIPM(periodeImposition.getTypeContribuable(), dateProchainBouclement, dateEmission, pf);
-		}
-		catch (DeclarationException e) {
-			throw new IllegalArgumentException(e);
+		if (parametres.getTypeTiers() != ParametreDemandeDelaisOnline.Type.PP) {
+			throw new IllegalArgumentException();
 		}
 
-		return delaiInitial.getDateEffective();
+		// on va chercher les délais pour la période courante
+		final DelaisAccordablesOnlineDIPP paramsPeriode = parametres.getPeriodesDelais().stream()
+				.map(DelaisAccordablesOnlineDIPP.class::cast)
+				.filter(d -> d.isValidAt(today))
+				.findFirst()
+				.orElse(null);
+		if (paramsPeriode == null) {
+			// si un contribuable demande un délai en 2019 pour une DI 2017, il n'y aura pas de période correspondante
+			return Collections.emptyList();
+		}
+
+		final List<DayMonth> delais;
+		switch (typeDemande) {
+		case UNITAIRE:
+			delais = paramsPeriode.getDelaisDemandeUnitaire();
+			break;
+		case GROUPEE:
+			delais = paramsPeriode.getDelaisDemandeGroupee();
+			break;
+		default:
+			throw new IllegalArgumentException("Type de demande inconnu = [" + typeDemande + "]");
+		}
+
+		// on converti les délais en dates
+		return delais.stream()
+				.map(d -> d.nextAfterOrEqual(today))
+				.sorted()
+				.distinct()
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Calcule les délais théoriques qui peuvent être accordés sur une DI d'une personne morale.
+	 *
+	 * @param dateEmissionDeclaration la date d'émission de la déclaration
+	 * @param dateProchainBouclement  la prochaine date de bouclement
+	 * @param periodeImposition       la période d'imposition qui correspond à la déclaration spécifiée
+	 * @param typeDemande             le type de demande
+	 * @param parametres              les paramètres de délais pour les demandes de délais online PP
+	 * @param today                   la date du jour
+	 * @return les délais théoriques calculés
+	 */
+	@NotNull
+	private List<RegDate> getDelaisTheoriquesPM(@NotNull RegDate dateEmissionDeclaration,
+	                                            @NotNull RegDate dateProchainBouclement,
+	                                            @NotNull PeriodeImposition periodeImposition,
+	                                            @NotNull TypeDemande typeDemande,
+	                                            @NotNull ParametreDemandeDelaisOnline parametres,
+	                                            @NotNull RegDate today) {
+
+		if (parametres.getTypeTiers() != ParametreDemandeDelaisOnline.Type.PM) {
+			throw new IllegalArgumentException();
+		}
+
+		// on détermine la date de référence (date d'émission de la DI ou date de bouclement de la PM) à partir des paramètres de la PF
+		final RegDate dateReference;
+		final TypeContribuable typeContribuable = periodeImposition.getTypeContribuable();
+		final PeriodeFiscale pf = parametres.getPeriodefiscale();
+		final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(typeContribuable);
+		if (params == null) {
+			throw new IllegalArgumentException("Pas de paramètrage trouvé pour le type de contribuable " + typeContribuable + " et la PF " + pf.getAnnee());
+		}
+		switch (params.getReferenceDelaiInitial()) {
+		case EMISSION:
+			dateReference = dateEmissionDeclaration;
+			break;
+		case FIN_PERIODE:
+			dateReference = dateProchainBouclement;
+			break;
+		default:
+			throw new IllegalArgumentException("Valeur inconnue pour le type de référence du délai initial : " + params.getReferenceDelaiInitial());
+		}
+
+		// on va chercher les délais pour la période courante
+		final List<DelaisAccordablesOnlineDIPM> list = parametres.getPeriodesDelais().stream()
+				.map(DelaisAccordablesOnlineDIPM.class::cast)
+				.sorted(Comparator.comparingInt(DelaisAccordablesOnlineDIPM::getIndex))
+				.filter(d -> today.isAfterOrEqual(d.getDelaiDebut().apply(dateReference)))
+				.collect(Collectors.toList());
+		if (list.isEmpty()) {
+			// pas de période paramétrée, pas de délai
+			return Collections.emptyList();
+		}
+		final DelaisAccordablesOnlineDIPM paramsPeriode = list.get(list.size() - 1); // on prend le plus récent des valides (les délais PM n'ont pas de date de "fin")
+
+		final List<Delai> delais;
+		switch (typeDemande) {
+		case UNITAIRE:
+			delais = paramsPeriode.getDelaisDemandeUnitaire();
+			break;
+		case GROUPEE:
+			delais = paramsPeriode.getDelaisDemandeGroupee();
+			break;
+		default:
+			throw new IllegalArgumentException("Type de demande inconnu = [" + typeDemande + "]");
+		}
+
+		// on converti les délais en dates
+		return delais.stream()
+				.map(d -> d.apply(dateReference))
+				.sorted()
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	/**
 	 * Construit une réponse négative pour le cas où c'est le contribuable qui n'est pas éligible.
 	 *
-	 * @param ctbId    le numéro du tiers considéré
-	 * @param tiers    le contribuable considéré
-	 * @param message  le message de la réponse négative
+	 * @param ctbId   le numéro du tiers considéré
+	 * @param tiers   le contribuable considéré
+	 * @param message le message de la réponse négative
 	 * @return la réponse construite
 	 */
 	private static ValidationResult buildIneligibleCtbResult(int ctbId, @Nullable Tiers tiers, @NotNull String message) {

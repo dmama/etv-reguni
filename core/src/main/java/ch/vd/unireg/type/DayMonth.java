@@ -2,8 +2,10 @@ package ch.vd.unireg.type;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import gnu.trove.TIntObjectHashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -14,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 public final class DayMonth implements Serializable, Comparable<DayMonth> {
 
 	private static final long serialVersionUID = 7894005325726916550L;
+	public static final Pattern STRING_PATTERN = Pattern.compile("\\d\\d\\d\\d");
 
 	/**
 	 * Jour dans le mois (1..31)
@@ -121,6 +124,24 @@ public final class DayMonth implements Serializable, Comparable<DayMonth> {
 	public static DayMonth fromIndex(int index) {
 		final int month = index / 100;
 		final int day = index % 100;
+		return _get(month, day);
+	}
+
+	/**
+	 * @param string une string (mm.dd)
+	 * @return valeur correspondante
+	 * @throws java.lang.IllegalArgumentException si l'index n'est pas valide
+	 */
+	public static DayMonth fromString(String string) {
+
+		final String trimmed = StringUtils.trimToEmpty(string);
+		if (!STRING_PATTERN.matcher(trimmed).matches()) {
+			throw new IllegalArgumentException("La string [" + string + "] n'est pas valide");
+		}
+
+		final int month = Integer.parseInt(trimmed.substring(0, 2));
+		final int day = Integer.parseInt(trimmed.substring(2));
+
 		return _get(month, day);
 	}
 

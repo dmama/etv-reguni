@@ -2,6 +2,9 @@ package ch.vd.unireg.parametrage;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 
@@ -18,6 +21,14 @@ public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeF
 	 * @return la liste des parametres de periode pour une periode donnée
 	 */
 	List<ParametrePeriodeFiscale> getByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale une période fiscale
+	 * @param type           le type de tiers
+	 * @return les paramètres des demandes de délais online correspondant; ou <i>null</i> si aucun paramètre ne correspond.
+	 */
+	@Nullable
+	ParametreDemandeDelaisOnline getParamsDemandeDelaisOnline(int periodeFiscale, @NotNull ParametreDemandeDelaisOnline.Type type);
 	
 	/**
 	 * @param periodeFiscale la période fiscale

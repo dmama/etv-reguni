@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="appInfo" class="ch.vd.unireg.common.ApplicationInfo">
 		<property name="name" value="${project.name}" />
@@ -502,5 +502,7 @@
 	</bean>
 	<bean id="degrevementICIValidator" class="ch.vd.unireg.foncier.DegrevementICIValidator" parent="allegementFoncierValidator"/>
 	<bean id="exonerationIFONCValidator" class="ch.vd.unireg.foncier.ExonerationIFONCValidator" parent="allegementFoncierValidator"/>
+
+	<bean id="parametreDemandeDelaisOnlineValidator" class="ch.vd.unireg.validation.parameter.ParametreDemandeDelaisOnlineValidator" parent="entityValidator"/>
 
 </beans>

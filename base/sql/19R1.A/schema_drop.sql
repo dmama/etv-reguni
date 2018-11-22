@@ -60,6 +60,8 @@ drop table MOUVEMENT_DOSSIER cascade constraints;
 
 drop table PARAMETRE cascade constraints;
 
+drop table PARAMETRE_DELAIS_ONLINE cascade constraints;
+
 drop table PARAMETRE_PERIODE_FISCALE cascade constraints;
 
 drop table PERIODE_FISCALE cascade constraints;

@@ -369,6 +369,7 @@
 		<property name="validationService" ref="validationService"/>
 		<property name="bouclementService" ref="bouclementService"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="parametrePeriodeFiscaleDAO" ref="parametrePeriodeFiscaleDAO"/>
 	</bean>
 
 </beans>

@@ -585,6 +585,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@NotNull
 	private static RegDate appliquerDelaiEnJour(RegDate dateSource, int jours, boolean reportFinMois) {
+		// TODO (msi) utiliser DelaiEnJours à la place
 		final RegDate dateDecalee = dateSource.addDays(jours);
 		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
 	}
@@ -598,6 +599,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@NotNull
 	private static RegDate appliquerDelaiEnMois(RegDate dateSource, int mois, boolean reportFinMois) {
+		// TODO (msi) utiliser DelaiEnMois à la place
 		final RegDate dateDecalee = dateSource.addMonths(mois);
 		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
 	}

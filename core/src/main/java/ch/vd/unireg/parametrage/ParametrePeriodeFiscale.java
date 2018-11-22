@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -55,8 +57,10 @@ public abstract class ParametrePeriodeFiscale extends HibernateEntity {
 		this.id = id;
 	}
 
+	// configuration hibernate : la période fiscale possède les paramètres
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-	@JoinColumn(name = "PERIODE_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "PERIODE_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_PARAM_PF_PERIODE_ID", columnNames = "PERIODE_ID")
 	public PeriodeFiscale getPeriodefiscale() {
 		return periodefiscale;
 	}

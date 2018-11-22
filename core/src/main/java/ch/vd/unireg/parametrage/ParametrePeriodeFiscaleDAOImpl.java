@@ -3,6 +3,9 @@ package ch.vd.unireg.parametrage;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.Query;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -18,6 +21,15 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	@Override
 	public List<ParametrePeriodeFiscale> getByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return find("FROM PeriodeParametreFiscale p WHERE p.periodeFiscale = :pf", buildNamedParameters(Pair.of("pf", periodeFiscale)), null);
+	}
+
+	@Override
+	@Nullable
+	public ParametreDemandeDelaisOnline getParamsDemandeDelaisOnline(int periodeFiscale, ParametreDemandeDelaisOnline.@NotNull Type type) {
+		final Query query = getCurrentSession().createQuery("from ParametreDemandeDelaisOnline p where annulationDate is null and periodefiscale.annee = :pf and typeTiers = :typeTiers");
+		query.setParameter("pf", periodeFiscale);
+		query.setParameter("typeTiers", type);
+		return (ParametreDemandeDelaisOnline) query.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")

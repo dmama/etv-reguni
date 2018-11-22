@@ -57,6 +57,10 @@
 		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM</value>
 		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC</value>
 		<value>ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument</value>
+		<value>ch.vd.unireg.parametrage.ParametreDemandeDelaisOnline</value>
+		<value>ch.vd.unireg.parametrage.DelaisAccordablesOnline</value>
+		<value>ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPP</value>
+		<value>ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPM</value>
 		<value>ch.vd.unireg.declaration.ModeleDocument</value>
 		<value>ch.vd.unireg.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.unireg.declaration.Periodicite</value>

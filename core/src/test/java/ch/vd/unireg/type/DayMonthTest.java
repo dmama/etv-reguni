@@ -20,6 +20,12 @@ public class DayMonthTest extends WithoutSpringTest {
 	}
 
 	@Test
+	public void testFromString() {
+		Assert.assertEquals(DayMonth.get(1, 1), DayMonth.fromString("0101"));
+		Assert.assertEquals(DayMonth.get(12, 31), DayMonth.fromString("1231"));
+	}
+
+	@Test
 	public void testFromRegDate() {
 		final RegDate today = RegDate.get();
 		Assert.assertEquals(today.day(), DayMonth.get(today).day());
