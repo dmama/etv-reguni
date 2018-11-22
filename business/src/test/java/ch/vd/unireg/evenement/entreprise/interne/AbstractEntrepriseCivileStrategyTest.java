@@ -21,7 +21,6 @@ import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.evenement.entreprise.interne.demenagement.DemenagementSiegeStrategyTest.getEvenementEntreprise;
 import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -289,6 +288,12 @@ public class AbstractEntrepriseCivileStrategyTest extends WithoutSpringTest {
 
 	@NotNull
 	protected static EvenementEntreprise createEvent(Long noEvenement, Long noEntrepriseCivile, TypeEvenementEntreprise type, RegDate date, EtatEvenementEntreprise etat) {
-		return getEvenementEntreprise(noEvenement, noEntrepriseCivile, type, date, etat);
+		final EvenementEntreprise event = new EvenementEntreprise();
+		event.setNoEvenement(noEvenement);
+		event.setNoEntrepriseCivile(noEntrepriseCivile);
+		event.setType(type);
+		event.setDateEvenement(date);
+		event.setEtat(etat);
+		return event;
 	}
 }

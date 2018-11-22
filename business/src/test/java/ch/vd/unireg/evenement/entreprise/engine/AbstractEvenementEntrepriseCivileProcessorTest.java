@@ -21,8 +21,6 @@ import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.evenement.entreprise.interne.demenagement.DemenagementSiegeStrategyTest.getEvenementEntreprise;
-
 public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends BusinessTest {
 	
 	private EvenementEntrepriseNotificationQueueImpl queue;

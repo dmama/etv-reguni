@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.Audit;
@@ -25,7 +27,7 @@ import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.interfaces.entreprise.data.Domicile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseHelper;
-import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -118,8 +120,8 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 
 				// On peut déjà partager le monde en deux, ce qui existait avant le seuil, sur lequel on peut compter, et ce qui est récent
 				// qui peut avoir été créé à la main.
-				final RegDate newnessThresholdDate = dateApres.addDays(-EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
-				final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = getContext().getTiersService().getEtablissementsPrincipauxEntreprise(entreprise);
+				final RegDate newnessThresholdDate = dateApres.addDays( - EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+				final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise);
 				final DateRanged<Etablissement> etablissementPreexistant = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, newnessThresholdDate);
 				if (etablissementPreexistant == null) {
 					final String message = String.format("Données RCEnt insuffisantes pour déterminer la situation de l'entreprise (une seule photo) " +
@@ -130,8 +132,9 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 				}
 
 				try {
-					final List<DomicileHisto> domiciles = getContext().getTiersService().getDomiciles(etablissementPreexistant.getPayload(), true);
-					final DomicileHisto domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
+					final DateRanged<Etablissement> etablissementPrincipalRange = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant);
+					final Set<DomicileEtablissement> domiciles = etablissementPrincipalRange.getPayload().getDomiciles();
+					final DomicileEtablissement domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
 					if (domicilePrincipal == null) {
 						final String message = String.format(
 								"Fatal: Impossible de traiter l'événement de changement de  siege sociale n°%d: impossible d'avoir le dernier siége sociale  de l'entreprise %s pour faire la comparaison avec le nouveau! "
@@ -141,8 +144,8 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 						throw new EvenementEntrepriseException(message);
 					}
 
-					final Integer noOfsAutoriteFiscale = domicilePrincipal.getNumeroOfsAutoriteFiscale();
-					final TypeAutoriteFiscale typeAutoriteFiscale = domicilePrincipal.getTypeAutoriteFiscale();
+					Integer noOfsAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getNumeroOfsAutoriteFiscale();
+					TypeAutoriteFiscale typeAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getTypeAutoriteFiscale();
 
 					communeDeSiegeAvant = new Domicile(domicilePrincipal.getDateDebut(), domicilePrincipal.getDateFin(), typeAutoriteFiscale, noOfsAutoriteFiscale);
 

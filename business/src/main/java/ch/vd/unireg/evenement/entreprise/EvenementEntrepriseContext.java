@@ -30,7 +30,7 @@ public class EvenementEntrepriseContext {
 	private final AssujettissementService assujettissementService;
 	private final AppariementService appariementService;
 	private final ParametreAppService parametreAppService;
-	//FIXME DMA clean code à faire
+
 	public EvenementEntrepriseContext(ServiceEntreprise serviceEntreprise, ServiceInfrastructureService serviceInfra, RegimeFiscalService regimeFiscalService, TiersDAO tiersDAO) {
 		this.serviceEntreprise = serviceEntreprise;
 		this.regimeFiscalService = regimeFiscalService;
