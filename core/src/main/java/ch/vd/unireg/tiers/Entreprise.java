@@ -31,6 +31,7 @@ import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.MotifFor;
 
 /**
  * Entreprise connue du registre des personnes morales de l'ACI
@@ -546,7 +547,10 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			return dateDebut;
 		}
 		final ForFiscalPrincipal forFiscalDateDebutLaplusAncienne = Collections.min(forFiscalPrincipals);
-		return isSNC() && forFiscalDateDebutLaplusAncienne.getDateDebut() != null && forFiscalDateDebutLaplusAncienne.getDateDebut().isAfter(dateDebut) ? forFiscalDateDebutLaplusAncienne.getDateDebut() : dateDebut;
+		return MotifFor.getListeMotifsDebutActiviteCommerciale().contains(forFiscalDateDebutLaplusAncienne.getMotifOuverture())
+				&& forFiscalDateDebutLaplusAncienne.getGenreImpot() == GenreImpot.REVENU_FORTUNE
+				&& forFiscalDateDebutLaplusAncienne.getDateDebut() != null
+				&& forFiscalDateDebutLaplusAncienne.getDateDebut().isAfter(dateDebut) ? forFiscalDateDebutLaplusAncienne.getDateDebut() : dateDebut;
 	}
 
 }

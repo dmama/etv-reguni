@@ -1,5 +1,8 @@
 package ch.vd.unireg.type;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum MotifFor {
 
 	DEMENAGEMENT_VD("Déménagement"),
@@ -109,5 +112,14 @@ public enum MotifFor {
 
 	public String getDescription(boolean ouverture) {
 		return ouverture ? descriptionOuverture : descriptionFermeture;
+	}
+
+	/**
+	 * Liste des motifs d'ouverture qui represente un début d'activité.
+	 *
+	 * @return Liste des motifs d'ouverture qui represente un début d'activité
+	 */
+	public static List<MotifFor> getListeMotifsDebutActiviteCommerciale() {
+		return Arrays.asList(ARRIVEE_HS, ARRIVEE_HC, FUSION_ENTREPRISES, DEBUT_EXPLOITATION);
 	}
 }
