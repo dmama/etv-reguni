@@ -1,6 +1,13 @@
 package ch.vd.unireg.param.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument;
+import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP;
+import ch.vd.unireg.type.TypeDocumentEmolument;
 
 public class ParametrePeriodeFiscalePPEditView {
 
@@ -30,6 +37,37 @@ public class ParametrePeriodeFiscalePPEditView {
 	private RegDate sommationReglementaireDiplomate;
 	private RegDate sommationEffectiveDiplomate;
 	private RegDate finEnvoiMasseDIDiplomate;
+
+	public ParametrePeriodeFiscalePPEditView() {
+	}
+
+	public ParametrePeriodeFiscalePPEditView(@NotNull PeriodeFiscale pf) {
+		this.idPeriodeFiscale = pf.getId();
+		this.anneePeriodeFiscale = pf.getAnnee();
+		this.codeControleSurSommationDI = pf.isShowCodeControleSommationDeclarationPP();
+
+		final ParametrePeriodeFiscaleEmolument emolument = pf.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
+		this.montantEmolumentSommationDI = emolument != null ? emolument.getMontant() : null;
+		this.emolumentSommationDI = emolument != null && emolument.getMontant() != null;
+
+		this.finEnvoiMasseDIDepense = pf.getParametrePeriodeFiscalePPDepense().getDateFinEnvoiMasseDI();
+		this.finEnvoiMasseDIDiplomate = pf.getParametrePeriodeFiscalePPDiplomateSuisse().getDateFinEnvoiMasseDI();
+		this.finEnvoiMasseDIHorsCanton = pf.getParametrePeriodeFiscalePPHorsCanton().getDateFinEnvoiMasseDI();
+		this.finEnvoiMasseDIHorsSuisse = pf.getParametrePeriodeFiscalePPHorsSuisse().getDateFinEnvoiMasseDI();
+		this.finEnvoiMasseDIVaud = pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getDateFinEnvoiMasseDI();
+
+		this.sommationEffectiveDepense = pf.getParametrePeriodeFiscalePPDepense().getTermeGeneralSommationEffectif();
+		this.sommationEffectiveDiplomate = pf.getParametrePeriodeFiscalePPDiplomateSuisse().getTermeGeneralSommationEffectif();
+		this.sommationEffectiveHorsCanton = pf.getParametrePeriodeFiscalePPHorsCanton().getTermeGeneralSommationEffectif();
+		this.sommationEffectiveHorsSuisse = pf.getParametrePeriodeFiscalePPHorsSuisse().getTermeGeneralSommationEffectif();
+		this.sommationEffectiveVaud = pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getTermeGeneralSommationEffectif();
+
+		this.sommationReglementaireDepense = pf.getParametrePeriodeFiscalePPDepense().getTermeGeneralSommationReglementaire();
+		this.sommationReglementaireDiplomate = pf.getParametrePeriodeFiscalePPDiplomateSuisse().getTermeGeneralSommationReglementaire();
+		this.sommationReglementaireHorsCanton = pf.getParametrePeriodeFiscalePPHorsCanton().getTermeGeneralSommationReglementaire();
+		this.sommationReglementaireHorsSuisse = pf.getParametrePeriodeFiscalePPHorsSuisse().getTermeGeneralSommationReglementaire();
+		this.sommationReglementaireVaud = pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getTermeGeneralSommationReglementaire();
+	}
 
 	public Integer getAnneePeriodeFiscale() {
 		return anneePeriodeFiscale;
@@ -189,5 +227,58 @@ public class ParametrePeriodeFiscalePPEditView {
 
 	public void setCodeControleSurSommationDI(boolean codeControleSurSommationDI) {
 		this.codeControleSurSommationDI = codeControleSurSommationDI;
+	}
+
+	public void saveTo(@NotNull PeriodeFiscale pf) {
+		pf.setShowCodeControleSommationDeclarationPP(this.isCodeControleSurSommationDI());
+
+		final ParametrePeriodeFiscaleEmolument emolument = pf.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
+		if (this.isEmolumentSommationDI()) {
+			if (emolument == null) {
+				final ParametrePeriodeFiscaleEmolument param = new ParametrePeriodeFiscaleEmolument();
+				param.setTypeDocument(TypeDocumentEmolument.SOMMATION_DI_PP);
+				param.setMontant(montantEmolumentSommationDI);
+				pf.addParametrePeriodeFiscale(param);
+			}
+			else {
+				emolument.setMontant(this.getMontantEmolumentSommationDI());
+			}
+		}
+		else if (emolument != null) {
+			emolument.setMontant(null);
+		}
+
+		final ParametrePeriodeFiscalePP[] ppfs = new ParametrePeriodeFiscalePP[] {
+				pf.getParametrePeriodeFiscalePPVaudoisOrdinaire(),
+				pf.getParametrePeriodeFiscalePPHorsCanton(),
+				pf.getParametrePeriodeFiscalePPHorsSuisse(),
+				pf.getParametrePeriodeFiscalePPDepense(),
+				pf.getParametrePeriodeFiscalePPDiplomateSuisse()
+		};
+
+		final RegDate[][] termes = new RegDate [][] {
+				{sommationEffectiveVaud, sommationReglementaireVaud, finEnvoiMasseDIVaud},
+				{sommationEffectiveHorsCanton, sommationReglementaireHorsCanton, finEnvoiMasseDIHorsCanton},
+				{sommationEffectiveHorsSuisse, sommationReglementaireHorsSuisse, finEnvoiMasseDIHorsSuisse},
+				{sommationEffectiveDepense, sommationReglementaireDepense, finEnvoiMasseDIDepense},
+				{sommationEffectiveDiplomate, sommationReglementaireDiplomate, finEnvoiMasseDIDiplomate}
+		};
+
+		assert (ppfs.length == termes.length);
+
+		// On verifie que tous les parametres de periode fiscale ne soient pas null
+		for (ParametrePeriodeFiscalePP ppf : ppfs) {
+			if (ppf == null) {
+				String msgErr = "Impossible de retrouver tous les paramètres PP pour la période fiscale : " + this.getAnneePeriodeFiscale();
+				throw new ObjectNotFoundException(msgErr);
+			}
+		}
+
+		// On met à jour les parametres de periode fiscale
+		for (int i = 0; i < ppfs.length; i++) {
+			ppfs[i].setTermeGeneralSommationEffectif(termes[i][0]);
+			ppfs[i].setTermeGeneralSommationReglementaire(termes[i][1]);
+			ppfs[i].setDateFinEnvoiMasseDI(termes[i][2]);
+		}
 	}
 }

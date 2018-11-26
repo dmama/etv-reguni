@@ -23,15 +23,6 @@
 		Configuration des beans pour : Paramètre de Période fiscale
 	 -->
 
-	<!--  Le manager -->
-	<bean id="paramPeriodeManager" class="ch.vd.unireg.param.manager.ParamPeriodeManagerImpl">
-		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
-		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
-		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
-		<property name="parametrePeriodeFiscaleDAO" ref="parametrePeriodeFiscaleDAO" />
-		<property name="periodeFiscaleService" ref="periodeFiscaleService" />
-	</bean>
-
 	<!-- Les validators -->
 	<bean id="parametrePeriodeFiscalePPValidator" class="ch.vd.unireg.param.validator.ParametrePeriodeFiscalePPValidator" />
 	<bean id="parametrePeriodeFiscalePMValidator" class="ch.vd.unireg.param.validator.ParametrePeriodeFiscalePMValidator" />
@@ -46,7 +37,6 @@
 	<!-- Les Controlleurs -->
 
 	<bean id="parametrePeriodeController" class="ch.vd.unireg.param.ParamPeriodeController">
-		<property name="manager" ref="paramPeriodeManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="validators">
@@ -57,6 +47,11 @@
 				<ref bean="modeleDocumentValidator"/>
 			</util:list>
 		</property>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="parametrePeriodeFiscaleDAO" ref="parametrePeriodeFiscaleDAO"/>
+		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO"/>
+		<property name="periodeFiscaleService" ref="periodeFiscaleService"/>
 	</bean>
 
 	<bean id="modeleFeuilleDocumentController" class="ch.vd.unireg.param.ModeleFeuilleDocumentController">
