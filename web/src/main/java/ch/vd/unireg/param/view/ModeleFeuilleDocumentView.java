@@ -1,19 +1,39 @@
 package ch.vd.unireg.param.view;
 
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.type.ModeleFeuille;
 import ch.vd.unireg.type.TypeDocument;
 
 
 public class ModeleFeuilleDocumentView {
-	
+
+	private Long idFeuille;
+	private ModeleFeuille modeleFeuille;
 	private Long idPeriode;
 	private Integer periodeAnnee;
 	private Long idModele;
-	private Long idFeuille;
 	private TypeDocument modeleDocumentTypeDocument;
-	private ModeleFeuille modeleFeuille;
-	
-	
+
+	public ModeleFeuilleDocumentView() {
+	}
+
+	public ModeleFeuilleDocumentView(@NotNull ModeleFeuilleDocument mfd) {
+		final ModeleDocument modeleDocument = mfd.getModeleDocument();
+		final PeriodeFiscale periodeFiscale = modeleDocument.getPeriodeFiscale();
+		final ModeleFeuille modeleFeuille = ModeleFeuille.fromNoCADEV(mfd.getNoCADEV());
+
+		this.idFeuille = mfd.getId();
+		this.modeleFeuille = modeleFeuille;
+		this.idPeriode = periodeFiscale.getId();
+		this.periodeAnnee = periodeFiscale.getAnnee();
+		this.idModele = modeleDocument.getId();
+		this.modeleDocumentTypeDocument = modeleDocument.getTypeDocument();
+	}
+
 	public void setModeleDocumentTypeDocument(TypeDocument modeleDocumentTypeDocument) {
 		this.modeleDocumentTypeDocument = modeleDocumentTypeDocument;
 	}

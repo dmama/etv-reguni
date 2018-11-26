@@ -23,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.ModeleFeuilleDocumentDAO;
-import ch.vd.unireg.param.manager.ParamPeriodeManager;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.param.view.ModeleFeuilleDocumentView;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
@@ -40,17 +42,22 @@ public class ModeleFeuilleDocumentController {
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec sur l'écran de paramétrisation des périodes";
 
-	private ParamPeriodeManager manager;
 	private MessageSource messageSource;
+	private PeriodeFiscaleDAO periodeFiscaleDAO;
+	private ModeleDocumentDAO modeleDocumentDAO;
 	private ModeleFeuilleDocumentDAO modeleFeuilleDocumentDAO;
 	private Validator modeleFeuilleDocumentValidator;
 
-	public void setManager(ParamPeriodeManager manager) {
-		this.manager = manager;
-	}
-
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
+		this.periodeFiscaleDAO = periodeFiscaleDAO;
+	}
+
+	public void setModeleDocumentDAO(ModeleDocumentDAO modeleDocumentDAO) {
+		this.modeleDocumentDAO = modeleDocumentDAO;
 	}
 
 	public void setModeleFeuilleDocumentDAO(ModeleFeuilleDocumentDAO modeleFeuilleDocumentDAO) {
@@ -72,7 +79,22 @@ public class ModeleFeuilleDocumentController {
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String add(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, Model model) throws Exception {
 
-		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
+		final PeriodeFiscale pf = periodeFiscaleDAO.get(periodeId);
+		if (pf == null) {
+			throw new ObjectNotFoundException("Impossible de retrouver la période fiscale id : " + periodeId);
+		}
+
+		final ModeleDocument md = modeleDocumentDAO.get(modeleId);
+		if (md == null) {
+			throw new ObjectNotFoundException("Impossible de retrouver le modèle de document id : " + modeleId);
+		}
+
+		final ModeleFeuilleDocumentView view = new ModeleFeuilleDocumentView();
+		view.setIdPeriode(pf.getId());
+		view.setPeriodeAnnee(pf.getAnnee());
+		view.setIdModele(modeleId);
+		view.setModeleDocumentTypeDocument(md.getTypeDocument());
+
 		model.addAttribute("command", view);
 		model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 
@@ -87,7 +109,18 @@ public class ModeleFeuilleDocumentController {
 			model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 			return "param/feuille-add";
 		}
-		manager.addFeuille(view.getIdModele(), view.getModeleFeuille());
+
+		final ModeleDocument md = modeleDocumentDAO.get(view.getIdModele());
+		if (md == null) {
+			throw new ObjectNotFoundException("Impossible de retrouver le modèle de document id : " + view.getIdModele());
+		}
+
+		final ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
+		mfd.setNoCADEV(view.getModeleFeuille().getNoCADEV());
+		mfd.setNoFormulaireACI(view.getModeleFeuille().getNoFormulaireACI());
+		mfd.setIntituleFeuille(view.getModeleFeuille().getDescription());
+		mfd.setPrincipal(view.getModeleFeuille().isPrincipal());
+		md.addModeleFeuilleDocument(mfd);
 
 		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
 	}
@@ -95,10 +128,15 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String edit(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
-		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewEdit(periodeId, modeleId, feuilleId);
-		model.addAttribute("command", view);
-		model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
+	public String edit(@RequestParam("mfd") long feuilleId, Model model) throws Exception {
+
+		final ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(feuilleId);
+		if (mfd == null) {
+			throw new ObjectNotFoundException("Impossible de retrouver la feuille du modèle de document id : " + feuilleId);
+		}
+
+		model.addAttribute("command", new ModeleFeuilleDocumentView(mfd));
+		model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(new ModeleFeuilleDocumentView(mfd).getModeleDocumentTypeDocument()));
 		return "param/feuille-edit";
 	}
 
@@ -110,7 +148,15 @@ public class ModeleFeuilleDocumentController {
 			model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 			return "param/feuille-edit";
 		}
-		manager.updateFeuille(view.getIdFeuille(), view.getModeleFeuille());
+
+		final ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(view.getIdFeuille());
+		if (mfd == null) {
+			throw new ObjectNotFoundException("Impossible de retrouver la feuille du modèle de document id : " + view.getIdFeuille());
+		}
+
+		mfd.setNoCADEV(view.getModeleFeuille().getNoCADEV());
+		mfd.setNoFormulaireACI(view.getModeleFeuille().getNoFormulaireACI());
+		mfd.setIntituleFeuille(view.getModeleFeuille().getDescription());
 
 		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriode() + "&md=" + view.getIdModele();
 	}
@@ -120,7 +166,7 @@ public class ModeleFeuilleDocumentController {
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String suppr(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
 		try {
-			manager.deleteModeleFeuilleDocument(feuilleId);
+			modeleFeuilleDocumentDAO.remove(feuilleId);
 		}
 		catch (DataIntegrityViolationException e) {
 			Map<Long, String> m = new HashMap<>(1);

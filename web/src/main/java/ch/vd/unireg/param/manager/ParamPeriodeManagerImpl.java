@@ -15,7 +15,6 @@ import ch.vd.unireg.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.param.view.ModeleDocumentView;
-import ch.vd.unireg.param.view.ModeleFeuilleDocumentView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePPEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
@@ -26,7 +25,6 @@ import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC;
 import ch.vd.unireg.parametrage.PeriodeFiscaleService;
-import ch.vd.unireg.type.ModeleFeuille;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocumentEmolument;
 
@@ -270,31 +268,6 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewAdd(Long periodeId, Long modeleId) {
-		ModeleFeuilleDocumentView mfdv = new ModeleFeuilleDocumentView();
-		PeriodeFiscale pf = retrievePeriodeFromDAO(periodeId);
-		ModeleDocument md = retrieveModeleFromDAO(modeleId);
-		mfdv.setIdPeriode(pf.getId());
-		mfdv.setPeriodeAnnee(pf.getAnnee());
-		mfdv.setIdModele(modeleId);
-		mfdv.setModeleDocumentTypeDocument(md.getTypeDocument());
-		return mfdv;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewEdit(Long periodeId, Long modeleId, Long feuilleId) {
-		final ModeleFeuilleDocumentView mfdv = createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
-		final ModeleFeuilleDocument mfd = retrieveFeuilleFromDAO(feuilleId);
-		mfdv.setIdFeuille(feuilleId);
-
-		final ModeleFeuille modeleFeuille = ModeleFeuille.fromNoCADEV(mfd.getNoCADEV());
-		mfdv.setModeleFeuille(modeleFeuille);
-		return mfdv;
-	}
-
-	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscalePPEditView ppfv) {
 
@@ -439,35 +412,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void addFeuille(Long idModele, ModeleFeuille modeleFeuille) {
-		final ModeleDocument md = modeleDocumentDAO.get(idModele);
-		final ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
-		mfd.setNoCADEV(modeleFeuille.getNoCADEV());
-		mfd.setNoFormulaireACI(modeleFeuille.getNoFormulaireACI());
-		mfd.setIntituleFeuille(modeleFeuille.getDescription());
-		mfd.setPrincipal(modeleFeuille.isPrincipal());
-		md.addModeleFeuilleDocument(mfd);
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void updateFeuille(Long idFeuille, ModeleFeuille modeleFeuille) {
-		final ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(idFeuille);
-		mfd.setNoCADEV(modeleFeuille.getNoCADEV());
-		mfd.setNoFormulaireACI(modeleFeuille.getNoFormulaireACI());
-		mfd.setIntituleFeuille(modeleFeuille.getDescription());
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void deleteModeleDocument(Long idModeleDocument) {
 		modeleDocumentDAO.remove(idModeleDocument);
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void deleteModeleFeuilleDocument(Long idModeleFeuilleDocument) {
-		modeleFeuilleDocumentDAO.remove(idModeleFeuilleDocument);
 	}
 
 	private PeriodeFiscale retrievePeriodeFromDAO(Long idPeriode) {
@@ -476,22 +422,6 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 			throw new ObjectNotFoundException("Impossible de retrouver la période fiscale id : " + idPeriode);
 		}
 		return pf;
-	}
-
-	private ModeleDocument retrieveModeleFromDAO(Long idModeleDocument) {
-		ModeleDocument md = modeleDocumentDAO.get(idModeleDocument);
-		if (md == null) {
-			throw new ObjectNotFoundException("Impossible de retrouver le modèle de document id : " + idModeleDocument);
-		}
-		return md;
-	}
-
-	private ModeleFeuilleDocument retrieveFeuilleFromDAO(Long idFeuille) {
-		ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(idFeuille);
-		if (mfd == null) {
-			throw new ObjectNotFoundException("Impossible de retrouver la feuille du modèle de document id : " + idFeuille);
-		}
-		return mfd;
 	}
 
 }

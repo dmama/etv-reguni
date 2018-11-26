@@ -8,7 +8,6 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.param.view.ModeleDocumentView;
-import ch.vd.unireg.param.view.ModeleFeuilleDocumentView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePPEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
@@ -16,7 +15,6 @@ import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC;
-import ch.vd.unireg.type.ModeleFeuille;
 
 public interface ParamPeriodeManager {
 
@@ -163,24 +161,6 @@ public interface ParamPeriodeManager {
 	 */
 	@Transactional(readOnly = true)
 	ModeleDocumentView createModeleDocumentViewAdd (Long idPeriode);
-	
-	/**
-	 * Créer un objet {@link ModeleFeuilleDocumentView} en vue d'une edition.
-	 * 
-	 * @param modeleId L'id du {@link ModeleFeuilleDocument} à éditer
-	 * 
-	 */	
-	@Transactional(readOnly = true)
-	ModeleFeuilleDocumentView createModeleFeuilleDocumentViewEdit(Long periodeId, Long modeleId, Long feuilleId);
-	
-	
-	/**
-	 * Créer un objet {@link ModeleFeuilleDocumentView} en vu d'un ajout.
-	 * 
-	 * @param modeleId L'id du {@link ModeleDocument} parent
-	 */
-	@Transactional(readOnly = true)
-	ModeleFeuilleDocumentView createModeleFeuilleDocumentViewAdd(Long periodeId, Long modeleId);
 
 	/**
 	 * Sauvegarde le formulaire contenant un {@link ModeleDocument}
@@ -193,22 +173,4 @@ public interface ParamPeriodeManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void deleteModeleDocument(Long idModeleDocument);
-	
-	/**
-	 * Supprime une feuille de modèle de document
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void deleteModeleFeuilleDocument(Long idModeleFeuilleDocument);
-
-	/**
-	 * Sauvegarde le formulaire contenant un {@link ModeleFeuilleDocument} en Ajout
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void addFeuille(Long idModele, ModeleFeuille modeleFeuille);
-	
-	/**
-	 * Sauvegarde le formulaire contenant un {@link ModeleFeuilleDocument} en Edition
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void updateFeuille(Long idFeuille, ModeleFeuille modeleFeuille);
 }

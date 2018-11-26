@@ -60,8 +60,9 @@
 	</bean>
 
 	<bean id="modeleFeuilleDocumentController" class="ch.vd.unireg.param.ModeleFeuilleDocumentController">
-		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
 		<property name="modeleFeuilleDocumentValidator" ref="modeleFeuilleDocumentValidator" />
 	</bean>
