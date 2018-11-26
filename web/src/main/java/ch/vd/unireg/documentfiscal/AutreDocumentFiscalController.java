@@ -596,7 +596,9 @@ public class AutreDocumentFiscalController {
 		final boolean documentRetourne = (doc.getDateRetour() != null);
 		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
 		final boolean rappelEnvoye = (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
-		return !documentRetourne && !rappelEnvoye;
+		// [FISCPROJ-911] le bouton "Ajouter" du tableau délai d'un SNC "Echue" ne doit pas être affiché
+		final boolean qsncEstEchu = (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.ECHU) != null);
+		return !documentRetourne && !rappelEnvoye && !qsncEstEchu;
 	}
 
 	public void setMessageHelper(MessageHelper messageHelper) {
