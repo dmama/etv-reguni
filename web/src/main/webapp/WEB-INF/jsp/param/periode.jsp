@@ -80,8 +80,10 @@
 				<div style="margin-top: 5px">
 					<fmt:message key="label.param.periode.select"/>:
 					<select id="periode" name="pf">
+						<%--@elvariable id="periodes" type="java.util.List"--%>
 						<c:forEach var="periode" items="${periodes}">
 							<c:set var="selected" value=""/>
+							<%--@elvariable id="periodeSelectionnee" type="ch.vd.unireg.declaration.PeriodeFiscale"--%>
 							<c:if test="${periode.id == periodeSelectionnee.id }">
 								<c:set var="selected">
 									selected="selected"
@@ -97,19 +99,26 @@
 				</div>
 
 				<fmt:message key="label.param.periode.arg" var="titleParametres">
-					<fmt:param value="${String.valueOf(periodeSelectionnee.annee)}" />
+					<fmt:param value="${periodeSelectionnee.annee}" />
 				</fmt:message>
 
 				<fieldset style="margin: 10px" class="information">
+					<%--@elvariable id="parametrePeriodeFiscalePPVaud" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePPHorsCanton" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePPHorsSuisse" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePPDepense" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePPDiplomateSuisse" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
 					<legend>
 						<fmt:message key="label.param.parametres.personnes.physiques"/>
 					</legend>
 					<a href="pf-edit-pp.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
 
 					<div class="checkbox">
-						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDIPP}">checked</c:if>/>
+						<input type="checkbox" disabled="disabled" <%--@elvariable id="codeControleSurSommationDIPP" type="java.lang.Boolean"--%>
+						<c:if test="${codeControleSurSommationDIPP}">checked</c:if>/>
 						<fmt:message key="label.param.code.controle.sur.sommation.pp"/>
 					</div>
+						<%--@elvariable id="parametrePeriodeFiscaleEmomulementSommationDIPP" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument"--%>
 					<c:if test="${parametrePeriodeFiscaleEmomulementSommationDIPP.montant != null}">
 						<div class="emolument">
 							<fmt:message key="label.param.emolument.sommation"/>&nbsp;:
@@ -130,7 +139,7 @@
 						<tr>
 							<th><fmt:message key="label.param.som.reg"/></th>
 							<td>
-								<unireg:date date="${parametrePeriodeFiscalePPVaud.termeGeneralSommationReglementaire}"></unireg:date>
+								<unireg:date date="${parametrePeriodeFiscalePPVaud.termeGeneralSommationReglementaire}"/>
 							</td>
 							<td>
 								<unireg:date date="${parametrePeriodeFiscalePPHorsCanton.termeGeneralSommationReglementaire}"/>
@@ -186,13 +195,18 @@
 				</fieldset>
 
 				<fieldset style="margin: 10px" class="information">
+					<%--@elvariable id="parametrePeriodeFiscalePMVaud" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePMHorsCanton" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePMHorsSuisse" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM"--%>
+					<%--@elvariable id="parametrePeriodeFiscalePMUtilitePublique" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePM"--%>
 					<legend>
 						<fmt:message key="label.param.parametres.personnes.morales"/>
 					</legend>
 					<a href="pf-edit-pm.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
 
 					<div class="checkbox">
-						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDIPM}">checked</c:if>/>
+						<input type="checkbox" disabled="disabled" <%--@elvariable id="codeControleSurSommationDIPM" type="java.lang.Boolean"--%>
+						<c:if test="${codeControleSurSommationDIPM}">checked</c:if>/>
 						<fmt:message key="label.param.code.controle.sur.sommation.pm"/>
 					</div>
 
@@ -319,12 +333,14 @@
 				</fieldset>
 
 				<fieldset style="margin: 10px" class="information">
+					<%--@elvariable id="parametrePeriodeFiscaleSNC" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC"--%>
 					<legend>
 						<fmt:message key="label.param.parametres.questionnaires.snc"/>
 					</legend>
 					<a href="pf-edit-snc.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
 					<div class="checkbox">
-						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurRappelQSNC}">checked</c:if>/>
+						<input type="checkbox" disabled="disabled" <%--@elvariable id="codeControleSurRappelQSNC" type="java.lang.Boolean"--%>
+						<c:if test="${codeControleSurRappelQSNC}">checked</c:if>/>
 						<fmt:message key="label.param.code.controle.sur.rappel.snc"/>
 					</div>
 					<table>
@@ -356,6 +372,7 @@
 							<th class="colonneModele">&nbsp;</th>
 							<th class="colonneModeleAction"><fmt:message key="title.param.action"/></th>
 						</tr>
+						<%--@elvariable id="modeles" type="java.util.List"--%>
 						<c:forEach var="modele" items="${modeles}">
 							<tr class="odd">
 								<td >${periodeSelectionnee.annee}</td>
@@ -376,6 +393,7 @@
 							<select name="md" id="modele">
 								<c:forEach var="modele" items="${modeles}">
 									<c:set var="selected" value=""/>
+									<%--@elvariable id="modeleSelectionne" type="ch.vd.unireg.declaration.ModeleDocument"--%>
 									<c:if test="${modele.id == modeleSelectionne.id }">
 										<c:set var="selected">
 											selected="selected"
@@ -415,6 +433,7 @@
 									<th class="colonneFeuille">&nbsp;</th>
 									<th class="colonneFeuilleAction" ><fmt:message key="title.param.action"/></th>
 								</tr>
+								<%--@elvariable id="feuilles" type="java.util.List"--%>
 								<c:forEach var="feuille" varStatus="i" items="${feuilles}">
 									<tr class="odd">
 										<td class="colonneFeuille">${periodeSelectionnee.annee}</td>
