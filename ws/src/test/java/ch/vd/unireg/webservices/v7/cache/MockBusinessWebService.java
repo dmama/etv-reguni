@@ -82,8 +82,8 @@ public class MockBusinessWebService implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException {
-		return target.validateGroupDeadlineRequest(request);
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) throws AccessDeniedException {
+		return target.validateGroupDeadlineRequest(request, today);
 	}
 
 	@Override

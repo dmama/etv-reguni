@@ -178,11 +178,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@NotNull
 	@Override
-	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException {
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.validateGroupDeadlineRequest(request);
+			return target.validateGroupDeadlineRequest(request, today);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;

@@ -40,6 +40,7 @@ import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.load.DetailedLoadMeter;
 import ch.vd.unireg.stats.DetailedLoadMonitorable;
 import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.utils.UniregModeHelper;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
@@ -512,10 +513,24 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response validateGroupDeadlineRequest(String user, GroupDeadlineValidationRequest request) {
-		final Supplier<String> params = () -> String.format("validateGroupDeadlineRequest{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
+	public Response validateGroupDeadlineRequest(String user, String todayAsString, GroupDeadlineValidationRequest request) {
+		final Supplier<String> params = () -> String.format("validateGroupDeadlineRequest{user=%s, today=%s, request=%s}", WebServiceHelper.enquote(user), todayAsString, request);
 		return execute(user, params, READ_ACCESS_LOG, () -> {
-			final GroupDeadlineValidationResponse response = target.validateGroupDeadlineRequest(request);
+
+			final RegDate today;
+			if (UniregModeHelper.isTestMode() && StringUtils.isNotBlank(todayAsString)) {
+				try {
+					today = dateFromString(todayAsString, false);
+				}
+				catch (ParseException | IllegalArgumentException e) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+				}
+			}
+			else {
+				today = RegDate.get();
+			}
+
+			final GroupDeadlineValidationResponse response = target.validateGroupDeadlineRequest(request, today);
 			return ExecutionResult.with(Response.ok(groupdeadlineObjectFactory.createGroupDeadlineValidationResponse(response)).build());
 		});
 	}

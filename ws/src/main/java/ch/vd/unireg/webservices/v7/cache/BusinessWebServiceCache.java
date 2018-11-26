@@ -377,9 +377,9 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@NotNull
 	@Override
-	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException {
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) throws AccessDeniedException {
 		// pas de cache sur cette requête
-		return target.validateGroupDeadlineRequest(request);
+		return target.validateGroupDeadlineRequest(request, today);
 	}
 
 	@Override

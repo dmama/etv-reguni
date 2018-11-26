@@ -87,9 +87,9 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException {
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) throws AccessDeniedException {
 		// le droit d'ajouter un délai dépend du type de contribuable PP/PM, le check est donc fait dans l'implémentation.
-		return target.validateGroupDeadlineRequest(request);
+		return target.validateGroupDeadlineRequest(request, today);
 	}
 
 	@Override

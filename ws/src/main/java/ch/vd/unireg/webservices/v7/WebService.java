@@ -284,6 +284,7 @@ public interface WebService {
 			@ApiResponse(code = 415, message = ERROR_415_MESSAGE)
 	})
 	Response validateGroupDeadlineRequest(@ApiParam(value = USER_PARAM_DESCRIPTION, required = true) @QueryParam("user") String user,
+	                                      @ApiParam(value = "la date du jour (JJ.MM.AAAA), seulement actif avec le mode de test activé") @QueryParam("today") String today,
 	                                      @ApiParam(value = "XML au format de l’élément « groupDeadlineValidationRequest » du namespace http://www.vd.ch/fiscalite/unireg/ws/groupdeadline/7.", required = true) GroupDeadlineValidationRequest request);
 
 	@GET

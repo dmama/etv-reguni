@@ -664,14 +664,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) {
-		final RegDate today = RegDate.get();
-		return validateGroupDeadlineRequest(request, today);
-	}
-
-	// package protected : pour le testing
-	@NotNull
-	GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, RegDate today) {
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) {
 		final int periodeFiscale = request.getTaxPeriod();
 		final List<Integer> ctbIds = request.getTaxPayerNumber();
 		final TypeDemande typeDemande = ctbIds.size() > 1 ? TypeDemande.GROUPEE : TypeDemande.UNITAIRE;

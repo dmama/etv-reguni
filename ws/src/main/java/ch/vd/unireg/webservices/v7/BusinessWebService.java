@@ -105,10 +105,11 @@ public interface BusinessWebService {
 	 * Validation d'une demande de groupée de délais sur plusieurs déclarations d'impôt
 	 *
 	 * @param request la demande de délai à valider
+	 * @param today   la date du jour à utiliser
 	 * @return la réponse
 	 */
 	@NotNull
-	GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException;
+	GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) throws AccessDeniedException;
 
 	/**
 	 * Récupère les offices d'impôt de la commune identifiée par son numéro OFS et la date de validité
