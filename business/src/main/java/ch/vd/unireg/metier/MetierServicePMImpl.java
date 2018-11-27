@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +58,7 @@ import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.unireg.tiers.ForsParTypeAt;
 import ch.vd.unireg.tiers.FusionEntreprises;
 import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.LienAssociesEtSNC;
 import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -160,7 +162,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 			dateDebutFiscal = premierForFiscalPrincipal.getDateDebut();
 			LOGGER.info("Calcul des fors secondaires entreprise {}: utilisation de la date de début du premier for fiscal principal comme début effectif des données fiscales.",
 			            FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-		} else {
+		}
+		else {
 			throw new MetierServiceException(
 					String.format("Calcul des fors secondaires entreprise n°%s: Impossible de calculer les fors secondaires en l'absence d'un for principal.",
 					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
@@ -190,19 +193,22 @@ public class MetierServicePMImpl implements MetierServicePM {
 		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 		final RaisonSocialeFiscaleEntreprise raisonSociale = RangeUtil.getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date,
-		                                                                             () -> "Appariement impossible car il existe une raison sociale saisie sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
+		                                                                             () -> "Appariement impossible car il existe une raison sociale saisie sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) +
+				                                                                             " après le " + RegDateHelper.dateToDisplayString(date));
 		if (raisonSociale != null && raisonSociale.getDateFin() == null) {
 			tiersService.closeRaisonSocialeFiscale(raisonSociale, date.getOneDayBefore());
 		}
 
 		final FormeJuridiqueFiscaleEntreprise formeJuridique = RangeUtil.getAssertLast(entreprise.getFormesJuridiquesNonAnnuleesTriees(), date,
-		                                                                               () -> "Appariement impossible car il existe une forme juridique saisie sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
+		                                                                               () -> "Appariement impossible car il existe une forme juridique saisie sur l'entreprise fiscale n°" +
+				                                                                               FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
 		if (formeJuridique != null && formeJuridique.getDateFin() == null) {
 			tiersService.closeFormeJuridiqueFiscale(formeJuridique, date.getOneDayBefore());
 		}
 
 		final CapitalFiscalEntreprise capital = RangeUtil.getAssertLast(entreprise.getCapitauxNonAnnulesTries(), date,
-		                                                                () -> "Appariement impossible car il existe un capital saisi sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
+		                                                                () -> "Appariement impossible car il existe un capital saisi sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " +
+				                                                                RegDateHelper.dateToDisplayString(date));
 		if (capital != null && capital.getDateFin() == null) {
 			tiersService.closeCapitalFiscal(capital, date.getOneDayBefore());
 		}
@@ -217,12 +223,14 @@ public class MetierServicePMImpl implements MetierServicePM {
 			throw new MetierServiceException(String.format("L'entreprise %s ne possède pas d'établissement principal!", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 		}
 		if (etablissementPrincipalRange.getDateDebut().isAfter(date)) {
-			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
+			throw new MetierServiceException(
+					String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
 
 		final Etablissement etablissementPrincipal = etablissementPrincipalRange.getPayload();
 		final DomicileEtablissement domicile = RangeUtil.getAssertLast(etablissementPrincipal.getSortedDomiciles(false), date,
-		                                                               () -> "Appariement impossible car il existe un domicile saisi sur l'établissement principal fiscal n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissementPrincipal.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
+		                                                               () -> "Appariement impossible car il existe un domicile saisi sur l'établissement principal fiscal n°" +
+				                                                               FormatNumeroHelper.numeroCTBToDisplay(etablissementPrincipal.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
 		if (domicile == null) {
 			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile en date du %s. Impossible de continuer le rapprochement.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
@@ -251,7 +259,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 					throw new MetierServiceException(String.format("L'établissement secondaire %s est censé être connu au civil mais son numéro ne correspond à aucun des établissements civil RCEnt de l'entreprise civile %d!",
 					                                               FormatNumeroHelper.numeroCTBToDisplay(numeroEtablissement), entreprise.getNumeroEntreprise()));
 				}
-			} else {
+			}
+			else {
 				etablissementsNonEncoreRattaches.add(etablissementSecondaire);
 			}
 		}
@@ -286,7 +295,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 			if (identificationsEntreprise != null && !identificationsEntreprise.isEmpty()) {
 				String noIdeEtablissement = identificationsEntreprise.iterator().next().getNumeroIde();
 				final DateRanged<String> noIdeEtablissementsRange = RangeUtil.getAssertLast(etablissementCivilForKey.getNumeroIDE(), date,
-				                                                                            () -> "Appariement impossible car il existe un numéro IDE sur l'établissement civil n°" + etablissementCivilForKey.getNumeroEtablissement() + " après le " + RegDateHelper.dateToDisplayString(date));
+				                                                                            () -> "Appariement impossible car il existe un numéro IDE sur l'établissement civil n°" + etablissementCivilForKey.getNumeroEtablissement() + " après le " +
+						                                                                            RegDateHelper.dateToDisplayString(date));
 				if (noIdeEtablissement != null && noIdeEtablissementsRange != null && !noIdeEtablissement.equals(noIdeEtablissementsRange.getPayload())) {
 					continue;
 				}
@@ -421,7 +431,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 		final List<DomicileEtablissement> domicileEtablissements = new ArrayList<>(etablissement.getDomiciles());
 		domicileEtablissements.sort(DateRangeComparator::compareRanges);
 		return RangeUtil.getAssertLast(domicileEtablissements, date,
-		                               () -> "Appariement impossible car il existe un domicile saisi sur l'établissement fiscal n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
+		                               () -> "Appariement impossible car il existe un domicile saisi sur l'établissement fiscal n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()) + " après le " +
+				                               RegDateHelper.dateToDisplayString(date));
 	}
 
 
@@ -436,14 +447,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		// 1. on ferme tous les rapports entre tiers ouvert (mandats et établissements secondaires)
 
-		for (RapportEntreTiers ret : CollectionsUtils.merged(entreprise.getRapportsSujet(), entreprise.getRapportsObjet())) {
-			if (!ret.isAnnule() && ret.getDateFin() == null) {
-				final boolean aFermer = (ret instanceof ActiviteEconomique && !((ActiviteEconomique) ret).isPrincipal()) || (ret instanceof Mandat);
-				if (aFermer) {
-					ret.setDateFin(datePrononceFaillite);
-				}
-			}
-		}
+		fermetureRapportEntreTiersSuiteFinActivite(entreprise, datePrononceFaillite);
 
 		// 1'. [SIFISC-18810] on ferme également les adresses mandataires...
 		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
@@ -717,14 +721,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		// 1. on ferme tous les rapports entre tiers ouvert (mandats et établissements secondaires)
 
-		for (RapportEntreTiers ret : CollectionsUtils.merged(entreprise.getRapportsSujet(), entreprise.getRapportsObjet())) {
-			if (!ret.isAnnule() && ret.getDateFin() == null) {
-				final boolean aFermer = (ret instanceof ActiviteEconomique && !((ActiviteEconomique) ret).isPrincipal()) || (ret instanceof Mandat);
-				if (aFermer) {
-					ret.setDateFin(dateFinActivite);
-				}
-			}
-		}
+		fermetureRapportEntreTiersSuiteFinActivite(entreprise, dateFinActivite);
 
 		// 1'. [SIFISC-18810] on ferme également les adresses mandataires...
 		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
@@ -757,6 +754,16 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// 6. éventuellement ajout d'une remarque sur l'entreprise
 
 		addRemarque(entreprise, remarqueAssociee);
+	}
+
+	private void fermetureRapportEntreTiersSuiteFinActivite(Entreprise entreprise, RegDate dateFinActivite) {
+		final Iterable<RapportEntreTiers> rapportEntreTiers = CollectionsUtils.merged(entreprise.getRapportsSujet(), entreprise.getRapportsObjet());
+		StreamSupport.stream(rapportEntreTiers.spliterator(), Boolean.FALSE)
+				.filter(rapport -> !rapport.isAnnule() && rapport.getDateFin() == null)
+				.filter(rapportEncoreValide -> (rapportEncoreValide instanceof ActiviteEconomique && !((ActiviteEconomique) rapportEncoreValide).isPrincipal())
+								|| (rapportEncoreValide instanceof Mandat)
+								|| (rapportEncoreValide instanceof LienAssociesEtSNC)) // FISCPROJ-914  date de fin pas mise à jour en cas de radiation d'une PM
+				.forEach(rapportAFermer -> rapportAFermer.setDateFin(dateFinActivite));
 	}
 
 	@Override
@@ -883,7 +890,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	/**
-	 * @param adresse adresse de l'entreprise absorbante
+	 * @param adresse           adresse de l'entreprise absorbante
 	 * @param dateDebutValidite date de début de validité de la surcharge souhaitée
 	 * @return une adresse courrier surchargée à placer sur l'entreprise absorbée
 	 */

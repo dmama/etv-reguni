@@ -63,8 +63,11 @@ import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.tiers.ForsParType;
 import ch.vd.unireg.tiers.FusionEntreprises;
+import ch.vd.unireg.tiers.LienAssociesEtSNC;
 import ch.vd.unireg.tiers.MontantMonetaire;
+import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.tiers.Remarque;
 import ch.vd.unireg.tiers.ScissionEntreprise;
 import ch.vd.unireg.tiers.TransfertPatrimoine;
@@ -74,6 +77,7 @@ import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEtatEntreprise;
@@ -2286,6 +2290,109 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(dateCessationActivite, eff.getDateValeur());
 					Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
 				}
+			}
+		});
+	}
+
+	@Test
+	public void testFinActiviteEtFermetureRapportEntreTiers() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2000, 4, 1);
+		final RegDate dateCessationActivite = date(2018, 11, 13);
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+			long idEtablissementSecondaire;
+			long idPP;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateCreationEntreprise, null, "Ma petite entreprise");
+			addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+			addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+			addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
+
+			addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+
+			final Etablissement etablissementPrincipal = addEtablissement();
+			addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
+			addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
+
+			final Etablissement etablissementSecondaire = addEtablissement();
+			addDomicileEtablissement(etablissementSecondaire, dateCreationEntreprise, null, MockCommune.ChateauDoex);
+			addActiviteEconomique(entreprise, etablissementSecondaire, dateCreationEntreprise, null, false);
+
+			addEtatEntreprise(entreprise, dateCreationEntreprise, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+			ids1.idEtablissementSecondaire = etablissementSecondaire.getNumero();
+			return ids1;
+		});
+
+		// ajout des rapport entre tiers
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique paul = addNonHabitant("Paul", "Ruccola", date(1968, 1, 1), Sexe.MASCULIN);
+			// Crée un Liens associé SNC
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			final LienAssociesEtSNC lienAssociesEtSNC = new LienAssociesEtSNC();
+			lienAssociesEtSNC.setDateDebut(dateCreationEntreprise);
+			tiersService.addRapport(lienAssociesEtSNC, paul, entreprise);
+			ids.idPP = paul.getId();
+			return ids;
+		});
+
+		// traitement de la faillite
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+				metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
+
+				// 1. les fors doivent être fermés pour motif FAILLITE
+				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+				Assert.assertNotNull(forsFiscaux);
+				Assert.assertEquals(2, forsFiscaux.size());
+				for (ForFiscal ff : forsFiscaux) {
+					Assert.assertFalse(ff.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertEquals(dateCessationActivite, ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+				}
+
+				// 2. le rapport entre tiers vers Associé SNC doit être fermé.
+				final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsObjet();
+				Assert.assertNotNull(rapportsSujet);
+				Assert.assertEquals(1, rapportsSujet.size());
+				for (RapportEntreTiers ret : rapportsSujet) {
+					Assert.assertFalse(ret.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, ret.getDateDebut());
+					Assert.assertEquals(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, ret.getType());
+					Assert.assertEquals(dateCessationActivite, ret.getDateFin());
+				}
+
 			}
 		});
 	}
