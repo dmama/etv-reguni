@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateEntity;
 
@@ -54,7 +55,7 @@ public abstract class DelaisAccordablesOnline extends HibernateEntity {
 	@ManyToOne(cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
-	@JoinColumn(name = "PARAM_PF_DELAI_ID", insertable = false, updatable = false)
+	@JoinColumn(name = "PARAM_PF_DELAI_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_PARAM_PF_DELAI_PERIODE_ID", columnNames = "PARAM_PF_DELAI_ID")
 	public ParametreDemandeDelaisOnline getParent() {
 		return parent;
@@ -63,4 +64,13 @@ public abstract class DelaisAccordablesOnline extends HibernateEntity {
 	public void setParent(ParametreDemandeDelaisOnline parent) {
 		this.parent = parent;
 	}
+
+	/**
+	 * Fait une copie du paramètre en l'adaptant pour la période fiscale spécifiée.
+	 *
+	 * @param periodeFiscale une période fiscale
+	 * @return une copie du paramètre courant.
+	 */
+	@NotNull
+	public abstract DelaisAccordablesOnline duplicateFor(int periodeFiscale);
 }

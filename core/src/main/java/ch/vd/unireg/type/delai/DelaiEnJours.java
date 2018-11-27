@@ -27,6 +27,11 @@ public class DelaiEnJours extends Delai {
 		this.reportFinMois = reportFinMois;
 	}
 
+	public DelaiEnJours(@NotNull DelaiEnJours right) {
+		this.jours = right.getJours();
+		this.reportFinMois = right.isReportFinMois();
+	}
+
 	/**
 	 * @return le nombre de jours de délai.
 	 */
@@ -92,5 +97,10 @@ public class DelaiEnJours extends Delai {
 		final boolean reportFinMois = (matcher.group(2) != null);
 
 		return new DelaiEnJours(jours, reportFinMois);
+	}
+
+	@Override
+	public DelaiEnJours duplicate() {
+		return new DelaiEnJours(this);
 	}
 }

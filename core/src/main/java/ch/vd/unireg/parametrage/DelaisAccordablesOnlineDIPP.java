@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,6 +55,13 @@ public class DelaisAccordablesOnlineDIPP extends DelaisAccordablesOnline impleme
 		this.delaisDemandeGroupee = delaisDemandeGroupee;
 	}
 
+	public DelaisAccordablesOnlineDIPP(@NotNull DelaisAccordablesOnlineDIPP right, int periodeFiscale) {
+		this.dateDebut = RegDate.get(periodeFiscale + 1, right.getDateDebut().month(), right.getDateDebut().day());
+		this.dateFin = RegDate.get(periodeFiscale + 1, right.getDateFin().month(), right.getDateFin().day());
+		this.delaisDemandeUnitaire = new ArrayList<>(right.getDelaisDemandeUnitaire()); // les objets DayMonth sont immutables, inutile d'en faire des copies
+		this.delaisDemandeGroupee = new ArrayList<>(right.getDelaisDemandeGroupee());
+	}
+
 	@Override
 	@Column(name = "DATE_DEBUT")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
@@ -100,5 +108,11 @@ public class DelaisAccordablesOnlineDIPP extends DelaisAccordablesOnline impleme
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && DateRange.super.isValidAt(date);
+	}
+
+	@NotNull
+	@Override
+	public DelaisAccordablesOnlineDIPP duplicateFor(int periodeFiscale) {
+		return new DelaisAccordablesOnlineDIPP(this, periodeFiscale);
 	}
 }

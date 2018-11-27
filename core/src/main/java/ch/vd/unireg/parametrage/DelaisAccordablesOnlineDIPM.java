@@ -5,11 +5,13 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.type.delai.Delai;
 
 /**
@@ -47,6 +49,17 @@ public class DelaisAccordablesOnlineDIPM extends DelaisAccordablesOnline {
 		this.delaiDebut = delaiDebut;
 		this.delaisDemandeUnitaire = delaisDemandeUnitaire;
 		this.delaisDemandeGroupee = delaisDemandeGroupee;
+	}
+
+	public DelaisAccordablesOnlineDIPM(@NotNull DelaisAccordablesOnlineDIPM right) {
+		this.index = right.getIndex();
+		this.delaiDebut = right.getDelaiDebut().duplicate();
+		this.delaisDemandeUnitaire = right.getDelaisDemandeUnitaire().stream()
+				.map(Duplicable::duplicate)
+				.collect(Collectors.toList());
+		this.delaisDemandeGroupee = right.getDelaisDemandeGroupee().stream()
+				.map(Duplicable::duplicate)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -101,5 +114,11 @@ public class DelaisAccordablesOnlineDIPM extends DelaisAccordablesOnline {
 
 	public void setDelaisDemandeGroupee(List<Delai> delaisDemandeGroupee) {
 		this.delaisDemandeGroupee = delaisDemandeGroupee;
+	}
+
+	@NotNull
+	@Override
+	public DelaisAccordablesOnlineDIPM duplicateFor(int periodeFiscale) {
+		return new DelaisAccordablesOnlineDIPM(this);
 	}
 }

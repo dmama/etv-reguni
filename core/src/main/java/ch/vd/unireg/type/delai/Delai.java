@@ -3,11 +3,12 @@ package ch.vd.unireg.type.delai;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.Duplicable;
 
 /**
  * Un délai qui permet de tranformer une {@link RegDate} en une autre.
  */
-public abstract class Delai {
+public abstract class Delai implements Duplicable<Delai> {
 
 	/**
 	 * Applique le délai à la date spécifiée.

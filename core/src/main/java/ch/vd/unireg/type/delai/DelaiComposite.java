@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.Duplicable;
 
 /**
  * Un délai composé de plusieurs autres délais appliqués successivement.
@@ -26,6 +27,12 @@ public class DelaiComposite extends Delai {
 			throw new IllegalArgumentException("Il doit y avoir au moins 2 composants");
 		}
 		this.composants = Collections.unmodifiableList(composants);
+	}
+
+	public DelaiComposite(@NotNull DelaiComposite right) {
+		this.composants = right.getComposants().stream()
+				.map(Duplicable::duplicate)
+				.collect(Collectors.toList());
 	}
 
 	public DelaiComposite(Delai... composants) {
@@ -80,5 +87,10 @@ public class DelaiComposite extends Delai {
 				.map(Delai::fromString)
 				.collect(Collectors.toList());
 		return new DelaiComposite(list);
+	}
+
+	@Override
+	public DelaiComposite duplicate() {
+		return new DelaiComposite(this);
 	}
 }

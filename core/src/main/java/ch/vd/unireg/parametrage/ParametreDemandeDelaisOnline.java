@@ -11,9 +11,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
+
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 
 /**
  * Paramètrage des délais accordables pour les demandes de délais online (e-Délai) pour un type de contribuable et une période fiscale déterminée.
@@ -34,8 +38,13 @@ public class ParametreDemandeDelaisOnline extends ParametrePeriodeFiscale {
 	public ParametreDemandeDelaisOnline() {
 	}
 
-	public ParametreDemandeDelaisOnline(ParametreDemandeDelaisOnline right) {
-		super(right);
+	public ParametreDemandeDelaisOnline(@NotNull ParametreDemandeDelaisOnline previous, @NotNull PeriodeFiscale nvellePeriodeFiscale) {
+		super(nvellePeriodeFiscale);
+		this.typeTiers = previous.getTypeTiers();
+		this.periodesDelais = previous.getPeriodesDelais().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(p -> p.duplicateFor(nvellePeriodeFiscale.getAnnee()))
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -43,7 +52,7 @@ public class ParametreDemandeDelaisOnline extends ParametrePeriodeFiscale {
 	 */
 	// configuration hibernate : le paramètre possède les périodes
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "PARAM_PF_DELAI_ID")
+	@JoinColumn(name = "PARAM_PF_DELAI_ID", nullable = false)
 	@ForeignKey(name = "FK_PARAM_PF_DELAI_PERIODE_ID")
 	public Set<DelaisAccordablesOnline> getPeriodesDelais() {
 		return periodesDelais;
@@ -57,6 +66,7 @@ public class ParametreDemandeDelaisOnline extends ParametrePeriodeFiscale {
 		if (periodesDelais == null) {
 			periodesDelais = new HashSet<>();
 		}
+		periode.setParent(this);
 		periodesDelais.add(periode);
 	}
 

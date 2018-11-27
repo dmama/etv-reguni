@@ -43,15 +43,14 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 			PeriodeFiscale premierePeriodeFiscale =  new PeriodeFiscale();
 			premierePeriodeFiscale.setAnnee(anneePremierePeriode);
 			premierePeriodeFiscale.setDefaultPeriodeFiscaleParametres();
-			dao.save(premierePeriodeFiscale);
-			return premierePeriodeFiscale;
-		} else {
+			return dao.save(premierePeriodeFiscale);
+		}
+		else {
 			// Il existe déjà une période fiscale
 			PeriodeFiscale periodeFiscale = list.get(0);
-			PeriodeFiscale nllePeriodeFiscale =  new PeriodeFiscale();
+			PeriodeFiscale nllePeriodeFiscale = new PeriodeFiscale();
 			initPeriodeFiscale(nllePeriodeFiscale, periodeFiscale);
-			dao.save(nllePeriodeFiscale);
-			return nllePeriodeFiscale;
+			return dao.save(nllePeriodeFiscale);
 		}
 	}
 
@@ -78,6 +77,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		addInitializerMapping(initializers, ParametrePeriodeFiscalePM.class, new ParametrePeriodeFiscalePMInitializer());
 		addInitializerMapping(initializers, ParametrePeriodeFiscaleSNC.class, new ParametrePeriodeFiscaleSNCInitializer());
 		addInitializerMapping(initializers, ParametrePeriodeFiscaleEmolument.class, new ParametrePeriodeFiscaleEmolumentInitializer());
+		addInitializerMapping(initializers, ParametreDemandeDelaisOnline.class, ParametreDemandeDelaisOnline::new);
 
 		for (ParametrePeriodeFiscale ppf : source.getParametrePeriodeFiscale()) {
 			final ParametrePeriodeFiscale newParam = initializeNewParameter(initializers, ppf, destination);

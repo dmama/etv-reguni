@@ -117,7 +117,7 @@ public class JspTagLinkTo extends RequestContextAwareTag {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<a href=\"").append(url).append("\" class=\"").append(link_class).append("\"");
 		if (StringUtils.isNotBlank(title)) {
-			sb.append(" title=\"").append(HtmlUtils.htmlEscape((title))).append("\"");
+			sb.append(" title=\"").append(HtmlUtils.htmlEscape(resolveCode(title))).append("\"");
 		}
 		if (onclickScript != null) {
 			sb.append(" onclick=\"").append(onclickScript).append("\"");
