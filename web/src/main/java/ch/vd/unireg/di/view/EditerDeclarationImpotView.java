@@ -34,6 +34,7 @@ public class EditerDeclarationImpotView {
 	private Long id;
 	private TypeDocument typeDocument;
 	private RegDate dateRetour;
+	private RegDate delaiRetourImprime;
 	private int periodeFiscale;
 	private RegDate dateDebutPeriodeImposition;
 	private RegDate dateFinPeriodeImposition;
@@ -83,6 +84,7 @@ public class EditerDeclarationImpotView {
 		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
+		this.delaiRetourImprime = di.getDelaiRetourImprime();
 		this.codeControle = di.getCodeControle();
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
@@ -205,6 +207,10 @@ public class EditerDeclarationImpotView {
 
 	public RegDate getDateFinPeriodeImposition() {
 		return dateFinPeriodeImposition;
+	}
+
+	public RegDate getDelaiRetourImprime() {
+		return delaiRetourImprime;
 	}
 
 	public RegDate getDateDebutExerciceCommercial() {

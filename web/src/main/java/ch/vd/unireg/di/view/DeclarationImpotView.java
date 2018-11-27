@@ -9,7 +9,6 @@ import ch.vd.unireg.declaration.view.DeclarationView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.utils.WebContextUtils;
 
 /**
  * Vue d'une déclaration d'impôt (ordinaire)
@@ -20,6 +19,7 @@ public class DeclarationImpotView extends DeclarationView implements CodeControl
 	private final String codeControle;
 	private final TypeDocument typeDocument;
 	private final String typeDocumentMessage;
+	private final RegDate delaiRetourImprime;
 	private final boolean diPP;
 	private final boolean diPM;
 	private final RegDate dateDebutExercice;
@@ -36,6 +36,7 @@ public class DeclarationImpotView extends DeclarationView implements CodeControl
 		else {
 			this.typeDocumentMessage = null;
 		}
+		this.delaiRetourImprime = di.getDelaiRetourImprime();
 
 		if (di instanceof DeclarationImpotOrdinairePM) {
 			final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
@@ -65,6 +66,10 @@ public class DeclarationImpotView extends DeclarationView implements CodeControl
 
 	public TypeDocument getTypeDocument() {
 		return typeDocument;
+	}
+
+	public RegDate getDelaiRetourImprime() {
+		return delaiRetourImprime;
 	}
 
 	public String getTypeDocumentMessage() {

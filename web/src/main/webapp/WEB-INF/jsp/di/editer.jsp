@@ -8,6 +8,7 @@
 	<tiles:put name="body">
 
 		<unireg:nextRowClass reset="1"/>
+		<%--@elvariable id="command" type="ch.vd.unireg.di.view.EditerDeclarationImpotView"--%>
 		<unireg:bandeauTiers numero="${command.tiersId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" />
 
 		<!-- Debut Declaration impot -->
@@ -38,8 +39,14 @@
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
 					<td width="25%"><c:if test="${command.typeDocument != null}"><fmt:message key="option.type.document.${command.typeDocument}"/></c:if></td>
+					<td width="25%"><fmt:message key="label.date.delai.imprimee" />&nbsp;:</td>
+					<td width="25%"><unireg:regdate regdate="${command.delaiRetourImprime}"/></td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
 					<td width="25%"><fmt:message key="option.etat.avancement.f.${command.dernierEtat}"/></td>
+					<td></td>
+					<td></td>
 				</tr>
 			</table>
 		</fieldset>

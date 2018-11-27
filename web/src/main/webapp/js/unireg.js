@@ -2762,6 +2762,7 @@ var Decl = {
 			/** @namespace di.dateDebut */
 			/** @namespace di.dateFin */
 			/** @namespace di.typeDocumentMessage */
+			/** @namespace di.delaiRetourImprime */
 			if (di) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la déclaration d\'impôt</span></legend>';
 				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + di.periodeFiscale + '</td>';
@@ -2769,7 +2770,7 @@ var Decl = {
 				info += '<tr class="even"><td width="25%">Début période imposition&nbsp;:</td><td width="25%">' + RegDate.format(di.dateDebut) + '</td>';
 				info += '<td width="25%">Fin période imposition&nbsp;:</td><td width="25%">' + RegDate.format(di.dateFin) + '</td></tr>';
 				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(di.typeDocumentMessage) + '</td>';
-				info += '<td width="25%">&nbsp;</td><td width="25%">&nbsp;</td></tr></table></fieldset>\n';
+				info += '<td width="25%">Date de délai imprimée&nbsp;:</td><td width="25%">' + RegDate.format(di.delaiRetourImprime) + '</td></tr></table></fieldset>\n';
 
 				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais, true);
 				var etats = Decl._buidlEtatsTable(di.etats, false);
