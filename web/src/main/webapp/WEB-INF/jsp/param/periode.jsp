@@ -108,6 +108,10 @@
 
 				<%@ include file="parametres-pf-snc-show.jsp" %>
 
+				<%@ include file="params-pf-delais-online-pp-show.jsp" %>
+
+				<%@ include file="params-pf-delais-online-pm-show.jsp" %>
+
 				<%@ include file="modele-show.jsp" %>
 			</fieldset>
 		</form>

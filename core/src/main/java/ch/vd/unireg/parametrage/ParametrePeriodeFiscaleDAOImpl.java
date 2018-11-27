@@ -127,4 +127,13 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	public ParametrePeriodeFiscaleEmolument getEmolumentSommationDIPPByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getEmolumentByPeriodeFiscaleEtTypeDocument(periodeFiscale, TypeDocumentEmolument.SOMMATION_DI_PP);
 	}
+
+	@Override
+	@Nullable
+	public ParametreDemandeDelaisOnline getParametreDemandeDelaisOnline(int periodeFiscale, @NotNull ParametreDemandeDelaisOnline.Type type) {
+		final Query query = getCurrentSession().createQuery("from ParametreDemandeDelaisOnline where typeTiers = :type and periodefiscale.annee = :periodeFiscale and annulationDate is null");
+		query.setParameter("type", type);
+		query.setParameter("periodeFiscale", periodeFiscale);
+		return (ParametreDemandeDelaisOnline) query.uniqueResult();
+	}
 }

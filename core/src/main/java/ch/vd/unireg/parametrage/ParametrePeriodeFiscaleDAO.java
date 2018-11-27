@@ -95,4 +95,12 @@ public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeF
 	 * @return les paramètres de période fiscale pour l'émolument des sommations de DI PP, pour la période donnée
 	 */
 	ParametrePeriodeFiscaleEmolument getEmolumentSommationDIPPByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale une période fiscale
+	 * @param type           le type de demande voulu
+	 * @return les paramètres des délais accordables online pour la période et le type de contribuable spécifiés.
+	 */
+	@Nullable
+	ParametreDemandeDelaisOnline getParametreDemandeDelaisOnline(int periodeFiscale, @NotNull ParametreDemandeDelaisOnline.Type type);
 }

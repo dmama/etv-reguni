@@ -3,10 +3,12 @@ package ch.vd.unireg.param;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.DynamicDelegatingValidator;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.declaration.ModeleDocument;
@@ -32,10 +36,15 @@ import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.param.view.DelaisAccordablesOnlinePMView;
+import ch.vd.unireg.param.view.DelaisAccordablesOnlinePPView;
 import ch.vd.unireg.param.view.ModeleDocumentView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscalePPEditView;
 import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
+import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPM;
+import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPP;
+import ch.vd.unireg.parametrage.ParametreDemandeDelaisOnline;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleDAO;
 import ch.vd.unireg.parametrage.PeriodeFiscaleService;
 import ch.vd.unireg.security.Role;
@@ -157,6 +166,28 @@ public class ParamPeriodeController {
 		model.addAttribute("parametrePeriodeFiscaleSNC", parametrePeriodeFiscaleDAO.getSNCByPeriodeFiscale(periodeSelectionnee));
 
 		model.addAttribute("parametrePeriodeFiscaleEmomulementSommationDIPP", parametrePeriodeFiscaleDAO.getEmolumentSommationDIPPByPeriodeFiscale(periodeSelectionnee));
+
+		final ParametreDemandeDelaisOnline paramsDemandesDelaisOnlinePP = parametrePeriodeFiscaleDAO.getParametreDemandeDelaisOnline(periodeSelectionnee.getAnnee(), ParametreDemandeDelaisOnline.Type.PP);
+		if (paramsDemandesDelaisOnlinePP != null) {
+			final List<DelaisAccordablesOnlinePPView> periodesDelaisAccordablesPP = paramsDemandesDelaisOnlinePP.getPeriodesDelais().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.map(DelaisAccordablesOnlineDIPP.class::cast)
+					.sorted(DateRangeComparator::compareRanges)
+					.map(DelaisAccordablesOnlinePPView::new)
+					.collect(Collectors.toList());
+			model.addAttribute("paramsDelaisAccordablesOnlinePP", periodesDelaisAccordablesPP);
+		}
+
+		final ParametreDemandeDelaisOnline paramsDemandesDelaisOnlinePM = parametrePeriodeFiscaleDAO.getParametreDemandeDelaisOnline(periodeSelectionnee.getAnnee(), ParametreDemandeDelaisOnline.Type.PM);
+		if (paramsDemandesDelaisOnlinePM != null) {
+			final List<DelaisAccordablesOnlinePMView> periodesDelaisAccordablesPM = paramsDemandesDelaisOnlinePM.getPeriodesDelais().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.map(DelaisAccordablesOnlineDIPM.class::cast)
+					.sorted(Comparator.comparing(DelaisAccordablesOnlineDIPM::getIndex))
+					.map(DelaisAccordablesOnlinePMView::new)
+					.collect(Collectors.toList());
+			model.addAttribute("paramsDelaisAccordablesOnlinePM", periodesDelaisAccordablesPM);
+		}
 
 		final List<ModeleDocument> modeles = new ArrayList<>(modeleDocumentDAO.getByPeriodeFiscale(periodeSelectionnee));
 		modeles.sort((o1, o2) -> {
