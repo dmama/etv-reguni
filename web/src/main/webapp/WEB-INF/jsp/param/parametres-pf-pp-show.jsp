@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <fieldset style="margin: 10px" class="information">
 	<%--@elvariable id="parametrePeriodeFiscalePPVaud" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
 	<%--@elvariable id="parametrePeriodeFiscalePPHorsCanton" type="ch.vd.unireg.parametrage.ParametrePeriodeFiscalePP"--%>
