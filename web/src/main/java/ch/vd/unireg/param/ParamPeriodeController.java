@@ -232,7 +232,7 @@ public class ParamPeriodeController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/init-periode.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/init-periode.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String initPeriode() {
 		periodeFiscaleService.initNouvellePeriodeFiscale();

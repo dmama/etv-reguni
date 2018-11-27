@@ -21,24 +21,13 @@
 			}
 		</style>
 		
-		<script type="text/javascript">
-		 $(document).ready(function() {
-			 /*
-			  * Event Handlers
-			  */
-				$("#initPeriodeFiscale").click( function () {
-					return confirm("${confirmInit}");
-				});
-		 });
-		</script>
-
 	</tiles:put>
 	<tiles:put name="body">
 		<form method="get" id="form" action="periode.do">
 		<fieldset class="information"><legend><fmt:message key="label.param.periodes"/></legend>
 			
 			<div class="button-add">
-				<unireg:raccourciAjouter id="initPeriodeFiscale" link="init-periode.do" tooltip="label.param.init.periode" display="label.param.init.periode"/>
+				<unireg:linkTo name="label.param.init.periode" action="/param/periode/init-periode.do" confirm="${confirmInit}" link_class="add" method="POST" title="label.param.init.periode"/>
 			</div>
 
 		</fieldset>
