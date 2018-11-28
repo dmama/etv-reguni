@@ -17,7 +17,9 @@ import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesEtSNCException;
 import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCService;
 import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCServiceImpl;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -39,9 +41,13 @@ public class LienAssociesSNCServiceTest {
 	@Mock
 	private TiersService tiersService;
 
+	@Mock
+	private MessageHelper messageHelper;
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		Mockito.when(messageHelper.getMessage(Mockito.any(String.class), Mockito.any(String.class))).thenReturn("Test message");
 	}
 
 
@@ -50,12 +56,24 @@ public class LienAssociesSNCServiceTest {
 	 */
 	@Test
 	public void testIsAllowedSujetTypeNonAcceptable() {
-		final Etablissement sujet = getEtablissement();
 		try {
-			service.isAllowed(sujet, null, null);
+			service.isAllowed(getDebiteurIS(), getDebiteurIS(), null);
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testIsAllowedObjetTypeNonAcceptableDIS() {
+		try {
+			service.isAllowed(getEtablissement(), getDebiteurIS(), null);
+		}
+		catch (LienAssociesEtSNCException ex) {
+			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
 		}
 		catch (Exception e) {
 			Assert.fail(e.getMessage());
@@ -189,6 +207,13 @@ public class LienAssociesSNCServiceTest {
 		final Etablissement objet = new Etablissement();
 		objet.setNumero(1234L);
 		return objet;
+	}
+
+	private DebiteurPrestationImposable getDebiteurIS() {
+		final DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+		dpi.setNumero(7L);
+		return dpi;
+
 	}
 
 }

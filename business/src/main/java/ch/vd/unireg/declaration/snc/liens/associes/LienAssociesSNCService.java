@@ -4,8 +4,8 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.LienAssociesEtSNC;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Service autour de la gestion des rapports entre tiers et la SNC : import des liens entre tiers et la SNC en masse, édition des liens...
@@ -22,5 +22,5 @@ public interface LienAssociesSNCService {
 	 * @param dateDebut : date de début du rapport
 	 * @return Indique si le rapport vérifie les conditions d'ajout
 	 */
-	boolean isAllowed(Contribuable sujet, Contribuable objet, RegDate dateDebut) throws LienAssociesEtSNCException;
+	boolean isAllowed(Tiers sujet, Tiers objet, RegDate dateDebut) throws LienAssociesEtSNCException;
 }

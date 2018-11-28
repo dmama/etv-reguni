@@ -262,7 +262,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 
 			try {
-				lienAssociesSNCService.isAllowed((Contribuable) objet, (Contribuable) sujet, rapportView.getDateDebut());
+				lienAssociesSNCService.isAllowed( objet,  sujet, rapportView.getDateDebut());
 			}
 			catch (LienAssociesEtSNCException e) {
 				throw new IllegalArgumentException(e.getMessage());

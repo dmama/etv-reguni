@@ -230,6 +230,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="messageHelper" ref="messageHelper" />
 	</bean>
 
 	<bean id="periodeExploitationService" class="ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationServiceImpl">
