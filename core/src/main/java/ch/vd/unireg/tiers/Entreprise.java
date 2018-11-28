@@ -537,7 +537,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public boolean isSNC() {
 		final ForFiscalPrincipal dernierForSnc = this.getDernierForFiscalPrincipal();
-		return dernierForSnc.getGenreImpot() == GenreImpot.REVENU_FORTUNE;
+		return dernierForSnc != null && dernierForSnc.getGenreImpot() == GenreImpot.REVENU_FORTUNE;
 	}
 
 	@Transient

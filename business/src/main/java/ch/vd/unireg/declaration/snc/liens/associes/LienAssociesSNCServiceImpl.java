@@ -50,11 +50,11 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 		}
 		if (!(objet instanceof Entreprise)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
-			                                     messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			                                     messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 
 		if (!((Entreprise) objet).isSNC()) {
-			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC, messageHelper.getMessage("error.tiers_pas_snc", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC, messageHelper.getMessage("error.tiers_pas_snc", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 		if (tiersService.existRapportEntreTiers(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, (Contribuable) objet, (Contribuable) sujet, dateDebut)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN, messageHelper.getMessage("error.chevauchement_lien"));
