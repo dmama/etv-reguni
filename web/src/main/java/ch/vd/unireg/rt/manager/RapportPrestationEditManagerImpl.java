@@ -47,7 +47,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.view.RapportsPrestationView;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager{
+public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationEditManagerImpl.class);
 
@@ -94,8 +94,8 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	}
 
 	@Override
-	public RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) {
-		RapportPrestationView rapportView =  new RapportPrestationView();
+	public RapportPrestationView get(Long numeroSrc, Long numeroDpi, String provenance) {
+		RapportPrestationView rapportView = new RapportPrestationView();
 
 		rapportView.setProvenance(provenance);
 
@@ -113,11 +113,17 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(sourcier, true);
 		rapportView.setSourcier(sourcierView);
 
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi);
+		final Tiers dpi = tiersService.getTiers(numeroDpi);
+
 		if (dpi == null) {
 			throw new ObjectNotFoundException(messageHelper.getMessage("error.debiteur.inexistant"));
 		}
-		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
+
+		if (!(dpi instanceof DebiteurPrestationImposable)) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.debiteur.prestation.impot.source.attendu", tiers.getNumero()));
+		}
+
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur((DebiteurPrestationImposable) dpi, true);
 		rapportView.setDebiteur(dpiView);
 
 		return rapportView;
@@ -126,10 +132,10 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	/**
 	 * Alimente la vue RapportView
 	 */
-	public RapportPrestationView get (Long idRapport, SensRapportEntreTiers sensRapportEntreTiers) throws AdresseException {
-		RapportPrestationView rapportView =  new RapportPrestationView();
+	public RapportPrestationView get(Long idRapport, SensRapportEntreTiers sensRapportEntreTiers) throws AdresseException {
+		RapportPrestationView rapportView = new RapportPrestationView();
 
-		RapportEntreTiers rapportEntreTiers	= rapportEntreTiersDAO.get(idRapport);
+		RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(idRapport);
 		if (rapportEntreTiers == null) {
 			throw new ObjectNotFoundException(messageHelper.getMessage("error.rapport.inexistant"));
 		}
