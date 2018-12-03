@@ -1,6 +1,10 @@
 package ch.vd.unireg.listes.listesnominatives;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -18,11 +22,11 @@ import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamBoolean;
 import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamFile;
 import ch.vd.unireg.scheduler.JobParamInteger;
 
 /**
- * Batch d'extraction des listes nominatives
- * -> TOUS les contribuables avec leurs numéro, nom et prénom
+ * Batch d'extraction des listes nominatives -> TOUS les contribuables avec leurs numéro, nom et prénom
  */
 public class ListesNominativesJob extends JobDefinition {
 
@@ -33,6 +37,7 @@ public class ListesNominativesJob extends JobDefinition {
 	public static final String B_CONTRIBUABLES_PP = "avecContribuablesPP";
 	public static final String B_CONTRIBUABLES_PM = "avecContribuablesPM";
 	public static final String B_DEBITEURS = "avecDebiteurs";
+	public static final String FILE_TIERS_LIST = "FILE_TIERS_LIST";
 
 	private ListesTiersService service;
 
@@ -77,6 +82,15 @@ public class ListesNominativesJob extends JobDefinition {
 		param4.setMandatory(true);
 		param4.setType(new JobParamBoolean());
 		addParameterDefinition(param4, Boolean.FALSE);
+
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Ids des tiers (fichier CSV)");
+			param.setName(FILE_TIERS_LIST);
+			param.setMandatory(false);
+			param.setType(new JobParamFile());
+			addParameterDefinition(param, null);
+		}
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -108,8 +122,11 @@ public class ListesNominativesJob extends JobDefinition {
 		final boolean avecContribuablesPM = getBooleanValue(params, B_CONTRIBUABLES_PM);
 		final boolean avecDebiteurs = getBooleanValue(params, B_DEBITEURS);
 
+		final byte[] idsFile = getFileContent(params, FILE_TIERS_LIST);
+		final Set<Long> ids = new HashSet<>(extractIdsFromCSV(idsFile));
+
 		// Extrait les résultats dans une transaction read-only (en fait, plusieurs, pour ne pas avoir de timeout de transaction)
-		final ListesNominativesResults results = service.produireListesNominatives(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, statusManager);
+		final ListesNominativesResults results = service.produireListesNominatives(nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, dateTraitement, avecDebiteurs, statusManager, ids);
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

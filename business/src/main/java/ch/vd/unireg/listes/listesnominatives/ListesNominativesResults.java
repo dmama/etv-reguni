@@ -3,6 +3,7 @@ package ch.vd.unireg.listes.listesnominatives;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,8 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
     private final TypeAdresse typeAdressesIncluses;
 
+	private final Set<Long> tiersList;
+
 	private final AdresseService adresseService;
 
 	private final boolean avecContribuablesPP;
@@ -48,12 +51,13 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 	private final boolean avecDebiteurs;
 
 	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs,
-	                                TiersService tiersService, AdresseService adresseService) {
+	                                Set<Long> tiersList, TiersService tiersService, AdresseService adresseService) {
         super(dateTraitement, nombreThreads, tiersService, adresseService);
         this.typeAdressesIncluses = typeAdressesIncluses;
 	    this.avecContribuablesPP = avecContribuablesPP;
 		this.avecContribuablesPM = avecContribuablesPM;
 		this.avecDebiteurs = avecDebiteurs;
+		this.tiersList = tiersList;
 		this.adresseService = adresseService;
 	}
 
