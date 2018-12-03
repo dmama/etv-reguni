@@ -97,6 +97,11 @@ public enum MotifFor {
 	 */
 	FAILLITE("Faillite");
 
+	/**
+	 * Liste des motifs d'ouverture qui represente un début d'activité.
+	 */
+	final private static List<MotifFor> MOTIFS_DEBUT_ACTIVITE = Arrays.asList(ARRIVEE_HS, ARRIVEE_HC, FUSION_ENTREPRISES, DEBUT_EXPLOITATION);
+
 	private final String descriptionOuverture;
 
 	private final String descriptionFermeture;
@@ -120,6 +125,6 @@ public enum MotifFor {
 	 * @return Liste des motifs d'ouverture qui represente un début d'activité
 	 */
 	public static List<MotifFor> getListeMotifsDebutActiviteCommerciale() {
-		return Arrays.asList(ARRIVEE_HS, ARRIVEE_HC, FUSION_ENTREPRISES, DEBUT_EXPLOITATION);
+		return MOTIFS_DEBUT_ACTIVITE;
 	}
 }

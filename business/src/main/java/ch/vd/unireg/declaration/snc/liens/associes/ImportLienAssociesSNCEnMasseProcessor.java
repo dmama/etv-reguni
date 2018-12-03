@@ -1,5 +1,6 @@
 package ch.vd.unireg.declaration.snc.liens.associes;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,8 +17,11 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.LienAssociesEtSNC;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
 
 /**
  * Processeur pour l'implémentation du job d'import en masse des liens entre tiers et la SNC.
@@ -64,7 +68,7 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 					}
 
 					//FISCPROJ-710
-					donneeBatch.setDateDebut(((Entreprise) snc).getDateDebutForFiscalSnc(donneeBatch.getDateDebut()));
+					donneeBatch.setDateDebut(getDateDebutForFiscalSnc((Entreprise) snc, donneeBatch.getDateDebut()));
 
 					final Contribuable associe = hibernateTemplate.get(Contribuable.class, donneeBatch.getNoContribuableAssocie());
 					if (associe == null) {
@@ -100,6 +104,18 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 		rapportFinal.setInterrupted(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
+	}
+
+	private RegDate getDateDebutForFiscalSnc(Entreprise snc, RegDate dateDebut) {
+		final List<ForFiscalPrincipal> forFiscalPrincipals = snc.getForsFiscauxPrincipauxOuvertsApres(dateDebut, Boolean.FALSE);
+		if (forFiscalPrincipals.isEmpty()) {
+			return dateDebut;
+		}
+		final ForFiscalPrincipal forFiscalDateDebutLaplusAncienne = Collections.min(forFiscalPrincipals);
+		return MotifFor.getListeMotifsDebutActiviteCommerciale().contains(forFiscalDateDebutLaplusAncienne.getMotifOuverture())
+				&& forFiscalDateDebutLaplusAncienne.getGenreImpot() == GenreImpot.REVENU_FORTUNE
+				&& forFiscalDateDebutLaplusAncienne.getDateDebut() != null
+				&& forFiscalDateDebutLaplusAncienne.getDateDebut().isAfter(dateDebut) ? forFiscalDateDebutLaplusAncienne.getDateDebut() : dateDebut;
 	}
 
 }
