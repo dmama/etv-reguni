@@ -760,10 +760,18 @@ public class MetierServicePMImpl implements MetierServicePM {
 		final Iterable<RapportEntreTiers> rapportEntreTiers = CollectionsUtils.merged(entreprise.getRapportsSujet(), entreprise.getRapportsObjet());
 		StreamSupport.stream(rapportEntreTiers.spliterator(), Boolean.FALSE)
 				.filter(rapport -> !rapport.isAnnule() && rapport.getDateFin() == null)
-				.filter(rapportEncoreValide -> (rapportEncoreValide instanceof ActiviteEconomique && !((ActiviteEconomique) rapportEncoreValide).isPrincipal())
-								|| (rapportEncoreValide instanceof Mandat)
-								|| (rapportEncoreValide instanceof LienAssociesEtSNC)) // FISCPROJ-914  date de fin pas mise à jour en cas de radiation d'une PM
+				.filter(MetierServicePMImpl::isRapportEntrepriseEncoreValide) // FISCPROJ-914  date de fin pas mise à jour en cas de radiation d'une PM
 				.forEach(rapportAFermer -> rapportAFermer.setDateFin(dateFinActivite));
+	}
+
+
+	/**
+	 * @param rapport un rapport-entre-tiers d'une entreprise
+	 * @return <i>vrai</i> si le rapport-entre-tiers est encore valide ; <i>faux</i> autrement
+	 */
+	private static boolean isRapportEntrepriseEncoreValide(@NotNull RapportEntreTiers rapport) {
+		return rapport instanceof Mandat || rapport instanceof LienAssociesEtSNC
+				|| (rapport instanceof ActiviteEconomique && !((ActiviteEconomique) rapport).isPrincipal());
 	}
 
 	@Override
