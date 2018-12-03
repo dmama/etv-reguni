@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -23,10 +21,6 @@ import ch.vd.unireg.common.ListesProcessor;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.MenageCommun;
-import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 
@@ -66,7 +60,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
     /**
      * Appel principal de génération des listes nominatives
      */
-    public ListesNominativesResults run(final int nbThreads, final TypeAdresse adressesIncluses, final boolean avecContribuablesPP, final boolean avecContribuablesPM, Set<Long> tiersList, RegDate dateTraitement,
+    public ListesNominativesResults run(RegDate dateTraitement, final int nbThreads, final TypeAdresse adressesIncluses, final boolean avecContribuablesPP, final boolean avecContribuablesPM,
                                         final boolean avecDebiteurs, StatusManager s) {
 
         final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
@@ -76,7 +70,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
             @Override
             public ListesNominativesResults createResults(RegDate dateTraitement) {
-                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs,tiersList , tiersService, adresseService);
+                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersService, adresseService);
             }
 
             @Override
@@ -88,19 +82,20 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
                                                    adressesIncluses,
                                                    avecContribuablesPP,
                                                    avecContribuablesPM,
-                                                   avecDebiteurs,tiersList ,
+                                                   avecDebiteurs,
                                                    tiersService,
                                                    adresseService,
                                                    serviceCivilCacheWarmer,
                                                    interruptible,
                                                    compteur,
                                                    transactionManager,
-                                                   tiersDAO, hibernateTemplate);
+                                                   tiersDAO,
+                                                   hibernateTemplate);
             }
 
             @Override
             public Iterator<Long> getIdIterator(Session session) {
-                return createIteratorOnIDsOfTiers(avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersList, session);
+                return createIteratorOnIDsOfTiers(session, avecContribuablesPP, avecContribuablesPM, avecDebiteurs);
             }
 
         });
@@ -112,28 +107,36 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 	}
 
 	@SuppressWarnings("unchecked")
-    private Iterator<Long> createIteratorOnIDsOfTiers(boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs, Set<Long> listTiers, Session session) {
+    private Iterator<Long> createIteratorOnIDsOfTiers(Session session, boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs) {
 	    if (avecContribuablesPP || avecContribuablesPM || avecDebiteurs) {
-		    final String populationPP = PersonnePhysique.class.getSimpleName() + ", " + MenageCommun.class.getSimpleName();
-		    final String populationPM = Entreprise.class.getSimpleName();
-		    final String debiteurPart = DebiteurPrestationImposable.class.getSimpleName();
+		    final String ppPart = "PersonnePhysique, MenageCommun";
+		    final String pmPart = "Entreprise";
+		    final String debiteurPart = "DebiteurPrestationImposable";
 
 		    final List<String> whereParts = new ArrayList<>(3);
 		    if (avecContribuablesPP) {
-			    whereParts.add(populationPP);
+			    whereParts.add(ppPart);
 		    }
 		    if (avecContribuablesPM) {
-			    whereParts.add(populationPM);
+			    whereParts.add(pmPart);
 		    }
 		    if (avecDebiteurs) {
 			    whereParts.add(debiteurPart);
 		    }
 
-		    final String inTiersCriteria = listTiers.stream().map(String::valueOf).collect(Collectors.joining(", "));
-		    final String inPopulationCriteria = String.join(", ", whereParts);
+		    final StringBuilder b = new StringBuilder();
+		    final Iterator<String> wherePartIterator = whereParts.iterator();
+		    while (wherePartIterator.hasNext()) {
+			    final String part = wherePartIterator.next();
+			    b.append(part);
+			    if (wherePartIterator.hasNext()) {
+				    b.append(", ");
+			    }
+		    }
 
-		    final String queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s) AND tiers.id IN (%s) ORDER BY tiers.id ASC", inPopulationCriteria, inTiersCriteria);
-		    final Query query = session.createQuery(queryString);
+		    final String inPart = b.toString();
+		    final String queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s) ORDER BY tiers.id ASC", inPart);
+			final Query query = session.createQuery(queryString);
 			return query.iterate();
 	    }
 	    else {

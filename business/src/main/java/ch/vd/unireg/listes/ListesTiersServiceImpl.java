@@ -1,7 +1,5 @@
 package ch.vd.unireg.listes;
 
-import java.util.Set;
-
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
@@ -66,10 +64,10 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 	}
 
 	@Override
-	public ListesNominativesResults produireListesNominatives(int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM, RegDate dateTraitement,
-	                                                          boolean avecDebiteurs, StatusManager statusManager, Set<Long> tiersList) {
+	public ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM,
+	                                                          boolean avecDebiteurs, StatusManager statusManager) {
 		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilCacheWarmer);
-		return processor.run(nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, tiersList, dateTraitement, avecDebiteurs, statusManager);
+		return processor.run(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, statusManager);
 	}
 
 	@Override

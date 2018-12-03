@@ -31,12 +31,12 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
 	private final Set<TiersDAO.Parts> partsFiscales;
 
     public ListesNominativesThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, TypeAdresse adressesIncluses,
-                                   boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs, Set<Long> tiersList, TiersService tiersService,
+                                   boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs, TiersService tiersService,
                                    AdresseService adresseService, ServiceCivilCacheWarmer serviceCivilCacheWarmer, Interruptible interruptible, AtomicInteger compteur, PlatformTransactionManager transactionManager,
                                    TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
         super(queue, interruptible, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-                new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs,tiersList , tiersService, adresseService));
+                new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersService, adresseService));
 
 	    this.adressesIncluses = adressesIncluses;
 	    if (adressesIncluses == TypeAdresse.AUCUNE) {
