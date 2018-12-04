@@ -11,9 +11,11 @@ import java.util.Map;
 import java.util.RandomAccess;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -410,5 +412,21 @@ public abstract class CollectionsUtils {
 		catch (InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Construit un predicate qui permet d'appliquer un 'distinct' sur un stream en se basant sur une propriété des objets du stream (voir https://stackoverflow.com/a/27872852/593768)
+	 * <p/>
+	 * Exemple :
+	 * <pre>
+	 *     .filter(CollectionsUtils.distinctByKey(ModeleCommunauteRF::getId))
+	 * </pre>
+	 *
+	 * @param keyExtractor l'extracteur de la propriété sur lequel appliquer le distinct
+	 * @return un predicate à appliquer à une méthode 'filter'.
+	 */
+	public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		Set<Object> seen = ConcurrentHashMap.newKeySet();
+		return t -> seen.add(keyExtractor.apply(t));
 	}
 }

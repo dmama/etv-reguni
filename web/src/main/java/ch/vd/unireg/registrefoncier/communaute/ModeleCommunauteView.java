@@ -6,12 +6,13 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.tiers.TiersService;
 
 /**
- * Information d'un modèle de communauté restreinte à un tiers donné.
+ * Informations sur un modèle de communauté.
  */
 public class ModeleCommunauteView {
 
@@ -35,11 +36,15 @@ public class ModeleCommunauteView {
 				.map(m -> new MembreCommunauteView(m, tiersService, registreFoncierService))
 				.collect(Collectors.toList());
 		this.principaux = registreFoncierService.buildPrincipalHisto(modele, true).stream()
-				.sorted(new DateRangeComparator<>().reversed()) // du plus récent au plus vieux
+				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true)) // du plus récent au plus vieux
 				.map(p -> new PrincipalCommunauteRFView(p, tiersService, registreFoncierService))
 				.collect(Collectors.toList());
-		this.principalCourant = this.principaux.isEmpty() ? null : this.principaux.get(0);
+		this.principalCourant = this.principaux.stream()
+				.filter(AnnulableHelper::nonAnnule) // [SIFISC-30135] il faut ignorer les principaux annulés
+				.findFirst()
+				.orElse(null);
 		this.regroupements = modele.getRegroupements().stream()
+				.filter(AnnulableHelper::nonAnnule)
 				.sorted(new DateRangeComparator<>().reversed()) // du plus récent au plus vieux
 				.map(r -> new RegroupementRFView(r, registreFoncierService))
 				.collect(Collectors.toList());

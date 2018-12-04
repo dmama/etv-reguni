@@ -4,9 +4,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -29,6 +27,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
@@ -297,21 +296,13 @@ public class CommunauteRFController {
 			throw new TiersNotFoundException(ctbId);
 		}
 
-		final Map<Long, ModeleCommunauteForTiersView> map = new HashMap<>();
-
-		// on regroupe les communautés dans lesquels apparaît le contribuable par modèle de communauté
-		registreFoncierService.getRegroupementsCommunautes(ctb)
-				.forEach(r -> {
-					final ModeleCommunauteRF modele = r.getModele();
-					// [SIFISC-27517] on n'affiche pas les modèles avec un seul membre parce que cela rend les utilisateurs confus (et il n'y pas grand-chose à faire sur de telles communautés)
-					if (modele.getMembres().size() > 1) {
-						final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
-						                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
-						modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
-					}
-				});
-
-		final List<ModeleCommunauteForTiersView> modeles = map.values().stream()
+		// on extrait les modèles de communautés dans lesquels le contribuable apparaît
+		final List<ModeleCommunauteForTiersView> modeles = registreFoncierService.getRegroupementsCommunautes(ctb).stream()
+				.map(RegroupementCommunauteRF::getModele)
+				// [SIFISC-27517] on n'affiche pas les modèles avec un seul membre parce que cela rend les utilisateurs confus (et il n'y pas grand-chose à faire sur de telles communautés)
+				.filter(m -> m.getMembres().stream().filter(AnnulableHelper::nonAnnule).count() > 1)
+				.filter(CollectionsUtils.distinctByKey(ModeleCommunauteRF::getId))
+				.map(m -> new ModeleCommunauteForTiersView(ctb.getNumero(), m, tiersService, registreFoncierService))
 				.sorted(new ModeleCommunauteForTiersComparator())
 				.collect(Collectors.toList());
 
