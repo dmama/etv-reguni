@@ -6,6 +6,7 @@
 		<legend>
 			<fmt:message key="label.param.params.delais.online.pp"/>
 		</legend>
+		<unireg:linkTo name="label.param.edit" link_class="edit" action="/param/periode/online/pp/edit.do" params="{'pf':${periodeSelectionnee.id}}"/>
 
 		<table>
 			<tr>

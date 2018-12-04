@@ -1,6 +1,9 @@
 package ch.vd.unireg.param.view;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +17,7 @@ import ch.vd.unireg.type.DayMonth;
  */
 public class DelaisAccordablesOnlinePPView {
 
+	private Long id;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	@Nullable
@@ -29,6 +33,7 @@ public class DelaisAccordablesOnlinePPView {
 	}
 
 	public DelaisAccordablesOnlinePPView(@NotNull DelaisAccordablesOnlineDIPP right) {
+		this.id = right.getId();
 		this.dateDebut = right.getDateDebut();
 		this.dateFin = right.getDateFin();
 
@@ -62,6 +67,14 @@ public class DelaisAccordablesOnlinePPView {
 			this.delai1DemandeGroupee = delaisGroupees.get(0);
 			this.delai2DemandeGroupee = null;
 		}
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public RegDate getDateDebut() {
@@ -114,5 +127,20 @@ public class DelaisAccordablesOnlinePPView {
 
 	public void setDelai2DemandeGroupee(@Nullable DayMonth delai2DemandeGroupee) {
 		this.delai2DemandeGroupee = delai2DemandeGroupee;
+	}
+
+	@NotNull
+	public DelaisAccordablesOnlineDIPP toEntity() {
+		final DelaisAccordablesOnlineDIPP entity = new DelaisAccordablesOnlineDIPP();
+		entity.setId(id);
+		entity.setDateDebut(dateDebut);
+		entity.setDateFin(dateFin);
+		entity.setDelaisDemandeUnitaire(Stream.of(delai1DemandeUnitaire, delai2DemandeUnitaire)
+				                                .filter(Objects::nonNull)
+				                                .collect(Collectors.toList()));
+		entity.setDelaisDemandeGroupee(Stream.of(delai1DemandeGroupee, delai2DemandeGroupee)
+				                               .filter(Objects::nonNull)
+				                               .collect(Collectors.toList()));
+		return entity;
 	}
 }

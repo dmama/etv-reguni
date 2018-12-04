@@ -434,7 +434,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description>Le catégorie spécifique de la propriété à éditer (optionel)</description>
+			<description>Le catégorie spécifique de la propriété à éditer (optionnel)</description>
 			<name>category</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -442,6 +442,37 @@
 		<attribute>
 			<description>Si le champ est en lecture seule (= édition interdite) ou non</description>
 			<name>readonly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<description>Tag qui génère un champ d'édition pour une RegDate dans un formulaire.</description>
+		<name>regdateInput</name>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRegDateInput</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>L'id html assigné au champ</description>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Le chemin de la propriété à éditer par rapport à la command</description>
+			<name>path</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Si la date est obligatoire (optionnel)</description>
+			<name>mandatory</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Equivalent to "class" - HTML Optional Attribute</description>
+			<name>cssClass</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

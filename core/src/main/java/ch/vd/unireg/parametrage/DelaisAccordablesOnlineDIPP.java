@@ -94,6 +94,13 @@ public class DelaisAccordablesOnlineDIPP extends DelaisAccordablesOnline impleme
 		this.delaisDemandeUnitaire = delaisDemandeUnitaire;
 	}
 
+	public void addDelaisDemandeUnitaire(@NotNull DayMonth delais) {
+		if (this.delaisDemandeUnitaire == null) {
+			this.delaisDemandeUnitaire = new ArrayList<>();
+		}
+		this.delaisDemandeUnitaire.add(delais);
+	}
+
 	@Column(name = "GROUPEE_PP")
 	@Type(type = "ch.vd.unireg.hibernate.DayMonthListUserType")
 	public List<DayMonth> getDelaisDemandeGroupee() {
@@ -102,6 +109,13 @@ public class DelaisAccordablesOnlineDIPP extends DelaisAccordablesOnline impleme
 
 	public void setDelaisDemandeGroupee(List<DayMonth> delaisDemandeGroupee) {
 		this.delaisDemandeGroupee = delaisDemandeGroupee;
+	}
+
+	public void addDelaisDemandeGroupee(@NotNull DayMonth delais) {
+		if (this.delaisDemandeGroupee == null) {
+			this.delaisDemandeGroupee = new ArrayList<>();
+		}
+		this.delaisDemandeGroupee.add(delais);
 	}
 
 	@Transient
@@ -114,5 +128,12 @@ public class DelaisAccordablesOnlineDIPP extends DelaisAccordablesOnline impleme
 	@Override
 	public DelaisAccordablesOnlineDIPP duplicateFor(int periodeFiscale) {
 		return new DelaisAccordablesOnlineDIPP(this, periodeFiscale);
+	}
+
+	public void copyTo(@NotNull DelaisAccordablesOnlineDIPP right) {
+		right.setDateDebut(dateDebut);
+		right.setDateFin(dateFin);
+		right.setDelaisDemandeUnitaire(new ArrayList<>(this.delaisDemandeUnitaire));
+		right.setDelaisDemandeGroupee(new ArrayList<>(this.delaisDemandeGroupee));
 	}
 }

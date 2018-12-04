@@ -54,6 +54,16 @@
 		<property name="periodeFiscaleService" ref="periodeFiscaleService"/>
 	</bean>
 
+	<bean id="paramDelaisOnlineController" class="ch.vd.unireg.param.online.ParamDelaisOnlineController">
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="parametrePeriodeFiscaleDAO" ref="parametrePeriodeFiscaleDAO" />
+		<property name="delaisOnlinePPValidator">
+			<bean class="ch.vd.unireg.param.online.DelaisOnlinePPValidator">
+				<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+			</bean>
+		</property>
+	</bean>
+
 	<bean id="modeleFeuilleDocumentController" class="ch.vd.unireg.param.ModeleFeuilleDocumentController">
 		<property name="messageSource" ref="messageSource" />
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
