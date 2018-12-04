@@ -3,6 +3,7 @@ package ch.vd.unireg.parametrage;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,5 +121,12 @@ public class DelaisAccordablesOnlineDIPM extends DelaisAccordablesOnline {
 	@Override
 	public DelaisAccordablesOnlineDIPM duplicateFor(int periodeFiscale) {
 		return new DelaisAccordablesOnlineDIPM(this);
+	}
+
+	public void copyTo(@NotNull DelaisAccordablesOnlineDIPM right) {
+		right.setIndex(index);
+		right.setDelaiDebut(delaiDebut);
+		right.setDelaisDemandeUnitaire(new ArrayList<>(this.delaisDemandeUnitaire));
+		right.setDelaisDemandeGroupee(new ArrayList<>(this.delaisDemandeGroupee));
 	}
 }

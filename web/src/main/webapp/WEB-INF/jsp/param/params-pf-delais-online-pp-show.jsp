@@ -10,7 +10,7 @@
 
 		<table>
 			<tr>
-				<th rowspan="2"><fmt:message key="label.date.debut"/></th>
+				<th rowspan="2"><fmt:message key="label.param.periode.demande.delai"/></th>
 				<th colspan="2"><fmt:message key="label.param.demande.unitaire"/></th>
 				<th colspan="2"><fmt:message key="label.param.demande.groupee"/></th>
 			</tr>

@@ -9,11 +9,11 @@ public class DelaiHelper {
 	public static String toDisplayString(@NotNull Delai delai) {
 		if (delai instanceof DelaiEnJours) {
 			final DelaiEnJours d = (DelaiEnJours) delai;
-			return d.getJours() + " jours" + (d.isReportFinMois() ? " (avec report de fin de mois" : "");
+			return d.getJours() + " jours" + (d.isReportFinMois() ? " (avec report de fin de mois)" : "");
 		}
 		else if (delai instanceof DelaiEnMois) {
 			final DelaiEnMois d = (DelaiEnMois) delai;
-			return d.getMois() + " mois" + (d.isReportFinMois() ? " (avec report de fin de mois" : "");
+			return d.getMois() + " mois" + (d.isReportFinMois() ? " (avec report de fin de mois)" : "");
 		}
 		else if (delai instanceof DelaiComposite) {
 			final DelaiComposite d = (DelaiComposite) delai;

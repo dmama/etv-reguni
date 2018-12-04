@@ -6,10 +6,11 @@
 		<legend>
 			<fmt:message key="label.param.params.delais.online.pm"/>
 		</legend>
+		<unireg:linkTo name="label.param.edit" link_class="edit" action="/param/periode/online/pm/edit.do" params="{'pf':${periodeSelectionnee.id}}"/>
 
 		<table>
 			<tr>
-				<th rowspan="2"><fmt:message key="label.date.debut"/></th>
+				<th rowspan="2"><fmt:message key="label.param.periode.demande.delai"/></th>
 				<th colspan="2"><fmt:message key="label.param.demande.unitaire"/></th>
 				<th colspan="2"><fmt:message key="label.param.demande.groupee"/></th>
 			</tr>

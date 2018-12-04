@@ -61,6 +61,7 @@ public class ParametreDemandeDelaisOnlineValidator extends EntityValidatorImpl<P
 				else {
 					// on vérifie que l'ordre des délais est déterministe
 					final List<Integer> indexes = periodesDelais.stream()
+							.filter(AnnulableHelper::nonAnnule)
 							.map(DelaisAccordablesOnlineDIPM.class::cast)
 							.map(DelaisAccordablesOnlineDIPM::getIndex)
 							.sorted()

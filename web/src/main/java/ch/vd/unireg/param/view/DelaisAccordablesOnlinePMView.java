@@ -1,6 +1,9 @@
 package ch.vd.unireg.param.view;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +12,7 @@ import ch.vd.unireg.type.delai.Delai;
 
 public class DelaisAccordablesOnlinePMView {
 
+	private Long id;
 	private int index;
 	private Delai delaiDebut;
 	private Delai delai1DemandeUnitaire;
@@ -20,6 +24,7 @@ public class DelaisAccordablesOnlinePMView {
 	}
 
 	public DelaisAccordablesOnlinePMView(@NotNull DelaisAccordablesOnlineDIPM right) {
+		this.id = right.getId();
 		this.index = right.getIndex();
 		this.delaiDebut = right.getDelaiDebut();
 
@@ -53,6 +58,14 @@ public class DelaisAccordablesOnlinePMView {
 			this.delai1DemandeGroupee = delaisGroupees.get(0);
 			this.delai2DemandeGroupee = null;
 		}
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public int getIndex() {
@@ -101,5 +114,19 @@ public class DelaisAccordablesOnlinePMView {
 
 	public void setDelai2DemandeGroupee(Delai delai2DemandeGroupee) {
 		this.delai2DemandeGroupee = delai2DemandeGroupee;
+	}
+
+	public DelaisAccordablesOnlineDIPM toEntity() {
+		final DelaisAccordablesOnlineDIPM entity = new DelaisAccordablesOnlineDIPM();
+		entity.setId(id);
+		entity.setIndex(index);
+		entity.setDelaiDebut(delaiDebut);
+		entity.setDelaisDemandeUnitaire(Stream.of(delai1DemandeUnitaire, delai2DemandeUnitaire)
+				                                .filter(Objects::nonNull)
+				                                .collect(Collectors.toList()));
+		entity.setDelaisDemandeGroupee(Stream.of(delai1DemandeGroupee, delai2DemandeGroupee)
+				                               .filter(Objects::nonNull)
+				                               .collect(Collectors.toList()));
+		return entity;
 	}
 }
