@@ -46,6 +46,11 @@ public class CollectionView {
 	 */
 	private List<Class<? extends HibernateEntity>> concreteEntityClasses;
 
+	/**
+	 * Vrai si la collection ne peut pas être modifiée.
+	 */
+	private boolean readonly;
+
 	public EntityKey getKey() {
 		return key;
 	}
@@ -109,5 +114,13 @@ public class CollectionView {
 
 	public void setConcreteEntityClasses(List<Class<? extends HibernateEntity>> concreteEntityClasses) {
 		this.concreteEntityClasses = concreteEntityClasses;
+	}
+
+	public boolean isReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
 	}
 }

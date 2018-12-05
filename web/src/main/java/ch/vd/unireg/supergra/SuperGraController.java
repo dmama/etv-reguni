@@ -162,7 +162,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/show.do", method = RequestMethod.GET)
-	public String showEntity(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, Model model, HttpServletRequest request) throws
+	public String showEntity(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, Model model, HttpServletRequest request) throws
 			Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
@@ -187,7 +187,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/update.do", method = RequestMethod.POST)
-	public String updateEntity(@Valid @ModelAttribute("entity") final EntityView view, BindingResult result, Model model, HttpServletRequest request) {
+	public String updateEntity(@Valid @ModelAttribute("entity") final EntityView view, BindingResult result, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -237,8 +237,8 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/coll/list.do", method = RequestMethod.GET)
-	public String listColl(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id,
-	                       @RequestParam(value = "name", required = true) String collName, Model model, HttpServletRequest request) throws Exception {
+	public String listColl(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id,
+	                       @RequestParam(value = "name") String collName, Model model, HttpServletRequest request) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -258,8 +258,8 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/coll/add.do", method = RequestMethod.POST)
-	public String addEntity(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id,
-	                        @RequestParam(value = "name", required = true) String collName, @RequestParam(value = "newClass", required = true) String newClassAsString,
+	public String addEntity(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id,
+	                        @RequestParam(value = "name") String collName, @RequestParam(value = "newClass") String newClassAsString,
 	                        HttpServletRequest request) throws
 			Exception {
 
@@ -280,6 +280,11 @@ public class SuperGraController {
 			return "redirect:list.do?id=" + view.getKey().getId() + "&class=" + view.getKey().getType() + "&name=" + collName;
 		}
 
+		if (view.isReadonly()) {
+			Flash.error("Cette collection est en lecture-seule.");
+			return "redirect:list.do?id=" + view.getKey().getId() + "&class=" + view.getKey().getType() + "&name=" + collName;
+		}
+
 		// On crée une nouvelle sous-entité
 		//noinspection unchecked
 		final Class<? extends HibernateEntity> newClass = (Class<? extends HibernateEntity>) Class.forName(newClassAsString);
@@ -294,7 +299,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/disable.do", method = RequestMethod.POST)
-	public String disableEntity(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, HttpServletRequest request) {
+	public String disableEntity(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -320,7 +325,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/enable.do", method = RequestMethod.POST)
-	public String enableEntity(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, HttpServletRequest request) {
+	public String enableEntity(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -346,7 +351,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/recalcRegroup.do", method = RequestMethod.POST)
-	public String recalcRegroup(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, HttpServletRequest request) {
+	public String recalcRegroup(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -374,7 +379,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/pp2mc.do", method = RequestMethod.GET)
-	public String pp2mc(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, Model model, HttpServletRequest request) throws
+	public String pp2mc(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, Model model, HttpServletRequest request) throws
 			Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
@@ -408,7 +413,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/pp2mc.do", method = RequestMethod.POST)
-	public String pp2mc(@Valid @ModelAttribute("pp2mc") final Pp2McView view, BindingResult result, Model model, HttpServletRequest request) throws Exception {
+	public String pp2mc(@Valid @ModelAttribute("pp2mc") final Pp2McView view, BindingResult result) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -425,7 +430,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/mc2pp.do", method = RequestMethod.GET)
-	public String mc2pp(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, Model model, HttpServletRequest request) throws
+	public String mc2pp(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, Model model, HttpServletRequest request) throws
 			Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
@@ -459,7 +464,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/entity/mc2pp.do", method = RequestMethod.POST)
-	public String mc2pp(@Valid @ModelAttribute("mc2pp") final Mc2PpView view, BindingResult result, Model model, HttpServletRequest request) throws Exception {
+	public String mc2pp(@Valid @ModelAttribute("mc2pp") final Mc2PpView view, BindingResult result) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -476,7 +481,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/actions/delete.do", method = RequestMethod.POST)
-	public String actionDelete(@RequestParam(value = "index", required = true) int index, HttpServletRequest request) {
+	public String actionDelete(@RequestParam(value = "index") int index, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -506,7 +511,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/actions/commit.do", method = RequestMethod.POST)
-	public String actionsCommitAll(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, HttpServletRequest request) {
+	public String actionsCommitAll(@RequestParam(value = "class") EntityType type, @RequestParam(value = "id") long id, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
@@ -569,7 +574,7 @@ public class SuperGraController {
 	}
 
 	@RequestMapping(value = "/supergra/option/details.do", method = RequestMethod.POST)
-	public String toggleShowDetails(@RequestParam(value = "show", required = true) boolean showDetails, HttpServletRequest request) {
+	public String toggleShowDetails(@RequestParam(value = "show") boolean showDetails, HttpServletRequest request) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);

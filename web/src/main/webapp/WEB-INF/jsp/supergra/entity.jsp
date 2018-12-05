@@ -10,23 +10,25 @@
 	<%--@elvariable id="superGraSession" type="ch.vd.unireg.supergra.SuperGraSession"--%>
 
 	<tiles:put name="actions" type="String">
-		<ul>
-		<c:if test="${!entity.annule}">
-			<li><unireg:buttonTo name="Annuler ${entity.key.type.displayArticleName}" action="/supergra/entity/disable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+		<c:if test="${!entity.readonly}">
+			<ul>
+			<c:if test="${!entity.annule}">
+				<li><unireg:buttonTo name="Annuler ${entity.key.type.displayArticleName}" action="/supergra/entity/disable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+			</c:if>
+			<c:if test="${entity.annule}">
+				<li><unireg:buttonTo name="Désannuler ${entity.key.type.displayArticleName}" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+			</c:if>
+			<c:if test="${entity.communauteRF}">
+				<li><unireg:buttonTo name="Recalculer les regroupements" action="/supergra/entity/recalcRegroup.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+			</c:if>
+			<c:if test="${entity.personnePhysique}">
+				<li><unireg:buttonTo name="Transformer en ménage-commun" action="/supergra/entity/pp2mc.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
+			</c:if>
+			<c:if test="${entity.menageCommun}">
+				<li><unireg:buttonTo name="Transformer en personne physique" action="/supergra/entity/mc2pp.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
+			</c:if>
+			</ul>
 		</c:if>
-		<c:if test="${entity.annule}">
-			<li><unireg:buttonTo name="Désannuler ${entity.key.type.displayArticleName}" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
-		</c:if>
-		<c:if test="${entity.communauteRF}">
-			<li><unireg:buttonTo name="Recalculer les regroupements" action="/supergra/entity/recalcRegroup.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
-		</c:if>
-		<c:if test="${entity.personnePhysique}">
-			<li><unireg:buttonTo name="Transformer en ménage-commun" action="/supergra/entity/pp2mc.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
-		</c:if>
-		<c:if test="${entity.menageCommun}">
-			<li><unireg:buttonTo name="Transformer en personne physique" action="/supergra/entity/mc2pp.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
-		</c:if>
-		</ul>
 	</tiles:put>
 
 	<tiles:put name="body" type="String">
@@ -84,7 +86,12 @@
 				<input type="hidden" name="id" value="${entity.key.id}">
 				<input type="hidden" name="class" value="${entity.key.type}">
 
+				<c:if test="${!entity.readonly}">
 				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>
+				</c:if>
+				<c:if test="${entity.readonly}">
+					<div style="padding: 10px"><b>Note :</b> cette entité ne peut pas être modifiée (lecture-seule).</div>
+				</c:if>
 				<display:table name="${entity.attributes}" id="a" class="display_table">
 						<display:column title="Attribute">
 							<c:out value="${a.displayName}"/>
@@ -107,7 +114,9 @@
 							<form:errors path="attributes[${a_rowNum - 1}].value" cssClass="error"/>
 						</display:column>
 				</display:table>
+				<c:if test="${!entity.readonly}">
 				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>
+				</c:if>
 			</form:form>
 
 		</td>

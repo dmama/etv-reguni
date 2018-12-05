@@ -62,13 +62,18 @@
 					</c:forEach>
 				</table>
 
-				<select id="newClass" name="newClass">
-					<option>-- Veuillez sélectionner --</option>
-					<c:forEach items="${coll.concreteEntityClasses}" var="c">
-					<option value="${c.name}">${c.simpleName}</option>
-					</c:forEach>
-				</select>
-				<input type="submit" name="add" value="Ajouter" />
+				<c:if test="${!coll.readonly}">
+					<select id="newClass" name="newClass">
+						<option>-- Veuillez sélectionner --</option>
+						<c:forEach items="${coll.concreteEntityClasses}" var="c">
+						<option value="${c.name}">${c.simpleName}</option>
+						</c:forEach>
+					</select>
+					<input type="submit" name="add" value="Ajouter" />
+				</c:if>
+				<c:if test="${coll.readonly}">
+					<div style="padding: 10px"><b>Note :</b> cette collection ne peut pas être modifiée (lecture-seule).</div>
+				</c:if>
 
 			</form:form>
 

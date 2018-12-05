@@ -1,6 +1,7 @@
 package ch.vd.unireg.supergra.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class EntityView implements Duplicable<EntityView> {
 	private boolean isMenageCommun;
 	private boolean isPersonnePhysique;
 	private boolean isCommunauteRF;
+	private boolean readonly;
 
 	public EntityView() {
 	}
@@ -44,6 +46,7 @@ public class EntityView implements Duplicable<EntityView> {
 			this.attributes = null;
 			this.attributesMap = null;
 		}
+		this.readonly = right.readonly;
 	}
 
 	public void setKey(EntityKey key) {
@@ -104,6 +107,14 @@ public class EntityView implements Duplicable<EntityView> {
 		isCommunauteRF = communauteRF;
 	}
 
+	public boolean isReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
+	}
+
 	@Override
 	public EntityView duplicate() {
 		return new EntityView(this);
@@ -116,6 +127,11 @@ public class EntityView implements Duplicable<EntityView> {
 	 * @return une liste de patches qui correspondent aux différences constatées.
 	 */
 	public List<AttributeUpdate> delta(EntityView right) {
+
+		if (readonly) {
+			// une entité read-only ne peut pas générer de deltas, par définition
+			return Collections.emptyList();
+		}
 
 		final List<AttributeUpdate> deltas = new ArrayList<>();
 

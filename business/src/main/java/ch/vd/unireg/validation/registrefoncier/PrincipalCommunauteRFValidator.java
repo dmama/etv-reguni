@@ -21,9 +21,9 @@ public class PrincipalCommunauteRFValidator extends DateRangeEntityValidator<Pri
 		final ValidationResults results = super.validate(entity);
 
 		// SIFISC-27135 : La date de début ne doit pas être supérieure à période fiscale N+1
-		RegDate dateDebut = ((PrincipalCommunauteRF) entity).getDateDebut();
-		if(dateDebut.year() > RegDate.get().addYears(1).year()) {
-			results.addError(String.format("La date de début %s ne peut pas dépasser la période fiscale N+1.", getEntityCategoryName(), getEntityDisplayString(entity)));
+		final RegDate dateDebut = entity.getDateDebut();
+		if (dateDebut != null && dateDebut.year() > RegDate.get().addYears(1).year()) {
+			results.addError("La date de début ne peut pas dépasser la période fiscale N+1.");
 		}
 
 		return results;

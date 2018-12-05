@@ -3,8 +3,8 @@ package ch.vd.unireg.supergra;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
@@ -81,8 +83,11 @@ import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.ImmeubleAvecQuotePartRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.ImplantationRF;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.unireg.registrefoncier.QuotePartRF;
 import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 import ch.vd.unireg.registrefoncier.dataimport.processor.CommunauteRFProcessor;
@@ -166,9 +171,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<>(EntityType.class);
 
 	/**
-	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.
+	 * Les propriétés et entités qui ne doivent pas être changées, même en mode SuperGra.
 	 */
 	private static final Set<String> readonlyProps = buildReadOnlyPropSet();
+	private static final Set<Class<? extends HibernateEntity>> readonlyEntities = Collections.singleton(RegroupementCommunauteRF.class);
+	private static final Map<Class<? extends HibernateEntity>, Set<String>> readonlyPropsByEntity = buildReadOnlyPropByEntitySet();
 
 	private static Set<String> buildReadOnlyPropSet() {
 		final Set<String> readonlyProps = new HashSet<>();
@@ -181,14 +188,15 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		readonlyProps.add("logModifDate");
 		readonlyProps.add("logModifUser");
 
-		// déclaration
-		readonlyProps.add("modeleDocument");
-		readonlyProps.add("periode");
-
-		// communauté RF
-		readonlyProps.add("regroupements"); // SIFISC-29450, les regroupements sont calculés automatiquement, il ne faut pas que l'utilisateur puisse les modifier (voir commentaire sur RecalcRegroup)
-
 		return readonlyProps;
+	}
+
+	private static Map<Class<? extends HibernateEntity>, Set<String>> buildReadOnlyPropByEntitySet() {
+		final HashMap<Class<? extends HibernateEntity>, Set<String>> map = new HashMap<>();
+		map.put(Declaration.class, new HashSet<>(Arrays.asList("modeleDocument", "periode")));
+		map.put(CommunauteRF.class, new HashSet<>(Collections.singletonList("regroupements")));
+		map.put(ModeleCommunauteRF.class, new HashSet<>(Arrays.asList("regroupements", "membres", "membresHashCode")));
+		return map;
 	}
 
 	/**
@@ -254,6 +262,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		childToParentRelationships.put(EstimationRF.class, ImmeubleRF.class);
 		childToParentRelationships.put(RaisonAcquisitionRF.class, DroitProprieteRF.class);
 		childToParentRelationships.put(QuotePartRF.class, ImmeubleAvecQuotePartRF.class);
+		childToParentRelationships.put(CommunauteRF.class, RegroupementCommunauteRF.class);
+		childToParentRelationships.put(ModeleCommunauteRF.class, PrincipalCommunauteRF.class);
 		childToParentRelationships.put(RolePartiePrenante.class, PartiePrenante.class);
 		childToParentRelationships.put(ErreurTraitement.class, UniteTraitement.class);
 
@@ -578,6 +588,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	private List<AttributeView> buildAttributes(HibernateEntity entity, SuperGraContext context) {
 
+		final Set<String> readonlyProps = getReadonlyPropsFor(entity);
+
 		final List<AttributeView> attributes = new ArrayList<>();
 		try {
 			final MetaEntity meta = MetaEntity.determine(entity.getClass());
@@ -609,12 +621,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					else if (p.isCollection()) {
 						// on cas de collection, on affiche un lien vers la page d'affichage de la collection
 						final Collection<?> coll = (Collection<?>) value;
-						final boolean isReadonly = readonlyProps.contains(propName);
-						attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, isReadonly);
+						attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, false);
 					}
 					else {
 						// cas général, on affiche l'éditeur pour l'attribut
-						final boolean readonly = p.isPrimaryKey() || isPropertyToParent(entity.getClass(), p) || readonlyProps.contains(propName);
+						final boolean readonly = p.isPrimaryKey() || readonlyEntities.contains(entity.getClass()) || readonlyProps.contains(propName) || isPropertyToParent(entity.getClass(), p);
 						attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isEntityForeignKey(), false, readonly);
 					}
 				}
@@ -631,6 +642,18 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			throw new RuntimeException(e);
 		}
 		return attributes;
+	}
+
+	@NotNull
+	private static Set<String> getReadonlyPropsFor(@NotNull HibernateEntity entity) {
+		Set<String> set = readonlyPropsByEntity.get(entity.getClass());
+		if (set == null || set.isEmpty()) {
+			return readonlyProps;
+		}
+		else {
+			return Stream.concat(set.stream(), readonlyProps.stream())
+					.collect(Collectors.toSet());
+		}
 	}
 
 	/**
@@ -682,6 +705,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 			final HibernateEntity entity = context.getEntity(key);
 			if (entity != null) {
+
+				final Set<String> readonlyProps = getReadonlyPropsFor(entity);
+
 				//noinspection unchecked
 				final Collection<HibernateEntity> coll = (Collection<HibernateEntity>) getCollection(collName, entity);
 
@@ -697,6 +723,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					view.setEntities(entities);
 					view.setAttributeNames(collData.getAttributeNames());
 					view.setConcreteEntityClasses(concreteClasses);
+					view.setReadonly(readonlyEntities.contains(entity.getClass()) || readonlyProps.contains(collName));
 				}
 			}
 			return null;
@@ -853,6 +880,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		view.setPersonnePhysique(entity instanceof PersonnePhysique);
 		view.setMenageCommun(entity instanceof MenageCommun);
 		view.setCommunauteRF(entity instanceof CommunauteRF);
+		view.setReadonly(readonlyEntities.contains(entity.getClass()));
 
 		final ValidationResults res = validationService.validate(entity);
 		view.setValidationResults(res);
@@ -895,7 +923,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		execute(new HibernateCallback<Object>() {
 			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			public Object doInHibernate(Session session) throws HibernateException {
 
 				final String user = AuthenticationHelper.getCurrentPrincipal();
 

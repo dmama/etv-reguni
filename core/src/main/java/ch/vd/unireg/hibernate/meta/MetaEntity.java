@@ -13,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -313,6 +315,21 @@ public class MetaEntity {
 				}
 				estColonne = true;
 			}
+			else if (a instanceof JoinTable) {
+				final JoinTable j = (JoinTable) a;
+				columnName = j.name();
+				if (isManyToManyRelationShip(readMethod.getReturnType(), columnName, clazz, descriptor.getName())) {
+					entityForeignKey = true;
+					javaType = readMethod.getReturnType();
+					storedType = Long.class;
+				}
+				else {
+					otherForeignKey = true;
+					javaType = readMethod.getReturnType();
+					storedType = javaType;
+				}
+				estColonne = true;
+			}
 			else if (a instanceof OneToMany) {
 				estCollection = true;
 				final OneToMany otm = (OneToMany) a;
@@ -320,6 +337,9 @@ public class MetaEntity {
 					estColonne = true;
 					columnName = getMappedColumnName(readMethod, otm);
 				}
+			}
+			else if (a instanceof ManyToMany) {
+				estCollection = true;
 			}
 			else if (a instanceof Type) {
 				final Type t = (Type) a;
@@ -555,7 +575,63 @@ public class MetaEntity {
 			//  - il possède une annotation JoinColumn avec la même colonne de jointure
 			//  - son type de retour est une collection générique dont le type corresponds bien avec celui attendu
 			if (hasOneToMany && (joinColumn.equals(joinColumnName) || otherGetter.equals(mappedByName)) && Collection.class.isAssignableFrom(readMethod.getReturnType())) {
-				final Class genericType = getGenericParamReturnType(readMethod);
+				final Class<?> genericType = getGenericParamReturnType(readMethod);
+				if (genericType != null && genericType.isAssignableFrom(other)) {
+					// le type de retour est une collection parametrisée et le type paramétrisé est celui voulu
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Détermine si la classe <i>main</i> est liée avec la classe <i>other</i> par un lien 1-n.
+	 *
+	 * @param main        la classe d'un du côté de la cardinalité "n-n"
+	 * @param joinColumn  le nom jdbc de la colonne de jointure
+	 * @param other       la classe de l'autre côté de la cardinalité "n-n"
+	 * @param otherGetter le nom de la propriété pour aller de la classe <i>other</i> à la classe <i>main</i>
+	 * @return <b>vrai</b> si la classe <i>main</i> est bien liée à la classe <i>other</i> par un lien n-n; <b>false</b> autrement.
+	 * @throws java.beans.IntrospectionException en cas de problème d'introspection
+	 */
+	private static boolean isManyToManyRelationShip(Class<?> main, String joinColumn, Class other, String otherGetter) throws IntrospectionException {
+
+		final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(main);
+		for (PropertyDescriptor descriptor : descriptors.values()) {
+			if (descriptor.getName().equals("class")) {
+				continue;
+			}
+
+			final Method readMethod = descriptor.getReadMethod();
+			if (readMethod == null) {
+				continue;
+			}
+
+			boolean hasOneToMany = false;
+			String mappedByName = null;
+			String joinColumnName = null;
+
+			final Annotation[] fieldAnnotations = readMethod.getAnnotations();
+			for (Annotation a : fieldAnnotations) {
+				if (a instanceof ManyToMany) {
+					final ManyToMany o = (ManyToMany) a;
+					hasOneToMany = true;
+					mappedByName = o.mappedBy();
+				}
+				else if (a instanceof JoinTable) {
+					final JoinTable j = (JoinTable) a;
+					joinColumnName = j.name();
+				}
+			}
+
+			// la méthode courant détermine une relation n-n si :
+			//  - il possède une annotation ManyToMany
+			//  - il possède une annotation JoinTable avec la même colonne de jointure que celle spécifiée
+			//  - son type de retour est une collection générique dont le type corresponds bien avec celui attendu
+			if (hasOneToMany && (joinColumn.equals(joinColumnName) || otherGetter.equals(mappedByName)) && Collection.class.isAssignableFrom(readMethod.getReturnType())) {
+				final Class<?> genericType = getGenericParamReturnType(readMethod);
 				if (genericType != null && genericType.isAssignableFrom(other)) {
 					// le type de retour est une collection parametrisée et le type paramétrisé est celui voulu
 					return true;
