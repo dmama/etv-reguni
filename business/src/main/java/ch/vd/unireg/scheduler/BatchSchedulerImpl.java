@@ -331,6 +331,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	}
 
 	private void sleep(long millisecondes) {
+		//noinspection CatchMayIgnoreException
 		try {
 			Thread.sleep(millisecondes);
 		}

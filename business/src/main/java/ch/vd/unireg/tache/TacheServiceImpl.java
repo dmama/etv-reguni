@@ -37,8 +37,6 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
-import ch.vd.unireg.common.FiscalDateHelper;
-import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
@@ -53,7 +51,6 @@ import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -238,12 +235,7 @@ public class TacheServiceImpl implements TacheService {
 	@Override
 	public List<String> getCommentairesDistincts(TypeTache typeTache) {
 		// on tape dans le cache, en le supposant rafraîchi de temps en temps
-		if (commentairesDistincts.containsKey(typeTache)) {
-			return commentairesDistincts.get(typeTache);
-		}
-		else {
-			return Collections.emptyList();
-		}
+		return commentairesDistincts.getOrDefault(typeTache, Collections.emptyList());
 	}
 
 	@NotNull

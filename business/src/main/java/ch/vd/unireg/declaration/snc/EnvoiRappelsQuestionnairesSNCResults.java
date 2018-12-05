@@ -103,13 +103,7 @@ public class EnvoiRappelsQuestionnairesSNCResults extends AbstractJobResults<Ide
 	@Override
 	public void end() {
 		final Comparator<Info> comparator = Comparator.comparingLong(i -> i.noCtb);
-		final Comparator<RappelEmis> comparatorEmis = (o1, o2) -> {
-			int comparison = Long.compare(o1.noCtb, o2.noCtb);
-			if (comparison == 0) {
-				comparison = Integer.compare(o1.pf, o2.pf);
-			}
-			return comparison;
-		};
+		final Comparator<RappelEmis> comparatorEmis = Comparator.comparingLong((RappelEmis o) -> o.noCtb).thenComparingInt(o -> o.pf);
 		emis.sort(comparatorEmis);
 		ignores.sort(comparator);
 		erreurs.sort(comparator);

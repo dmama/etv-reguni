@@ -128,7 +128,7 @@ public abstract class BeanUtils {
 		if (beanToCheck == null) {
 			throw new IllegalArgumentException("beanToCheck ne peut pas être null");
 		}
-		if (beanToCheck == null) {
+		if (beanToCompareFrom == null) {
 			throw new IllegalArgumentException("beanToCompareFrom ne peut pas être null");
 		}
 
