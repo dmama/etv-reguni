@@ -296,7 +296,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				final String name = (String) map.values().iterator().next();
 				list.add(name);
 			}
-			return list.toArray(new String[list.size()]);
+			return list.toArray(new String[0]);
 		}
 
 		return null;
@@ -319,7 +319,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		if (reverse) {
 			Collections.reverse(t);
 		}
-		return t.toArray(new String[t.size()]);
+		return t.toArray(new String[0]);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -462,7 +462,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			allTables.addAll(tiersTables);
 			allTables.addAll(retTables);
 
-			final IDataSet dataSet = new CompositeDataSet(allTables.toArray(new ITable[allTables.size()]));
+			final IDataSet dataSet = new CompositeDataSet(allTables.toArray(new ITable[0]));
 
 			if (status.isInterrupted()) {
 				return -1;

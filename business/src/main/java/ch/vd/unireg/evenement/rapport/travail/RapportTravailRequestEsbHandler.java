@@ -41,18 +41,18 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
-import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EsbMessageValidationHelper;
 import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
+import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 //Listener qui écoute les demandes sur les rapports de travail pour le moment on a que des demandes de mise à jour
 public class RapportTravailRequestEsbHandler implements EsbMessageHandler, InitializingBean {
@@ -177,7 +177,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 		final List<ClassPathResource> resource = rapportTravailRequestHandler.getResponseXSD();
 		resources.addAll(resource);
 
-		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[0]));
 
 		outputJaxbContext = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory.class.getPackage().getName());
 		inputJaxbContext = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory.class.getPackage().getName());

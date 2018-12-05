@@ -237,7 +237,7 @@ public abstract class CsvHelper {
 	 * @param lignes chaîne de caractères potentiellement sur plusieurs lignes
 	 */
 	public static String asCsvField(List<String> lignes) {
-		return asCsvField(lignes.toArray(new String[lignes.size()]));
+		return asCsvField(lignes.toArray(new String[0]));
 	}
 
 	/**

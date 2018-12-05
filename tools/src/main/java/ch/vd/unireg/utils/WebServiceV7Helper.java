@@ -17,7 +17,7 @@ public abstract class WebServiceV7Helper {
 		if (collection == null || collection.isEmpty()) {
 			return new Object[0];
 		}
-		return collection.toArray(new Object[collection.size()]);
+		return collection.toArray(new Object[0]);
 	}
 
 	public static Party getParty(String urlWebService, String username, String password, String businessUser, int oid, int partyNo, Set<PartyPart> parts) {

@@ -26,7 +26,7 @@ public class JobParamDescription {
 			this.enumValues = null;
 		}
 		else {
-			this.enumValues = allowedValues.toArray(new String[allowedValues.size()]);
+			this.enumValues = allowedValues.toArray(new String[0]);
 		}
 	}
 

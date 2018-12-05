@@ -299,7 +299,7 @@ public abstract class EvenementCivilInterne {
 		 */
 		final Set<AttributeIndividu> requiredParts = EnumSet.noneOf(AttributeIndividu.class);
 		fillRequiredParts(requiredParts);
-		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
+		parts = requiredParts.toArray(new AttributeIndividu[0]);
 	}
 
 	@Nullable

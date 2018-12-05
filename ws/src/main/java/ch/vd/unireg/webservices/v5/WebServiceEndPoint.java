@@ -31,25 +31,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
-import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
-import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
-import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
-import ch.vd.unireg.ws.parties.v1.Entry;
-import ch.vd.unireg.ws.parties.v1.Parties;
-import ch.vd.unireg.ws.security.v1.SecurityResponse;
-import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.xml.error.v1.Error;
-import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
-import ch.vd.unireg.xml.party.v3.Party;
-import ch.vd.unireg.xml.party.v3.PartyInfo;
-import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.avatar.ImageData;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.indexer.EmptySearchCriteriaException;
@@ -60,7 +41,26 @@ import ch.vd.unireg.stats.LoadDetail;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
+import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
+import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Entry;
+import ch.vd.unireg.ws.parties.v1.Parties;
+import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
+import ch.vd.unireg.xml.party.v3.Party;
+import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
@@ -333,7 +333,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	                            final Long oldWithholdingNumber) {
 
 		final Supplier<String> params = () -> {
-			final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[partyTypes.size()]));
+			final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[0]));
 			return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, uidNumber=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
 			                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
 			                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), WebServiceHelper.enquote(uidNumber), taxResidenceFSOId,

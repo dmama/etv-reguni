@@ -22,13 +22,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, InitializingBean {
 
@@ -56,7 +56,7 @@ public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, In
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.jaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[handlers.size()]));
+		this.jaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[0]));
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, In
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[sources.size()]));
+			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
 		}
 	}
 

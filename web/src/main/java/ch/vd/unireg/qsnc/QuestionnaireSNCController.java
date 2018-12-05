@@ -211,7 +211,7 @@ public class QuestionnaireSNCController {
 		if (liberation) {
 			rolesRequis.add(Role.QSNC_LIBERATION);
 		}
-		if (!rolesRequis.isEmpty() && !SecurityHelper.isAnyGranted(securityProvider, rolesRequis.toArray(new Role[rolesRequis.size()]))) {
+		if (!rolesRequis.isEmpty() && !SecurityHelper.isAnyGranted(securityProvider, rolesRequis.toArray(new Role[0]))) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec requis pour effectuer cette opération.");
 		}
 	}

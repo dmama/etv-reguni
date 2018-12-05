@@ -40,7 +40,7 @@ public class MockGenreImpotMandataire implements GenreImpotMandataire, Serializa
 				}
 			}
 		}
-		return mocks.toArray(new MockGenreImpotMandataire[mocks.size()]);
+		return mocks.toArray(new MockGenreImpotMandataire[0]);
 	}
 
 	private final String code;

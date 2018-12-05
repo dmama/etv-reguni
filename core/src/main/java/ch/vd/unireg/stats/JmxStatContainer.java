@@ -187,7 +187,7 @@ public class JmxStatContainer implements SmartLifecycle {
 				attrList.add(new OpenMBeanAttributeInfoSupport(service.getKey(), "Statistiques " + service.getKey(), dataType, true, false, false));
 			}
 
-			final OpenMBeanAttributeInfo[] attrs = attrList.toArray(new OpenMBeanAttributeInfo[attrList.size()]);
+			final OpenMBeanAttributeInfo[] attrs = attrList.toArray(new OpenMBeanAttributeInfo[0]);
 			return new OpenMBeanInfoSupport(getClass().getName(), "Statistiques d'utilisation", attrs, null, null, null);
 		}
 	}

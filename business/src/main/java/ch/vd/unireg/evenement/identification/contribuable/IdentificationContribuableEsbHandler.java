@@ -37,7 +37,6 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EsbMessageValidationHelper;
 import ch.vd.unireg.jms.EsbBusinessCode;
@@ -47,6 +46,7 @@ import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 public class IdentificationContribuableEsbHandler implements EsbMessageHandler, InitializingBean {
 
@@ -123,9 +123,9 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 			parsingClasses.add(requestClass);
 		}
 
-		inputJaxbContext = JAXBContext.newInstance(parsingClasses.toArray(new Class[parsingClasses.size()]));
+		inputJaxbContext = JAXBContext.newInstance(parsingClasses.toArray(new Class[0]));
 
-		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[0]));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -199,7 +199,7 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[sources.size()]));
+			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
 		}
 	}
 }

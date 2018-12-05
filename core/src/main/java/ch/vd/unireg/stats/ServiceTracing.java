@@ -483,7 +483,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	public static <T> String toString(Collection<T> col) {
 		final Object[] array;
 		if (col != null) {
-			array = col.toArray(new Object[col.size()]);
+			array = col.toArray(new Object[0]);
 		}
 		else {
 			array = null;

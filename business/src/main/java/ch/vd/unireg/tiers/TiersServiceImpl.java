@@ -5425,7 +5425,7 @@ public class TiersServiceImpl implements TiersService {
     public boolean isVeuvageMarieSeul(PersonnePhysique tiers) {
         MenageCommun menageCommun = findDernierMenageCommun(tiers);
         if (menageCommun != null) {
-            PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[getPersonnesPhysiques(menageCommun).size()]);
+            PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[0]);
             if (personnes.length == 1 && EtatCivil.VEUF == situationFamilleService.getEtatCivil(tiers, RegDate.get(), true)) {
                 return true;
             }

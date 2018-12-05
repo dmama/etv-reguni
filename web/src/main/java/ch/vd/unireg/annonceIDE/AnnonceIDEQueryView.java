@@ -123,7 +123,7 @@ public class AnnonceIDEQueryView {
 		final AnnonceIDEQuery query = new AnnonceIDEQuery();
 		query.setNoticeId(noticeId);
 		query.setType(type);
-		query.setStatus(status == null || status.isEmpty() ? null : status.toArray(new StatutAnnonce[status.size()]));
+		query.setStatus(status == null || status.isEmpty() ? null : status.toArray(new StatutAnnonce[0]));
 		query.setCantonalId(cantonalId);
 		query.setUserId(StringUtils.isEmpty(userId) ? RCEntAnnonceIDEHelper.UNIREG_USER : userId);
 		query.setName(name);

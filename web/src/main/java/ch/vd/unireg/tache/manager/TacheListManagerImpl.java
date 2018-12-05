@@ -287,7 +287,7 @@ public class TacheListManagerImpl implements TacheListManager {
 					for (ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c : collectivites) {
 						oids.add(c.getNoColAdm());
 					}
-					coreCriteria.setOidUser(oids.toArray(new Integer[oids.size()]));
+					coreCriteria.setOidUser(oids.toArray(new Integer[0]));
 				}
 			}
 		}

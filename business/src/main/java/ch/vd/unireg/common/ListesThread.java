@@ -22,10 +22,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.Interruptible;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -164,7 +164,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 		fillAttributesIndividu(attributes);
 		final AttributeIndividu[] attributesArray;
 		if (!attributes.isEmpty()) {
-			attributesArray = attributes.toArray(new AttributeIndividu[attributes.size()]);
+			attributesArray = attributes.toArray(new AttributeIndividu[0]);
 		}
 		else {
 			attributesArray = null;

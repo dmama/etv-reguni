@@ -36,14 +36,6 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.unireg.xml.event.party.v2.ObjectFactory;
-import ch.vd.unireg.xml.event.party.v2.Request;
-import ch.vd.unireg.xml.event.party.v2.Response;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EsbMessageValidationHelper;
 import ch.vd.unireg.evenement.RequestHandlerResult;
@@ -54,6 +46,14 @@ import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.party.v2.ObjectFactory;
+import ch.vd.unireg.xml.event.party.v2.Request;
+import ch.vd.unireg.xml.event.party.v2.Response;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Listener qui écoute les requêtes de données de tiers et qui répond en conséquence.
@@ -170,7 +170,7 @@ public class PartyRequestEsbHandlerV2 implements EsbMessageHandler, Initializing
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[sources.size()]));
+			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
 		}
 	}
 
@@ -240,8 +240,8 @@ public class PartyRequestEsbHandlerV2 implements EsbMessageHandler, Initializing
 			resources.addAll(resource);
 		}
 
-		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
-		inputJaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[handlers.size()]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[0]));
+		inputJaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[0]));
 		outputJaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 }

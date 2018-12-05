@@ -67,7 +67,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 		final String query = b.toString();
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("DeclarationImpotCriteria Query: " + query);
-			LOGGER.trace("DeclarationImpotCriteria Params: " + Arrays.toString(params.entrySet().toArray(new Map.Entry[params.size()])));
+			LOGGER.trace("DeclarationImpotCriteria Params: " + Arrays.toString(params.entrySet().toArray(new Map.Entry[0])));
 		}
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);

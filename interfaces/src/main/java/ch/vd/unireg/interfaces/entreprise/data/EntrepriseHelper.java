@@ -694,7 +694,7 @@ public abstract class EntrepriseHelper {
 		final Domicile premierDomicile = domiciles.get(0);
 		final RegDate debutDomiciles = premierDomicile.getDateDebut();
 		final RegDate debutActivite = activite.get(0).getDateDebut();
-		final Domicile[] domicilesDebutCorrige = domiciles.toArray(new Domicile[domiciles.size()]);
+		final Domicile[] domicilesDebutCorrige = domiciles.toArray(new Domicile[0]);
 		if (debutActivite.isBefore(debutDomiciles) && !debutActivite.isBefore(debutDomiciles.addDays( - NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 			domicilesDebutCorrige[0] = new Domicile(debutActivite, premierDomicile.getDateFin(), premierDomicile.getTypeAutoriteFiscale(), premierDomicile.getNumeroOfsAutoriteFiscale());
 		}

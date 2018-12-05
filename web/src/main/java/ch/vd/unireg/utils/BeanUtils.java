@@ -145,7 +145,7 @@ public abstract class BeanUtils {
 				listRes.add(pd.getName());
 			}
 		}
-		return listRes.toArray(new String[listRes.size()]);
+		return listRes.toArray(new String[0]);
 
 	}
 }

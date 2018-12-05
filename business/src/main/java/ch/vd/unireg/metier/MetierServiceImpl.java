@@ -1729,7 +1729,7 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	private ch.vd.unireg.type.EtatCivil mariesOuPacses(MenageCommun menage) {
 		final Set<PersonnePhysique> personnePhysiqueSet = tiersService.getPersonnesPhysiques(menage);
-		final PersonnePhysique[] personnes = personnePhysiqueSet.toArray(new PersonnePhysique[personnePhysiqueSet.size()]);
+		final PersonnePhysique[] personnes = personnePhysiqueSet.toArray(new PersonnePhysique[0]);
 		final PersonnePhysique tiers1 = personnes[0];
 		final PersonnePhysique tiers2 = personnes.length > 1 ? personnes[1] : null;
 		ch.vd.unireg.type.EtatCivil etatCivilFamille = ch.vd.unireg.type.EtatCivil.MARIE;

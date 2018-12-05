@@ -40,7 +40,7 @@ class DropColumnTable implements ITable {
 					l.remove(i);
 				}
 			}
-			return l.toArray(new Column[l.size()]);
+			return l.toArray(new Column[0]);
 		}
 
 		@Override

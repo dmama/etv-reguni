@@ -277,7 +277,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public String toString() {
 			return "KeyGetCollectivitesAdministrativesByTypes{" +
-					"types=" + Arrays.toString(types.toArray(new TypeCollectivite[types.size()])) +
+					"types=" + Arrays.toString(types.toArray(new TypeCollectivite[0])) +
 					'}';
 		}
 	}

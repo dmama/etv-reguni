@@ -618,7 +618,7 @@ public class TiersMapHelper extends CommonMapHelper {
 					typesIgnores.add(type);
 				}
 			}
-			mapTypesDeclarationImpotOrdinaire = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, typesIgnores.toArray(new TypeDocument[typesIgnores.size()]));
+			mapTypesDeclarationImpotOrdinaire = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, typesIgnores.toArray(new TypeDocument[0]));
 		}
 		return mapTypesDeclarationImpotOrdinaire;
 	}
@@ -767,7 +767,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * @return la map correspondante
 	 */
 	public Map<TypeEtatEntreprise, String> getMapForTypeEtatEntreprise(List<TypeEtatEntreprise> transitions) {
-		return initMapEnum(ApplicationConfig.masterKeyEtatEntreprise, transitions.toArray(new TypeEtatEntreprise[transitions.size()]));
+		return initMapEnum(ApplicationConfig.masterKeyEtatEntreprise, transitions.toArray(new TypeEtatEntreprise[0]));
 	}
 
 	/**

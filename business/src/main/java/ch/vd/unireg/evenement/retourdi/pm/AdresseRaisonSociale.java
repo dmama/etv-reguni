@@ -19,12 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.adresse.AdresseAdapter;
 import ch.vd.unireg.adresse.AdresseCivileAdapter;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
@@ -36,6 +30,12 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.StringComparator;
 import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
@@ -249,7 +249,7 @@ public abstract class AdresseRaisonSociale {
 					lignes.add(ligne);
 				}
 			}
-			return lignes.toArray(new String[lignes.size()]);
+			return lignes.toArray(new String[0]);
 		}
 
 		/**
@@ -461,7 +461,7 @@ public abstract class AdresseRaisonSociale {
 			}
 
 			// ok, maintenant il faut comparer...
-			final String[] arrayLignesCanoniques = lignesCanoniques.toArray(new String[lignesCanoniques.size()]);
+			final String[] arrayLignesCanoniques = lignesCanoniques.toArray(new String[0]);
 			for (Rue rueOfficielle : ruesOfficielles) {
 				final String nomOfficielRue = rueOfficielle.getDesignationCourrier();
 				final String nomOfficielRueMinuscules = canonize(nomOfficielRue);

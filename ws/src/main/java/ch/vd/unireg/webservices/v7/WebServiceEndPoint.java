@@ -409,7 +409,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	                            final Long oldWithholdingNumber) {
 
 		final Supplier<String> params = () -> {
-			final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[partyTypes.size()]));
+			final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[0]));
 			return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, uidNumber=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
 			                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
 			                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), WebServiceHelper.enquote(uidNumber), taxResidenceFSOId,

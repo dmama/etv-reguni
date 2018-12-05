@@ -915,7 +915,7 @@ public class IdentificationController {
 			return new TypeDemande[0];
 		}
 		else {
-			return types.toArray(new TypeDemande[types.size()]);
+			return types.toArray(new TypeDemande[0]);
 		}
 	}
 

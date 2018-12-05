@@ -15,17 +15,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
@@ -134,7 +134,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 
 			dossiers.add(dossier);
 		}
-		bordereauEnvoi.setDossierArray(dossiers.toArray(new BordereauEnvoiDocument.BordereauEnvoi.Dossier[dossiers.size()]));
+		bordereauEnvoi.setDossierArray(dossiers.toArray(new BordereauEnvoiDocument.BordereauEnvoi.Dossier[0]));
 
 		// signature
 		final CollectiviteAdministrative caSignataire = bordereau.getExpediteur();

@@ -164,7 +164,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 		final List<MBeanOperationInfo> allOps = new ArrayList<>(resets.size() + dumps.size());
 		allOps.addAll(resets);
 		allOps.addAll(dumps);
-		final MBeanOperationInfo ops[] = allOps.toArray(new MBeanOperationInfo[allOps.size()]);
+		final MBeanOperationInfo ops[] = allOps.toArray(new MBeanOperationInfo[0]);
 		return new MBeanInfo(getClass().getName(), "Cache Manager d'Unireg", atts, null, ops, null);
 	}
 }

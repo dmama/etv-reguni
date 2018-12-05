@@ -421,7 +421,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			final List<Etat> etats = Arrays.asList(Etat.A_TRAITER_MANUELLEMENT, Etat.A_EXPERTISER);
 			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[0])));
 			}
 			criteria.put("etats", etats);
 		}
@@ -446,7 +446,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			final List<Etat> etats = Arrays.asList(Etat.A_TRAITER_MANUELLEMENT, Etat.A_EXPERTISER, Etat.EXCEPTION);
 			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Etat identification CTB: " + Arrays.asList(etats.toArray(new Etat[etats.size()])));
+				LOGGER.trace("Etat identification CTB: " + Arrays.asList(etats.toArray(new Etat[0])));
 			}
 			criteria.put("etats", etats);
 		}
@@ -480,7 +480,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
 
-				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[0])));
 			}
 			criteria.put("etats", etats);
 		}
@@ -515,7 +515,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			final List<Etat> etats = Arrays.asList(Etat.A_EXPERTISER, Etat.A_EXPERTISER_SUSPENDU, Etat.A_TRAITER_MANUELLEMENT, Etat.A_TRAITER_MAN_SUSPENDU);
 			queryWhere += " and identificationContribuable.etat in (:etats)";
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[0])));
 			}
 			criteria.put("etats", etats);
 		}
@@ -549,7 +549,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			final List<Etat> etats = Arrays.asList(Etat.A_EXPERTISER_SUSPENDU, Etat.A_TRAITER_MAN_SUSPENDU);
 			queryWhere += " and identificationContribuable.etat in (:etats) ";
 			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
+				LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[0])));
 			}
 			criteria.put("etats", etats);
 		}
@@ -584,7 +584,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 				final List<Etat> etats = Arrays.asList(Etat.A_TRAITER_MAN_SUSPENDU, Etat.A_EXPERTISER_SUSPENDU, Etat.SUSPENDU);
 				queryWhere += " and identificationContribuable.etat in (:etats)";
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[etats.size()])));
+					LOGGER.trace("Etat identification CTB: " + Arrays.toString(etats.toArray(new Etat[0])));
 				}
 				criteria.put("etats", etats);
 			}

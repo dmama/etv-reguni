@@ -21,12 +21,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Listener qui reçoit les messages JMS concernant les événements externes, les valide, les transforme et les transmet au handler approprié.
@@ -71,7 +71,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler, Initializi
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.jaxbContext = JAXBContext.newInstance(connectorMap.keySet().toArray(new Class[connectorMap.size()]));
+		this.jaxbContext = JAXBContext.newInstance(connectorMap.keySet().toArray(new Class[0]));
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler, Initializi
 			for (EvenementExterneConnector connector : connectorMap.values()) {
 				sources.add(new StreamSource(connector.getRequestXSD().getURL().toExternalForm()));
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[sources.size()]));
+			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
 		}
 	}
 }

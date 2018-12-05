@@ -85,7 +85,7 @@ public class ModifAdresseTable implements ITable {
 					break;
 				}
 			}
-			return l.toArray(new Column[l.size()]);
+			return l.toArray(new Column[0]);
 		}
 
 		@Override

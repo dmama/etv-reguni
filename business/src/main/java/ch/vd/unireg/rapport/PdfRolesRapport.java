@@ -304,7 +304,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				fichiers.add(contenu);
 			}
 		}
-		return fichiers.toArray(new TemporaryFile[fichiers.size()]);
+		return fichiers.toArray(new TemporaryFile[0]);
 	}
 
 	protected final TemporaryFile[] traiteListeContribuablesPM(final List<InfoContribuablePM> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
@@ -418,7 +418,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				fichiers.add(contenu);
 			}
 		}
-		return fichiers.toArray(new TemporaryFile[fichiers.size()]);
+		return fichiers.toArray(new TemporaryFile[0]);
 	}
 
 	protected final String asCvsField(InfoContribuable.TypeContribuable typeCtb) {

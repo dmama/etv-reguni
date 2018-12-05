@@ -728,7 +728,7 @@ public class ProduireRolesProcessor {
 					break;
 				}
 			}
-			return liste.toArray(new ProduireRolesOIDsResults[liste.size()]);
+			return liste.toArray(new ProduireRolesOIDsResults[0]);
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new ServiceException(e);
@@ -1172,7 +1172,7 @@ public class ProduireRolesProcessor {
 				communesExploded = String.format("de la commune %d", ofsCommunes.iterator().next());
 			}
 			else {
-				final Integer[] ofsArray = ofsCommunes.toArray(new Integer[ofsCommunes.size()]);
+				final Integer[] ofsArray = ofsCommunes.toArray(new Integer[0]);
 				communesExploded = String.format("des communes %s", Arrays.toString(ofsArray));
 			}
 

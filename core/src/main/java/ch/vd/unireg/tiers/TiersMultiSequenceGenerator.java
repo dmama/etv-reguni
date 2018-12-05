@@ -172,7 +172,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 		sqlDropStrings.addAll(Arrays.asList(ctbGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(etbGenerator.sqlDropStrings(dialect)));
 
-		return sqlDropStrings.toArray(new String[sqlDropStrings.size()]);
+		return sqlDropStrings.toArray(new String[0]);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 		sqlCreateStrings.addAll(Arrays.asList(ctbGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(etbGenerator.sqlCreateStrings(dialect)));
 
-		return sqlCreateStrings.toArray(new String[sqlCreateStrings.size()]);
+		return sqlCreateStrings.toArray(new String[0]);
 	}
 
 	@Override
