@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.ApplicationConfig;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -39,6 +37,8 @@ import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.security.AccessDeniedException;
@@ -237,7 +237,7 @@ public class ForsController {
 		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
 			return GenreImpot.REVENU_FORTUNE;
 		}
-		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
+		if (ctb instanceof Entreprise) {
 			final CategorieEntreprise categorieCourante = tiersService.getCategorieEntreprise((Entreprise) ctb, null);
 			if (categorieCourante == CategorieEntreprise.SP) {
 				return GenreImpot.REVENU_FORTUNE;

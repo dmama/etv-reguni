@@ -842,7 +842,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		                                                    @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour adresseRetour,
 		                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
 
-			if (!(tiers instanceof ContribuableImpositionPersonnesMorales)) {
+			if (!(tiers instanceof Entreprise)) {
 				throw new DeclarationException("Le tiers n'est pas soumis au régime des personnes morales");
 			}
 

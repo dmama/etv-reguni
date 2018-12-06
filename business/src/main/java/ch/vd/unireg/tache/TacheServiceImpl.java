@@ -1585,7 +1585,7 @@ public class TacheServiceImpl implements TacheService {
 							dernierForFiscalVaudois = f;
 						}
 						if (f.isAnnule()) {
-							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
+							if (f instanceof ForFiscalSecondaire || (f instanceof ForFiscalPrincipalPP && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
 								dernierForFiscalVaudoisNonSourceAnnule = f;
 								break;
 							}
