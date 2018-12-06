@@ -1532,7 +1532,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			if (entity1.getCategorieIdentifiant() != entity2.getCategorieIdentifiant()) {
 				throw new IllegalArgumentException();
 			}
-			if (entity1.getIdentifiant() != entity2.getIdentifiant()) {
+			if (!Objects.equals(entity1.getIdentifiant(), entity2.getIdentifiant())) {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -1556,7 +1556,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(IdentificationEntreprise entity1, IdentificationEntreprise entity2) {
-			if (entity1.getNumeroIde() != entity2.getNumeroIde()) {
+			if (!Objects.equals(entity1.getNumeroIde(), entity2.getNumeroIde())) {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -1589,7 +1589,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			if (entity1.getTypeAutoriteFiscale() != entity2.getTypeAutoriteFiscale()) {
 				throw new IllegalArgumentException();
 			}
-			if (entity1.getNumeroOfsAutoriteFiscale() != entity2.getNumeroOfsAutoriteFiscale()) {
+			if (!Objects.equals(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale())) {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -1731,7 +1731,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			if (entity1.getPortee() != entity2.getPortee()) {
 				throw new IllegalArgumentException();
 			}
-			if (entity1.getCode() != entity2.getCode()) {
+			if (!entity1.getCode().equals(entity2.getCode())) {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -2006,13 +2006,13 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(DecisionAci entity1, DecisionAci entity2) {
-			if (entity1.getNumeroOfsAutoriteFiscale() != entity2.getNumeroOfsAutoriteFiscale()) {
+			if (!Objects.equals(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale())) {
 				throw new IllegalArgumentException();
 			}
 			if (entity1.getTypeAutoriteFiscale() != entity2.getTypeAutoriteFiscale()) {
 				throw new IllegalArgumentException();
 			}
-			if (entity1.getContribuable().getNumero() != entity2.getContribuable().getNumero()) {
+			if (!Objects.equals(entity1.getContribuable().getNumero(), entity2.getContribuable().getNumero())) {
 				throw new IllegalArgumentException();
 			}
 			if (entity1.getDateDebut() != entity2.getDateDebut()) {
