@@ -45,7 +45,7 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		}
 
 		// contrôle sur le type de tiers
-		if (!Contribuable.class.isInstance(tiers)) {
+		if (!(tiers instanceof Contribuable)) {
 			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO));
 		}
 
@@ -67,7 +67,7 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		}
 
 		// contrôle sur le type de tiers
-		if (!Contribuable.class.isInstance(tiers)) {
+		if (!(tiers instanceof Contribuable)) {
 			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO));
 		}
 

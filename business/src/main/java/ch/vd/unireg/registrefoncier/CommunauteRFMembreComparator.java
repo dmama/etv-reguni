@@ -109,7 +109,7 @@ public class CommunauteRFMembreComparator implements Comparator<Long> {
 	@NotNull
 	private TypeFor getTypeFor(@NotNull Tiers tiers) {
 
-		if (!Contribuable.class.isInstance(tiers)) {
+		if (!(tiers instanceof Contribuable)) {
 			// pas un contribuable, aucune chance d'avoir des fors principaux
 			return TypeFor.UNKNOWN;
 		}

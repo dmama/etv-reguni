@@ -83,7 +83,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				.filter(Objects::nonNull)
 				.flatMap(Set::stream)
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(ret -> !RapportPrestationImposable.class.isInstance(ret))       // [UNIREG-859] d'un point-de-vue métier, on peut ajouter deux fois le même rapport de travail
+				.filter(ret -> !(ret instanceof RapportPrestationImposable))       // [UNIREG-859] d'un point-de-vue métier, on peut ajouter deux fois le même rapport de travail
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toMap(RapportEntreTiers::getType,       // ne peuvent être identiques que des rapports de même type
 				                          Collections::singletonList,
