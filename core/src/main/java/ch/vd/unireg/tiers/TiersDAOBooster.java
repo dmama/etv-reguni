@@ -435,12 +435,12 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 		catch (InterruptedException e) {
 			// ignored
 		}
-		String message = "";
+		final StringBuilder message = new StringBuilder();
 		for (char c : poppins.toCharArray()) {
-			message = message + c;
+			message.append(c);
 		}
-		message += " (" + id + ')';
-		LOGGER.error(message);
+		message.append(" (").append(id).append(')');
+		LOGGER.error(message.toString());
 	}
 
 	@Override

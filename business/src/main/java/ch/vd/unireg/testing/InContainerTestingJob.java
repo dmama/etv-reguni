@@ -46,15 +46,15 @@ public class InContainerTestingJob extends JobDefinition {
 	public synchronized void doExecute(Map<String, Object> params) throws Exception {
 		transactionListener = new TransactionListener();
 		boolean error = false;
-		String methodsInError = "";
+		StringBuilder methodsInError = new StringBuilder();
 		try {
 			for (InContainerTest test : tests) {
 				boolean err = runMethod(test);
 				if (err) {
-					if (!methodsInError.isEmpty()) {
-						methodsInError += " ";
+					if (methodsInError.length() > 0) {
+						methodsInError.append(" ");
 					}
-					methodsInError += test.getClass().getSimpleName();
+					methodsInError.append(test.getClass().getSimpleName());
 				}
 				error |= err;
 			}

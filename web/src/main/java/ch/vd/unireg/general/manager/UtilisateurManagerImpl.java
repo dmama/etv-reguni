@@ -1,7 +1,7 @@
 package ch.vd.unireg.general.manager;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,18 +37,10 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 				prenomNom = prenomNom + ' ' + operateur.getNom();
 			}
 			utilisateurView.setPrenomNom(prenomNom);
-			List<CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
-			Iterator<CollectiviteAdministrative> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
-			String officeImpot = null;
-			while (itCollectiviteAdministrative.hasNext()) {
-				CollectiviteAdministrative collectiviteAdministrative = itCollectiviteAdministrative.next();
-				if (officeImpot != null) {
-					officeImpot = officeImpot + ", " + collectiviteAdministrative.getNomCourt();
-				}
-				else {
-					officeImpot = collectiviteAdministrative.getNomCourt();
-				}
-			}
+			final List<CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
+			final String officeImpot = collectivitesAdministrative.stream()
+					.map(CollectiviteAdministrative::getNomCourt)
+					.collect(Collectors.joining(", "));
 			utilisateurView.setOfficeImpot(officeImpot);
 		}
 

@@ -194,9 +194,9 @@ public class FormatNumeroHelper {
 
 	public static String extractNoReference(String ligneCodage) {
 
-		int block =5 ;
-		String noRef = "";
-		String noRefFormate = "";
+		int block = 5;
+		String noRef;
+		StringBuilder noRefFormate = new StringBuilder();
 		noRef = StringUtils.substringAfter(ligneCodage, ">");
 		if (StringUtils.indexOf(noRef, "+") < 0) {
 			noRef = "";
@@ -209,10 +209,10 @@ public class FormatNumeroHelper {
 		}
 		int tailleNoReference = noRef != null ? noRef.length() : 0;
 		int nbreSeparateurs = tailleNoReference / block;
-		for (int i=0; i<nbreSeparateurs; i++) {
-			noRefFormate = noRefFormate + StringUtils.substring(noRef, 0, block) ;
-			if (i < nbreSeparateurs -1) {
-				noRefFormate = noRefFormate + ' ';
+		for (int i = 0; i < nbreSeparateurs; i++) {
+			noRefFormate.append(StringUtils.substring(noRef, 0, block));
+			if (i < nbreSeparateurs - 1) {
+				noRefFormate.append(' ');
 				noRef = StringUtils.substring(noRef, block);
 			}
 			else {
@@ -221,22 +221,14 @@ public class FormatNumeroHelper {
 		}
 		if ((noRef != null) && (noRef.length() > 0)) {
 			if (tailleNoReference > block) {
-				noRefFormate = noRefFormate + ' ' + noRef;
+				noRefFormate.append(' ').append(noRef);
 			}
 			else {
-				noRefFormate = noRef;
+				noRefFormate = new StringBuilder(noRef);
 			}
 		}
-		if (noRefFormate != null) {
-			noRefFormate = StringUtils.reverse(noRefFormate);
-		}
 
-		if ("".equals(noRefFormate)) {
-			noRefFormate = null;
-		}
-
-		return noRefFormate;
-
+		return StringUtils.trimToNull(StringUtils.reverse(noRefFormate.toString()));
 	}
 
 }

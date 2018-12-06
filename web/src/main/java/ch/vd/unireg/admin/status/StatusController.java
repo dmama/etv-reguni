@@ -201,21 +201,20 @@ public class StatusController {
 	}
 
 	private String getCacheStatus() {
-		String status = "";
 		try {
+			final StringBuilder status = new StringBuilder();
 			String[] names = cacheManager.getCacheNames();
 			for (String name : names) {
 				Cache cache = cacheManager.getCache(name);
 				Statistics stats = cache.getStatistics();
-				status += stats.toString() + '\n';
+				status.append(stats.toString()).append('\n');
 			}
-			status = HtmlHelper.renderMultilines(status);
+			return HtmlHelper.renderMultilines(status.toString());
 		}
 		catch (Exception e) {
-			String callstack = ExceptionUtils.extractCallStack(e);
-			status = "NOK\n" + callstack;
+			String status = "NOK\n" + ExceptionUtils.extractCallStack(e);;
 			status = HtmlHelper.renderMultilines(status);
+			return status;
 		}
-		return status;
 	}
 }

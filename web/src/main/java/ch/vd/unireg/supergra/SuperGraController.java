@@ -217,16 +217,16 @@ public class SuperGraController {
 				message = "L'attribut '" + newdeltas.get(0).getName() + "' a été changé.";
 			}
 			else {
-				String list = "";
+				final StringBuilder list = new StringBuilder();
 				for (int i = 0, newdeltasSize = newdeltas.size(); i < newdeltasSize; i++) {
 					final AttributeUpdate a = newdeltas.get(i);
 					if (i > 0 && i < newdeltasSize - 2) {
-						list += ", ";
+						list.append(", ");
 					}
 					if (i > 0 && i == newdeltasSize - 1) {
-						list += " et ";
+						list.append(" et ");
 					}
-					list += '\'' + a.getName() + '\'';
+					list.append('\'').append(a.getName()).append('\'');
 				}
 				message = "Les attributs " + list + " ont été changés.";
 			}

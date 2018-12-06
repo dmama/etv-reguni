@@ -8,12 +8,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.perfs.PerfsAccessFileIterator;
 import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
@@ -26,8 +29,6 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.common.ReflexionUtils;
-import ch.vd.unireg.perfs.PerfsAccessFileIterator;
 
 /**
  * Thread qui exécute un certain nombre de requêtes au web-service, puis s'arrête.
@@ -81,16 +82,9 @@ public class PerfsThread extends Thread {
 				return "<none>";
 			}
 			else {
-				String s = null;
-				for (PartyPart e : parts) {
-					if (s == null) {
-						s = e.name();
-					}
-					else {
-						s += '+' + e.name();
-					}
-				}
-				return s;
+				return parts.stream()
+						.map(Enum::name)
+						.collect(Collectors.joining("+"));
 			}
 		}
 
