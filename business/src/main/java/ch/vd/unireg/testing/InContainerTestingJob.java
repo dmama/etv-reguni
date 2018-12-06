@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,7 @@ public class InContainerTestingJob extends JobDefinition {
 
 		private final Logger logger = LoggerFactory.getLogger(TransactionListener.class);
 
-		private volatile int transactionsStarted = 0;
+		private final AtomicInteger transactionsStarted = new AtomicInteger(0);
 
 		private final Map<Method, TransactionContext> transactionContextCache = Collections
 				.synchronizedMap(new IdentityHashMap<>());
@@ -161,9 +162,9 @@ public class InContainerTestingJob extends JobDefinition {
 
 		private void startNewTransaction(Method testMethod, TransactionContext txContext) throws Exception {
 			txContext.startTransaction();
-			++this.transactionsStarted;
+			transactionsStarted.incrementAndGet();
 			if (logger.isInfoEnabled()) {
-				logger.info("Began transaction (" + this.transactionsStarted + "): transaction manager [" + txContext.transactionManager
+				logger.info("Began transaction (" + transactionsStarted.get() + "): transaction manager [" + txContext.transactionManager
 						+ "]; rollback [" + isRollback(testMethod) + ']');
 			}
 		}
