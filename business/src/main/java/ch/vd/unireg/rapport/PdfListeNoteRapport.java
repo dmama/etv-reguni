@@ -146,9 +146,9 @@ public class PdfListeNoteRapport extends PdfRapport {
 					final String nomCommuneHC = emptyInsteadNull(communeHC);
 					final String nomCantonHC = emptyInsteadNull(info.getNomCantonHC());
 
-					final String nomCommuneVaudoise = info.getCommuneVaudoise().getNomOfficiel();
+					final String nomCommuneVaudoise = info.getCommuneVaudoise() != null ? info.getCommuneVaudoise().getNomOfficiel() : StringUtils.EMPTY;
 					final String dateFermetureSecondaire = RegDateHelper.dateToDisplayString(info.getDateFermetureSecondaire());
-					final String motifFin = info.getMotifFinSecondaire().name();
+					final String motifFin = info.getMotifFinSecondaire() != null ? info.getMotifFinSecondaire().name() : StringUtils.EMPTY;
 
 					String nomCommFin = null;
 
