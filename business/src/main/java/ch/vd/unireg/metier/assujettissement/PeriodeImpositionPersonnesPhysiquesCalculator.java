@@ -140,7 +140,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		// On retourne tous les ranges qui ne sont pas associés avec une déclaration
 		final List<PeriodeImpositionPersonnesPhysiques> periodes = new ArrayList<>();
 		for (Assujettissement a : assujettissements) {
-			final PeriodeImpositionPersonnesPhysiques periode = determinePeriodeImposition(fors, a, data);
+			final PeriodeImpositionPersonnesPhysiques periode = determinePeriodeImposition(fors, a);
 			//on calcule la qualification
 			if (periode != null) {
 				periodes.add(periode);
@@ -198,27 +198,14 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	}
 
 	/**
-	 * Point d'entrée un peu moins officiel, pour pouvoir assigner une période d'imposition à un assujettissement particulier sur une année donnée
-	 * @param fors les fors d'une année
+	 * Détermination d'une période d'imposition pour un assujettissement donnée dans l'année donnée
+	 *
+	 * @param fors             les fors d'une année
 	 * @param assujettissement un assujettissement (qui couvre l'année au moins partiellement...)
-	 * @param tous les assujettissements complets du contribuable
 	 * @return la période d'imposition trouvée (ou <code>null</code> s'il n'y en a pas)
 	 */
 	@Nullable
-	public PeriodeImpositionPersonnesPhysiques determinePeriodeImposition(DecompositionForsAnneeComplete fors, Assujettissement assujettissement, List<Assujettissement> tous) {
-		final DonneesAssujettissement data = new DonneesAssujettissement(tous);
-		return determinePeriodeImposition(fors, assujettissement, data);
-	}
-
-	/**
-	 * Coeur du calcul, identification d'une période d'imposition qui correspond à l'assujettissement donnée dans l'année donnée
-	 * @param fors les fors d'une année
-	 * @param assujettissement un assujettissement (qui couvre l'année au moins partiellement...)
-	 * @param data les données d'assujettissement complètes du contribuable (<code>null</code> implique qu'on n'aura accès ici à aucun autre assujettissement)
-	 * @return la période d'imposition trouvée (ou <code>null</code> s'il n'y en a pas)
-	 */
-	@Nullable
-	private PeriodeImpositionPersonnesPhysiques determinePeriodeImposition(DecompositionForsAnneeComplete fors, Assujettissement assujettissement, DonneesAssujettissement data) {
+	public PeriodeImpositionPersonnesPhysiques determinePeriodeImposition(DecompositionForsAnneeComplete fors, Assujettissement assujettissement) {
 
 		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) assujettissement.getContribuable();
 		final RegDate debutAssujettissement = assujettissement.getDateDebut();
@@ -244,7 +231,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		if (assujettissement instanceof DiplomateSuisse) {
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
 				// [UNIREG-1976] diplomates suisses basés à l'étranger et qui possèdent un ou plusieurs immeubles => déclaration ordinaire
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee);
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifAssujettissement.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifAssujettissement.VEUVAGE_DECES);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
@@ -254,18 +241,16 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			}
 		}
 
-		/**
-		 * Pour un contribuable vaudois (ordinaire, dépense, sourcier ou indigent), la période d'assujettissement est toujours égale à
-		 * l'année complète sauf en cas de:
-		 *
-		 * <pre>
-		 *  - décès
-		 *  - veuvage
-		 *  - d'arrivée de l'étranger
-		 *  - départ à l'étranger (pour autant qu'il ne reste pas un for secondaire sur un immeuble)
-		 *  - plus plein de cas spéciaux, voir l'implémentation de la classe Assujettissement pour les détails
-		 * </pre>
-		 */
+		// Pour un contribuable vaudois (ordinaire, dépense, sourcier ou indigent), la période d'assujettissement est toujours égale à
+		// l'année complète sauf en cas de:
+		//
+		// <pre>
+		// - décès
+		// - veuvage
+		// - d'arrivée de l'étranger
+		// - départ à l'étranger (pour autant qu'il ne reste pas un for secondaire sur un immeuble)
+		// - plus plein de cas spéciaux, voir l'implémentation de la classe Assujettissement pour les détails
+		// </pre>
 
 		/*
 		 * Sourcier mixte
@@ -292,7 +277,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			if (mixte.getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_HC) {
 				if (forsPeriode.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 					// Sourcier mixte hc avec activité indépendante => déclaration ordinaire
-					final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee, data);
+					final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee);
 					return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, remplaceeParNote, causeFermeture, codeSegment, categorie, adresseRetour);
 				}
 				else {
@@ -302,7 +287,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			}
 			else {
 				// Sourcier mixte vaudois => déclaration ordinaire
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, remplaceeParNote, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 		}
@@ -319,7 +304,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		 */
 		if (assujettissement instanceof VaudoisOrdinaire || assujettissement instanceof Indigent) {
 			// Vaudois ordinaire => déclaration ordinaire
-			final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
+			final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee);
 			return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 		}
 
@@ -350,7 +335,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 
 			if (fors.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton => déclaration ordinaires
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, remplaceeParNote, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 			else {
@@ -367,14 +352,14 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton => déclaration ordinaire
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
 			final ForFiscalPrincipal dernierPrincipal = assujettissement.getFors().principauxDansLaPeriode.last();
 			if (dernierPrincipal.getMotifRattachement() == MotifRattachement.DIPLOMATE_ETRANGER) {
 				// Fonctionnaire international ou diplomate étranger propriétaire d'immeuble dans le canton => déclaration ordinaire
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
@@ -383,7 +368,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 				// selon un mode forfaitaire et *peuvent* recevoir une déclaration d'impôt à leur demande (dès l’année d’acquisition du 1er immeuble),
 				// mais n’en bénéficient *plus* l’année de la vente du dernier immeuble ou du décès.
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifAssujettissement.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifAssujettissement.VEUVAGE_DECES);
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
@@ -399,11 +384,10 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	 * @param typeContribuable le type de contribuable (imposition ordinaire)
 	 * @param contribuable     le contribuable
 	 * @param annee            la période fiscale considérée
-	 * @param data             les données d'assujettissement complètes du contribuable
 	 * @return le type d'envoi de DI
 	 */
-	private CategorieEnvoiDIPP determineCategorieEnvoiDIOrdinaire(TypeContribuable typeContribuable, ContribuableImpositionPersonnesPhysiques contribuable, int annee, DonneesAssujettissement data) {
-		final FormatDIOrdinaire formatDI = determineFormatDIOrdinaire(contribuable, annee, data);
+	private CategorieEnvoiDIPP determineCategorieEnvoiDIOrdinaire(TypeContribuable typeContribuable, ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
+		final FormatDIOrdinaire formatDI = determineFormatDIOrdinaire(contribuable, annee);
 		return CategorieEnvoiDIPP.ordinaireFor(typeContribuable, formatDI);
 	}
 
@@ -466,19 +450,19 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	}
 
 	/**
-	 * [UNIREG-820] [UNIREG-1824] Détermine le format (VaudTax ou complète) pour une déclaration ordinaire
+	 * [UNIREG-820] [UNIREG-1824] [SIFISC-29906] Détermine le format (VaudTax ou complète) pour une déclaration ordinaire
 	 *
 	 * @param contribuable un contribuable
 	 * @param annee        l'année pour laquelle on veut déterminer le format de DI
-	 * @param data         les données d'assujettissement complètes du contribuable
 	 * @return le format de DI à utiliser
 	 */
-	protected FormatDIOrdinaire determineFormatDIOrdinaire(ContribuableImpositionPersonnesPhysiques contribuable, int annee, DonneesAssujettissement data) {
+	protected static FormatDIOrdinaire determineFormatDIOrdinaire(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 
 		final List<DeclarationImpotOrdinairePP> dis = getDeclarationsDansPeriode(contribuable, annee - 1, annee - 2);
 
 		if (dis != null && !dis.isEmpty()) {
-			// inspecte les déclarations des deux dernières années et retourne le type de la première déclaration ordinaire trouvée
+
+			// inspecte les déclarations des deux dernières années et retourne le type de la déclaration ordinaire la plus récente
 			for (int i = dis.size() - 1; i >= 0; i--) {
 				final DeclarationImpotOrdinairePP di = dis.get(i);
 				switch (di.getTypeDeclaration()) {
@@ -490,20 +474,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 				}
 			}
 
-			// contribuable assujetti mais aucune information disponible sur les DIS -> déclaration complète par défaut
-			return FormatDIOrdinaire.COMPLETE;
+			// [SIFISC-29906] contribuable assujetti mais aucune information disponible sur les DIS -> déclaration VaudTax par défaut
+			return FormatDIOrdinaire.VAUDTAX;
 		}
 		else {
-			// s'il n'y a pas de déclaration, on retourne vaudtax sauf s'il était sourcier pur
-			final List<Assujettissement> assujetti = data.forYear(annee - 1);
-			if (assujetti == null || (assujetti.get(assujetti.size() - 1) instanceof SourcierPur)) {
-				// le contribuable est nouvellement assujetti -> VaudTax par défaut
-				return FormatDIOrdinaire.VAUDTAX;
-			}
-			else {
-				// le contribuable est déjà assujetti -> déclaration complète par défaut
-				return FormatDIOrdinaire.COMPLETE;
-			}
+			// [SIFISC-29906] s'il n'y a pas de déclaration, on retourne VaudTax dans tous les cas
+			return FormatDIOrdinaire.VAUDTAX;
 		}
 	}
 

@@ -174,6 +174,6 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 			// dommage, mais cela veut juste dire qu'on n'aura pas accès aux assujettissements autres que celui passé en paramètre...
 			assujettissement = null;
 		}
-		return ppCalculator.determinePeriodeImposition(fors, assujettissement, assujettissements);
+		return ppCalculator.determinePeriodeImposition(fors, assujettissement);
 	}
 }

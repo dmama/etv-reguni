@@ -1362,11 +1362,11 @@ public class TacheServiceTest extends BusinessTest {
 		assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI,
 				envois.get(0));
 
-		// après 2007, on ne trouve pas de DI et on ne considère *pas* le contribuable (ménage) comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
+		// après 2007, on ne trouve pas de DI et on ne considère *pas* le contribuable (ménage) comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc VAUD_TAX
 		for (int i = 2008; i < today.year(); ++i) {
 			final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 			final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
-			assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 					TypeAdresseRetour.CEDI, tache);
 		}
 	}
@@ -1485,11 +1485,11 @@ public class TacheServiceTest extends BusinessTest {
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI,
 					envois.get(0));
 
-			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
+			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc VAUD_TAX
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
 				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
-				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 						TypeAdresseRetour.CEDI, tache);
 			}
 
@@ -1520,11 +1520,11 @@ public class TacheServiceTest extends BusinessTest {
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI,
 					envois.get(0));
 
-			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
+			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc VAUD_TAX
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
 				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
-				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 						TypeAdresseRetour.CEDI, tache);
 			}
 
@@ -1660,11 +1660,11 @@ public class TacheServiceTest extends BusinessTest {
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI,
 					envois.get(0));
 
-			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
+			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc VAUD_TAX
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
 				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
-				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 						TypeAdresseRetour.CEDI, tache);
 			}
 
@@ -1695,11 +1695,11 @@ public class TacheServiceTest extends BusinessTest {
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI,
 					envois.get(0));
 
-			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
+			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc VAUD_TAX
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
 				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
-				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 						TypeAdresseRetour.CEDI, tache);
 			}
 
@@ -1844,7 +1844,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), dateDeces.getOneDayAfter(), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(0));
 			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, envois.get(1));
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(1));
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
@@ -4000,10 +4000,10 @@ public class TacheServiceTest extends BusinessTest {
 
 		final TacheEnvoiDeclarationImpotPP tache1 = (TacheEnvoiDeclarationImpotPP) taches.get(1);
 		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente - 1, 1, 1), date(anneePrecedente - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tache1);
+				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache1);
 
 		final TacheEnvoiDeclarationImpotPP tache2 = (TacheEnvoiDeclarationImpotPP) taches.get(2);
-		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneePrecedente, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneePrecedente, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 				TypeAdresseRetour.CEDI, tache2);
 	}
 
@@ -4869,7 +4869,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
 
 			final TacheEnvoiDeclarationImpotPP tacheEnvoi = (TacheEnvoiDeclarationImpotPP) tache;
-			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEnvoi);
+			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tacheEnvoi);
 			return null;
 		});
 	}
@@ -5310,16 +5310,10 @@ public class TacheServiceTest extends BusinessTest {
 				assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 				assertFalse(tache.isAnnule());
 
-				// [UNIREG-820] dit ceci:
+				// [SIFISC-29906] dit ceci:
 				// la première année, pas de DI avant, ni assujettissement -> VAUDTAX
-				// la seconde année, toujours pas de DI avant, mais assujettissement l'année précédente -> COMPLETE
-				final TypeDocument typeDocumentAttendu;
-				if (tacheDi.getDateDebut().year() == dateDebutActivite.year()) {
-					typeDocumentAttendu = TypeDocument.DECLARATION_IMPOT_VAUDTAX;
-				}
-				else {
-					typeDocumentAttendu = TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH;
-				}
+				// la seconde année, toujours pas de DI avant, mais assujettissement l'année précédente -> VAUDTAX
+				final TypeDocument typeDocumentAttendu = TypeDocument.DECLARATION_IMPOT_VAUDTAX;
 				assertEquals(DateRangeHelper.toDisplayString(tacheDi), typeDocumentAttendu, tacheDi.getTypeDocument());
 			}
 			return null;

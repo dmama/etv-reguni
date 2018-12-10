@@ -16,7 +16,6 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.MultipleSwitch;
 import ch.vd.unireg.common.Switchable;
-import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.ModeleDocument;
@@ -104,7 +103,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -155,7 +154,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 		                  eric, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		/*
@@ -186,13 +185,13 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt traitée
 		PersonnePhysique tom = addNonHabitant("Tom", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 		                  tom, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance mais annulée
 		PersonnePhysique tommy = addNonHabitant("Tommy", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, tommy, Qualification.AUTOMATIQUE, 0, colAdm);
+		                                                     TypeDocument.DECLARATION_IMPOT_VAUDTAX, tommy, Qualification.AUTOMATIQUE, 0, colAdm);
 		tache.setAnnule(true);
 
 		final List<Long> list = service.createListeIdsContribuables(2007);
@@ -216,23 +215,23 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 		PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
-		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
+		ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
+		ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
 		// Un tiers avec un for ouvert sans déclaration envoyée pour 2007
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		{
 			addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			addDeclarationImpot(paul, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					declarationComplete2006);
+					declarationVaudTax2006);
 		}
 
 		// Un tiers avec un for ouvert et avec une déclaration déja envoyée pour 2007
@@ -240,9 +239,9 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			addForPrincipal(pierre, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			addDeclarationImpot(pierre, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					declarationComplete2006);
+					declarationVaudTax2006);
 			addDeclarationImpot(pierre, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					declarationComplete2007);
+					declarationVaudTax2007);
 		}
 
 		// Un contribuable hors-Suisse avec plusieurs achats et ventes d'immeuble dans l'année (= plusieurs périodes d'imposition) et autant de déclarations envoyées
@@ -251,8 +250,8 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			final Range activite1 = new Range(date(2007, 1, 18), date(2007, 3, 31));
 			final Range activite2 = new Range(date(2007, 8, 1), date(2007, 11, 15));
 			armand = createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(activite1, activite2);
-			addDeclarationImpot(armand, periode2007, activite1.getDateDebut(), activite1.getDateFin(), TypeContribuable.HORS_SUISSE, declarationComplete2007);
-			addDeclarationImpot(armand, periode2007, activite2.getDateDebut(), activite2.getDateFin(), TypeContribuable.HORS_SUISSE, declarationComplete2007);
+			addDeclarationImpot(armand, periode2007, activite1.getDateDebut(), activite1.getDateFin(), TypeContribuable.HORS_SUISSE, declarationVaudTax2007);
+			addDeclarationImpot(armand, periode2007, activite2.getDateDebut(), activite2.getDateFin(), TypeContribuable.HORS_SUISSE, declarationVaudTax2007);
 		}
 
 		final List<Long> list = service.createListeIdsContribuables(2007);
@@ -329,7 +328,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
 			addForPrincipal(ramon, date(1968, 11, 3), null, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
 			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ramon, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ramon, 2007, r));
 		}
 	}
 
@@ -406,7 +405,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// Un tiers ordinaire, mais sans déclaration d'impôt précédente
 		PersonnePhysique olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(olrik, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-		assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(olrik,
+		assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(olrik,
 		                                                                                                                       2007, r));
 
 		// Un tiers ordinaire mais avec VaudTax
@@ -434,7 +433,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-		assertDetails(CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jean, 2007, r));
+		assertDetails(CategorieEnvoiDIPP.HC_ACTIND_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jean, 2007, r));
 
 		// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for
 		PersonnePhysique jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
@@ -444,7 +443,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		addForAutreImpot(jacques, date(1968, 11, 3), null, MockCommune.Lausanne,
 		                 GenreImpot.DONATION);
 		addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-		assertDetails(CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jacques, 2007, r));
+		assertDetails(CategorieEnvoiDIPP.HC_ACTIND_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jacques, 2007, r));
 
 		// contribuable hors Suisse ayant une activité indépendante dans le canton
 		PersonnePhysique mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
@@ -452,7 +451,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
-		assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt, 2007, r));
+		assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt, 2007, r));
 
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
 		PersonnePhysique georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
@@ -495,7 +494,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique laurent = addNonHabitant("Laurent", "Maillard", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(laurent, date(1983, 4, 13), MotifFor.MAJORITE,date(2006,12,31),MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addDeclarationImpot(laurent, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				declarationComplete);
+				declarationVaudTax);
 
 		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 		assertZeroDeclaration(service.determineDetailsEnvoi(laurent, 2007, r), r);
@@ -553,7 +552,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2004, r), r); // pas de DI
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2005, r), r); // pas de DI
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2006, r), r); // pas de DI
-			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 5, 30), service.determineDetailsEnvoi(salvatore, 2007, r)); // vente de l'immeuble + rattrapage -> DI
+			assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), date(2007, 5, 30), service.determineDetailsEnvoi(salvatore, 2007, r)); // vente de l'immeuble + rattrapage -> DI
 		}
 
 		{
@@ -562,10 +561,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2007, 7, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(greg, date(2007, 7, 2), MotifFor.DEPART_HS, MockPays.Espagne);
 			addForSecondaire(greg, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2005, 1, 1), date(2005, 12, 31), service.determineDetailsEnvoi(greg, 2005, r));
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2006, 1, 1), date(2006, 12, 31), service.determineDetailsEnvoi(greg, 2006, r));
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2005, 1, 1), date(2005, 12, 31), service.determineDetailsEnvoi(greg, 2005, r));
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2006, 1, 1), date(2006, 12, 31), service.determineDetailsEnvoi(greg, 2006, r));
 			// [UNIREG-1742] rattrapage de la DI qui aurait dû être émise automatiquement lors du départ
-			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(greg, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(greg, 2007, r));
 			assertZeroDeclaration(service.determineDetailsEnvoi(greg, 2008, r), r); // DI optionnelle pour les hors-Suisse avec immeuble
 		}
 	}
@@ -595,10 +594,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		assertZeroDeclaration(service.determineDetailsEnvoi(ralf, 2007, r), r);  // pas de déclaration dans ce cas
 
 		final PersonnePhysique armand = createHorsSuisseAvecFinActiviteIndependante(dateFin);
-		assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(armand, 2007, r));
+		assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(armand, 2007, r));
 
 		final PersonnePhysique alfred = createHorsSuisseAvecVenteImmeuble(dateFin);
-		assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(alfred, 2007, r));
+		assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(alfred, 2007, r));
 	}
 
 	@Test
@@ -674,11 +673,11 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	public void testTraiterPeriodeImposition() throws Exception {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
-		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
+		ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
 		// Un contribuable normal
 		{
@@ -694,7 +693,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			TacheEnvoiDeclarationImpotPP tacheEric = service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheEric);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEric);
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tacheEric);
 		}
 
 		// Un autre contribuable normal
@@ -711,7 +710,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			TacheEnvoiDeclarationImpotPP tacheJohn = service.traiterPeriodeImposition(john, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheJohn);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheJohn);
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tacheJohn);
 		}
 	}
 
@@ -725,18 +724,18 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
-		ModeleDocument declarationComplete2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2009);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2009);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2009);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2009);
+		ModeleDocument declarationVaudTax2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2009);
 
 		// Un contribuable normal
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 		addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2010, 1, 15), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
+		                  TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2009);
@@ -748,7 +747,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		TacheEnvoiDeclarationImpotPP tacheEric = service.traiterPeriodeImposition(eric, periode2009, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 		assertNotNull(tacheEric);
 		assertTache(TypeEtatTache.EN_INSTANCE, date(2010, 1, 31), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEric);
+				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tacheEric);
 	}
 
 	/**
@@ -761,17 +760,17 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
-		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
-		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
+		ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
 		// Un contribuable normal avec une tâche d'envoi de DI pré-existante
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal ffp = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 15), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
+		                  TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
 		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
@@ -798,7 +797,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			assertEquals(date(2007, 8, 10), partie2007.getDateFin());
 			// [UNIREG-1984] la tâche d'envoi pré-xistante devra être annulée (dans un post-processing) et une nouvelle tâche d'envoi de DI doit avoir été déterminée
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 8, 10), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) partie2007, r));
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) partie2007, r));
 		}
 	}
 
@@ -818,7 +817,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007, r));
 		}
 
@@ -830,7 +829,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 5), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2008, 1, 6), null, MockCommune.Neuchatel);
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007, r));
 		}
 
@@ -839,7 +838,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			ForFiscalPrincipal f = addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			f.setMotifOuverture(null); // hack pour bypasser la validation
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007, r));
 		}
 
@@ -866,7 +865,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(2005, 1, 1), null, date(2007, 2, 28), null, MockPays.Danemark);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			addForSecondaire(ctb, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
 		// Contribuable vaudois arrivé dans le canton en cours d'année depuis un autre pays et ayant changé de commune entre-deux
@@ -883,7 +882,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2006, 3, 1), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
 		// Contribuable vaudois dont le conjoint est décéde en cours d'année
@@ -930,7 +929,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HS, MockPays.Danemark);
 			// [UNIREG-1742] rattrapage de la DI
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
 		// Contribuable vaudois décédé en cours d'année
@@ -938,7 +937,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 			// [UNIREG-1742] rattrapage de la DI
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
 		// Contribuable vaudois marié en cours d'année (non testé ici : le ménage commun)
@@ -986,7 +985,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2007, 3, 4), MotifFor.FIN_EXPLOITATION,
 					MockCommune.Cossonay, MotifRattachement.ACTIVITE_INDEPENDANTE);
 			// [UNIREG-1742] rattrapage de la DI
-			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 3, 4), service.determineDetailsEnvoi(ctb, 2007, r));
+			assertDetails(CategorieEnvoiDIPP.HS_VAUDTAX, date(2007, 1, 1), date(2007, 3, 4), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
 		// [UNIREG-465] Contribuable hors-canton avec un for secondaire immeuble dans le canton qui a été fermé dans l'année
@@ -1019,7 +1018,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			                  TypeDocument.DECLARATION_IMPOT_VAUDTAX, contribuable, null, null, colAdm);
 
 			Range range = new Range(date(2007, 7, 1), date(2007, 12, 31));
 			assertNull(service.checkExistenceTache(contribuable, range));
@@ -1029,7 +1028,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
-			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1044,7 +1043,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			                  TypeDocument.DECLARATION_IMPOT_VAUDTAX, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1060,7 +1059,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			                  TypeDocument.DECLARATION_IMPOT_VAUDTAX, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1086,47 +1085,47 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
+				final ModeleDocument declarationVaudTax2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2008);
 				ids.periodeId = periode2008.getId();
 
 				// cas #1: un tiers avec une DI libre "honorée" (cas simple)
 				PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.arnoldId = arnold.getNumero();
 				addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addDeclarationImpot(arnold, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
+				addDeclarationImpot(arnold, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
 				// cas #2: un tiers avec une DI libre, parti après (cas d'erreur)
 				PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 				ids.malkoId = malko.getNumero();
 				addForPrincipal(malko, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2008, 6, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addDeclarationImpot(malko, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
+				addDeclarationImpot(malko, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
 				// cas #3: un tiers avec une DI libre, jamais parti (cas d'erreur)
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
+				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
 				// cas #4: un tiers avec un DI libre, parti puis revenu (cas de traitement normal)
 				PersonnePhysique salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.salvatoreId = salvatore.getNumero();
 				addForPrincipal(salvatore, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(salvatore, dateDepart.addMonths(6), MotifFor.ARRIVEE_HS, MockCommune.Vevey);
-				addDeclarationImpot(salvatore, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
+				addDeclarationImpot(salvatore, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
 				// cas #5: un tiers avec une DI libre, parti avant la date annoncée, puis revenu (cas d'erreur)
 				PersonnePhysique greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.gregId = greg.getNumero();
 				addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2008, 4, 25), MotifFor.DEPART_HS, MockCommune.Lausanne); // date de départ effective != date de départ annoncée
 				addForPrincipal(greg, dateDepart.addMonths(5), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				addDeclarationImpot(greg, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
+				addDeclarationImpot(greg, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
 				return null;
 			}
@@ -1147,7 +1146,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	public void testAnnulationDeclarationSansPeriodeCorrespondante() throws Exception {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1186,7 +1185,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1217,7 +1216,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1225,7 +1224,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 		                  eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
@@ -1255,7 +1254,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1264,9 +1263,9 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable parti hors-Suisse en cours d'année avec une tâche (valide) pour sa période en Suisse, et une autre tâche (invalide) pour sa période hors-Suisse.
 		PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
-		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 		                  arnold, Qualification.AUTOMATIQUE, 0, colAdm);
-		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, arnold,
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, arnold,
 		                  Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
@@ -1298,7 +1297,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1307,7 +1306,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante déjà traitée
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		                                                     TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
@@ -1336,7 +1335,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1346,7 +1345,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2007, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		                                                     TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
@@ -1374,7 +1373,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1384,7 +1383,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		                                                     TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
@@ -1410,7 +1409,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	public void testIgnoreDeclarationAnnulee() throws Exception {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
 		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
@@ -1460,7 +1459,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		assertDetails(CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, date(2009, 1, 1), date(2009, 12, 31), service.determineDetailsEnvoi(marc, 2009, r));
 	}
 
-	private void assertTraitementContribuable(int nbTraites, int nbEnErreur, int nbIgnores, long ctbId, PeriodeFiscale periodeFiscale) throws DeclarationException, AssujettissementException {
+	private void assertTraitementContribuable(int nbTraites, int nbEnErreur, int nbIgnores, long ctbId, PeriodeFiscale periodeFiscale) throws AssujettissementException {
 		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2008, date(2009, 1, 15), 1, tiersService, adresseService);
 		final ContribuableImpositionPersonnesPhysiques ctb = hibernateTemplate.get(ContribuableImpositionPersonnesPhysiques.class, ctbId);
 		assertNotNull(ctb);
