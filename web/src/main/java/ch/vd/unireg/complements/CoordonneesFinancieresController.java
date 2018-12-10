@@ -107,6 +107,7 @@ public class CoordonneesFinancieresController {
 				.collect(Collectors.toList());
 
 		model.addAttribute("tiersId", tiersId);
+		model.addAttribute("tiersNumeroFormatter", FormatNumeroHelper.numeroCTBToDisplay(tiersId));
 		model.addAttribute("coordonneesFinancieres", list);
 
 		return "complements/coordfinancieres/list";

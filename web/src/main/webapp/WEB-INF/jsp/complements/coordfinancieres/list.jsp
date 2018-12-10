@@ -6,7 +6,9 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
-		<fmt:message key="title.edition.complements.coordfinancieres" />
+		<fmt:message key="title.edition.complements.coordfinancieres">
+			<fmt:param>${tiersNumeroFormatter}</fmt:param>
+		</fmt:message>
 	</tiles:put>
 
 	<tiles:put name="fichierAide">
