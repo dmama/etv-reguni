@@ -13,7 +13,7 @@
 		<groupId>ch.vd.unireg</groupId>
 		<artifactId>unireg</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>19R1.A.0-SNAPSHOT</version>
+		<version>19R1.A.0</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
