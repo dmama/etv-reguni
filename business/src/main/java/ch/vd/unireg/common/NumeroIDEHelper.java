@@ -28,6 +28,7 @@ public abstract class NumeroIDEHelper {
 
 	/**
 	 * Voir http://www.pgrocer.net/Cis51/mod11.html
+	 *
 	 * @param digits une chaîne de 8 chiffres
 	 * @return le chiffre de contrôle d'après l'algo MOD11
 	 */
@@ -38,7 +39,7 @@ public abstract class NumeroIDEHelper {
 		}
 
 		int sum = 0;
-		for (int i = 0; i < array.length ; ++ i) {
+		for (int i = 0; i < array.length; ++i) {
 			sum += (array[i] - '0') * MOD11_WEIGHTS[i];
 		}
 
@@ -56,6 +57,7 @@ public abstract class NumeroIDEHelper {
 
 	/**
 	 * Normalisation du numéro IDE avant analyse resp. stockage
+	 *
 	 * @param valeurBrutte valeur brutte telle que saisie, avec des points, tirets et/ou espaces
 	 * @return la valeur épurée des points, tirets et espaces (<code>null</code> s'il ne reste plus rien après ça)
 	 */
@@ -68,6 +70,7 @@ public abstract class NumeroIDEHelper {
 
 	/**
 	 * Vérification qu'un numéro IDE est syntaxiquement valide (au format défini par {@link #IDE_PATTERN} avec le bon chiffre de contrôle
+	 *
 	 * @param ide IDE à tester
 	 * @return <code>true</code> s'il est bien composé de CHE ou ADM suivi de 9 chiffres (après normalisation, voir {@link #normalize(String)}) avec un chiffre de contrôle correct
 	 */
@@ -94,5 +97,25 @@ public abstract class NumeroIDEHelper {
 			// chiffre de contrôle incalculable
 			return false;
 		}
+	}
+
+	@Nullable
+	public static String formater(String valeurBrute) {
+
+		final String normalized = normalize(valeurBrute);
+		if (normalized == null) {
+			return null;
+		}
+
+		final StringBuilder sb = new StringBuilder();
+		sb.append(normalized, 0, 3);
+		sb.append("-");
+		sb.append(normalized, 3, 6);
+		sb.append(".");
+		sb.append(normalized, 6, 9);
+		sb.append(".");
+		sb.append(normalized, 9, 12);
+
+		return sb.toString();
 	}
 }

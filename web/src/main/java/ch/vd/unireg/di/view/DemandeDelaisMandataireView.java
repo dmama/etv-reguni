@@ -3,6 +3,7 @@ package ch.vd.unireg.di.view;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.common.NumeroIDEHelper;
 import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 
 public class DemandeDelaisMandataireView {
@@ -33,7 +34,7 @@ public class DemandeDelaisMandataireView {
 
 	public DemandeDelaisMandataireView(@NotNull DemandeDelaisMandataire demande) {
 		this.numeroCtbMandataire = demande.getNumeroCtbMandataire();
-		this.numeroIDE = demande.getNumeroIDE();
+		this.numeroIDE = NumeroIDEHelper.formater(demande.getNumeroIDE());
 		this.raisonSociale = demande.getRaisonSociale();
 		this.businessId = demande.getBusinessId();
 		this.referenceId = demande.getReferenceId();

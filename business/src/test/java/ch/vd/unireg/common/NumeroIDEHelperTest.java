@@ -36,6 +36,11 @@ public class NumeroIDEHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
+	public void testFormatNumeroIDE() throws Exception {
+		assertEquals("CHE-114.002.069", NumeroIDEHelper.formater("CHE114002069"));
+	}
+
+	@Test
 	public void testIsValid() throws Exception {
 		assertFalse(NumeroIDEHelper.isValid("..-..-"));
 		assertFalse(NumeroIDEHelper.isValid(null));
