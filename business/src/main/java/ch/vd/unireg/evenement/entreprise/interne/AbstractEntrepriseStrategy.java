@@ -165,8 +165,6 @@ public abstract class AbstractEntrepriseStrategy implements EvenementEntrepriseT
 			return false;
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER:
 			return false;
-		case IDE_NOUVELLE_INSCRIPTION:
-			return !entrepriseCivile.isConnueInscriteAuRC(date) || nouveauAuRc(entrepriseCivile, date);
 		case IDE_MUTATION:
 			return false;
 		case IDE_RADIATION:
@@ -185,7 +183,9 @@ public abstract class AbstractEntrepriseStrategy implements EvenementEntrepriseT
 			return false;
 		case RCPERS_CORRECTION_DONNEES:
 			return false;
+		case IDE_NOUVELLE_INSCRIPTION:
 		case REE_NOUVELLE_INSCRIPTION:
+		case REE_NOUVEL_ETABLISSEMENT:
 			return !entrepriseCivile.isConnueInscriteAuRC(date) || nouveauAuRc(entrepriseCivile, date);
 		case REE_MUTATION:
 			return false;
