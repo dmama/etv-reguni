@@ -43,6 +43,12 @@
 				<display:column titleKey="label.date.demande" style="width: 20%;">
 					<unireg:regdate regdate="${delai.dateDemande}" />
 				</display:column>
+				<display:column titleKey="label.type.delai">
+					<span title="<fmt:message key="option.qsnc.type.delai.tooltip.${delai.typeDelai}"/>"><fmt:message key="option.type.delai.${delai.typeDelai}"/></span>
+					<c:if test="${delai.demandeDelaisMandataireId != null}">
+						<unireg:consulterDemandeMandataire demandeId="${delai.demandeDelaisMandataireId}"/>
+					</c:if>
+				</display:column>
 				<display:column titleKey="label.date.traitement" style="width: 20%;">
 					<unireg:regdate regdate="${delai.dateTraitement}" />
 				</display:column>
