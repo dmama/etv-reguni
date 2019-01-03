@@ -37,6 +37,9 @@
 						<td width="30%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
 						<td width="70%">
 							<unireg:regdate regdate="${editCoords.dateDebut}"/>
+							<c:if test="${editCoords.dateDebut!=null}">
+							<span class="mandatory">*</span>
+							</c:if>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
@@ -46,7 +49,7 @@
 								<jsp:param name="path" value="dateFin" />
 								<jsp:param name="id" value="dateFin" />
 							</jsp:include>
-							<span class="mandatory">*</span>
+
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
