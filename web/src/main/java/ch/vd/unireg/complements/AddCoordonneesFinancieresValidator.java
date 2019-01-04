@@ -1,6 +1,5 @@
 package ch.vd.unireg.complements;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -27,7 +26,7 @@ public class AddCoordonneesFinancieresValidator extends AbstractCoordonneesFinan
 
 		// validation de la plage de validité
 		validateDateDebut(errors, view.getDateDebut());
-		validateDateFin(errors,  view.getDateDebut(), view.getDateFin());
+		validateDateFin(errors, view.getDateDebut(), view.getDateFin());
 		validateIBAN(errors, view.getIban(), ibanValidator);
 	}
 
