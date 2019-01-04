@@ -232,6 +232,7 @@ public class CoordonneesFinancieresController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("tiersId", tiersId);
+			model.addAttribute("tiersNumeroFormatter", FormatNumeroHelper.numeroCTBToDisplay(tiersId));
 			return "complements/coordfinancieres/edit";
 		}
 
