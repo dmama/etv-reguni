@@ -60,7 +60,7 @@
 							<br><c:out value="${tiers.nom2}"/>
 						</c:if>
 					</display:column>
-					<display:column titleKey="label.date.naissance.ou.rc" sortable="true">
+					<display:column titleKey="label.date.naissance.ou.rc" sortable="true" sortProperty="dateNaissanceInscriptionRC">
 						<c:if test="${tiers.dateNaissanceInscriptionRC != null}">
 							<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
 						</c:if>
