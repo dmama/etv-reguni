@@ -65,6 +65,7 @@ import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleEmolument;
 import ch.vd.unireg.tiers.Contribuable;
@@ -116,6 +117,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private ParametreAppService parametres;
 	private BamMessageSender bamMessageSender;
 	private PeriodeImpositionService periodeImpositionService;
+	private DelaisService delaisService;
+
 
 	/**
 	 * Interface pour l'implémentation spécifique à l'impression d'une DI PP ou PM
@@ -123,6 +126,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private interface DeclarationPrinter {
 		EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
 		                                            TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException;
+
 		EditiqueResultat imprimeDuplicata(DeclarationImpotOrdinaire di, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 	}
 
@@ -562,7 +566,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	protected DeclarationImpotOrdinairePP creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
-	                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
+	                                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 
@@ -594,7 +598,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		try {
 			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, dateQuittancement, null);
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
-			final String processDefinitionId = di instanceof DeclarationImpotOrdinairePM ? BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PM : BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PP;       // nous allons assimiler les quittancements IHM à des quittancements "papier"
+			final String processDefinitionId =
+					di instanceof DeclarationImpotOrdinairePM ? BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PM : BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PP;       // nous allons assimiler les quittancements IHM à des quittancements "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
 			bamMessageSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 		}
@@ -609,7 +614,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Assigne le modèle de document à la DI en fonction du type de document trouvé dans la view
 	 *
-	 * @param di         DI à laquelle le modèle de document sera assigné
+	 * @param di                   DI à laquelle le modèle de document sera assigné
 	 * @param typeDeclarationImpot le type de déclaration souhaitée
 	 */
 	private void assigneModeleDocument(DeclarationImpotOrdinaire di, TypeDocument typeDeclarationImpot) {
@@ -722,7 +727,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			switch (delai.getEtat()) {
 			case ACCORDE:
 			case REFUSE:
-				cle = editiqueCompositionService.imprimeLettreDecisionDelaiForBatch(di, delai);
+				final RegDate dateExpedition = delaisService.getDateExpeditionDelaiImpressionCadev(RegDate.get());
+				cle = editiqueCompositionService.imprimeLettreDecisionDelaiForBatch(di, delai, dateExpedition);
 				break;
 			default:
 				throw new EditiqueException("Impossible d'imprimer un courrier pour un délai qui n'est ni accordé, ni refusé.");
@@ -772,6 +778,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
+	}
+
+	public void setDelaisService(DelaisService delaisService) {
+		this.delaisService = delaisService;
 	}
 
 	/**
@@ -866,7 +876,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		@Override
-		public EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
+		public EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException,
+				AssujettissementException {
 			if (tiersService.getOfficeImpotId(tiers) == null) {
 				throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 			}
@@ -902,7 +913,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		@Override
-		public EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
+		public EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException,
+				AssujettissementException {
 			final DeclarationImpotOrdinairePM di = diGenerator.creerDeclaration(tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
 			//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
 			return diService.envoiDIOnline(di, RegDate.get());
@@ -985,12 +997,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * Enregistrement d'une factory de sommation pour une classe de déclaration d'impôt ordinaire (on passe par une méthode ad'hoc
-	 * histoire de garantir un peu de validation sur les types des déclarations et des factories associées)
-	 * @param map map destination des mappings
-	 * @param clazz class de la déclaration d'impôt concernée
+	 * Enregistrement d'une factory de sommation pour une classe de déclaration d'impôt ordinaire (on passe par une méthode ad'hoc histoire de garantir un peu de validation sur les types des déclarations et des factories associées)
+	 *
+	 * @param map      map destination des mappings
+	 * @param clazz    class de la déclaration d'impôt concernée
 	 * @param summoner factory de sommation pour ce genre de déclaration d'impôt
-	 * @param <T> type de la déclaration d'impôt
+	 * @param <T>      type de la déclaration d'impôt
 	 */
 	private static <T extends DeclarationImpotOrdinaire> void registerSummoner(Map<Class<? extends DeclarationImpotOrdinaire>, DeclarationSummoner<?>> map,
 	                                                                           Class<T> clazz, DeclarationSummoner<T> summoner) {

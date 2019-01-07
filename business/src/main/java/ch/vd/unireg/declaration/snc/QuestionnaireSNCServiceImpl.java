@@ -378,8 +378,8 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 			switch (delai.getEtat()) {
 			case ACCORDE:
 			case REFUSE:
-				final RegDate dateExpedition = delaisService.getDateExpeditionDelaiCadevImpressionQuestionnaireSNC(dateTraitement);
-				resultat = editiqueCompositionService.imprimeLettreDecisionDelaiQSNCBatch(delai,dateExpedition );
+				final RegDate dateExpedition = delaisService.getDateExpeditionDelaiImpressionCadev(dateTraitement);
+				resultat = editiqueCompositionService.imprimeLettreDecisionDelaiQSNCBatch(delai, dateExpedition);
 				break;
 			default:
 				final String message = String.format("Type de lettre non-supporté, etat du délai  : %s", delai.getEtat());

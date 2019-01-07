@@ -274,10 +274,11 @@ public interface EditiqueCompositionService {
 	 *
 	 * @param di    la déclaration d'impôt PM
 	 * @param delai le délai accordé/refusé
+	 * @param dateExpedition
 	 * @return l'identifiant d'archivage du document généré
 	 * @throws EditiqueException en cas de souci
 	 */
-	String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+	String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la liste récapitulative spécifiée on-line

@@ -52,7 +52,7 @@ public class MockDelaisService implements DelaisService {
 	}
 
 	@Override
-	public RegDate getDateExpeditionDelaiCadevImpressionQuestionnaireSNC(RegDate dateExpedition) {
+	public RegDate getDateExpeditionDelaiImpressionCadev(RegDate dateExpedition) {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

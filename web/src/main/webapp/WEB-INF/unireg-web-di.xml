@@ -51,6 +51,7 @@
 		<property name="validationService" ref="validationService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="delaisService" ref="delaisService" />
 	</bean>
 
 	<!-- Excercices commerciaux -->

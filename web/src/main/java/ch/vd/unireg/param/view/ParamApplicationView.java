@@ -88,7 +88,7 @@ public class ParamApplicationView {
 		this.delaiCadevImpressionDeclarationImpot = ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiCadevImpressionDeclarationImpot());
 		this.delaiCadevImpressionListesRecapitulatives = ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirValeurTypeeVersString(service.getDelaiCadevImpressionListesRecapitulatives());
 		this.delaiCadevImpressionLettreBienvenue = ParametreEnum.delaiCadevImpressionLettreBienvenue.convertirValeurTypeeVersString(service.getDelaiCadevImpressionLettreBienvenue());
-		this.delaiCadevImpressionQuestionnaireSNC = ParametreEnum.delaiCadevImpressionQuestionnaireSNC.convertirValeurTypeeVersString(service.getDelaiCadevImpressionQuestionnaireSNC());
+		this.delaiCadevImpressionQuestionnaireSNC = ParametreEnum.delaiImpressionCadev.convertirValeurTypeeVersString(service.getDateExpeditionDelaiImpressionCadev());
 		this.delaiCadevImpressionDemandeDegrevementICI = ParametreEnum.delaiCadevImpressionDemandeDegrevementICI.convertirValeurTypeeVersString(service.getDelaiCadevImpressionDemandeDegrevementICI());
 		this.nbMaxParListe = ParametreEnum.nbMaxParListe.convertirValeurTypeeVersString(service.getNbMaxParListe());
 		this.nbMaxParPage = ParametreEnum.nbMaxParPage.convertirValeurTypeeVersString(service.getNbMaxParPage());
@@ -133,7 +133,7 @@ public class ParamApplicationView {
 		service.setDelaiCadevImpressionDeclarationImpot((Integer) ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirStringVersValeurTypee(this.delaiCadevImpressionDeclarationImpot));
 		service.setDelaiCadevImpressionListesRecapitulatives((Integer) ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirStringVersValeurTypee(this.delaiCadevImpressionListesRecapitulatives));
 		service.setDelaiCadevImpressionLettreBienvenue((Integer) ParametreEnum.delaiCadevImpressionLettreBienvenue.convertirStringVersValeurTypee(this.delaiCadevImpressionLettreBienvenue));
-		service.setDelaiCadevImpressionQuestionnaireSNC((Integer) ParametreEnum.delaiCadevImpressionQuestionnaireSNC.convertirStringVersValeurTypee(this.delaiCadevImpressionQuestionnaireSNC));
+		service.setDelaiCadevImpressionQuestionnaireSNC((Integer) ParametreEnum.delaiImpressionCadev.convertirStringVersValeurTypee(this.delaiCadevImpressionQuestionnaireSNC));
 		service.setDelaiCadevImpressionDemandeDegrevementICI((Integer) ParametreEnum.delaiCadevImpressionDemandeDegrevementICI.convertirStringVersValeurTypee(this.delaiCadevImpressionDemandeDegrevementICI));
 		service.setNbMaxParListe((Integer) ParametreEnum.nbMaxParListe.convertirStringVersValeurTypee(this.nbMaxParListe));
 		service.setNbMaxParPage((Integer) ParametreEnum.nbMaxParPage.convertirStringVersValeurTypee(this.nbMaxParPage));

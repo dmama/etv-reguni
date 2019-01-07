@@ -90,7 +90,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 	}
 
 	@Override
-	public FichierImpression.Document buildDocument(ImpressionLettreDecisionDelaiPMHelperParams params, String cleArchivage) throws EditiqueException {
+	public FichierImpression.Document buildDocument(ImpressionLettreDecisionDelaiPMHelperParams params, String cleArchivage, RegDate dateExpedition) throws EditiqueException {
 		try {
 			final DeclarationImpotOrdinairePM declaration = params.getDi();
 			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
@@ -103,7 +103,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateDebutExerciceCommercial()),
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateFinExerciceCommercial()));
 
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, params.getDateTraitement(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 
 			final FichierImpression.Document.RefusDelai refusDelai = buildRefusDelai(params);
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);

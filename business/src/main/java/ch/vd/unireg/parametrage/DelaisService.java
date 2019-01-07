@@ -107,7 +107,7 @@ public interface DelaisService {
 	 */
 	RegDate getDateFinDelaiCadevImpressionQuestionnaireSNC(RegDate dateDebut);
 
-	RegDate getDateExpeditionDelaiCadevImpressionQuestionnaireSNC(RegDate dateExpedition);
+	RegDate getDateExpeditionDelaiImpressionCadev(RegDate dateExpedition);
 
 	/**
 	 * Determine la date d'échéance du délai technique d’impression par la CADEV des lettres de bienvenue PM.<br>

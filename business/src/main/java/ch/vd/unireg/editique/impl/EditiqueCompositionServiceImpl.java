@@ -761,7 +761,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String cleArchivage = impressionLettreDecisionDelaiPMHelper.construitIdArchivageDocument(params);
 
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
+		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage,  RegDate.get());
 		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, di.getTiers(), RegDate.get());
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
@@ -776,13 +776,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException, JMSException {
 		final ImpressionLettreDecisionDelaiPMHelperParams params = new ImpressionLettreDecisionDelaiPMHelperParams(di, delai);
 		final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPMHelper.getTypeDocumentEditique(params);
 		final String cleArchivage = impressionLettreDecisionDelaiPMHelper.construitIdArchivageDocument(params);
 
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
+		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage, dateExpedition);
 		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, di.getTiers(), RegDate.get());
 		root.getDocument().add(original);
 		if (copieMandataire != null) {

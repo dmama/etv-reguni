@@ -1,6 +1,7 @@
 package ch.vd.unireg.declaration.ordinaire.pm;
 
 import ch.vd.editique.unireg.FichierImpression;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.editique.EditiqueAbstractHelper;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.TypeDocumentEditique;
@@ -28,7 +29,8 @@ public interface ImpressionLettreDecisionDelaiPMHelper extends EditiqueAbstractH
 	/**
 	 * @param params détails de la demande de délai
 	 * @param cleArchivage clé d'archivage pour le document généré
+	 * @param dateExpedition
 	 * @return données à envoyer à l'éditique pour le document
 	 */
-	FichierImpression.Document buildDocument(ImpressionLettreDecisionDelaiPMHelperParams params, String cleArchivage) throws EditiqueException;
+	FichierImpression.Document buildDocument(ImpressionLettreDecisionDelaiPMHelperParams params, String cleArchivage, RegDate dateExpedition) throws EditiqueException;
 }

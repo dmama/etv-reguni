@@ -16,7 +16,7 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiCadevImpressionLettreBienvenue();
 
-	Integer getDelaiCadevImpressionQuestionnaireSNC();
+	Integer getDateExpeditionDelaiImpressionCadev();
 
 	Integer getDelaiCadevImpressionDelaiQuestionnaireSNC();
 

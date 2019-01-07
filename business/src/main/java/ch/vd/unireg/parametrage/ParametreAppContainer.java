@@ -117,8 +117,8 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public Integer getDelaiCadevImpressionQuestionnaireSNC() {
-		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionQuestionnaireSNC));
+	public Integer getDateExpeditionDelaiImpressionCadev() {
+		return Integer.parseInt(get(ParametreEnum.delaiImpressionCadev));
 	}
 
 	@Override
@@ -375,7 +375,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setDelaiCadevImpressionQuestionnaireSNC(Integer val) {
-		setValeur(ParametreEnum.delaiCadevImpressionQuestionnaireSNC, val.toString());
+		setValeur(ParametreEnum.delaiImpressionCadev, val.toString());
 	}
 
 	@Override
