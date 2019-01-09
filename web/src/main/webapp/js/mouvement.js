@@ -9,10 +9,10 @@ function retourVisuFromMvt(numero) {
 * Selection d'un type de mouvement
 */
 function selectTypeMouvement(name) {
-	if( name == 'EnvoiDossier' ){
+	if( name === 'EnvoiDossier' ){
 		$('#envoi').show();
 		$('#reception').hide();
-	} else if( name == 'ReceptionDossier' ){
+	} else if( name === 'ReceptionDossier' ){
 		$('#envoi').hide();
 		$('#reception').show();
 	} 
@@ -36,7 +36,7 @@ function selectEnvoi(name) {
 * Selection d'une reception
 */
 function selectReception(name) {
-	if( name == 'PERSONNE' ){
+	if( name === 'PERSONNE' ){
 		$('#utilisateursReception').show();	
 	}
 	else {

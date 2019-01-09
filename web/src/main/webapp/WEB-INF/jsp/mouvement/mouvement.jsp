@@ -70,7 +70,7 @@
 	</table>
 	<script>
 		$(function() { <%-- [SIFISC-4823]fix l'état du formulaire incoherent en cas d'erreur --%>
-			selectEnvoi($('input[@name=destinationEnvoi]:checked').attr('id') == 'radioColl' ? 'COLLECTIVITE': 'UTILISATEUR_ENVOI');
+			selectEnvoi($('input[@name=destinationEnvoi]:checked').attr('id') === 'radioColl' ? 'COLLECTIVITE': 'UTILISATEUR_ENVOI');
 		});
     </script>
 	</div>
