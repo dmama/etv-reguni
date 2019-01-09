@@ -102,7 +102,7 @@ public abstract class TiersWebHelper {
 			return String.format("%s %s hérité de %s", nomSujet, fermeOuAnnule ? "avait" : "a", nomObjet);
 		}
 		else if (rapport instanceof LienAssociesEtSNC) {
-			return String.format("%s %s associé / commanditaire de la société %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return String.format("%s %s associé / commanditaire de la société %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
 		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
