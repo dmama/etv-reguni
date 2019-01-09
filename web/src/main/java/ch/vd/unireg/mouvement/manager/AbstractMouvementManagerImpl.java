@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -120,7 +121,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	/**
 	 * Point d'entrée principal pour bâtir la view détaillée pour un mouvement de dossier donné
 	 *
-	 * @param mvt le mouvement depuis lequel bâtir la vue
+	 * @param mvt          le mouvement depuis lequel bâtir la vue
 	 * @param isExtraction
 	 * @return la vue
 	 * @throws ServiceInfrastructureException
@@ -179,7 +180,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			// que l'on découpe ensuite en petits lots pour récupérer les numéros d'individus
 			final int nbLots = idsTiers.size() / TAILLE_LOT + 1;
 			final List<Long> listeIdsTiers = new ArrayList<>(idsTiers);
-			for (int i = 0 ; i < nbLots ; ++ i) {
+			for (int i = 0; i < nbLots; ++i) {
 				final int idxMin = i * TAILLE_LOT;
 				final int idxMax = Math.min((i + 1) * TAILLE_LOT, listeIdsTiers.size());
 				if (idxMin < idxMax) {
@@ -202,7 +203,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setExecutant(mvt.getLogModifUser());
 		view.setContribuable(creerCtbView(mvt.getContribuable()));
 		view.setAnnule(mvt.isAnnule());
-		if (!isExtraction){
+		if (!isExtraction) {
 			view.setAnnulable(isAnnulable(mvt));
 		}
 		return view;
@@ -292,7 +293,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		}
 	}
 
-	private InfoCollaborateur getInfosCollaborateur(String visa) {
+	private InfoCollaborateur getInfosCollaborateur(@NotNull String visa) {
 
 		final Operateur operateur = serviceSecuriteService.getOperateur(visa);
 		final String nomUtilisateur;
@@ -331,12 +332,14 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 		if (envoi instanceof EnvoiDossierVersCollaborateur) {
 			final String visaDestinataire = ((EnvoiDossierVersCollaborateur) envoi).getVisaDestinataire();
-			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(visaDestinataire);
-			view.setDestinationUtilisateur(infoCollaborateur.nomPrenom);
-			view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
-			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
-			view.setVisaUtilisateurEnvoi(infoCollaborateur.visaOperateur);
-			view.setNomUtilisateurEnvoi(infoCollaborateur.nomPrenom);
+			if (visaDestinataire != null) {
+				final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(visaDestinataire);
+				view.setDestinationUtilisateur(infoCollaborateur.nomPrenom);
+				view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
+				view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
+				view.setVisaUtilisateurEnvoi(infoCollaborateur.visaOperateur);
+				view.setNomUtilisateurEnvoi(infoCollaborateur.nomPrenom);
+			}
 		}
 		else if (envoi instanceof EnvoiDossierVersCollectiviteAdministrative) {
 			final String nomCollectiviteAdm = getNomCollectiviteAdministrative(((EnvoiDossierVersCollectiviteAdministrative) envoi).getCollectiviteAdministrativeDestinataire());
@@ -359,12 +362,14 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 		if (reception instanceof ReceptionDossierPersonnel) {
 			final String visaRecepteur = ((ReceptionDossierPersonnel) reception).getVisaRecepteur();
-			final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(visaRecepteur);
-			view.setDestinationUtilisateur(infoCollaborateur.nomPrenom);
-			view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
-			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
-			view.setVisaUtilisateurReception(infoCollaborateur.visaOperateur);
-			view.setNomUtilisateurReception(infoCollaborateur.nomPrenom);
+			if (visaRecepteur != null) {
+				final InfoCollaborateur infoCollaborateur = getInfosCollaborateur(visaRecepteur);
+				view.setDestinationUtilisateur(infoCollaborateur.nomPrenom);
+				view.setNomPrenomUtilisateur(infoCollaborateur.nomPrenom);
+				view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
+				view.setVisaUtilisateurReception(infoCollaborateur.visaOperateur);
+				view.setNomUtilisateurReception(infoCollaborateur.nomPrenom);
+			}
 		}
 		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null && RegDateHelper.get(reception.getLogCreationDate()).isAfter(dateMeP11R1)) {
 			final Object[] params = {Integer.toString(reception.getDateMouvement().year())};

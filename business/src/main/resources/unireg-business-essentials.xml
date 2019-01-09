@@ -506,4 +506,7 @@
 
 	<bean id="parametreDemandeDelaisOnlineValidator" class="ch.vd.unireg.validation.parameter.ParametreDemandeDelaisOnlineValidator" parent="entityValidator"/>
 
+	<bean id="envoiDossierVersCollaborateurValidator" class="ch.vd.unireg.validation.mouvementdossier.EnvoiDossierVersCollaborateurValidator" parent="entityValidator"/>
+	<bean id="receptionDossierPersonnelValidator" class="ch.vd.unireg.validation.mouvementdossier.ReceptionDossierPersonnelValidator" parent="entityValidator"/>
+
 </beans>
