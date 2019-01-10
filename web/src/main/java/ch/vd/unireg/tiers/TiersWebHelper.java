@@ -2,11 +2,13 @@ package ch.vd.unireg.tiers;
 
 import java.util.List;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.utils.SpringContext;
 
 public abstract class TiersWebHelper {
 
@@ -43,66 +45,61 @@ public abstract class TiersWebHelper {
 		final boolean fermeOuAnnule = rapport.isAnnule() || rapport.getDateFin() != null;
 
 		if (rapport instanceof ContactImpotSource) {
-			return String.format("%s %s le tiers référent de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.contactimpotsource", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof RepresentationConventionnelle) {
-			return String.format("%s %s représenté(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof Curatelle) {
-			return String.format("%s %s le curateur de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.curatelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof ConseilLegal) {
-			return String.format("%s %s le conseiller légal de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.conseillegal", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof Tutelle) {
-			return String.format("%s %s le tuteur de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.tutelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof AnnuleEtRemplace) {
-			return String.format("%s (n°%d) %s %s (n°%d)", nomObjet, objetId, fermeOuAnnule ? "remplaçait" : "remplace", nomSujet, sujetId);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.annuleetremplace", nomObjet, objetId, BooleanUtils.toInteger(fermeOuAnnule), nomSujet, sujetId);
 		}
 		else if (rapport instanceof AppartenanceMenage) {
-			return String.format("%s %s au ménage %s", nomSujet, fermeOuAnnule ? "appartenait" : "appartient", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.appartenancemenage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof RapportPrestationImposable) {
-			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.rapportprestationimposable", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof Parente) {
-			return String.format("%s %s l'enfant de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.parente", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof AssujettissementParSubstitution) {
-			return String.format("L'assujettissement de %s se %s à celui de %s", nomObjet, fermeOuAnnule ? "substituait" : "substitue", nomSujet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof ActiviteEconomique) {
-			if (((ActiviteEconomique) rapport).isPrincipal()) {
-				return String.format("%s %s son activité économique principale au travers de l'établissement %s", nomSujet, fermeOuAnnule ? "exerçait" : "exerce", nomObjet);
-			}
-			else {
-				return String.format("%s %s une activité économique au travers de l'établissement %s", nomSujet, fermeOuAnnule ? "exerçait" : "exerce", nomObjet);
-			}
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.activiteeconomique", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, BooleanUtils.toInteger(((ActiviteEconomique) rapport).isPrincipal()));
 		}
 		else if (rapport instanceof Mandat) {
-			return String.format("%s %s un mandat à %s", nomSujet, fermeOuAnnule ? "confiait" : "confie", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.mandat", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof FusionEntreprises) {
-			return String.format("%s (n°%d) %s fusionné pour donner %s (n°%d)", nomSujet, sujetId, fermeOuAnnule ? "avait" : "a", nomObjet, objetId);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.fusionentreprises", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
 		}
 		else if (rapport instanceof ScissionEntreprise) {
-			return String.format("%s (n°%d) %s été scindée pour donner %s (n°%d)", nomSujet, sujetId, fermeOuAnnule ? "avait" : "a", nomObjet, objetId);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.scissionentreprise", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
 		}
 		else if (rapport instanceof TransfertPatrimoine) {
-			return String.format("%s (n°%d) %s transféré du patrimoine vers %s (n°%d)", nomSujet, sujetId, fermeOuAnnule ? "avait" : "a", nomObjet, objetId);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.transfertpatrimoine", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
 		}
 		else if (rapport instanceof AdministrationEntreprise) {
-			return String.format("L'entreprise '%s' %s administrée par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.administrationentreprise", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof SocieteDirection) {
-			return String.format("%s %s propriétaire du fonds de placement %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.societedirection", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof Heritage) {
-			return String.format("%s %s hérité de %s", nomSujet, fermeOuAnnule ? "avait" : "a", nomObjet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.heritage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof LienAssociesEtSNC) {
-			return String.format("%s %s associé / commanditaire de la société %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
+			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.lienassociesetsnc", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
