@@ -13,6 +13,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.BaseComparator;
 import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.unireg.tiers.ActiviteEconomique;
@@ -105,7 +106,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	public RapportView() {
 	}
 
-	public RapportView(RapportEntreTiers rapport, SensRapportEntreTiers sens, TiersService tiersService, AdresseService adresseService) {
+	public RapportView(RapportEntreTiers rapport, SensRapportEntreTiers sens, TiersService tiersService, AdresseService adresseService, MessageHelper messageHelper) {
 		this.id = rapport.getId();
 		this.dateDebut = rapport.getDateDebut();
 		this.dateFin = rapport.getDateFin();
@@ -147,13 +148,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		}
 
 		this.messageNumeroAbsent = null; // TDDO (msi) rapports de filiation
-		this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
+		this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService, messageHelper);
 	}
 
 	/**
 	 * Récupération du nom de l'autorité tutellaire à partir de son id, depuis le service infrastructure
+	 *
 	 * @param autoriteTutelaireId id de l'autorité tutellaire
-	 * @param tiersService service utilisé pour la recherche
+	 * @param tiersService        service utilisé pour la recherche
 	 * @return le nom de l'autorité tutellaire
 	 */
 	String getNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
@@ -405,7 +407,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 			return null;
 		}
 		try {
-			return  adresseService.getNomCourrier(tiers, null, false);
+			return adresseService.getNomCourrier(tiers, null, false);
 		}
 		catch (Exception e) {
 			return Collections.singletonList(e.getMessage());

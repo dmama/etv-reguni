@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.utils.SpringContext;
+import ch.vd.unireg.message.MessageHelper;
 
 public abstract class TiersWebHelper {
 
@@ -17,10 +17,11 @@ public abstract class TiersWebHelper {
 	/**
 	 * Construit et retourne une string qui résume de manière compréhensible pour un humain un rapport entre deux tiers.
 	 *
-	 * @param rapport le rapport dont on veut obtenir un résumé
+	 * @param rapport       le rapport dont on veut obtenir un résumé
+	 * @param messageHelper messageHelper
 	 * @return un résumé du rapport; ou <b>null</b> s'il n'est pas possible de le créer pour une raison ou une autre.
 	 */
-	public static String getRapportEntreTiersTooltips(RapportEntreTiers rapport, AdresseService adresseService, TiersService tiersService) {
+	public static String getRapportEntreTiersTooltips(RapportEntreTiers rapport, AdresseService adresseService, TiersService tiersService, MessageHelper messageHelper) {
 
 		final Long sujetId = rapport.getSujetId();
 		final Long objetId = rapport.getObjetId();
@@ -45,61 +46,61 @@ public abstract class TiersWebHelper {
 		final boolean fermeOuAnnule = rapport.isAnnule() || rapport.getDateFin() != null;
 
 		if (rapport instanceof ContactImpotSource) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.contactimpotsource", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.contactimpotsource", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof RepresentationConventionnelle) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof Curatelle) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.curatelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.curatelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof ConseilLegal) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.conseillegal", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.conseillegal", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof Tutelle) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.tutelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.tutelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof AnnuleEtRemplace) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.annuleetremplace", nomObjet, objetId, BooleanUtils.toInteger(fermeOuAnnule), nomSujet, sujetId);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.annuleetremplace", nomObjet, objetId, BooleanUtils.toInteger(fermeOuAnnule), nomSujet, sujetId);
 		}
 		else if (rapport instanceof AppartenanceMenage) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.appartenancemenage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.appartenancemenage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof RapportPrestationImposable) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.rapportprestationimposable", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.rapportprestationimposable", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof Parente) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.parente", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.parente", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof AssujettissementParSubstitution) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof ActiviteEconomique) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.activiteeconomique", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, BooleanUtils.toInteger(((ActiviteEconomique) rapport).isPrincipal()));
+			return messageHelper.getMessage("tooltip.rapport.entretiers.activiteeconomique", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, BooleanUtils.toInteger(((ActiviteEconomique) rapport).isPrincipal()));
 		}
 		else if (rapport instanceof Mandat) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.mandat", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.mandat", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof FusionEntreprises) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.fusionentreprises", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.fusionentreprises", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
 		}
 		else if (rapport instanceof ScissionEntreprise) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.scissionentreprise", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.scissionentreprise", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
 		}
 		else if (rapport instanceof TransfertPatrimoine) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.transfertpatrimoine", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.transfertpatrimoine", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
 		}
 		else if (rapport instanceof AdministrationEntreprise) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.administrationentreprise", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.administrationentreprise", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof SocieteDirection) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.societedirection", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.societedirection", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof Heritage) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.heritage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.heritage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof LienAssociesEtSNC) {
-			return SpringContext.getMessageHelper().getMessage("tooltip.rapport.entretiers.lienassociesetsnc", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.lienassociesetsnc", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');

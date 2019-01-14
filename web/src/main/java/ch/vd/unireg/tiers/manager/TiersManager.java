@@ -332,7 +332,7 @@ public class TiersManager implements MessageSourceAware {
 				}
 				rapportView.setNomCourrier(nomObjet);
 
-				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
+				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService, messageHelper);
 				rapportView.setToolTipMessage(toolTipMessage);
 
 				rapportsView.add(rapportView);
@@ -352,7 +352,7 @@ public class TiersManager implements MessageSourceAware {
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
 			final RapportEntreTiersKey key = new RapportEntreTiersKey(rapportEntreTiers.getType(), RapportEntreTiersKey.Source.OBJET);
 			if (RapportHelper.ALLOWED_VISU_COMPLETE.contains(key)) {
-				rapportsView.add(new RapportView(rapportEntreTiers, SensRapportEntreTiers.OBJET, tiersService, adresseService));
+				rapportsView.add(new RapportView(rapportEntreTiers, SensRapportEntreTiers.OBJET, tiersService, adresseService, messageHelper));
 			}
 		}
 
@@ -360,7 +360,7 @@ public class TiersManager implements MessageSourceAware {
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsSujet()) {
 			final RapportEntreTiersKey key = new RapportEntreTiersKey(rapportEntreTiers.getType(), RapportEntreTiersKey.Source.SUJET);
 			if (RapportHelper.ALLOWED_VISU_COMPLETE.contains(key)) {
-				final RapportView rapportView = new RapportView(rapportEntreTiers, SensRapportEntreTiers.SUJET, tiersService, adresseService);
+				final RapportView rapportView = new RapportView(rapportEntreTiers, SensRapportEntreTiers.SUJET, tiersService, adresseService, messageHelper);
 				rapportsView.add(rapportView);
 			}
 		}
@@ -400,7 +400,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setNumero(tiersSujet.getNumero());
 				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
 				rapportView.setNomCourrier(nomCourrier);
-				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
+				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService, messageHelper);
 				rapportView.setToolTipMessage(toolTipMessage);
 				boolean accepterRapportHistorique = isRapportHistorique(rapportEntreTiers) && ctbAssocieHisto;
 				if (accepterRapportHistorique || !isRapportHistorique(rapportEntreTiers)) {

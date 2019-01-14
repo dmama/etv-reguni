@@ -47,6 +47,7 @@ import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.rapport.manager.RapportEditManager;
 import ch.vd.unireg.rapport.view.RapportListView;
 import ch.vd.unireg.rapport.view.RapportView;
@@ -97,6 +98,7 @@ public class RapportController {
 	private Validator rapportAddValidator;
 	private RapportEditValidator rapportEditValidator;
 	private Validator setPrincipalValidator;
+	private MessageHelper messageHelper;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -155,6 +157,10 @@ public class RapportController {
 
 	public void setSetPrincipalValidator(Validator setPrincipalValidator) {
 		this.setPrincipalValidator = setPrincipalValidator;
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
@@ -488,7 +494,7 @@ public class RapportController {
 				.filter(Heritage.class::isInstance)
 				.map(Heritage.class::cast)
 				.filter(h -> h.getPrincipalCommunaute() != null && h.getPrincipalCommunaute())
-				.map(r -> new RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService))
+				.map(r -> new RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService, messageHelper))
 				.collect(Collectors.toList());
 	}
 
@@ -732,10 +738,10 @@ public class RapportController {
 		final List<RapportsPage.RapportView> views = new ArrayList<>(currentRapports.size());
 		for (RapportEntreTiers r : currentRapports) {
 			if (r.getObjetId().equals(tiersId)) {
-				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService, messageSource));
+				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService, messageHelper));
 			}
 			else if (r.getSujetId().equals(tiersId)) {
-				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.SUJET, tiersService, adresseService, messageSource));
+				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.SUJET, tiersService, adresseService, messageHelper));
 			}
 		}
 		return views;

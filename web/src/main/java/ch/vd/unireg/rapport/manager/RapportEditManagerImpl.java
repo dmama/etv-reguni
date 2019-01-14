@@ -22,6 +22,7 @@ import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.unireg.rapport.view.RapportView;
@@ -56,6 +57,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	private EvenementFiscalService evenementFiscalService;
 	private LienAssociesSNCService lienAssociesSNCService;
+	private MessageHelper messageHelper;
 
 	/**
 	 * Alimente la vue RapportView
@@ -126,7 +128,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		final List<String> nomTiersLie = adresseService.getNomCourrier(tiersLie, null, false);
-		final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
+		final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService, messageHelper);
 
 		rapportView.setNumeroCourant(numeroTiersCourant);
 		rapportView.setNumero(numeroTiersLie);
@@ -262,7 +264,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 
 			try {
-				lienAssociesSNCService.isAllowed( objet,  sujet, rapportView.getDateDebut());
+				lienAssociesSNCService.isAllowed(objet, sujet, rapportView.getDateDebut());
 			}
 			catch (LienAssociesEtSNCException e) {
 				throw new IllegalArgumentException(e.getMessage());
@@ -558,5 +560,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	public void setLienAssociesSNCService(LienAssociesSNCService lienAssociesSNCService) {
 		this.lienAssociesSNCService = lienAssociesSNCService;
+	}
+
+	@Override
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 }

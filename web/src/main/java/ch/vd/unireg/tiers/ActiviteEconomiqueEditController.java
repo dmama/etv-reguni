@@ -20,6 +20,7 @@ import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.view.RapportView;
 import ch.vd.unireg.security.AccessDeniedException;
@@ -37,6 +38,7 @@ public class ActiviteEconomiqueEditController {
 	private AdresseService adresseService;
 	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
+	private MessageHelper messageHelper;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -52,6 +54,10 @@ public class ActiviteEconomiqueEditController {
 
 	public void setAutorisationManager(AutorisationManager autorisationManager) {
 		this.autorisationManager = autorisationManager;
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 
 	@InitBinder("command")
@@ -78,7 +84,7 @@ public class ActiviteEconomiqueEditController {
 		final Tiers sujet = tiersService.getTiers(ae.getSujetId());
 		checkDroitEditionActiviteEconomique(sujet);
 		return showClose(model,
-		                 new RapportView(ae, SensRapportEntreTiers.SUJET, tiersService, adresseService),
+		                 new RapportView(ae, SensRapportEntreTiers.SUJET, tiersService, adresseService, messageHelper),
 		                 new CloseActiviteEconomiqueView(ae));
 	}
 
@@ -95,7 +101,7 @@ public class ActiviteEconomiqueEditController {
 		final ActiviteEconomique ae = getActiviteEconomiqueSecondaireOuverte(view.getIdRapportActiviteEconomique());
 		if (bindingResult.hasErrors()) {
 			return showClose(model,
-			                 new RapportView(ae, SensRapportEntreTiers.SUJET, tiersService, adresseService),
+			                 new RapportView(ae, SensRapportEntreTiers.SUJET, tiersService, adresseService, messageHelper),
 			                 view);
 		}
 

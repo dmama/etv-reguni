@@ -396,6 +396,4 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="springContext" class="ch.vd.unireg.utils.SpringContext"/>
-
 </beans>

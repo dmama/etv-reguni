@@ -41,6 +41,7 @@
 		<property name="rapportAddValidator" ref="rapportAddValidator" />
 		<property name="rapportEditValidator" ref="rapportEditValidator" />
 		<property name="setPrincipalValidator" ref="setPrincipalValidator" />
+		<property name="messageHelper" ref="messageHelper" />
 	</bean>
 
 	<bean id="rapportEditManager" class="ch.vd.unireg.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
@@ -50,6 +51,7 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="lienAssociesSNCService" ref="lienAssociesSNCService" />
+		<property name="messageHelper" ref="messageHelper" />
 	</bean>
 
 	<bean id="rapportAddValidator" class="ch.vd.unireg.rapport.validator.RapportAddValidator" >
@@ -76,6 +78,7 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 </beans>

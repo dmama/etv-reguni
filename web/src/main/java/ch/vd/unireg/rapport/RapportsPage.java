@@ -3,10 +3,9 @@ package ch.vd.unireg.rapport;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Heritage;
@@ -17,7 +16,6 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.TiersWebHelper;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
-import ch.vd.unireg.utils.WebContextUtils;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RapportsPage {
@@ -43,12 +41,12 @@ public class RapportsPage {
 		// -- uniquement pour les héritiers
 		private Boolean principalCommunaute;
 
-		public RapportView(RapportEntreTiers rapport, SensRapportEntreTiers sens, TiersService tiersService, AdresseService adresseService, MessageSource messageSource) {
+		public RapportView(RapportEntreTiers rapport, SensRapportEntreTiers sens, TiersService tiersService, AdresseService adresseService, MessageHelper messageHelper) {
 			this.id = rapport.getId();
 			this.dateDebut = RegDateHelper.dateToDisplayString(rapport.getDateDebut());
 			this.dateFin = RegDateHelper.dateToDisplayString(rapport.getDateFin());
 			this.annule = rapport.isAnnule();
-			this.type = initType(rapport, sens, messageSource);
+			this.type = initType(rapport, sens, messageHelper);
 			this.numeroAutreTiers = (sens == SensRapportEntreTiers.SUJET ? rapport.getObjetId() : rapport.getSujetId());
 			this.nomCourrier = ch.vd.unireg.rapport.view.RapportView.buildNomCourrier(getTiers(this.numeroAutreTiers, tiersService), adresseService);
 
@@ -68,7 +66,7 @@ public class RapportsPage {
 				this.principalCommunaute = heritage.getPrincipalCommunaute();
 			}
 
-			this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
+			this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService, messageHelper);
 		}
 
 		static String getNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
@@ -86,7 +84,7 @@ public class RapportsPage {
 			return numeroTiers != null ? tiersService.getTiers(numeroTiers) : null;
 		}
 
-		private static String initType(RapportEntreTiers rapport, SensRapportEntreTiers sens, MessageSource messageSource) {
+		private static String initType(RapportEntreTiers rapport, SensRapportEntreTiers sens, MessageHelper messageHelper) {
 			final String code;
 			final TypeRapportEntreTiers type = rapport.getType();
 			if (type == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && sens == SensRapportEntreTiers.SUJET && ((ActiviteEconomique) rapport).isPrincipal()) {
@@ -95,7 +93,7 @@ public class RapportsPage {
 			else {
 				code = "option.rapport.entre.tiers." + sens.name() + "." + type.name();
 			}
-			return messageSource.getMessage(code, null, WebContextUtils.getDefaultLocale());
+			return messageHelper.getMessage(code);
 		}
 
 		public Long getId() {
@@ -195,7 +193,7 @@ public class RapportsPage {
 	private List<RapportView> rapports;
 	private boolean showHisto;
 	private TypeRapportEntreTiers typeRapport;
-	private Map<TypeRapportEntreTiers,String> typesRapportEntreTiers;
+	private Map<TypeRapportEntreTiers, String> typesRapportEntreTiers;
 	private int page;
 	private int totalCount;
 	private String sortField;
