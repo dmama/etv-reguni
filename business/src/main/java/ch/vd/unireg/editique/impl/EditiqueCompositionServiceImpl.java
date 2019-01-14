@@ -19,9 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.editique.unireg.CTypeImmeuble;
-import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -88,6 +85,9 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.unireg.type.ModeleFeuille;
 import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeImmeuble;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 public class EditiqueCompositionServiceImpl implements EditiqueCompositionService {
 

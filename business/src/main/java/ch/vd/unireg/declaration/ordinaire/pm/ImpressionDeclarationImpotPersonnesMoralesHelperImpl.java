@@ -10,17 +10,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeAnnexesDI;
-import ch.vd.editique.unireg.CTypeAnnexesDIAPM;
-import ch.vd.editique.unireg.CTypeDeclarationImpot;
-import ch.vd.editique.unireg.CTypeDeclarationImpotAPM;
-import ch.vd.editique.unireg.CTypeDeclarationImpotPM;
-import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeReferenceAnnexeDI;
-import ch.vd.editique.unireg.STypeReferenceAnnexeDIAPM;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -49,6 +38,17 @@ import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.unireg.type.ModeleFeuille;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeAffranchissement;
+import ch.vd.unireg.xml.editique.pm.CTypeAnnexesDI;
+import ch.vd.unireg.xml.editique.pm.CTypeAnnexesDIAPM;
+import ch.vd.unireg.xml.editique.pm.CTypeDeclarationImpot;
+import ch.vd.unireg.xml.editique.pm.CTypeDeclarationImpotAPM;
+import ch.vd.unireg.xml.editique.pm.CTypeDeclarationImpotPM;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoDocument;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.STypeReferenceAnnexeDI;
+import ch.vd.unireg.xml.editique.pm.STypeReferenceAnnexeDIAPM;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDeclarationImpotPersonnesMoralesHelper {
 

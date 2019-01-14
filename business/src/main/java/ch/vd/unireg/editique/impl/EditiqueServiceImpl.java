@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.editique.EditiqueException;
@@ -24,6 +23,7 @@ import ch.vd.unireg.editique.RetourImpressionToInboxTrigger;
 import ch.vd.unireg.editique.RetourImpressionTrigger;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.inbox.InboxService;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 /**
  * Implémentation standard de {@link EditiqueService}.

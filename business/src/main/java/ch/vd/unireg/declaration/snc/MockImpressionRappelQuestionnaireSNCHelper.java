@@ -2,12 +2,12 @@ package ch.vd.unireg.declaration.snc;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 public class MockImpressionRappelQuestionnaireSNCHelper implements ImpressionRappelQuestionnaireSNCHelper {
 

@@ -6,7 +6,6 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.infrastructure.model.rest.CommuneSimple;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -30,6 +29,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -13,7 +13,6 @@ import noNamespace.InfoArchivageDocument;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -42,6 +41,7 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeLettreBienvenue;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
 import ch.vd.unireg.xml.event.docsortant.v1.Archivage;
 import ch.vd.unireg.xml.event.docsortant.v1.Archives;
 import ch.vd.unireg.xml.event.docsortant.v1.Caracteristiques;

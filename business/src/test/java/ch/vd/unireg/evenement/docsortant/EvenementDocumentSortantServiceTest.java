@@ -13,14 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.xml.event.docsortant.v1.CodeSupport;
-import ch.vd.unireg.xml.event.docsortant.v1.Document;
-import ch.vd.unireg.xml.event.docsortant.v1.Documents;
-import ch.vd.unireg.xml.event.docsortant.v1.Population;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalEmis;
@@ -28,6 +21,8 @@ import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.Fraction;
@@ -39,6 +34,11 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeRapprochementRF;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
+import ch.vd.unireg.xml.event.docsortant.v1.CodeSupport;
+import ch.vd.unireg.xml.event.docsortant.v1.Document;
+import ch.vd.unireg.xml.event.docsortant.v1.Documents;
+import ch.vd.unireg.xml.event.docsortant.v1.Population;
 
 public class EvenementDocumentSortantServiceTest extends BusinessTest {
 

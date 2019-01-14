@@ -1,17 +1,10 @@
 package ch.vd.unireg.documentfiscal;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -25,6 +18,12 @@ import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.xml.editique.pm.CTypeAffranchissement;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoEnteteDocument;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 public class ImpressionRappelDemandeDegrevementICIHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionRappelDemandeDegrevementICIHelper {
 

@@ -14,10 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.editique.unireg.CTypeAdresse;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
@@ -25,11 +22,14 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.xml.editique.pm.CTypeAdresse;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 public abstract class EditiqueAbstractLegacyHelper {
 

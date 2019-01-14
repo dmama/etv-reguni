@@ -14,16 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.editique.unireg.CTypeAdresse;
-import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeDestinataire;
-import ch.vd.editique.unireg.CTypeExpediteur;
-import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
-import ch.vd.editique.unireg.CTypePorteAdresse;
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -63,6 +53,16 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.xml.editique.pm.CTypeAdresse;
+import ch.vd.unireg.xml.editique.pm.CTypeAffranchissement;
+import ch.vd.unireg.xml.editique.pm.CTypeDestinataire;
+import ch.vd.unireg.xml.editique.pm.CTypeExpediteur;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoEnteteDocument;
+import ch.vd.unireg.xml.editique.pm.CTypePorteAdresse;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelper {
 

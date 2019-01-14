@@ -1,15 +1,10 @@
 package ch.vd.unireg.documentfiscal;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Formatter;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
@@ -27,6 +22,7 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeLettreBienvenue;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 
 public class ImpressionRappelHelperTest extends BusinessTest {

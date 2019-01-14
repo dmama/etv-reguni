@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -34,6 +32,8 @@ import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.TypeImpressionEditique;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.utils.LogLevel;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.ObjectFactory;
 
 /**
  * Bean qui permet d'envoyer des documents à l'éditique.

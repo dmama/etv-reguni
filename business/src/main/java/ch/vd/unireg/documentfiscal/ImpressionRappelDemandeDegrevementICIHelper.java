@@ -1,11 +1,11 @@
 package ch.vd.unireg.documentfiscal;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.editique.EditiqueAbstractHelper;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 public interface ImpressionRappelDemandeDegrevementICIHelper extends EditiqueAbstractHelper {
 

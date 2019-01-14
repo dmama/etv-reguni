@@ -5,11 +5,6 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
@@ -26,6 +21,11 @@ import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.editique.pm.CTypeAffranchissement;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoEnteteDocument;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionFourreNeutreHelper {
 	private static final String CODE_DOCUMENT_FOURRE_NEUTRE = TypeDocumentEditique.FOURRE_NEUTRE.getCodeDocumentEditique().substring(0, 4);

@@ -3,7 +3,7 @@ package ch.vd.unireg.editique;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xmlbeans.XmlObject;
 
-import ch.vd.editique.unireg.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 /**
  * Interface qui permet d'envoyer des événements à l'éditique.

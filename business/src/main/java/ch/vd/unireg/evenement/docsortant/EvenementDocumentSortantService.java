@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.docsortant;
 import noNamespace.InfoArchivageDocument;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
@@ -17,6 +16,7 @@ import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
 
 /**
  * Service de constitution de message de signalement de document sortant (au DPerm)

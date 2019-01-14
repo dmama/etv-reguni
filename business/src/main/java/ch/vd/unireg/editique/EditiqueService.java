@@ -2,7 +2,7 @@ package ch.vd.unireg.editique;
 
 import org.apache.xmlbeans.XmlObject;
 
-import ch.vd.editique.unireg.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 /**
  * Service Editique. Ce service est dédié à la communication avec le service Editique permettant l'impression des divers documents.

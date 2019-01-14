@@ -5,12 +5,6 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
@@ -24,6 +18,12 @@ import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.xml.editique.pm.CTypeAffranchissement;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoEnteteDocument;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 /**
  * Rassemblement des méthodes utiles pour la constitution d'un document de sommation de DI PM à envoyer à l'éditique

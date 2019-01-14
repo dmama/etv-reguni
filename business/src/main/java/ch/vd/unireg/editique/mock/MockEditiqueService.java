@@ -2,7 +2,6 @@ package ch.vd.unireg.editique.mock;
 
 import org.apache.xmlbeans.XmlObject;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
@@ -10,6 +9,7 @@ import ch.vd.unireg.editique.EditiqueService;
 import ch.vd.unireg.editique.FormatDocumentEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.impl.EditiqueResultatErreurImpl;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
 
 public class MockEditiqueService implements EditiqueService {
 

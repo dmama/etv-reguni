@@ -9,14 +9,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.CTypeAdresse;
-import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
-import ch.vd.editique.unireg.CTypeQuestSNC;
-import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -40,6 +32,14 @@ import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.xml.editique.pm.CTypeAdresse;
+import ch.vd.unireg.xml.editique.pm.CTypeAffranchissement;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeInfoEnteteDocument;
+import ch.vd.unireg.xml.editique.pm.CTypeQuestSNC;
+import ch.vd.unireg.xml.editique.pm.FichierImpression;
+import ch.vd.unireg.xml.editique.pm.STypeZoneAffranchissement;
 
 public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionQuestionnaireSNCHelper {
 
