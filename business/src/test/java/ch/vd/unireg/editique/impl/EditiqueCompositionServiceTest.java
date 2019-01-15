@@ -76,14 +76,25 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testFicherImpressionVersion() throws Exception {
+	public void testFicherImpressionVersionPM() throws Exception {
 		final ClassPathResource classPathResource = new ClassPathResource("editique/UniregPM_FichierImpression.xsd");
 		final InputStream is = classPathResource.getInputStream();
 		final XmlSchemaCollection schemaCol = new XmlSchemaCollection();
 		final XmlSchema schema = schemaCol.read(new StreamSource(is));
 		final List<String> sTypeVersionXSD = XmlSchemaUtils.enumeratorValues((XmlSchemaSimpleType) schema.getTypeByName("STypeVersionXSD"));
 		Assert.assertEquals(1, sTypeVersionXSD.size());
-		Assert.assertEquals("Attention la version Editique UNIREG diffère de celle de la xsd!", sTypeVersionXSD.get(0), EditiqueAbstractHelperImpl.VERSION_XSD);
+		Assert.assertEquals("Attention la version Editique UNIREG diffère de celle de la xsd PM!", sTypeVersionXSD.get(0), EditiqueAbstractHelperImpl.VERSION_XSD_PM);
+	}
+
+	@Test
+	public void testFicherImpressionVersionPP() throws Exception {
+		final ClassPathResource classPathResource = new ClassPathResource("editique/UniregPP_FichierImpression.xsd");
+		final InputStream is = classPathResource.getInputStream();
+		final XmlSchemaCollection schemaCol = new XmlSchemaCollection();
+		final XmlSchema schema = schemaCol.read(new StreamSource(is));
+		final List<String> sTypeVersionXSD = XmlSchemaUtils.enumeratorValues((XmlSchemaSimpleType) schema.getTypeByName("STypeVersionXSD"));
+		Assert.assertEquals(1, sTypeVersionXSD.size());
+		Assert.assertEquals("Attention la version Editique UNIREG diffère de celle de la xsd PP!", sTypeVersionXSD.get(0), EditiqueAbstractHelperImpl.VERSION_XSD_PP);
 	}
 
 	/**

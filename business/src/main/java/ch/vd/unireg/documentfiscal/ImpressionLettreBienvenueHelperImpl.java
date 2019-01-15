@@ -38,9 +38,9 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 		try {
 			final Entreprise entreprise = lettre.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
-			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
+			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			final RegDate dateEnvoi = duplicata ? dateTraitement : lettre.getDateEnvoi();
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final FichierImpression.Document.LettreBienvenue lb = new FichierImpression.Document.LettreBienvenue(mapType(lettre.getType()));
 
 			final FichierImpression.Document document = new FichierImpression.Document();
@@ -59,12 +59,12 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Entreprise entreprise) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
-		                                                                                                      false,
-		                                                                                                      ServiceInfrastructureService.noOIPM);
-		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissementPM(adresseEnvoi,
+		                                                                                                        false,
+		                                                                                                        ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoiPM(infoDoc, entreprise, infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_LETTRE_BIENVENUE);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);

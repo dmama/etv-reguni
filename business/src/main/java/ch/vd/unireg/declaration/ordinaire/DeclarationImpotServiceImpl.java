@@ -844,30 +844,37 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private TypeDocumentEditique getTypeDocumentEditique(DelaiDeclaration delai) {
 		final Declaration declaration = delai.getDeclaration();
 		if (declaration instanceof DeclarationImpotOrdinairePP || declaration instanceof DeclarationImpotSource) {
-			return TypeDocumentEditique.CONFIRMATION_DELAI;
-		}
-
-		if (declaration instanceof QuestionnaireSNC) {
-			return delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE ? TypeDocumentEditique.ACCORD_DELAI_QSNC : TypeDocumentEditique.REFUS_DELAI_QSNC;
-		}
-
-		if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
-			throw new IllegalArgumentException("Délai " + delai.getId() + " sur une déclaration non-supportée : " + declaration.getClass().getName());
-		}
-
-		if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
-			if (delai.isSursis()) {
-				return TypeDocumentEditique.SURSIS;
+			if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
+				return TypeDocumentEditique.CONFIRMATION_DELAI;
+			}
+			else if (delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE) {
+				return TypeDocumentEditique.REFUS_DELAI_PP;
 			}
 			else {
-				return TypeDocumentEditique.ACCORD_DELAI_PM;
+				throw new IllegalArgumentException("Délai " + delai.getId() + " sans document (etat " + delai.getEtat() + ")");
 			}
 		}
-		else if (delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE) {
-			return TypeDocumentEditique.REFUS_DELAI_PM;
+		else  if (declaration instanceof QuestionnaireSNC) {
+			return delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE ? TypeDocumentEditique.ACCORD_DELAI_QSNC : TypeDocumentEditique.REFUS_DELAI_QSNC;
+		}
+		else if (declaration instanceof DeclarationImpotOrdinairePM) {
+			if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
+				if (delai.isSursis()) {
+					return TypeDocumentEditique.SURSIS;
+				}
+				else {
+					return TypeDocumentEditique.ACCORD_DELAI_PM;
+				}
+			}
+			else if (delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE) {
+				return TypeDocumentEditique.REFUS_DELAI_PM;
+			}
+			else {
+				throw new IllegalArgumentException("Délai " + delai.getId() + " sans document (etat " + delai.getEtat() + ")");
+			}
 		}
 		else {
-			throw new IllegalArgumentException("Délai " + delai.getId() + " sans document (etat " + delai.getEtat() + ")");
+			throw new IllegalArgumentException("Délai " + delai.getId() + " sur une déclaration non-supportée : " + declaration.getClass().getName());
 		}
 	}
 

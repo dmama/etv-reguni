@@ -34,11 +34,22 @@ public class MockEditiqueService implements EditiqueService {
 	}
 
 	@Override
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, ch.vd.unireg.xml.editique.pp.FichierImpression document, boolean archive,
+	                                                                   String description) throws EditiqueException {
+		return null;
+	}
+
+	@Override
 	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException {
 	}
 
 	@Override
 	public String creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
+		return nomDocument;
+	}
+
+	@Override
+	public String creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, ch.vd.unireg.xml.editique.pp.FichierImpression document, boolean archive) throws EditiqueException {
 		return nomDocument;
 	}
 

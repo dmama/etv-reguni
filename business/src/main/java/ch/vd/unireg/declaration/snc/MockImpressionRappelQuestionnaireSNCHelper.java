@@ -33,7 +33,13 @@ public class MockImpressionRappelQuestionnaireSNCHelper implements ImpressionRap
 
 	@Nullable
 	@Override
-	public FichierImpression.Document buildCopieMandataire(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+	public FichierImpression.Document buildCopieMandatairePM(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+		throw new IllegalArgumentException("no meant to be called");
+	}
+
+	@Nullable
+	@Override
+	public ch.vd.unireg.xml.editique.pp.FichierImpression.Document buildCopieMandatairePP(ch.vd.unireg.xml.editique.pp.FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 }

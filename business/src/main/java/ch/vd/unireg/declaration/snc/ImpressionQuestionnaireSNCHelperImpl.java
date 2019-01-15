@@ -55,8 +55,8 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 		try {
 			final Entreprise pm = (Entreprise) questionnaire.getTiers();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(pm), pm);
-			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(TypeDocumentEditique.QSNC, construitCleArchivageDocument(questionnaire), pm.getNumero(), RegDate.get());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(pm, RegDate.get(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(TypeDocumentEditique.QSNC, construitCleArchivageDocument(questionnaire), pm.getNumero(), RegDate.get());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(pm, RegDate.get(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final CTypeQuestSNC qsnc = buildDocumentQuestionnaire(questionnaire);
 
 			final FichierImpression.Document document = new FichierImpression.Document();
@@ -87,7 +87,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			//Selon FISCPROJ-527 valeur string du code segment
 			final String codeFlyers = String.valueOf(QuestionnaireSNCService.codeSegment);
 			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
-			                         buildAdresse(infraService.getCEDI()),
+			                         buildAdressePM(infraService.getCEDI()),
 			                         delaiRetourImprime,
 			                         codeRoutage,
 			                         siege,
@@ -152,12 +152,12 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, ContribuableImpositionPersonnesMorales pm) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
-		                                                                                                      false,
-		                                                                                                      ServiceInfrastructureService.noOIPM);
-		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, pm, infosAffranchissement);
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissementPM(adresseEnvoi,
+		                                                                                                        false,
+		                                                                                                        ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoiPM(infoDoc, pm, infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_QSNC);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);

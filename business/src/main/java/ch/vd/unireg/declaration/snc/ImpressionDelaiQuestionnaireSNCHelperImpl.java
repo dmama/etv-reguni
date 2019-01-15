@@ -53,11 +53,11 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 			final QuestionnaireSNC questionnaire = (QuestionnaireSNC) delai.getDeclaration();
 
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(snc), delai);
-			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(isDelaiAccorde(delai) ? TypeDocumentEditique.ACCORD_DELAI_QSNC : TypeDocumentEditique.REFUS_DELAI_QSNC,
-			                                                            cleArchivageDocument, snc.getNumero(), RegDate.get());
+			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(isDelaiAccorde(delai) ? TypeDocumentEditique.ACCORD_DELAI_QSNC : TypeDocumentEditique.REFUS_DELAI_QSNC,
+			                                                              cleArchivageDocument, snc.getNumero(), RegDate.get());
 			final String titre = String.format("QUESTIONNAIRE SNC/SC %d ",
 			                                   questionnaire.getPeriode().getAnnee());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(snc, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(snc, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);
@@ -89,13 +89,13 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 	private CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, DelaiDeclaration delai) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
-		                                                                                                      false,
-		                                                                                                      ServiceInfrastructureService.noOIPM);
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissementPM(adresseEnvoi,
+		                                                                                                        false,
+		                                                                                                        ServiceInfrastructureService.noOIPM);
 
-		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, (Entreprise) delai.getDeclaration().getTiers(), infosAffranchissement);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoiPM(infoDoc, (Entreprise) delai.getDeclaration().getTiers(), infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		infoDoc.setCodDoc(isDelaiAccorde(delai) ? CODE_DOCUMENT_ACCORD : CODE_DOCUMENT_REFUS);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);

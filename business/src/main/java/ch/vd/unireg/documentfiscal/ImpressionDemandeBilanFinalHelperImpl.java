@@ -37,8 +37,8 @@ public class ImpressionDemandeBilanFinalHelperImpl extends EditiqueAbstractHelpe
 		try {
 			final Entreprise entreprise = lettre.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
-			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 
 			final FichierImpression.Document.DemandeBilanFinal dbf = new FichierImpression.Document.DemandeBilanFinal(XmlUtils.regdate2xmlcal(RegDate.get(lettre.getPeriodeFiscale())),
 			RegDateHelper.toIndexString(lettre.getDateRequisitionRadiation()));
@@ -57,12 +57,12 @@ public class ImpressionDemandeBilanFinalHelperImpl extends EditiqueAbstractHelpe
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Entreprise entreprise) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
-		                                                                                                      false,
-		                                                                                                      ServiceInfrastructureService.noOIPM);
-		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);     // TODO est-ce vraiment nécessaire dans la mesure où il n'y a pas de batch pour ce document ?
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissementPM(adresseEnvoi,
+		                                                                                                        false,
+		                                                                                                        ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoiPM(infoDoc, entreprise, infosAffranchissement);     // TODO est-ce vraiment nécessaire dans la mesure où il n'y a pas de batch pour ce document ?
 		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_BILAN_FINAL);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);

@@ -107,7 +107,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
 		return Pair.of(dummyResultat(), null);
 	}
 
@@ -118,6 +118,11 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 
 	@Override
 	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException, JMSException {
+		return null;
+	}
+
+	@Override
+	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePP di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException, JMSException {
 		return null;
 	}
 

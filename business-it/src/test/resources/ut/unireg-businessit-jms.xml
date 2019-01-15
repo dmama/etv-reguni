@@ -131,6 +131,7 @@
 				<value>classpath:event/lr/evtQuittanceListe-v1.xsd</value>
 				<value>classpath:eVD-0025-1-2.xsd</value>
 				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
+				<value>classpath:editique/UniregPP_FichierImpression.xsd</value>
 			</list>
 		</property>
 	</bean>

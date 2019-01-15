@@ -39,6 +39,7 @@
 		<property name="impressionNouveauxDossiersHelper" ref="impressionNouveauxDossiersHelper" />
 		<property name="impressionConfirmationDelaiPPHelper" ref="impressionConfirmationDelaiPPHelper" />
 		<property name="impressionLettreDecisionDelaiPMHelper" ref="impressionLettreDecisionDelaiPMHelper"/>
+		<property name="impressionLettreDecisionDelaiPPHelper" ref="impressionLettreDecisionDelaiPPHelper"/>
 		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />

@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.documentfiscal.TypeImpression;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 @SuppressWarnings("unused")
@@ -23,6 +24,7 @@ public abstract class AbstractEditionDelaiDeclarationView {
 	private RegDate dateDemande;
 	private RegDate delaiAccordeAu;
 	private EtatDelaiDocumentFiscal decision;
+	private TypeImpression typeImpression;
 
 	public AbstractEditionDelaiDeclarationView() {
 	}
@@ -32,6 +34,7 @@ public abstract class AbstractEditionDelaiDeclarationView {
 		this.dateDemande = dateDemande;
 		this.delaiAccordeAu = delaiAccordeAu;
 		this.decision = decision;
+		this.typeImpression = TypeImpression.BATCH;         // par défaut
 	}
 
 	public AbstractEditionDelaiDeclarationView(@NotNull Declaration declaration) {
@@ -117,5 +120,13 @@ public abstract class AbstractEditionDelaiDeclarationView {
 
 	public void setDecision(EtatDelaiDocumentFiscal decision) {
 		this.decision = decision;
+	}
+
+	public TypeImpression getTypeImpression() {
+		return typeImpression;
+	}
+
+	public void setTypeImpression(TypeImpression typeImpression) {
+		this.typeImpression = typeImpression;
 	}
 }

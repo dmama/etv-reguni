@@ -310,6 +310,7 @@
     </bean>
 
 	<bean id="impressionLettreDecisionDelaiPMHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperImpl"/>
+	<bean id="impressionLettreDecisionDelaiPPHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.ordinaire.pp.ImpressionLettreDecisionDelaiPPHelperImpl"/>
 
 	<bean id="impressionLettreBienvenueHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.documentfiscal.ImpressionLettreBienvenueHelperImpl"/>
 

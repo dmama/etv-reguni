@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -200,12 +199,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// [UNIREG-1742][UNIREG-2051] dans certain cas, les déclarations sont remplacées par une note à l'administration fiscale de l'autre canton
 		// [UNIREG-1742] les diplomates suisses ne reçoivent pas de déclaration
 		// [SIFISC-8094] si la déclaration a été jugée optionnelle, il faut pouvoir l'émettre manuellement
-		CollectionUtils.filter(ranges, new Predicate<PeriodeImposition>() {
-			@Override
-			public boolean evaluate(PeriodeImposition periode) {
-				return (!periode.isDeclarationRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) || periode.isDeclarationOptionnelle();
-			}
-		});
+		CollectionUtils.filter(ranges, periode -> (!periode.isDeclarationRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) || periode.isDeclarationOptionnelle());
 
 		if (ranges.isEmpty()) {
 			return null;
@@ -221,7 +215,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param contribuable le contribuable concerné
 	 * @param annee        l'année concernée
 	 * @return une liste de ranges (dans 95% des cas, un seul range), ou <b>null</b> s'il n'y a pas de déclarations à envoyer
-	 * @throws ValidationException
 	 */
 	private List<PeriodeImposition> calculateRangesDIsPourAnnee(final Contribuable contribuable, int annee) throws ValidationException {
 
@@ -653,8 +646,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Sommer une Declaration Impot
-	 *
-	 * @throws EditiqueException
 	 */
 	@Override
 	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException {
@@ -683,13 +674,35 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EditiqueResultat envoieImpressionLocalConfirmationDelaiPP(Long idDI, Long idDelai) throws EditiqueException {
+	public EditiqueResultat envoieImpressionLocalLettreDecisionDelaiPP(Long idDI, Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
 			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(idDI);
-			final Pair<EditiqueResultat, String> resultat = editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
+			final Pair<EditiqueResultat, String> resultat = editiqueCompositionService.imprimeLettreDecisionDelaiOnline(di, delai);
 			delai.setCleArchivageCourrier(resultat.getRight());
 			return resultat.getLeft();
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
+	}
+
+	@Override
+	public void envoieImpressionBatchLettreDecisionDelaiPP(Long idDelai) throws EditiqueException {
+		try {
+			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
+			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) delai.getDeclaration();
+			final String cle;
+			switch (delai.getEtat()) {
+			case ACCORDE:
+			case REFUSE:
+				final RegDate dateExpedition = delaisService.getDateExpeditionDelaiImpressionCadev(RegDate.get());
+				cle = editiqueCompositionService.imprimeLettreDecisionDelaiForBatch(di, delai, dateExpedition);
+				break;
+			default:
+				throw new EditiqueException("Impossible d'imprimer un courrier pour un délai qui n'est ni accordé, ni refusé.");
+			}
+			delai.setCleArchivageCourrier(cle);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);
@@ -941,7 +954,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		@Override
-		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePP declaration, RegDate date, @Nullable Integer emolument) throws DeclarationException, EditiqueException, JMSException {
+		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePP declaration, RegDate date, @Nullable Integer emolument) throws EditiqueException, JMSException {
 			return editiqueCompositionService.imprimeSommationDIOnline(declaration, date, emolument);
 		}
 	}
@@ -958,7 +971,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		@Override
-		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePM declaration, RegDate date, @Nullable Integer emolument) throws DeclarationException, EditiqueException, JMSException {
+		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePM declaration, RegDate date, @Nullable Integer emolument) throws EditiqueException, JMSException {
 			if (emolument != null) {    // si ça pête, c'est qu'on a oublié de mettre en cohérence le résultat de la méthode getMontantEmolument avec celle-ci...
 				throw new IllegalArgumentException();
 			}
@@ -967,7 +980,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 
 		final DeclarationImpotPersonnesPhysiquesGenerator ppGenerator = new DeclarationImpotPersonnesPhysiquesGenerator();
 		final DeclarationImpotPersonnesMoralesGenerator pmGenerator = new DeclarationImpotPersonnesMoralesGenerator();

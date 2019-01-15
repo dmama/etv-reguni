@@ -231,14 +231,13 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.unireg.declaration.DelaiDeclaration} spécifié
+	 * Imprime la confirmation ou le refus de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.unireg.declaration.DelaiDeclaration} spécifiés
 	 *
-	 * @param di
-	 * @param delai
-	 * @return
-	 * @throws EditiqueException
+	 * @param di    une déclaration
+	 * @param delai le délai de la déclaration
+	 * @return le document imprimé
 	 */
-	Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+	Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la lettre de décision d'accord/refus de délai pour la {@link DeclarationImpotOrdinairePM}
@@ -279,6 +278,17 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException en cas de souci
 	 */
 	String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException, JMSException;
+
+	/**
+	 * Demande l'impression et l'envoi de la lettre de décision d'accord de délai pour la {@link DeclarationImpotOrdinairePP}
+	 *
+	 * @param di             la déclaration d'impôt PM
+	 * @param delai          le délai accordé/refusé
+	 * @param dateExpedition la date d'expédition imprimée sur le document
+	 * @return l'identifiant d'archivage du document généré
+	 * @throws EditiqueException en cas de souci
+	 */
+	String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePP di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la liste récapitulative spécifiée on-line

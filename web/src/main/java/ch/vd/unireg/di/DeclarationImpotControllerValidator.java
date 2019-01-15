@@ -242,7 +242,14 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	}
 
 	private void valideAjoutDelaiDeclarationPP(AjouterDelaiDeclarationPPView view, Errors errors) {
+
 		validateAjoutDelaiDeclaration(view, errors);
+
+		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
+			if (view.isConfirmationEcrite() && view.getTypeImpression() == null) {
+				errors.rejectValue("decision", "error.type.impression.obligatoire");
+			}
+		}
 	}
 
 	private void valideAjoutDelaiDeclarationPM(AjouterDelaiDeclarationPMView view, Errors errors) {

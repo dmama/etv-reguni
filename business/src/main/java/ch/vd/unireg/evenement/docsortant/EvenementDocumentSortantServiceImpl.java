@@ -212,6 +212,18 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
+	public void signaleRefusDelai(DeclarationImpotOrdinairePP di, ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage infoArchivage, boolean local) {
+		signaleDocumentSortant("REDEL",
+		                       TypeDocumentSortant.REFUS_DELAI_PM,
+		                       di.getTiers(),
+		                       local,
+		                       di.getPeriode().getAnnee(),
+		                       di.getNumero(),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE),
+		                       infoArchivage);
+	}
+
+	@Override
 	public void signaleReponseDemandeDelaiQSNC(DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
 		if (infoArchivage != null) {
 			final EtatDelaiDocumentFiscal etatDelai = delai.getEtat();
@@ -515,6 +527,21 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode utilisable pour les nouveaux types de document (PM)
 	 * @param prefixeBusinessId le prefixe à utiliser pour le calcul du business ID du message
 	 * @param typeDocument le type de document sortant
+	 * @param tiers le tiers associé au document
+	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
+	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
+	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
+	 * @param infoArchivage informations d'archivage du document
+	 */
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, idEntityPourReponse, infoArchivage);
+	}
+
+	/**
+	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode utilisable pour les nouveaux types de document (PM)
+	 * @param prefixeBusinessId le prefixe à utiliser pour le calcul du business ID du message
+	 * @param typeDocument le type de document sortant
 	 * @param nomDocument le nom (lisible pour un utilisateur humain dans le contexte du contribuable) à associer au document dans l'annonce
 	 * @param tiers le tiers associé au document
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
@@ -524,6 +551,25 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param infoArchivage informations d'archivage du document
 	 */
 	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, CTypeInfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, idEntityPourReponse, new Archives(infoArchivage.getIdDocument(),
+		                                                                                                                                     infoArchivage.getTypDocument(),
+		                                                                                                                                     infoArchivage.getNomDossier(),
+		                                                                                                                                     infoArchivage.getTypDossier()));
+	}
+
+	/**
+	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode utilisable pour les nouveaux types de document (PM)
+	 * @param prefixeBusinessId le prefixe à utiliser pour le calcul du business ID du message
+	 * @param typeDocument le type de document sortant
+	 * @param nomDocument le nom (lisible pour un utilisateur humain dans le contexte du contribuable) à associer au document dans l'annonce
+	 * @param tiers le tiers associé au document
+	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
+	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
+	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
+	 * @param infoArchivage informations d'archivage du document
+	 */
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage infoArchivage) {
 		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, idEntityPourReponse, new Archives(infoArchivage.getIdDocument(),
 		                                                                                                                                     infoArchivage.getTypDocument(),
 		                                                                                                                                     infoArchivage.getNomDossier(),

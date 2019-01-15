@@ -50,7 +50,8 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 	private String serviceDestinationCopieConforme;
 	private String serviceReplyTo;
 
-	private JAXBContext jaxbContext;
+	private JAXBContext jaxbContextPM;
+	private JAXBContext jaxbContextPP;
 	private EsbMessageValidator esbMessageValidator;
 
 	private interface HeaderCustomFiller {
@@ -68,12 +69,22 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 	}
 
 	@Override
+	public String envoyerDocumentImmediatement(String nomDocument, TypeDocumentEditique typeDocument, ch.vd.unireg.xml.editique.pp.FichierImpression document, FormatDocumentEditique typeFormat, boolean archive) throws EditiqueException {
+		return envoyerImpression(nomDocument, typeDocument, document, TypeImpressionEditique.DIRECT, typeFormat, archive, noTxEsbTemplate);
+	}
+
+	@Override
 	public String envoyerDocument(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, FormatDocumentEditique typeFormat, boolean archive) throws EditiqueException {
 		return envoyerImpressionLegacy(nomDocument, typeDocument, document, TypeImpressionEditique.BATCH, typeFormat, archive, esbTemplate);
 	}
 
 	@Override
 	public String envoyerDocument(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, FormatDocumentEditique typeFormat, boolean archive) throws EditiqueException {
+		return envoyerImpression(nomDocument, typeDocument, document, TypeImpressionEditique.BATCH, typeFormat, archive, esbTemplate);
+	}
+
+	@Override
+	public String envoyerDocument(String nomDocument, TypeDocumentEditique typeDocument, ch.vd.unireg.xml.editique.pp.FichierImpression document, FormatDocumentEditique typeFormat, boolean archive) throws EditiqueException {
 		return envoyerImpression(nomDocument, typeDocument, document, TypeImpressionEditique.BATCH, typeFormat, archive, esbTemplate);
 	}
 
@@ -146,7 +157,37 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 		}
 
 		try {
-			final Marshaller marshaller = jaxbContext.createMarshaller();
+			final Marshaller marshaller = jaxbContextPM.createMarshaller();
+			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			final DocumentBuilder db = dbf.newDocumentBuilder();
+			final Document doc = db.newDocument();
+			marshaller.marshal(fichierImpression, doc);
+
+			final boolean reponseAttendue = isReponseAttendue(typeImpression);
+			final EsbMessage m = buildEsbMessage(nomDocument, typeDocument, doc, serviceDestinationImpression, reponseAttendue, new PrintingHeaderFiller(typeImpression, archive, typeDocument, reponseAttendue, typeFormat, nomDocument));
+			esbMessageValidator.validate(m);
+			esbTemplate.send(m);
+			return m.getMessageId();
+		}
+		catch (Exception e) {
+			final String message = "Exception lors du processus d'envoi des données à l'éditique.";
+			LogLevel.log(LOGGER, LogLevel.Level.FATAL, message, e);
+
+			throw new EditiqueException(message, e);
+		}
+	}
+
+	private String envoyerImpression(String nomDocument, TypeDocumentEditique typeDocument, ch.vd.unireg.xml.editique.pp.FichierImpression fichierImpression, TypeImpressionEditique typeImpression,
+	                                 FormatDocumentEditique typeFormat, boolean archive, EsbJmsTemplate esbTemplate) throws EditiqueException {
+
+		final String principal = AuthenticationHelper.getCurrentPrincipal();
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
+
+		try {
+			final Marshaller marshaller = jaxbContextPP.createMarshaller();
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
 			final DocumentBuilder db = dbf.newDocumentBuilder();
@@ -318,6 +359,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+		jaxbContextPM = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+		jaxbContextPP = JAXBContext.newInstance(ch.vd.unireg.xml.editique.pp.ObjectFactory.class.getPackage().getName());
 	}
 }

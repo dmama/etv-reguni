@@ -20,6 +20,7 @@
 
 			<form:hidden path="idDeclaration"/>
 			<form:hidden path="ancienDelaiAccorde"/>
+			<form:hidden path="typeImpression" id="typeImpression"/>
 
 			<fieldset>
 				<legend><span><fmt:message key="label.etats"/></span></legend>
@@ -40,7 +41,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.decision"/>&nbsp;:</td>
 						<td>
-							<form:select id="decision" path="decision" onchange="toggleDecision();">
+							<form:select id="decision" path="decision" onchange="refreshButtons();">
 								<form:options items="${decisionsDelai}"/>
 							</form:select>
 						</td>
@@ -61,7 +62,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.confirmation.ecrite"/>&nbsp;:</td>
 						<td>
-							<form:checkbox path="confirmationEcrite" id="confirmation" onchange="toggleSubmitName();" onclick="toggleSubmitName();"/>
+							<form:checkbox path="confirmationEcrite" id="confirmation" onchange="refreshButtons();" onclick="refreshButtons();"/>
 						</td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
@@ -72,9 +73,12 @@
 
 			<table border="0">
 				<tr>
-					<td width="25%">&nbsp;</td>
+					<td width="25%" align="right">
+						<input type="button" id="envoi-auto" value="Envoi courrier automatique" onclick="return ajouterDelai(this, 'BATCH');" style="display: none;">
+					</td>
 					<td width="25%">
-						<input type="button" id="ajouter" value="Ajouter" onclick="return ajouterDelai(this);">
+						<input type="button" id="envoi-manuel" value="Envoi courrier manuel" onclick="return ajouterDelai(this, 'LOCAL');" style="display: none;">
+						<input type="button" id="ajouter" value="Ajouter" onclick="return ajouterDelai(this, null);">
 						<unireg:buttonTo id="retour" name="Retour" visible="false" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
 					</td>
 					<td width="25%">
@@ -87,63 +91,77 @@
 		<script type="text/javascript">
 
 			function verifierDelaiDI() {
-				var dateExpedition = '${command.dateExpedition}';
-				var delaiAccordeAu = $('#delaiAccordeAu').val();
-				if (DateUtils.validate(delaiAccordeAu) && DateUtils.compare(DateUtils.addYear(dateExpedition, 1, 'yyyy.MM.dd'), DateUtils.getDate(delaiAccordeAu, 'dd.MM.yyyy')) == -1) {
+				let dateExpedition = '${command.dateExpedition}';
+				let delaiAccordeAu = $('#delaiAccordeAu').val();
+				let decisionSelectionnee = $('#decision').val();
+				if (decisionSelectionnee === 'ACCORDE' && DateUtils.validate(delaiAccordeAu) && DateUtils.compare(DateUtils.addYear(dateExpedition, 1, 'yyyy.MM.dd'), DateUtils.getDate(delaiAccordeAu, 'dd.MM.yyyy')) === -1) {
 					return confirm("Ce délai est située plus d'un an dans le futur à compter de la date d'expédition de la DI. Voulez-vous le sauver ?");
 				}
 				return true;
 			}
 
-			function ajouterDelai(button) {
+			function ajouterDelai(button, type) {
 
 				if (!verifierDelaiDI()) {
 					return false;
 				}
 
+				$('#typeImpression').val(type);
 				$('.error').hide();
 				$(button).closest("form").submit();
 
-				// On desactive les boutons
-				$('#ajouter, #annuler').hide();
+				// On désactive les boutons
+				$('#ajouter, #annuler, #envoi-auto, #envoi-manuel').hide();
 				$('#retour').show();
 				$('#confirmation').attr("disabled", true);
 
 				return true;
 			}
 
-			function toggleSubmitName() {
-				if ($('#confirmation').attr('checked') && $('#decision').val() !== 'DEMANDE') {
-					$('#ajouter').val('Imprimer');
-				}
-				else {
-					$('#ajouter').val('Ajouter');
-				}
-			}
+			function refreshButtons() {
 
-			function toggleDecision() {
-				let isDelaiAccorde = $('#decision').val() === 'ACCORDE';
-
-				// on ne peut pas demander une confirmation écrite que sur un délai accordé
 				let confirmationInput = $('#confirmation');
-				confirmationInput.attr("disabled", !isDelaiAccorde);
-				if (!isDelaiAccorde) {
-					confirmationInput.attr('checked', false)
-				}
+				let confirmationEcrite = confirmationInput.attr('checked');
+				let decisionSelectionnee = $('#decision').val();
 
-				// on peut pas mettre de date de délai accordé sur un délai non-accordé
-				if (isDelaiAccorde) {
+				if (decisionSelectionnee === 'ACCORDE') {
 					$('.siDelaiAccorde').show();
+					if (confirmationEcrite) {
+						$('#envoi-auto, #envoi-manuel').show();
+						$('#ajouter').hide();
+					}
+					else {
+						$('#envoi-auto, #envoi-manuel').hide();
+						$('#ajouter').show();
+					}
+					confirmationInput.attr("disabled", false);
+				}
+				else if (decisionSelectionnee === 'REFUSE') {
+					// on ne peut pas mettre de date de délai accordé sur un délai refusé
+					$('.siDelaiAccorde').hide();
+					if (confirmationEcrite) {
+						$('#envoi-auto, #envoi-manuel').show();
+						$('#ajouter').hide();
+					}
+					else {
+						$('#envoi-auto, #envoi-manuel').hide();
+						$('#ajouter').show();
+					}
+					confirmationInput.attr("disabled", false);
 				}
 				else {
+					// on ne peut pas mettre de date de délai accordé sur un délai en attente
 					$('.siDelaiAccorde').hide();
+					$('#envoi-auto, #envoi-manuel').hide();
+					$('#ajouter').show();
+					// on ne peut pas demander une confirmation écrite sur un délai en attente
+					confirmationInput.attr('checked', false);
+					confirmationInput.attr("disabled", true);
 				}
-
-				toggleSubmitName();
 			}
 
 			// première exécution au chargement de la page...
-			toggleDecision();
+			refreshButtons();
 
 		</script>
 	</tiles:put>

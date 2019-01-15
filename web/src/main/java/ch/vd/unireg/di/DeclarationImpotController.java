@@ -1303,20 +1303,30 @@ public class DeclarationImpotController {
 		final boolean isDelaiAccorde = (decision == EtatDelaiDocumentFiscal.ACCORDE);
 		final RegDate delaiAccordeAu = (isDelaiAccorde ? view.getDelaiAccordeAu() : null);
 		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), delaiAccordeAu, decision, false);
+		return gererImpressionCourrierDelaiDeclarationPP(idDelai, id, view.getTypeImpression(), response);
+	}
 
-		if (view.isConfirmationEcrite() && isDelaiAccorde) {
-
-			// On imprime le document
-			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelaiPP(id, idDelai);
-
-			final RedirectEditDI inbox = new RedirectEditDI(id);
-			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, null, erreur);
+	private String gererImpressionCourrierDelaiDeclarationPP(long idDelai, long idDeclaration,
+	                                                         TypeImpression typeImpression,
+	                                                         HttpServletResponse response) throws EditiqueException, IOException {
+		if (typeImpression != null) {
+			if (typeImpression == TypeImpression.BATCH) {
+				manager.envoieImpressionBatchLettreDecisionDelaiPP(idDelai);
+				Flash.message("L'envoi automatique du document de décision a été programmé.");
+			}
+			else if (typeImpression == TypeImpression.LOCAL) {
+				final EditiqueResultat resultat = manager.envoieImpressionLocalLettreDecisionDelaiPP(idDeclaration, idDelai);
+				final RedirectEditDI inbox = new RedirectEditDI(idDeclaration);
+				final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(idDeclaration, messageSource);
+				return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, null, erreur);
+			}
+			else {
+				throw new IllegalArgumentException("Valeur non-supportée pour le type d'impression : " + typeImpression);
+			}
 		}
-		else {
-			// Pas de duplicata -> on retourne à l'édition de la DI
-			return "redirect:/di/editer.do?id=" + id;
-		}
+
+		// Pas de document directement en retour -> on retourne à l'édition de la DI
+		return "redirect:/di/editer.do?id=" + idDeclaration;
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -1396,7 +1406,7 @@ public class DeclarationImpotController {
 		if (view.isConfirmationEcrite() && isDelaiAccorde) {
 
 			// On imprime le document
-			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelaiPP(id, view.getIdDelai());
+			final EditiqueResultat resultat = manager.envoieImpressionLocalLettreDecisionDelaiPP(id, view.getIdDelai());
 
 			final RedirectEditDI inbox = new RedirectEditDI(id);
 			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
@@ -1437,7 +1447,7 @@ public class DeclarationImpotController {
 			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 				throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PP");
 			}
-			resultat = manager.envoieImpressionLocalConfirmationDelaiPP(declaration.getId(), idDelai);
+			resultat = manager.envoieImpressionLocalLettreDecisionDelaiPP(declaration.getId(), idDelai);
 		}
 		else if (declaration instanceof DeclarationImpotOrdinairePM) {
 			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {

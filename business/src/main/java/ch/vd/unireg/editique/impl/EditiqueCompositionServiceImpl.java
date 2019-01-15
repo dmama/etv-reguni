@@ -39,6 +39,8 @@ import ch.vd.unireg.declaration.ordinaire.pm.ImpressionSommationDeclarationImpot
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelper;
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
+import ch.vd.unireg.declaration.ordinaire.pp.ImpressionLettreDecisionDelaiPPHelper;
+import ch.vd.unireg.declaration.ordinaire.pp.ImpressionLettreDecisionDelaiPPHelperParams;
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionSommationDIHelperParams;
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.unireg.declaration.ordinaire.pp.InformationsDocumentAdapter;
@@ -104,6 +106,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionNouveauxDossiersHelper impressionNouveauxDossiersHelper;
 	private ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper;
 	private ImpressionLettreDecisionDelaiPMHelper impressionLettreDecisionDelaiPMHelper;
+	private ImpressionLettreDecisionDelaiPPHelper impressionLettreDecisionDelaiPPHelper;
 	private ServiceSecuriteService serviceSecurite;
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
 	private ImpressionDocumentEfactureHelper impressionEfactureHelper;
@@ -121,107 +124,90 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionFourreNeutreHelper impressionFourreNeutreHelper;
 	private ImpressionDelaiQuestionnaireSNCHelper impressionDelaiQSNCHelper;
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionDIPPHelper(ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper) {
 		this.impressionDIPPHelper = impressionDIPPHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionDIPMHelper(ImpressionDeclarationImpotPersonnesMoralesHelper impressionDIPMHelper) {
 		this.impressionDIPMHelper = impressionDIPMHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionLRHelper(ImpressionListeRecapHelper impressionLRHelper) {
 		this.impressionLRHelper = impressionLRHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionSommationDIPPHelper(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIPPHelper) {
 		this.impressionSommationDIPPHelper = impressionSommationDIPPHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionSommationDIPMHelper(ImpressionSommationDeclarationImpotPersonnesMoralesHelper impressionSommationDIPMHelper) {
 		this.impressionSommationDIPMHelper = impressionSommationDIPMHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionSommationLRHelper(ImpressionSommationLRHelper impressionSommationLRHelper) {
 		this.impressionSommationLRHelper = impressionSommationLRHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionNouveauxDossiersHelper(ImpressionNouveauxDossiersHelper impressionNouveauxDossiersHelper) {
 		this.impressionNouveauxDossiersHelper = impressionNouveauxDossiersHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionConfirmationDelaiPPHelper(ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper) {
 		this.impressionConfirmationDelaiPPHelper = impressionConfirmationDelaiPPHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionLettreDecisionDelaiPMHelper(ImpressionLettreDecisionDelaiPMHelper impressionLettreDecisionDelaiPMHelper) {
 		this.impressionLettreDecisionDelaiPMHelper = impressionLettreDecisionDelaiPMHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionLettreDecisionDelaiPPHelper(ImpressionLettreDecisionDelaiPPHelper impressionLettreDecisionDelaiPPHelper) {
+		this.impressionLettreDecisionDelaiPPHelper = impressionLettreDecisionDelaiPPHelper;
+	}
+
 	public void setServiceSecurite(ServiceSecuriteService serviceSecurite) {
 		this.serviceSecurite = serviceSecurite;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionBordereauMouvementDossierHelper(ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper) {
 		this.impressionBordereauMouvementDossierHelper = impressionBordereauMouvementDossierHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionEfactureHelper(ImpressionDocumentEfactureHelper impressionEfactureHelper) {
 		this.impressionEfactureHelper = impressionEfactureHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionLettreBienvenueHelper(ImpressionLettreBienvenueHelper impressionLettreBienvenueHelper) {
 		this.impressionLettreBienvenueHelper = impressionLettreBienvenueHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionRappelHelper(ImpressionRappelHelper impressionRappelHelper) {
 		this.impressionRappelHelper = impressionRappelHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionQSNCHelper(ImpressionQuestionnaireSNCHelper impressionQSNCHelper) {
 		this.impressionQSNCHelper = impressionQSNCHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionRappelQSNCHelper(ImpressionRappelQuestionnaireSNCHelper impressionRappelQSNCHelper) {
 		this.impressionRappelQSNCHelper = impressionRappelQSNCHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionAutorisationRadiationRCHelper(ImpressionAutorisationRadiationRCHelper impressionAutorisationRadiationRCHelper) {
 		this.impressionAutorisationRadiationRCHelper = impressionAutorisationRadiationRCHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSignatairesAutorisationRadiationRC(Signataires signatairesAutorisationRadiationRC) {
 		this.signatairesAutorisationRadiationRC = signatairesAutorisationRadiationRC;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionDemandeBilanFinalHelper(ImpressionDemandeBilanFinalHelper impressionDemandeBilanFinalHelper) {
 		this.impressionDemandeBilanFinalHelper = impressionDemandeBilanFinalHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionLettreTypeInformationLiquidationHelper(ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper) {
 		this.impressionLettreTypeInformationLiquidationHelper = impressionLettreTypeInformationLiquidationHelper;
 	}
@@ -234,17 +220,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		this.impressionRappelDemandeDegrevementICIHelper = impressionRappelDemandeDegrevementICIHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionFourreNeutreHelper(ImpressionFourreNeutreHelper impressionFourreNeutreHelper) {
 		this.impressionFourreNeutreHelper = impressionFourreNeutreHelper;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementDocumentSortantService(EvenementDocumentSortantService evenementDocumentSortantService) {
 		this.evenementDocumentSortantService = evenementDocumentSortantService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionDelaiQSNCHelper(ImpressionDelaiQuestionnaireSNCHelper impressionDelaiQSNCHelper) {
 		this.impressionDelaiQSNCHelper = impressionDelaiQSNCHelper;
 	}
@@ -493,7 +476,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionSommationDIPMHelper.getTypeDocumentEditique();
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateTraitement, dateOfficielleEnvoi, true);
-		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandatairePM(original, declaration.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -549,7 +532,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateTraitement, dateOfficielleEnvoi, false);
-		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandatairePM(original, declaration.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -573,7 +556,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true, false);
-		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandatairePM(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -605,7 +588,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, false, isDuplicata);
-		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandatairePM(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -634,7 +617,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionRappelHelper.buildDocument(lettre, dateTraitement, true);
-		final FichierImpression.Document copieMandataire = impressionRappelHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionRappelHelper.buildCopieMandatairePM(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -707,29 +690,58 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
-		final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
-		final String[] infoOperateur = getInfoOperateur();
-		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
-		                                                                                                   infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
-		                                                                                                   delai.getId(), delai.getLogCreationDate());
-		final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
-		final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
-		final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
+	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		switch (delai.getEtat()) {
+		case ACCORDE:
+		{
+			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
+			final String[] infoOperateur = getInfoOperateur();
+			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
+			                                                                                                   infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
+			                                                                                                   delai.getId(), delai.getLogCreationDate());
+			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
+			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
+			final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
 
-		// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
-		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
-		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleConfirmationDelai(di, infoArchivage, true);
+			// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
+			final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+			if (infoArchivage != null) {
+				evenementDocumentSortantService.signaleConfirmationDelai(di, infoArchivage, true);
+			}
+
+			final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
+			                                         RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()),
+			                                         di.getPeriode().getAnnee(),
+			                                         FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
+
+			final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
+			return Pair.of(resultat, cleArchivage);
+
 		}
+		case REFUSE:
+		{
+			final ImpressionLettreDecisionDelaiPPHelperParams params = new ImpressionLettreDecisionDelaiPPHelperParams(di, delai);
+			final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPPHelper.getTypeDocumentEditique(params);
+			final String cleArchivage = impressionLettreDecisionDelaiPPHelper.construitIdArchivageDocument(params);
 
-		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
-		                                         RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()),
-		                                         di.getPeriode().getAnnee(),
-		                                         FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
+			final ch.vd.unireg.xml.editique.pp.FichierImpression root = new ch.vd.unireg.xml.editique.pp.FichierImpression();
+			final ch.vd.unireg.xml.editique.pp.FichierImpression.Document original = impressionLettreDecisionDelaiPPHelper.buildDocument(params, cleArchivage,  RegDate.get());
+			final ch.vd.unireg.xml.editique.pp.FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPPHelper.buildCopieMandatairePP(original, di.getTiers(), RegDate.get());
+			root.getDocument().add(original);
+			if (copieMandataire != null) {
+				root.getDocument().add(copieMandataire);
+			}
 
-		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
-		return Pair.of(resultat, cleArchivage);
+			envoieNotificationLettreDecisionDelai(di, delai, original.getInfoArchivage(), true);
+
+			final String nomDocument = impressionLettreDecisionDelaiPPHelper.construitIdDocument(params);
+			final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, original.getInfoArchivage() != null, params.getDescriptionDocument());
+			return Pair.of(resultat, cleArchivage);
+
+		}
+		default:
+			throw new IllegalArgumentException("Type d'état de délai non-supporté = [" + delai.getEtat() + "]");
+		}
 	}
 
 	private void envoieNotificationLettreDecisionDelai(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
@@ -754,6 +766,24 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 	}
 
+	private void envoieNotificationLettreDecisionDelai(DeclarationImpotOrdinairePP di, DelaiDeclaration delai, ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage infoArchivage, boolean local) {
+		if (infoArchivage != null) {
+			final EtatDelaiDocumentFiscal etatDelai = delai.getEtat();
+			switch (etatDelai) {
+			// msi (14.01.2018) : la lettre d'obtention de délai est encore générée à travers les anciens XSD éditique (voir evenementDocumentSortantService.signaleConfirmationDelai)
+//			case ACCORDE:
+//				evenementDocumentSortantService.signaleAccordDelai(di, infoArchivage, local);
+//				break;
+			case REFUSE:
+				evenementDocumentSortantService.signaleRefusDelai(di, infoArchivage, local);
+				break;
+			default:
+				// rien à faire
+				break;
+			}
+		}
+	}
+
 	@Override
 	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
 		final ImpressionLettreDecisionDelaiPMHelperParams params = new ImpressionLettreDecisionDelaiPMHelperParams(di, delai);
@@ -762,7 +792,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage,  RegDate.get());
-		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, di.getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandatairePM(original, di.getTiers(), RegDate.get());
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -783,7 +813,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage, dateExpedition);
-		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, di.getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandatairePM(original, di.getTiers(), RegDate.get());
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -797,11 +827,62 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
+	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePP di, DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException {
+
+		switch (delai.getEtat()) {
+		case ACCORDE:
+		{
+			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
+			final String[] infoOperateur = getInfoOperateur();
+			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
+			                                                                                                   infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
+			                                                                                                   delai.getId(), delai.getLogCreationDate());
+			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
+			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
+			final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
+
+			// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
+			final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+			if (infoArchivage != null) {
+				evenementDocumentSortantService.signaleConfirmationDelai(di, infoArchivage, true);
+			}
+
+			editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, infoArchivage != null);
+			return cleArchivage;
+		}
+		case REFUSE:
+		{
+			// FISCPROJ-508
+			final ImpressionLettreDecisionDelaiPPHelperParams params = new ImpressionLettreDecisionDelaiPPHelperParams(di, delai);
+			final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPPHelper.getTypeDocumentEditique(params);
+			final String cleArchivage = impressionLettreDecisionDelaiPPHelper.construitIdArchivageDocument(params);
+
+			final ch.vd.unireg.xml.editique.pp.FichierImpression root = new ch.vd.unireg.xml.editique.pp.FichierImpression();
+			final ch.vd.unireg.xml.editique.pp.FichierImpression.Document original = impressionLettreDecisionDelaiPPHelper.buildDocument(params, cleArchivage, dateExpedition);
+			final ch.vd.unireg.xml.editique.pp.FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPPHelper.buildCopieMandatairePP(original, di.getTiers(), RegDate.get());
+			root.getDocument().add(original);
+			if (copieMandataire != null) {
+				root.getDocument().add(copieMandataire);
+			}
+
+			envoieNotificationLettreDecisionDelai(di, delai, original.getInfoArchivage(), false);
+
+			final String nomDocument = impressionLettreDecisionDelaiPPHelper.construitIdDocument(params);
+			editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, original.getInfoArchivage() != null);
+			return cleArchivage;
+			
+		}
+		default:
+			throw new IllegalArgumentException("Type d'état de délai non-supporté = [" + delai.getEtat() + "]");
+		}
+	}
+
+	@Override
 	public Pair<String, String> imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai, RegDate dateExpedition) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
 		final String cleArchivageDocument = impressionDelaiQSNCHelper.construitCleArchivageDocument(delai);
 		final FichierImpression.Document original = impressionDelaiQSNCHelper.buildDocument(delai, cleArchivageDocument, dateExpedition);
-		final FichierImpression.Document copieMandataire = impressionDelaiQSNCHelper.buildCopieMandataire(original, (Contribuable) delai.getDeclaration().getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionDelaiQSNCHelper.buildCopieMandatairePM(original, (Contribuable) delai.getDeclaration().getTiers(), RegDate.get());
 
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
@@ -823,7 +904,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final String cleArchivageDocument = impressionDelaiQSNCHelper.construitCleArchivageDocument(delai);
 		final FichierImpression.Document original = impressionDelaiQSNCHelper.buildDocument(delai, cleArchivageDocument, RegDate.get());
-		final FichierImpression.Document copieMandataire = impressionDelaiQSNCHelper.buildCopieMandataire(original, (Contribuable) delai.getDeclaration().getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionDelaiQSNCHelper.buildCopieMandatairePM(original, (Contribuable) delai.getDeclaration().getTiers(), RegDate.get());
 
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
@@ -957,7 +1038,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public void imprimeRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionRappelQSNCHelper.buildDocument(questionnaire, dateTraitement, dateOfficielleEnvoi);
-		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandatairePM(original, questionnaire.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -977,7 +1058,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionRappelQSNCHelper.buildDocument(questionnaire, dateTraitement, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandatairePM(original, questionnaire.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -1020,7 +1101,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionDemandeBilanFinalHelper.buildDocument(lettre, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandatairePM(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -1043,7 +1124,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeLettreTypeInformationLiquidationOnline(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreTypeInformationLiquidationHelper.buildDocument(lettre, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionLettreTypeInformationLiquidationHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionLettreTypeInformationLiquidationHelper.buildCopieMandatairePM(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);

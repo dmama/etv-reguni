@@ -39,6 +39,8 @@ public interface EvenementDocumentSortantService {
 
 	void signaleRefusDelai(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local);
 
+	void signaleRefusDelai(DeclarationImpotOrdinairePP di, ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage infoArchivage, boolean local);
+
 	void signaleSursis(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local);
 	
 	void signaleSommationDeclarationImpot(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local);

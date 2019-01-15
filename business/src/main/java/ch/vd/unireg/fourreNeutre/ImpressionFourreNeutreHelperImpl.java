@@ -41,7 +41,7 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 		final String codeBarre = calculCodeBarre(fourre);
 		try {
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateTraitement, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACI(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateTraitement, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACI(), infraService.getCAT());
 			final FichierImpression.Document.FourreNeutre fourreNeutre = new FichierImpression.Document.FourreNeutre(XmlUtils.regdate2xmlcal(RegDate.get(fourre.getPeriodeFiscale())), codeBarre);
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);
@@ -64,18 +64,24 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 
 	@Nullable
 	@Override
-	public FichierImpression.Document buildCopieMandataire(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+	public FichierImpression.Document buildCopieMandatairePM(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public ch.vd.unireg.xml.editique.pp.FichierImpression.Document buildCopieMandatairePP(ch.vd.unireg.xml.editique.pp.FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
 		return null;
 	}
 
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Tiers tiers) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
-		                                                                                                      false,
-		                                                                                                      ServiceInfrastructureService.noOIPM);
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissementPM(adresseEnvoi,
+		                                                                                                        false,
+		                                                                                                        ServiceInfrastructureService.noOIPM);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_FOURRE_NEUTRE);
 

@@ -15,6 +15,7 @@ public enum TypeDocumentEditique {
 	SOMMATION_DI("RGPS0801", "385", "sommationDI"),
 	CHEMISE_TO("RGPT0801", null, "chemiseTO"),
 	CONFIRMATION_DELAI("RGPC0801", "387", "confirmationDelai"),
+	REFUS_DELAI_PP("U2P6REFU", "420", "refusDelai"),
 
 	//
 	// Autour des déclarations d'impôt des personnes morales

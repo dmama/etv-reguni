@@ -42,6 +42,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.LocalizedDateRange;
@@ -72,7 +73,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String IMPOT_COMPLEMENTAIRE_IMMEUBLES = "IMPÔT COMPLÉMENTAIRE SUR LES IMMEUBLES";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
 
-	public static final String VERSION_XSD = "16.14";
+	public static final String VERSION_XSD_PM = "16.14";
+	public static final String VERSION_XSD_PP = "1.0";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
@@ -116,10 +118,17 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 
 	@NotNull
-	protected static Pair<STypeZoneAffranchissement, String> getInformationAffranchissementIdEnvoi(String idEnvoi) {
+	protected static Pair<STypeZoneAffranchissement, String> getInformationAffranchissementIdEnvoiPM(String idEnvoi) {
 		Objects.requireNonNull(idEnvoi);
 		Objects.requireNonNull(StringUtils.trimToNull(idEnvoi));
 		return Pair.of(STypeZoneAffranchissement.NA, idEnvoi);
+	}
+
+	@NotNull
+	protected static Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> getInformationAffranchissementIdEnvoiPP(String idEnvoi) {
+		Objects.requireNonNull(idEnvoi);
+		Objects.requireNonNull(StringUtils.trimToNull(idEnvoi));
+		return Pair.of(ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement.NA, idEnvoi);
 	}
 
 	/**
@@ -129,14 +138,14 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	 * @return un type d'affranchissement et, éventuellement, un idEnvoi à utiliser pour l'envoi du courrier
 	 */
 	@NotNull
-	protected static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissement(AdresseEnvoiDetaillee adresseEnvoi,
-	                                                                                         boolean idEnvoiSiEtranger,
-	                                                                                         int valeurIdEnvoi) {
+	protected static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissementPM(AdresseEnvoiDetaillee adresseEnvoi,
+	                                                                                           boolean idEnvoiSiEtranger,
+	                                                                                           int valeurIdEnvoi) {
 
 		// adresse incomplète, sans type d'affranchissement ou à destination de l'étranger quand on ne veut justement rien y envoyer
 		final TypeAffranchissement typeAffranchissement = adresseEnvoi.getTypeAffranchissement();
 		if (adresseEnvoi.isIncomplete() || typeAffranchissement == null || (idEnvoiSiEtranger && typeAffranchissement != TypeAffranchissement.SUISSE)) {
-			return getInformationAffranchissementIdEnvoi(String.valueOf(valeurIdEnvoi));
+			return getInformationAffranchissementIdEnvoiPM(String.valueOf(valeurIdEnvoi));
 		}
 
 		// donc ici : adresse complète avec type d'affranchissement connu et sans limitation sur les destinations autorisées
@@ -147,6 +156,36 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 			return Pair.of(STypeZoneAffranchissement.EU, null);
 		case MONDE:
 			return Pair.of(STypeZoneAffranchissement.RM, null);
+		default:
+			throw new IllegalArgumentException("Type d'affranchissement non supporté : " + typeAffranchissement);
+		}
+	}
+
+	/**
+	 * @param adresseEnvoi      l'adresse à laquelle on veut envoyer un document
+	 * @param idEnvoiSiEtranger <code>true</code> si une adresse à l'étranger doit être en fait traitée par un idEnvoi
+	 * @param valeurIdEnvoi     valeur à utiliser
+	 * @return un type d'affranchissement et, éventuellement, un idEnvoi à utiliser pour l'envoi du courrier
+	 */
+	@NotNull
+	protected static Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> getInformationsAffranchissementPP(AdresseEnvoiDetaillee adresseEnvoi,
+	                                                                                           boolean idEnvoiSiEtranger,
+	                                                                                           int valeurIdEnvoi) {
+
+		// adresse incomplète, sans type d'affranchissement ou à destination de l'étranger quand on ne veut justement rien y envoyer
+		final TypeAffranchissement typeAffranchissement = adresseEnvoi.getTypeAffranchissement();
+		if (adresseEnvoi.isIncomplete() || typeAffranchissement == null || (idEnvoiSiEtranger && typeAffranchissement != TypeAffranchissement.SUISSE)) {
+			return getInformationAffranchissementIdEnvoiPP(String.valueOf(valeurIdEnvoi));
+		}
+
+		// donc ici : adresse complète avec type d'affranchissement connu et sans limitation sur les destinations autorisées
+		switch (typeAffranchissement) {
+		case SUISSE:
+			return Pair.of(ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement.CH, null);
+		case EUROPE:
+			return Pair.of(ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement.EU, null);
+		case MONDE:
+			return Pair.of(ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement.RM, null);
 		default:
 			throw new IllegalArgumentException("Type d'affranchissement non supporté : " + typeAffranchissement);
 		}
@@ -188,10 +227,10 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	 *
 	 * @param infoDocument         structure qui va recevoir la valeur de l'IdEnvoi
 	 * @param contribuable         contribuable concerné par le document envoyé
-	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissement(AdresseEnvoiDetaillee, boolean, int)}
+	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissementPM(AdresseEnvoiDetaillee, boolean, int)}
 	 * @return la valeur de la zone d'affranchissement à utiliser (= toujours NA si l'IdEnvoi est rempli...)
 	 */
-	protected static STypeZoneAffranchissement assigneIdEnvoi(CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesMorales contribuable, Pair<STypeZoneAffranchissement, String> infoAffranchissement) {
+	protected static STypeZoneAffranchissement assigneIdEnvoiPM(CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesMorales contribuable, Pair<STypeZoneAffranchissement, String> infoAffranchissement) {
 		final String idEnvoi;
 		if (StringUtils.isNotBlank(infoAffranchissement.getRight())) {
 			idEnvoi = infoAffranchissement.getRight();
@@ -206,25 +245,57 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return idEnvoi != null ? STypeZoneAffranchissement.NA : infoAffranchissement.getLeft();
 	}
 
+	/**
+	 * Assigne la valeur du champ idEnvoi dans la structure {@link CTypeInfoDocument} passée en paramètre selon les critères suivants :
+	 * <ul>
+	 * <li>si l'IdEnvoi dans les informations d'affranchissement est renseigné, c'est lui</li>
+	 * <li>sinon, si le contribuable a son dernier for principal fermé pour motif "FAILLITE", alors on y met la valeur de l'ACI (22)</li>
+	 * </ul>
+	 *
+	 * @param infoDocument         structure qui va recevoir la valeur de l'IdEnvoi
+	 * @param contribuable         contribuable concerné par le document envoyé
+	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissementPM(AdresseEnvoiDetaillee, boolean, int)}
+	 * @return la valeur de la zone d'affranchissement à utiliser (= toujours NA si l'IdEnvoi est rempli...)
+	 */
+	protected static ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement assigneIdEnvoiPP(ch.vd.unireg.xml.editique.pp.CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesPhysiques contribuable, Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> infoAffranchissement) {
+		final String idEnvoi;
+		if (StringUtils.isNotBlank(infoAffranchissement.getRight())) {
+			idEnvoi = infoAffranchissement.getRight();
+		}
+		else if (isEnFaillite(contribuable)) {
+			idEnvoi = String.valueOf(ServiceInfrastructureService.noACI);
+		}
+		else {
+			idEnvoi = null;
+		}
+		infoDocument.setIdEnvoi(idEnvoi);
+		return idEnvoi != null ? ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement.NA : infoAffranchissement.getLeft();
+	}
+
 	protected AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers) throws AdresseException {
 		return adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 	}
 
-	protected CTypeAdresse buildAdresse(CollectiviteAdministrative coll) throws AdresseException {
+	protected CTypeAdresse buildAdressePM(CollectiviteAdministrative coll) throws AdresseException {
 		if (coll.getNoColAdm() == ServiceInfrastructureService.noCEDI) {
 			return buildAdresseCEDI(ServiceInfrastructureService.noOIPM);
 		}
 		final Tiers colAdm = tiersService.getCollectiviteAdministrative(coll.getNoColAdm());
-		return buildAdresse(colAdm);
+		return buildAdressePM(colAdm);
 	}
 
-	protected CTypeAdresse buildAdresse(Tiers tiers) throws AdresseException {
+	protected CTypeAdresse buildAdressePM(Tiers tiers) throws AdresseException {
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-		return buildAdresse(adresse);
+		return buildAdressePM(adresse);
+	}
+
+	protected ch.vd.unireg.xml.editique.pp.CTypeAdresse buildAdressePP(Tiers tiers) throws AdresseException {
+		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
+		return buildAdressePP(adresse);
 	}
 
 	@Nullable
-	protected CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
+	protected CTypeAdresse buildAdressePM(AdresseEnvoi adresseEnvoi) {
 		final List<String> lignes = new ArrayList<>(6);
 		for (String ligne : adresseEnvoi.getLignes()) {
 			lignes.add(StringUtils.trimToEmpty(ligne));
@@ -244,6 +315,27 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return lignes.isEmpty() ? null : new CTypeAdresse(lignes);
 	}
 
+	@Nullable
+	protected ch.vd.unireg.xml.editique.pp.CTypeAdresse buildAdressePP(AdresseEnvoi adresseEnvoi) {
+		final List<String> lignes = new ArrayList<>(6);
+		for (String ligne : adresseEnvoi.getLignes()) {
+			lignes.add(StringUtils.trimToEmpty(ligne));
+		}
+
+		// suppression des dernières lignes si elles sont vides
+		final ListIterator<String> iterator = lignes.listIterator(lignes.size());
+		while (iterator.hasPrevious()) {
+			if (StringUtils.isBlank(iterator.previous())) {
+				iterator.remove();
+			}
+			else {
+				break;
+			}
+		}
+
+		return lignes.isEmpty() ? null : new ch.vd.unireg.xml.editique.pp.CTypeAdresse(lignes);
+	}
+
 	/**
 	 * @param noColAdministrative numéro à placer dans "CEDI XX" (c'est le XX) sur la troisième ligne
 	 * @return l'adresse du CEDI à utiliser comme adresse de retour
@@ -259,7 +351,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return new CTypeAdresse(lignes);
 	}
 
-	protected static CTypeInfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, String cleArchivage, long noTiers, RegDate dateTraitement) {
+	protected static CTypeInfoArchivage buildInfoArchivagePM(TypeDocumentEditique typeDocument, String cleArchivage, long noTiers, RegDate dateTraitement) {
 		if (typeDocument.getCodeDocumentArchivage() == null) {
 			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
 		}
@@ -273,28 +365,55 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return info;
 	}
 
-	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
-	                                                          String traitePar, String nomServiceExpediteur,
-	                                                          CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail) throws ServiceInfrastructureException, AdresseException {
-		return buildInfoEnteteDocument(destinataire, dateExpedition, traitePar, nomServiceExpediteur, expediteurPourAdresse, expediteurPourTelFaxMail, IMPOT_BENEFICE_CAPITAL);
+	protected static ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage buildInfoArchivagePP(TypeDocumentEditique typeDocument, String cleArchivage, long noTiers, RegDate dateTraitement) {
+		if (typeDocument.getCodeDocumentArchivage() == null) {
+			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
+		}
+		final ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage info = new ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage();
+		info.setDatTravail(String.valueOf(dateTraitement.index()));
+		info.setIdDocument(cleArchivage);
+		info.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
+		info.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(noTiers));
+		info.setTypDocument(typeDocument.getCodeDocumentArchivage());
+		info.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+		return info;
 	}
 
-	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
-	                                                          String traitePar, String nomServiceExpediteur,
-	                                                          CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                                          String libelleTitre) throws ServiceInfrastructureException, AdresseException {
+	protected CTypeInfoEnteteDocument buildInfoEnteteDocumentPM(Tiers destinataire, RegDate dateExpedition,
+	                                                            String traitePar, String nomServiceExpediteur,
+	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail) throws ServiceInfrastructureException, AdresseException {
+		return buildInfoEnteteDocumentPM(destinataire, dateExpedition, traitePar, nomServiceExpediteur, expediteurPourAdresse, expediteurPourTelFaxMail, IMPOT_BENEFICE_CAPITAL);
+	}
+
+	protected CTypeInfoEnteteDocument buildInfoEnteteDocumentPM(Tiers destinataire, RegDate dateExpedition,
+	                                                            String traitePar, String nomServiceExpediteur,
+	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
+	                                                            String libelleTitre) throws ServiceInfrastructureException, AdresseException {
 		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
-		entete.setDestinataire(buildDestinataire(destinataire));
-		entete.setExpediteur(buildExpediteur(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
+		entete.setDestinataire(buildDestinatairePM(destinataire));
+		entete.setExpediteur(buildExpediteurPM(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
 		entete.setLigReference(null);
 		entete.setPorteAdresse(null);
 		entete.setLibelleTitre(libelleTitre);
 		return entete;
 	}
 
-	private CTypeDestinataire buildDestinataire(Tiers tiers) throws AdresseException {
+	protected ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument buildInfoEnteteDocumentPP(Tiers destinataire, RegDate dateExpedition,
+	                                                            String traitePar, String nomServiceExpediteur,
+	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
+	                                                            String libelleTitre) throws ServiceInfrastructureException, AdresseException {
+		final ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument entete = new ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument();
+		entete.setDestinataire(buildDestinatairePP(destinataire));
+		entete.setExpediteur(buildExpediteurPP(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
+		entete.setLigReference(null);
+		entete.setPorteAdresse(null);
+		entete.setLibelleTitre(libelleTitre);
+		return entete;
+	}
+
+	private CTypeDestinataire buildDestinatairePM(Tiers tiers) throws AdresseException {
 		final CTypeDestinataire destinataire = new CTypeDestinataire();
-		destinataire.setAdresse(buildAdresse(tiers));
+		destinataire.setAdresse(buildAdressePM(tiers));
 		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		if (tiers instanceof Entreprise) {
 			final String ideBrut = tiersService.getNumeroIDE((Entreprise) tiers);
@@ -305,8 +424,21 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return destinataire;
 	}
 
-	private CTypeExpediteur buildExpediteur(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                        RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
+	private ch.vd.unireg.xml.editique.pp.CTypeDestinataire buildDestinatairePP(Tiers tiers) throws AdresseException {
+		final ch.vd.unireg.xml.editique.pp.CTypeDestinataire destinataire = new ch.vd.unireg.xml.editique.pp.CTypeDestinataire();
+		destinataire.setAdresse(buildAdressePP(tiers));
+		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
+		if (tiers instanceof Entreprise) {
+			final String ideBrut = tiersService.getNumeroIDE((Entreprise) tiers);
+			if (NumeroIDEHelper.isValid(ideBrut)) {
+				destinataire.getNumIDE().add(FormatNumeroHelper.formatNumIDE(ideBrut));
+			}
+		}
+		return destinataire;
+	}
+
+	private CTypeExpediteur buildExpediteurPM(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
+	                                          RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
 		final CTypeExpediteur expediteur = new CTypeExpediteur();
 
 		final Adresse adresse = expediteurPourAdresse.getAdresse();
@@ -317,7 +449,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		adresseEnvoi.addLine(adresse.getRue());
 		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 
-		expediteur.setAdresse(buildAdresse(adresseEnvoi));
+		expediteur.setAdresse(buildAdressePM(adresseEnvoi));
 		expediteur.setAdrMes(expediteurPourTelFaxMail.getAdresseEmail());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
 		expediteur.setLocaliteExpedition(expediteurPourAdresse.getAdresse().getLocalite());
@@ -330,9 +462,34 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return expediteur;
 	}
 
+	private ch.vd.unireg.xml.editique.pp.CTypeExpediteur buildExpediteurPP(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
+	                                          RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
+		final ch.vd.unireg.xml.editique.pp.CTypeExpediteur expediteur = new ch.vd.unireg.xml.editique.pp.CTypeExpediteur();
+
+		final Adresse adresse = expediteurPourAdresse.getAdresse();
+		final AdresseEnvoi adresseEnvoi = new AdresseEnvoi();
+		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet1());
+		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet2());
+		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet3());
+		adresseEnvoi.addLine(adresse.getRue());
+		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
+
+		expediteur.setAdresse(buildAdressePP(adresseEnvoi));
+		expediteur.setAdrMes(expediteurPourTelFaxMail.getAdresseEmail());
+		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
+		expediteur.setLocaliteExpedition(expediteurPourAdresse.getAdresse().getLocalite());
+		expediteur.setNumCCP(StringUtils.trimToNull(expediteurPourAdresse.getNoCCP()));
+		expediteur.setNumFax(StringUtils.trimToNull(expediteurPourTelFaxMail.getNoFax()));
+		expediteur.setNumIBAN(null);
+		expediteur.setNumTelephone(StringUtils.trimToNull(expediteurPourTelFaxMail.getNoTelephone()));
+		expediteur.setTraitePar(traitePar);
+		expediteur.setSrvExp(nomServiceExpediteur);
+		return expediteur;
+	}
+
 	@Override
 	@Nullable
-	public FichierImpression.Document buildCopieMandataire(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+	public FichierImpression.Document buildCopieMandatairePM(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
 
 		// [SIFISC-18705] si le contribuable est en faillite, on ne fait jamais de copie mandataire
 		if (isEnFaillite(destinataire)) {
@@ -371,10 +528,10 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		}
 
 		// données d'affranchissement pour l'adresse mandataire
-		final Pair<STypeZoneAffranchissement, String> affranchissement = getInformationsAffranchissement(adresse,
-		                                                                                                 false,
-		                                                                                                 ServiceInfrastructureService.noOIPM);
-		final CTypeAdresse adresseEditique = buildAdresse(adresse);
+		final Pair<STypeZoneAffranchissement, String> affranchissement = getInformationsAffranchissementPM(adresse,
+		                                                                                                   false,
+		                                                                                                   ServiceInfrastructureService.noOIPM);
+		final CTypeAdresse adresseEditique = buildAdressePM(adresse);
 
 		final CTypeInfoEnteteDocument originalInfoEnteteDocument = original.getInfoEnteteDocument();
 		final CTypeInfoDocument originalInfoDocument = original.getInfoDocument();
@@ -427,6 +584,90 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		                                      original.getAccordDelaiSNC(),
 		                                      original.getRefusDelaiSNC(),
 		                                      original.getInfoRoutage());
+	}
+
+	@Nullable
+	@Override
+	public ch.vd.unireg.xml.editique.pp.FichierImpression.Document buildCopieMandatairePP(ch.vd.unireg.xml.editique.pp.FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+
+		// [SIFISC-18705] si le contribuable est en faillite, on ne fait jamais de copie mandataire
+		if (isEnFaillite(destinataire)) {
+			return null;
+		}
+
+		// y a-t-il un mandataire général à la date de référence ?
+		final AdresseEnvoiDetaillee adresse;
+
+		try {
+			// 1. sous forme de lien ?
+			final Tiers mandataireGeneral = findMandataireGeneral(destinataire, dateReference);
+			if (mandataireGeneral != null) {
+				adresse = adresseService.getAdresseEnvoi(mandataireGeneral, dateReference, TypeAdresseFiscale.REPRESENTATION, false);
+			}
+			else {
+				// 2. ou sous forme d'adresse mandataire explicite ?
+				final AdresseMandataire adresseMandataire = findAdresseMandataireGeneral(destinataire, dateReference);
+				if (adresseMandataire != null) {
+					final AdresseGenerique adresseGenerique = new AdresseMandataireAdapter(adresseMandataire, infraService);
+					adresse = adresseService.buildAdresseEnvoi(adresseGenerique.getSource().getTiers(), adresseGenerique, dateReference);
+				}
+				else {
+					// en fait, non, rien...
+					adresse = null;
+				}
+			}
+		}
+		catch (AdresseException e) {
+			throw new EditiqueException(e);
+		}
+
+		// pas d'adresse de mandataire trouvée -> pas de copie mandataire envoyée...
+		if (adresse == null) {
+			return null;
+		}
+
+		// données d'affranchissement pour l'adresse mandataire
+		final Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> affranchissement = getInformationsAffranchissementPP(adresse,
+		                                                                                                                                false,
+		                                                                                                                                ServiceInfrastructureService.noOIPM);
+		final ch.vd.unireg.xml.editique.pp.CTypeAdresse adresseEditique = buildAdressePP(adresse);
+
+		final ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument originalInfoEnteteDocument = original.getInfoEnteteDocument();
+		final ch.vd.unireg.xml.editique.pp.CTypeInfoDocument originalInfoDocument = original.getInfoDocument();
+
+		// calcul des lignes de "copie à"
+		final List<String> texteCopieA = buildCopieA(adresse);
+
+		// il faut donc générer un double du document original pour le mandataire...
+		final ch.vd.unireg.xml.editique.pp.CTypeInfoDocument copieInfoDocument =
+				new ch.vd.unireg.xml.editique.pp.CTypeInfoDocument(originalInfoDocument.getVersionXSD(),
+				                                                   originalInfoDocument.getPrefixe(),
+				                                                   CODE_PORTE_ADRESSE_MANDATAIRE,
+				                                                   texteCopieA,
+				                                                   affranchissement.getRight(),
+				                                                   originalInfoDocument.getTypDoc(),
+				                                                   originalInfoDocument.getCodDoc(),
+				                                                   originalInfoDocument.getCleRgp(),
+				                                                   originalInfoDocument.getPopulations(),
+				                                                   new ch.vd.unireg.xml.editique.pp.CTypeAffranchissement(affranchissement.getLeft(), null),
+				                                                   originalInfoDocument.isBrouillon());
+
+		// le "copie à" doit apparaître aussi dans le document original
+		originalInfoDocument.getTxtCopieMandataire().addAll(texteCopieA);
+
+		final ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument copieInfoEnteteDocument =
+				new ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument(originalInfoEnteteDocument.getExpediteur(),
+				                                                         originalInfoEnteteDocument.getDestinataire(),
+				                                                         new ch.vd.unireg.xml.editique.pp.CTypePorteAdresse(adresseEditique),
+				                                                         originalInfoEnteteDocument.getLigReference(),
+				                                                         originalInfoEnteteDocument.getLibelleTitre());
+
+		// on renvoie une copie légèrement modifiée de l'original
+		return new ch.vd.unireg.xml.editique.pp.FichierImpression.Document(copieInfoDocument,
+		                                                                   original.getInfoArchivage(),
+		                                                                   copieInfoEnteteDocument,
+		                                                                   original.getRefusDelai(),
+		                                                                   original.getInfoRoutage());
 	}
 
 	@Nullable
@@ -526,7 +767,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 		if (adresseRetenue != null) {
 			final AdresseEnvoi adresseEnvoi = adresseService.buildAdresseEnvoi(entreprise, adresseRetenue, dateFinPeriode);
-			final CTypeAdresse adresse = buildAdresse(adresseEnvoi);
+			final CTypeAdresse adresse = buildAdressePM(adresseEnvoi);
 			if (adresse != null) {
 				return adresse;
 			}

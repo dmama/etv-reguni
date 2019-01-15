@@ -96,14 +96,14 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
 			final TypeDocumentEditique typeDocument = getTypeDocumentEditique(params);
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers, typeDocument, getCodeDocument(params));
-			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(typeDocument, cleArchivage, tiers.getNumero(), params.getDateTraitement());
+			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(typeDocument, cleArchivage, tiers.getNumero(), params.getDateTraitement());
 
 			final String titre = String.format("IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL %d (du %s au %s)",
 			                                   declaration.getPeriode().getAnnee(),
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateDebutExerciceCommercial()),
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateFinExerciceCommercial()));
 
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 
 			final FichierImpression.Document.RefusDelai refusDelai = buildRefusDelai(params);
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);
@@ -127,12 +127,12 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, ContribuableImpositionPersonnesMorales contribuable, TypeDocumentEditique typeDocument, String codeDocument) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
-		                                                                                                      false,
-		                                                                                                      ServiceInfrastructureService.noOIPM);
-		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, contribuable, infosAffranchissement);
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissementPM(adresseEnvoi,
+		                                                                                                        false,
+		                                                                                                        ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoiPM(infoDoc, contribuable, infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		infoDoc.setCodDoc(codeDocument);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);

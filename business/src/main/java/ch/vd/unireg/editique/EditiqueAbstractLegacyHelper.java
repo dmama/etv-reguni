@@ -158,7 +158,11 @@ public abstract class EditiqueAbstractLegacyHelper {
 
 	@Nullable
 	protected Integer getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(Tiers tiers, @Nullable RegDate dateReference) {
+		return getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(tiers, dateReference, tiersService);
+	}
 
+	@Nullable
+	public static Integer getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(Tiers tiers, @Nullable RegDate dateReference, TiersService tiersService) {
 		final Stream.Builder<Tiers> streamBuilder = Stream.builder();
 		streamBuilder.add(tiers);
 		if (tiers instanceof MenageCommun) {

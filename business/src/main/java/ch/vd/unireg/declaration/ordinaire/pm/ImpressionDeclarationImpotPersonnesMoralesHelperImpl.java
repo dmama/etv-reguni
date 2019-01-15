@@ -153,9 +153,9 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			}
 			final ContribuableImpositionPersonnesMorales pm = declaration.getTiers();
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(pm)));
-			document.setInfoEnteteDocument(buildInfoEnteteDocument(pm, declaration.getDateExpedition(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
+			document.setInfoEnteteDocument(buildInfoEnteteDocumentPM(pm, declaration.getDateExpedition(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
 			if (hasFeuilletPrincipal) {
-				document.setInfoArchivage(buildInfoArchivage(typeDocumentEditique, construitCleArchivageDocument(declaration), pm.getNumero(), RegDate.get()));
+				document.setInfoArchivage(buildInfoArchivagePM(typeDocumentEditique, construitCleArchivageDocument(declaration), pm.getNumero(), RegDate.get()));
 			}
 			document.setInfoRoutage(null);
 			return document;
@@ -207,9 +207,9 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	private static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissement(AdresseEnvoiDetaillee adresseContribuable, TypeContribuable typeContribuable) {
 		switch (typeContribuable) {
 		case UTILITE_PUBLIQUE:
-			return getInformationAffranchissementIdEnvoi("LIASF");
+			return getInformationAffranchissementIdEnvoiPM("LIASF");
 		default:
-			return getInformationsAffranchissement(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
+			return getInformationsAffranchissementPM(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
 		}
 	}
 
@@ -217,9 +217,9 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
 		final Pair<STypeZoneAffranchissement, String> infoAffranchissement = getInformationsAffranchissement(adresseContribuable, declaration.getTypeContribuable());
-		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, declaration.getTiers(), infoAffranchissement);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoiPM(infoDoc, declaration.getTiers(), infoAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
-		infoDoc.setVersionXSD(VERSION_XSD);
+		infoDoc.setVersionXSD(VERSION_XSD_PM);
 
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(declaration);
 		infoDoc.setCodDoc(getCodeDocument(typeDocumentEditique));
