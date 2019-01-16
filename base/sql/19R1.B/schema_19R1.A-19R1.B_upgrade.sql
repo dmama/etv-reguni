@@ -49,7 +49,7 @@ select 'DI_PM', HIBERNATE_SEQUENCE.NEXTVAL, ppf.ID, 2, '9M', null, null, 'FISCPR
 from PARAMETRE_PERIODE_FISCALE ppf
 where ppf.PPF_TYPE = 'ONLINE' and ppf.TYPE_TIERS = 'PM' and ppf.PERIODE_ID = (select ID from PERIODE_FISCALE pf where pf.ANNEE = 2019);
 
-UPDATE PARAMETRE SET NOM='delaiImpressionCadev' WHERE NOM='delaiCadevImpressionDelaiQuestionnaireSNC';
+UPDATE PARAMETRE SET NOM='delaiImpressionCadev' WHERE NOM='delaiCadevImpressionQuestionnaireSNC';
 
 -- [FISCPROJ-985] correction du type de délai (implicite/explicite)
 update DELAI_DOCUMENT_FISCAL set TYPE_DELAI = 'EXPLICITE' where DISCRIMINATOR = 'DELAI_DECLARATION' and LOG_MUSER = 'DemandeDelaiCollectiveJob';
