@@ -52,10 +52,6 @@ public final class MockParameterAppService implements ParametreAppService {
 		return container.getDateExpeditionDelaiImpressionCadev();
 	}
 
-	@Override
-	public Integer getDelaiCadevImpressionDelaiQuestionnaireSNC() {
-		return container.getDelaiCadevImpressionDelaiQuestionnaireSNC();
-	}
 
 	@Override
 	public Integer getDelaiCadevImpressionDemandeDegrevementICI() {
