@@ -42,6 +42,8 @@ import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Supervision;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
@@ -150,7 +152,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			return null;
 		});
 
-		// vérification que le délai existant est toujours là et qu'il est maintenant explicite
+		// [FISCPROJ-999] vérification que le délai implicite existant est annulé et qu'un nouveau délai explicite à la même date existe maintenant
 		doInNewTransaction(status -> {
 			final Tiers tiers = tiersDAO.get(ctbId);
 			assertNotNull(tiers);
@@ -162,11 +164,16 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			assertNotNull(declaration2016);
 
 			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
-			assertEquals(1, delais.size());
+			assertEquals(2, delais.size());
 			final DelaiDeclaration delai0 = (DelaiDeclaration) delais.get(0);
+			// le délai implicite doit être annulé
 			assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai0);
-			// [FISCPROJ-873] le délai doit maintenant être explicite
-			assertEquals(TypeDelaiDeclaration.EXPLICITE, delai0.getTypeDelai());
+			assertEquals(TypeDelaiDeclaration.IMPLICITE, delai0.getTypeDelai());
+			assertTrue(delai0.isAnnule());
+			// un nouveau délai explicite à la même date doit exister
+			final DelaiDeclaration delai1 = (DelaiDeclaration) delais.get(1);
+			assertDelai(RegDate.get(), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai1);
+			assertEquals(TypeDelaiDeclaration.EXPLICITE, delai1.getTypeDelai());
 			return null;
 		});
 	}
@@ -477,7 +484,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			return null;
 		});
 
-		// vérification que les délais ont été acceptés, mais comme c'est les mêmes que les délais implicites, seul le lien vers la demande groupée est ajouté
+		// [FISCPROJ-999] vérification que les demandes ont été acceptées, que les délais implicites existants sont annulés et que de nouveaux délais explicites aux mêmes dates existent maintenant
 		doInNewTransaction(status -> {
 
 			final Tiers tiers1 = tiersDAO.get(ids.pp1);
@@ -490,17 +497,24 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 				assertNotNull(declaration2016);
 
 				final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
-				assertEquals(1, delais.size());
+				assertEquals(2, delais.size());
+
+				// le délai implicite doit être annulé
 				final DelaiDeclaration delai0 = (DelaiDeclaration) delais.get(0);
 				assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai0);
+				assertEquals(TypeDelaiDeclaration.IMPLICITE, delai0.getTypeDelai());
+				assertNull(delai0.getDemandeMandataire());
+				assertTrue(delai0.isAnnule());
+
+				// un nouveau délai explicite à la même date doit exister
+				final DelaiDeclaration delai1 = (DelaiDeclaration) delais.get(1);
+				assertDelai(RegDate.get(), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai1);
+				assertEquals(TypeDelaiDeclaration.EXPLICITE, delai1.getTypeDelai());
 
 				// [FISCPROJ-816] La demande mandataire doit être maintenant renseignée sur le délai
-				final DemandeDelaisMandataire demandeMandataire = delai0.getDemandeMandataire();
+				final DemandeDelaisMandataire demandeMandataire = delai1.getDemandeMandataire();
 				assertNotNull(demandeMandataire);
 				assertEquals("CHE1", demandeMandataire.getNumeroIDE());
-
-				// [FISCPROJ-873] Le délai doit maintenant être explicite
-				assertEquals(TypeDelaiDeclaration.EXPLICITE, delai0.getTypeDelai());
 			}
 
 			final Tiers tiers2 = tiersDAO.get(ids.pp2);
@@ -513,17 +527,24 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 				assertNotNull(declaration2016);
 
 				final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
-				assertEquals(1, delais.size());
+				assertEquals(2, delais.size());
+
+				// le délai implicite doit être annulé
 				final DelaiDeclaration delai0 = (DelaiDeclaration) delais.get(0);
 				assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai0);
+				assertEquals(TypeDelaiDeclaration.IMPLICITE, delai0.getTypeDelai());
+				assertNull(delai0.getDemandeMandataire());
+				assertTrue(delai0.isAnnule());
+
+				// un nouveau délai explicite à la même date doit exister
+				final DelaiDeclaration delai1 = (DelaiDeclaration) delais.get(1);
+				assertDelai(RegDate.get(), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delai1);
+				assertEquals(TypeDelaiDeclaration.EXPLICITE, delai1.getTypeDelai());
 
 				// [FISCPROJ-816] La demande mandataire doit être maintenant renseignée sur le délai
-				final DemandeDelaisMandataire demandeMandataire = delai0.getDemandeMandataire();
+				final DemandeDelaisMandataire demandeMandataire = delai1.getDemandeMandataire();
 				assertNotNull(demandeMandataire);
 				assertEquals("CHE1", demandeMandataire.getNumeroIDE());
-
-				// [FISCPROJ-873] Le délai doit maintenant être explicite
-				assertEquals(TypeDelaiDeclaration.EXPLICITE, delai0.getTypeDelai());
 			}
 
 			return null;

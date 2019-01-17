@@ -194,8 +194,15 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 				// [FISCPROJ-816] on vérifie que le délai existant n'est pas lié à une demande mandataire (auquel cas il ne peut pas être mis-à-jour selon les règles)
 				final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
 				validateDelaiImplicite(dernierDelaiAccorde);
-				// [FISCPROJ-873] on promeut le type de délai à 'EXPLICIT'
-				dernierDelaiAccorde.setTypeDelai(TypeDelaiDeclaration.EXPLICITE);
+
+				// [FISCPROJ-999] on annule le délai implicite existant et on ajoute un nouveau délai explicite
+				dernierDelaiAccorde.setAnnule(true);
+				try {
+					declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, null);
+				}
+				catch (AjoutDelaiDeclarationException ee) {
+					throw new EsbBusinessException(getEsbBusinessCode(ee.getRaison()), ee.getMessage(), ee);
+				}
 			}
 			else {
 				throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
@@ -253,9 +260,15 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 					// [FISCPROJ-816] on renseigne la demande de délai du mandataire sur le délai existant et on continue normalement (il s'agit d'un cas valide)
 					final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
 					validateDelaiImplicite(dernierDelaiAccorde);
-					// [FISCPROJ-873] on promeut le type de délai à 'EXPLICIT'
-					dernierDelaiAccorde.setTypeDelai(TypeDelaiDeclaration.EXPLICITE);
-					dernierDelaiAccorde.setDemandeMandataire(demandeMandataire);
+
+					// [FISCPROJ-999] on annule le délai implicite existant et on ajoute un nouveau délai explicite
+					dernierDelaiAccorde.setAnnule(true);
+					try {
+						declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, demandeMandataire);
+					}
+					catch (AjoutDelaiDeclarationException ee) {
+						throw new EsbBusinessException(getEsbBusinessCode(ee.getRaison()), "Contribuable n°" + numeroContribuable + " : " + ee.getMessage(), ee);
+					}
 				}
 				else {
 					throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), "Contribuable n°" + numeroContribuable + " : " + e.getMessage(), e);

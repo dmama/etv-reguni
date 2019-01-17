@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +70,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.editique.EditiqueCompositionService;
@@ -524,12 +526,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
 			}
 
-			final RegDate delaiActuel = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
+			final RegDate delaiActuel = Optional.of(declaration)
+					.map(Declaration::getDernierDelaiDeclarationAccorde)
+					.map(DelaiDocumentFiscal::getDelaiAccordeAu)
+					.orElse(null);
 			if (dateDelai == delaiActuel) {
 				throw new AjoutDelaiDeclarationException(DELAI_DEJA_EXISTANT, "Un délai à la date demandée existe déjà.");
 			}
 
-			if (RegDateHelper.isBefore(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
+			if (delaiActuel != null && RegDateHelper.isBefore(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
 				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un délai plus lointain existe déjà.");
 			}
 		}
