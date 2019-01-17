@@ -57,7 +57,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	private EvenementFiscalService evenementFiscalService;
 	private LienAssociesSNCService lienAssociesSNCService;
-	private MessageHelper messageHelper;
 
 	/**
 	 * Alimente la vue RapportView
@@ -560,10 +559,5 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	public void setLienAssociesSNCService(LienAssociesSNCService lienAssociesSNCService) {
 		this.lienAssociesSNCService = lienAssociesSNCService;
-	}
-
-	@Override
-	public void setMessageHelper(MessageHelper messageHelper) {
-		this.messageHelper = messageHelper;
 	}
 }
