@@ -124,7 +124,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 	}
 
 	private EvenementEntrepriseDetailView buildDetailView(EvenementEntreprise evt) {
-		final String foscPublicationDirectLinkFormat = "https://www.fosc.ch/shabforms/servlet/Search/1925485.pdf?EID=7&DOCID=%d";
+		final String foscPublicationDirectLinkFormat = "https://www.fosc.ch/shabforms/servlet/Search/1925485.pdf?EID=7&DOCID=%s";
 
 		final EvenementEntrepriseDetailView evtView = new EvenementEntrepriseDetailView();
 

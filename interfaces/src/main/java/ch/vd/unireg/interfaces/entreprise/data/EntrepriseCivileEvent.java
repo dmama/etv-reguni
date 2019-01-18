@@ -18,7 +18,7 @@ public class EntrepriseCivileEvent implements Serializable {
 	private Long numeroEntreeJournalRC;
 	private RegDate dateEntreeJournalRC;
 
-	private Long numeroDocumentFOSC;
+	private String numeroDocumentFOSC;
 	private RegDate datePublicationFOSC;
 
 	private final EntrepriseCivile pseudoHistory;
@@ -69,11 +69,11 @@ public class EntrepriseCivileEvent implements Serializable {
 		this.dateEntreeJournalRC = dateEntreeJournalRC;
 	}
 
-	public Long getNumeroDocumentFOSC() {
+	public String getNumeroDocumentFOSC() {
 		return numeroDocumentFOSC;
 	}
 
-	public void setNumeroDocumentFOSC(Long numeroDocumentFOSC) {
+	public void setNumeroDocumentFOSC(String numeroDocumentFOSC) {
 		this.numeroDocumentFOSC = numeroDocumentFOSC;
 	}
 

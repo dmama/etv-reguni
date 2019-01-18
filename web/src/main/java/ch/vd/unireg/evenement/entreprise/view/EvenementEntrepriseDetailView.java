@@ -38,7 +38,7 @@ public class EvenementEntrepriseDetailView implements Serializable {
 	private boolean correctionDansLePasse;
 	private final List<ErreurEvenementEntrepriseView> evtErreurs = new ArrayList<>();
 
-	private Long foscNumero;
+	private String foscNumero;
 	private RegDate foscDate;
 	private String foscLienDirect;
 
@@ -183,11 +183,11 @@ public class EvenementEntrepriseDetailView implements Serializable {
 		this.noOrganisation = noOrganisation;
 	}
 
-	public Long getFoscNumero() {
+	public String getFoscNumero() {
 		return foscNumero;
 	}
 
-	public void setFoscNumero(Long foscNumero) {
+	public void setFoscNumero(String foscNumero) {
 		this.foscNumero = foscNumero;
 	}
 

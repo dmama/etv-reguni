@@ -125,7 +125,7 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 				entrepriseCivileEvent.setNumeroEntreeJournalRC(organisationEvent.getCommercialRegisterEntryNumber());
 				entrepriseCivileEvent.setDateEntreeJournalRC(organisationEvent.getCommercialRegisterEntryDate());
 				if (!StringUtils.isBlank(organisationEvent.getDocumentNumberFOSC())) {
-					entrepriseCivileEvent.setNumeroDocumentFOSC(Long.parseLong(organisationEvent.getDocumentNumberFOSC()));
+					entrepriseCivileEvent.setNumeroDocumentFOSC(organisationEvent.getDocumentNumberFOSC());
 				}
 				entrepriseCivileEvent.setDatePublicationFOSC(organisationEvent.getPublicationDateFOSC());
 				result.put(orgEntry.getKey(), entrepriseCivileEvent);
