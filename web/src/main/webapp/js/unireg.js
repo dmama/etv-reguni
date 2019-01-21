@@ -2772,7 +2772,7 @@ var Decl = {
 				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(di.typeDocumentMessage) + '</td>';
 				info += '<td width="25%">Date de délai imprimée&nbsp;:</td><td width="25%">' + RegDate.format(di.delaiRetourImprime) + '</td></tr></table></fieldset>\n';
 
-				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais, true);
+				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais, true, true);
 				var etats = Decl._buidlEtatsTable(di.etats, false);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
@@ -2887,7 +2887,7 @@ var Decl = {
 
 				var delais = "";
 				if (doc.delais.length > 0) {
-					delais = Decl._buildDelaisPMTable(doc.delais, false);
+					delais = Decl._buildDelaisPMTable(doc.delais, false, false);
 				}
 				var etats = Decl._buidlEtatsTable(doc.etats, true);
 
@@ -2933,7 +2933,7 @@ var Decl = {
 
 				var delais = "";
 				if (doc.delais.length > 0) {
-					delais = Decl._buildDelaisPMTable(doc.delais, false);
+					delais = Decl._buildDelaisPMTable(doc.delais, false, false);
 				}
 				var etats = Decl._buidlEtatsTable(doc.etats, true);
 
@@ -2988,7 +2988,7 @@ var Decl = {
 
 				var delais = "";
 				if (doc.delais.length > 0) {
-					delais = Decl._buildDelaisPMTable(doc.delais, false);
+					delais = Decl._buildDelaisPMTable(doc.delais, false, false);
 				}
 				var etats = Decl._buidlEtatsTable(doc.etats, true);
 
@@ -3067,11 +3067,15 @@ var Decl = {
 		return html;
 	},
 
-	_buildDelaisPMTable: function (delais, avecDecision) {
+	_buildDelaisPMTable: function (delais, avecDecision, avecTypeDelai) {
 		var html = '';
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
-			html += '<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Type de délai</th><th>Date traitement</th>';
+			html += '<table id="delai" class="display"><thead><tr><th>Date demande</th>';
+			if (avecTypeDelai) {
+				html += '<th>Type de délai</th>';
+			}
+			html += '<th>Date traitement</th>';
 			if (avecDecision) {
 				html += '<th>Décision</th>';
 			}
@@ -3090,12 +3094,14 @@ var Decl = {
 				/** @namespace d.sursis */
 				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
-				html += '<td><span title="' + (d.typeDelai === 'EXPLICITE' ? 'Ce délai a été demandé explicitement après la création de la DI' : 'Ce délai a été créé automatiquement à l\'émission de la DI') +'">' +
-					(d.typeDelai === 'EXPLICITE' ? 'Explicite' : 'Automatique') + '</span>';
-				if (d.demandeDelaisMandataireId) {
-					html += ' ' + Link.consulterMandataire(d.demandeDelaisMandataireId);
+				if (avecTypeDelai) {
+					html += '<td><span title="' + (d.typeDelai === 'EXPLICITE' ? 'Ce délai a été demandé explicitement après la création de la DI' : 'Ce délai a été créé automatiquement à l\'émission de la DI') + '">' +
+						(d.typeDelai === 'EXPLICITE' ? 'Explicite' : 'Automatique') + '</span>';
+					if (d.demandeDelaisMandataireId) {
+						html += ' ' + Link.consulterMandataire(d.demandeDelaisMandataireId);
+					}
+					html += '</td>';
 				}
-				html += '</td>';
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
 				if (avecDecision) {
 					html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
