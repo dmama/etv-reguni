@@ -63,6 +63,13 @@
 				<display:column titleKey="label.date.demande">
 					<unireg:regdate regdate="${delai.dateDemande}" />
 				</display:column>
+				<display:column titleKey="label.type.delai">
+					<span title="<fmt:message key="option.lr.type.delai.tooltip.${delai.typeDelai}"/>"><fmt:message key="option.type.delai.${delai.typeDelai}"/></span>
+					<c:if test="${delai.demandeDelaisMandataireId != null}">
+						<unireg:consulterDemandeMandataire demandeId="${delai.demandeDelaisMandataireId}"/>
+					</c:if>
+				</display:column>
+
 				<display:column titleKey="label.date.delai.accorde">
 					<unireg:regdate regdate="${delai.delaiAccordeAu}" />
 				</display:column>
