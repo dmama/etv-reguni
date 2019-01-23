@@ -372,6 +372,24 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	/**
+	 * Renvoie la liste de fors fiscaux principaux débutant à ou avant la date demandée (y compris les fors annulés).
+	 * @param date date de référence
+	 * @param withAnnule indique si on veut les fors annulées
+	 * @return liste des fors principaux demandés
+	 */
+	@NotNull
+	@Transient
+	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsAvant(RegDate date, boolean withAnnule) {
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, withAnnule)
+				.filter(ff -> date.isAfterOrEqual(ff.getDateDebut()))
+				.sorted(FOR_FISCAL_COMPARATOR)
+				.collect(Collectors.toList());
+	}
+
+	/**
 	 * @param date date a laquelle on doit verifié que le tiers possède un for annulé.
 	 * @param motif motif du for
 	 *

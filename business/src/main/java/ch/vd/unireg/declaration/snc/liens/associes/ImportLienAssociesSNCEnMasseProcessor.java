@@ -109,12 +109,14 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 	}
 
 	private RegDate getDateDebutLienAssocieSnc(Entreprise snc, RegDate dateDebut) {
-		final List<ForFiscalPrincipal> forFiscalPrincipals = snc.getForsFiscauxPrincipauxOuvertsApres(dateDebut, Boolean.FALSE);
-		if (forFiscalPrincipals.isEmpty()) {
+		final List<ForFiscalPrincipal> forFiscalApres = snc.getForsFiscauxPrincipauxOuvertsApres(dateDebut, Boolean.FALSE);
+		final List<ForFiscalPrincipal> forFiscalAvant = snc.getForsFiscauxPrincipauxOuvertsAvant(dateDebut, Boolean.FALSE);
+
+		if (forFiscalApres.isEmpty() || !forFiscalAvant.isEmpty()) {
 			return dateDebut;
 		}
 
-		final List<ForFiscalPrincipal> forPrincipauxVaudois = forFiscalPrincipals.stream()
+		final List<ForFiscalPrincipal> forPrincipauxVaudois = forFiscalApres.stream()
 				.filter(forFiscal -> forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && forFiscal.getGenreImpot() == GenreImpot.REVENU_FORTUNE)
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());
