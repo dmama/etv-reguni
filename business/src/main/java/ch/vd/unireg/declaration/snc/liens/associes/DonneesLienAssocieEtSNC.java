@@ -39,7 +39,7 @@ public class DonneesLienAssocieEtSNC {
 	private RegDate dateDebut;
 	private final String ligneSource;
 
-	private DonneesLienAssocieEtSNC(long noContribuableSNC, Long noContribuableAssocie, RegDate dateDebut, String ligneSource) {
+	public DonneesLienAssocieEtSNC(long noContribuableSNC, Long noContribuableAssocie, RegDate dateDebut, String ligneSource) {
 		this.noContribuableSNC = noContribuableSNC;
 		this.noContribuableAssocie = noContribuableAssocie;
 		this.dateDebut = dateDebut;

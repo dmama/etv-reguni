@@ -2,17 +2,11 @@ package ch.vd.unireg.declaration.snc;
 
 import java.util.Collections;
 
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -37,9 +31,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
-@PrepareForTest({CSVRecord.class})
 public class ImportLienAssociesSNCEnmasseProcessorTest extends BusinessTest {
 
 	private ImportLienAssociesSNCEnMasseProcessor processor;
@@ -80,11 +71,8 @@ public class ImportLienAssociesSNCEnmasseProcessorTest extends BusinessTest {
 			});
 
 			//mise en place de la relation
-			final CSVRecord csvRecordMock = PowerMockito.mock(CSVRecord.class);
-			PowerMockito.when(csvRecordMock.get(DonneesLienAssocieEtSNC.SUJET)).thenReturn(pairSncAssocie.getKey());
-			PowerMockito.when(csvRecordMock.get(DonneesLienAssocieEtSNC.OBJECT)).thenReturn(pairSncAssocie.getValue());
+			final DonneesLienAssocieEtSNC lienAssocieEtSNC = getLienAssocieEtSNC(pairSncAssocie);
 
-			final DonneesLienAssocieEtSNC lienAssocieEtSNC = DonneesLienAssocieEtSNC.valueOf(csvRecordMock);
 			final LienAssociesSNCEnMasseImporterResults res = processor.run(Collections.singletonList(lienAssocieEtSNC), RegDate.get(), null);
 
 			//vérification de la création du lien
@@ -130,12 +118,8 @@ public class ImportLienAssociesSNCEnmasseProcessorTest extends BusinessTest {
 				return new ImmutablePair<>(String.valueOf(snc.getNumero()), String.valueOf(associe.getNumero()));
 			});
 
-			//mise en place de la relation
-			final CSVRecord csvRecordMock = PowerMockito.mock(CSVRecord.class);
-			PowerMockito.when(csvRecordMock.get(DonneesLienAssocieEtSNC.SUJET)).thenReturn(pairSncAssocie.getKey());
-			PowerMockito.when(csvRecordMock.get(DonneesLienAssocieEtSNC.OBJECT)).thenReturn(pairSncAssocie.getValue());
 
-			final DonneesLienAssocieEtSNC lienAssocieEtSNC = DonneesLienAssocieEtSNC.valueOf(csvRecordMock);
+			final DonneesLienAssocieEtSNC lienAssocieEtSNC = getLienAssocieEtSNC(pairSncAssocie);
 			final LienAssociesSNCEnMasseImporterResults res = processor.run(Collections.singletonList(lienAssocieEtSNC), RegDate.get(), null);
 
 			//vérification de la création du lien
@@ -159,6 +143,14 @@ public class ImportLienAssociesSNCEnmasseProcessorTest extends BusinessTest {
 		catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
+	}
+
+	@NotNull
+	private DonneesLienAssocieEtSNC getLienAssocieEtSNC(Pair<String, String> pairSncAssocie) {
+		return new DonneesLienAssocieEtSNC(Long.valueOf(pairSncAssocie.getKey()),
+		                                   Long.valueOf(pairSncAssocie.getValue()),
+		                                   RegDate.get(2018, 1, 1),
+		                                   pairSncAssocie.getKey() + ";" + pairSncAssocie.getValue());
 	}
 
 }
