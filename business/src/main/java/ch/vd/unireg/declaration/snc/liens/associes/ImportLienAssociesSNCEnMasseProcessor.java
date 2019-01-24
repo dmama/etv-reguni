@@ -20,10 +20,12 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
-import ch.vd.unireg.tiers.LienAssociesEtSNC;
+import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+
+import static ch.vd.unireg.type.TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC;
 
 /**
  * Processeur pour l'implémentation du job d'import en masse des liens entre tiers et la SNC.
@@ -85,8 +87,9 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 						continue;
 					}
 
-					final LienAssociesEtSNC lienEntreAssociesEtSNC = new LienAssociesEtSNC(donneeBatch.getDateDebut(), null, associe, (Entreprise) snc);
-					tiersService.addRapport(lienEntreAssociesEtSNC, associe, snc);
+					final RapportEntreTiers lienEntreAssociesEtSNC = LIENS_ASSOCIES_ET_SNC.newInstance();
+					lienEntreAssociesEtSNC.setDateDebut(donneeBatch.getDateDebut());
+					tiersService.addRapport(lienEntreAssociesEtSNC, snc, associe);
 					rapport.addLienCree(donneeBatch);
 					status.setMessage("Importation des liens entre associés et SNC", progressMonitor.getProgressInPercent());
 				}

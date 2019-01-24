@@ -21,8 +21,8 @@ public class DonneesLienAssocieEtSNC {
 	/**
 	 * Hearder du fichier CSV
 	 */
-	private static final String SUJET = "Tiers sujet ID";
-	private static final String OBJECT = "Tiers object ID";
+	public static final String SUJET = "Tiers sujet ID";
+	public static final String OBJECT = "Tiers object ID";
 	public static final List<String> HEADERS = Arrays.asList(SUJET, OBJECT);
 	/**
 	 * Date début du liens pour la relation initiale, cette date sera celle du for de gestion de la SNC

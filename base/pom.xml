@@ -470,6 +470,19 @@
 			<version>${mokito.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<reporting>
@@ -768,6 +781,7 @@
 		<oro.version>2.0.8</oro.version>
 		<cobertura.version>2.6</cobertura.version>
 		<mokito.version>1.10.19</mokito.version>
+		<powermock.version>1.6.6</powermock.version>
 
 		<!-- Database settings -->
 		<oracle.version>12.1.0.2.0</oracle.version>

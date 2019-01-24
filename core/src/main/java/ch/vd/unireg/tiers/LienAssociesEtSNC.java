@@ -10,7 +10,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 /**
  * <pre>
  *   +------------------+                   +--------------------+
- *   |     Associes     |                   |         SNC        |
+ *   |     SNC          |                   |         Associe        |
  *   +------------------+                   +--------------------+
  *           ^                                           ^
  *           ¦  sujet  +-----------------------+  objet  ¦
@@ -30,7 +30,7 @@ public class LienAssociesEtSNC extends RapportEntreTiers {
 	}
 
 	public LienAssociesEtSNC(RegDate dateDebut, RegDate dateFin, Contribuable associe, Entreprise snc) {
-		super(dateDebut, dateFin, associe, snc);
+		super(dateDebut, dateFin, snc, associe);
 	}
 
 	protected LienAssociesEtSNC(LienAssociesEtSNC src) {
@@ -40,13 +40,13 @@ public class LienAssociesEtSNC extends RapportEntreTiers {
 	@Transient
 	@Override
 	public String getDescriptionTypeObjet() {
-		return SNC;
+		return ASSOCIES;
 	}
 
 	@Transient
 	@Override
 	public String getDescriptionTypeSujet() {
-		return ASSOCIES;
+		return SNC;
 	}
 
 	@Transient
