@@ -2,6 +2,7 @@ package ch.vd.unireg.complements;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -122,5 +123,9 @@ public class CoordonneesFinancieresEditView implements DateRange, Annulable {
 	@Override
 	public boolean isAnnule() {
 		return annulationDate != null;
+	}
+
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(iban) && StringUtils.isEmpty(oldIban);
 	}
 }
