@@ -509,15 +509,16 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throw new AjoutDelaiDeclarationException(DECLARATION_ANNULEE, "La déclaration est annulée.");
 		}
 
-		if (declaration.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
-			throw new AjoutDelaiDeclarationException(MAUVAIS_ETAT_DECLARATION, "La déclaration n'est pas dans l'état 'EMIS'.");
-		}
-
 		if (RegDateHelper.isAfter(dateObtention, aujourdhui, NullDateBehavior.LATEST)) {
 			throw new AjoutDelaiDeclarationException(DATE_OBTENTION_INVALIDE, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
 		}
 
-		if (etatDelai == EtatDelaiDocumentFiscal.ACCORDE) {
+		if (etatDelai == EtatDelaiDocumentFiscal.ACCORDE) { // [FISCPROJ-1068] seuls les délais accordé sont soumis à ces vérifications
+
+			if (declaration.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
+				throw new AjoutDelaiDeclarationException(MAUVAIS_ETAT_DECLARATION, "La déclaration n'est pas dans l'état 'EMIS'.");
+			}
+
 			if (dateDelai == null) {
 				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "La date de délai est nulle");
 			}

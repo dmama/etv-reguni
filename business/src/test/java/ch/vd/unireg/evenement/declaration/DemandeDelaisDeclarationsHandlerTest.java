@@ -271,6 +271,168 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 	}
 
 	/**
+	 * [FISCPROJ-1068] Teste le cas passant d'ajout d'un délai refusé sur une déclaration à l'état 'échue'.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiRefuseSurDeclarationEchue() throws Exception {
+
+		// mise en place
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			addEtatDeclarationEchue(di, date(2017, 7, 1));
+			addDelaiDeclaration(di, date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
+		});
+
+		final RegDate nouveauDelai = RegDate.get().addMonths(1);
+		final RegDate dateObtention = RegDate.get();
+
+		// ajout du délai
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, 1, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
+		});
+
+		// vérification que le délai refusé a bien été ajouté
+		doInNewTransaction(status -> {
+			final Tiers tiers = tiersDAO.get(ctbId);
+			assertNotNull(tiers);
+
+			final List<DeclarationImpotOrdinairePP> declarations = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+			assertEquals(1, declarations.size());
+
+			final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+			assertNotNull(declaration2016);
+
+			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+			assertEquals(2, delais.size());
+			assertDelai(date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
+			assertDelai(dateObtention, null, EtatDelaiDocumentFiscal.REFUSE, delais.get(1));
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-1068] Teste le cas passant d'ajout d'un délai refusé sur une déclaration à l'état 'sommée'.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiRefuseSurDeclarationSommee() throws Exception {
+
+		// mise en place
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			addEtatDeclarationSommee(di, date(2017, 8, 1), date(2017, 8, 1), null);
+			addDelaiDeclaration(di, date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
+		});
+
+		final RegDate nouveauDelai = RegDate.get().addMonths(1);
+		final RegDate dateObtention = RegDate.get();
+
+		// ajout du délai
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, 1, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
+		});
+
+		// vérification que le délai refusé a bien été ajouté
+		doInNewTransaction(status -> {
+			final Tiers tiers = tiersDAO.get(ctbId);
+			assertNotNull(tiers);
+
+			final List<DeclarationImpotOrdinairePP> declarations = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+			assertEquals(1, declarations.size());
+
+			final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+			assertNotNull(declaration2016);
+
+			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+			assertEquals(2, delais.size());
+			assertDelai(date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
+			assertDelai(dateObtention, null, EtatDelaiDocumentFiscal.REFUSE, delais.get(1));
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-1068] Teste le cas passant d'ajout d'un délai refusé sur une déclaration à l'état 'retournée'.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiRefuseSurDeclarationRetournee() throws Exception {
+
+		// mise en place
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			addEtatDeclarationRetournee(di, date(2017, 5, 1));
+			addDelaiDeclaration(di, date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
+		});
+
+		final RegDate nouveauDelai = RegDate.get().addMonths(1);
+		final RegDate dateObtention = RegDate.get();
+
+		// ajout du délai
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, 1, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
+		});
+
+		// vérification que le délai refusé a bien été ajouté
+		doInNewTransaction(status -> {
+			final Tiers tiers = tiersDAO.get(ctbId);
+			assertNotNull(tiers);
+
+			final List<DeclarationImpotOrdinairePP> declarations = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+			assertEquals(1, declarations.size());
+
+			final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+			assertNotNull(declaration2016);
+
+			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+			assertEquals(2, delais.size());
+			assertDelai(date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
+			assertDelai(dateObtention, null, EtatDelaiDocumentFiscal.REFUSE, delais.get(1));
+			return null;
+		});
+	}
+
+	/**
 	 * Teste un des cas d'erreur de l'appel de la méthode declarationImpotService.ajouterDelaiDI()
 	 */
 	@Test

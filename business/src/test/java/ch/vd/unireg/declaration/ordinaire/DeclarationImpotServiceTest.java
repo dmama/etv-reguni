@@ -2521,20 +2521,20 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiRefuseDIMauvaisEtat() {
+	public void testAjouterDelaiRefuseDIMauvaisEtat() throws AjoutDelaiDeclarationException {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.addEtat(new EtatDeclarationEmise());
 		di.addEtat(new EtatDeclarationSommee());
 
-		try {
-			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2), EtatDelaiDocumentFiscal.REFUSE, null);
-			fail();
-		}
-		catch (AjoutDelaiDeclarationException e) {
-			assertEquals(Raison.MAUVAIS_ETAT_DECLARATION, e.getRaison());
-			assertEquals("La déclaration n'est pas dans l'état 'EMIS'.", e.getMessage());
-		}
+		service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2), EtatDelaiDocumentFiscal.REFUSE, null);
+
+		// [FISCPROJ-1068] les délais refusés doivent être acceptés, même sur une déclaration non-émise
+		final Set<DelaiDocumentFiscal> delais = di.getDelais();
+		assertEquals(1, delais.size());
+		final DelaiDocumentFiscal delai0 = delais.iterator().next();
+		assertEquals(EtatDelaiDocumentFiscal.REFUSE, delai0.getEtat());
+		assertNull(delai0.getDelaiAccordeAu());
 	}
 
 	@Test
