@@ -140,6 +140,7 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.ApplicantType;
 import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
 import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.groupdeadline.v7.RejectionReason;
@@ -667,7 +668,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request, @NotNull RegDate today) {
 		final int periodeFiscale = request.getTaxPeriod();
 		final List<Integer> ctbIds = request.getTaxPayerNumber();
-		final TypeDemande typeDemande = ctbIds.size() > 1 ? TypeDemande.GROUPEE : TypeDemande.UNITAIRE;
+		final TypeDemande typeDemande = getTypeDemande(request);
 
 		return doInTransaction(true, status -> {
 			final List<ValidationResult> validationResults = ctbIds.stream()
@@ -675,6 +676,40 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 					.collect(Collectors.toList());
 			return new GroupDeadlineValidationResponse(validationResults, 0, null);
 		});
+	}
+
+	@NotNull
+	static TypeDemande getTypeDemande(@NotNull GroupDeadlineValidationRequest request) {
+		final ApplicantType applicantType = request.getApplicantType();
+		final List<Integer> ctbIds = request.getTaxPayerNumber();
+
+		final TypeDemande typeDemande;
+		if (applicantType == null) {
+			// FIXME (msi) à supprimer en 19R2
+			// mode de compatibilité pré-19R1.C : ce paramètre n'était pas obligatoire, on utilise l'ancient algorithme pour déterminer le type de demandeur.
+			final String ids = ctbIds.stream().map(Object::toString).collect(Collectors.joining(", "));
+			LOGGER.warn("Reçu une requête de validation de demande de délais (période=" + request.getTaxPeriod() + ", ids=[" + ids + "]) " +
+					            "sans information sur le demandeur : détermination automatique à partir du nombre de contribuables.");
+			typeDemande = ctbIds.size() > 1 ? TypeDemande.GROUPEE : TypeDemande.UNITAIRE;
+		}
+		else {
+			// [FISCPROJ-1060] le type de demandeur est spécifié dans la demande
+			switch (applicantType) {
+			case PARTY_HIMSELF:
+				if (ctbIds.size() > 1) {
+					throw new BadRequestException("Une demande unitaire ne doit contenir qu'un seul contribuable (" + ctbIds.size() + " renseignés). ");
+				}
+				typeDemande = TypeDemande.UNITAIRE;
+				break;
+			case AGENT:
+				typeDemande = TypeDemande.GROUPEE;
+				break;
+			default:
+				throw new IllegalArgumentException();
+			}
+		}
+
+		return typeDemande;
 	}
 
 	/**

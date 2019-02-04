@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -123,6 +124,7 @@ import ch.vd.unireg.type.TypePermis;
 import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.type.TypeTiersEtiquette;
 import ch.vd.unireg.validation.ValidationService;
+import ch.vd.unireg.webservices.v7.BusinessWebServiceImpl.TypeDemande;
 import ch.vd.unireg.ws.ack.v7.AckStatus;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
@@ -132,6 +134,7 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.ApplicantType;
 import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
 import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.groupdeadline.v7.RejectionReason;
@@ -5016,7 +5019,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final RegDate today = RegDate.get(2018, 3, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
 
-		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Arrays.asList((int) ctbId, ctbIdInconnu, debiteurId.intValue()));
+		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Arrays.asList((int) ctbId, ctbIdInconnu, debiteurId.intValue()), ApplicantType.AGENT);
 		final GroupDeadlineValidationResponse response = service.validateGroupDeadlineRequest(request, today);
 		assertNotNull(response);
 
@@ -5054,7 +5057,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final RegDate today = RegDate.get(2018, 5, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
 
-		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Collections.singletonList((int) ctbId));
+		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Collections.singletonList((int) ctbId), ApplicantType.PARTY_HIMSELF);
 		final GroupDeadlineValidationResponse response = service.validateGroupDeadlineRequest(request, today);
 		assertNotNull(response);
 
@@ -5091,7 +5094,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final RegDate today = RegDate.get(2018, 3, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
 
-		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Collections.singletonList((int) ctbId));
+		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Collections.singletonList((int) ctbId), ApplicantType.PARTY_HIMSELF);
 		final GroupDeadlineValidationResponse response = service.validateGroupDeadlineRequest(request, today);
 		assertNotNull(response);
 
@@ -5111,7 +5114,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service.setTiersDAO(tiersDAO);
 
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, null, "Le contribuable n'existe pas.", results);
 			return null;
 		});
@@ -5130,7 +5133,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			// on crée un débiteur
 			addDebiteur(ctbId);
 
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable (Débiteur prestation imposable).", results);
 			return null;
 		});
@@ -5151,7 +5154,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable est annulé.", results);
 			return null;
 		});
@@ -5175,7 +5178,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Une incohérence de données sur le contribuable empêche sa modification (validation).", results);
 			return null;
 		});
@@ -5198,7 +5201,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en 2018.", results);
 			return null;
 		});
@@ -5223,7 +5226,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en 2018 (hors Suisse).", results);
 			return null;
 		});
@@ -5248,7 +5251,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale 2018.", results);
 			return null;
 		});
@@ -5276,7 +5279,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale 2018.", results);
 			return null;
 		});
@@ -5303,7 +5306,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 3, 31); // on se place un peu avant le 30 juin, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "Il n'existe aucune déclaration sur la période 2017.", results);
 			return null;
 		});
@@ -5333,7 +5336,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "02", "La déclaration existante sur la période 2017 est annulée.", results);
 			return null;
 		});
@@ -5366,7 +5369,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "04", "La déclaration est déjà retournée sur la période 2017.",
 			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
@@ -5401,7 +5404,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 3, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "09", "Il y a déjà un délai accordé au 01.11.2018.",
 			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
@@ -5448,7 +5451,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 5, 10); // on se place un peu avant la date d'échéance initiale, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationError(ctbId, PartyType.CORPORATION, "09", "Il y a déjà un délai accordé au 02.02.2019.",
 			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
@@ -5482,7 +5485,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il doit être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 5, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results);
 			return null;
 		});
@@ -5529,7 +5532,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2017, 5, 10); // on se place moins de 6 mois après la date de bouclement
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2016, 4, 1), date(2017, 3, 31), 1, Collections.singletonList(dateDelai), results);
 			return null;
 		});
@@ -5576,7 +5579,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2017, 10, 10); // on se place moins de 6 mois après la date de bouclement
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2016, 7, 1), date(2017, 6, 30), 1, Collections.singletonList(dateDelai), results);
 			return null;
 		});
@@ -5623,7 +5626,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2017, 11, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2016, 10, 1), date(2017, 9, 30), 1, Collections.singletonList(dateDelai), results);
 			return null;
 		});
@@ -5670,7 +5673,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 3, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(dateDelai), results);
 			return null;
 		});
@@ -5708,7 +5711,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en 2017.", results);
 			return null;
 		});
@@ -5744,7 +5747,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, RegDate.get());
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "05", "Il existe plusieurs déclarations sur la période 2017.", results);
 			return null;
 		});
@@ -5781,7 +5784,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2013, 5, 1);
-			final ValidationResult results = service.validateDeadlineRequest(2012, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2012, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'y a pas de délai configuré sur la période fiscale 2012.", results);
 			return null;
 		});
@@ -5825,7 +5828,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2013, 5, 1);
-			final ValidationResult results = service.validateDeadlineRequest(2012, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2012, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'y a pas de délai configuré sur la période fiscale 2012.", results);
 			return null;
 		});
@@ -5861,7 +5864,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il doit être possible de demander plusieurs délais
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 5, 20); // on se place quelques jours avant les 6 mois après la date d'émission, pour tomber dans la période où il n'y a deux délais accordables
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Arrays.asList(date(2018, 6, 30), date(2018, 9, 30)), results);    // <-- deux délais
 			return null;
 		});
@@ -5912,7 +5915,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2018, 7, 10); // on se place moins de 6 mois après la date d'émission, pour tomber dans la période où il n'y a qu'un seul délai accordable
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2017, 1, 1), date(2017, 12, 31), 1, Arrays.asList(dateDelai1, dateDelai2), results);
 			return null;
 		});
@@ -5948,7 +5951,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il doit être possible de demander plusieurs délais
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2019, 2, 12); // on se place beaucoup trop tard pour espérer un délai
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'y a pas de délai accordable en date du 12.02.2019 pour la période fiscale 2017.", results);
 			return null;
 		});
@@ -5999,10 +6002,49 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2019, 2, 12); // on se place beaucoup trop tard pour espérer un délai
-			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, BusinessWebServiceImpl.TypeDemande.UNITAIRE, today);
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
 			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'y a pas de délai accordable en date du 12.02.2019 pour la période fiscale 2017.", results);
 			return null;
 		});
+	}
+
+	/**
+	 * [FISCPROJ-1060] Vérifie que la détection du type de demande tient bien compte des cas particuliers.
+	 */
+	@Test
+	public void testGetTypeDemande() {
+		// mode de compatibilité pré-19R1.C
+		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null)));
+		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null, 1)));
+		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null, 1, 2)));
+		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null, 1, 2, 3)));
+
+		// mode normal
+		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.PARTY_HIMSELF)));
+		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.AGENT)));
+		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.PARTY_HIMSELF, 1)));
+		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.AGENT, 1)));
+		try {
+			BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.PARTY_HIMSELF, 1, 2));
+			fail();
+		}
+		catch (Exception e) {
+			assertEquals("Une demande unitaire ne doit contenir qu'un seul contribuable (2 renseignés). ", e.getMessage());
+		}
+		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.AGENT, 1, 2)));
+	}
+
+	@NotNull
+	protected static GroupDeadlineValidationRequest newGroupDeadlineValidationRequest(int period, @Nullable ApplicantType applicantType, int... ids) {
+		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest();
+		request.setTaxPeriod(period);
+		request.setApplicantType(applicantType);
+		if (ids != null) {
+			for (int id : ids) {
+				request.getTaxPayerNumber().add(id);
+			}
+		}
+		return request;
 	}
 
 	private static DelaiDocumentFiscal newDelaiDeclaration(RegDate dateTraitement, RegDate dateDelai) {
