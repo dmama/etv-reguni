@@ -120,7 +120,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		}
 
 		if (!(dpi instanceof DebiteurPrestationImposable)) {
-			throw new ObjectNotFoundException(messageHelper.getMessage("error.debiteur.prestation.impot.source.attendu", tiers.getNumero()));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.debiteur.prestation.impot.source.attendu", FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero())));
 		}
 
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur((DebiteurPrestationImposable) dpi, true);
