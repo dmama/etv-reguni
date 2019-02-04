@@ -41,7 +41,7 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 
 		if (!(objet instanceof Contribuable)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
-			                                     messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			                                     messageHelper.getMessage("error.mauvais_type_snc." + objet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 
 		if (!(sujet instanceof PersonnePhysique) && !(sujet instanceof Entreprise)) {
@@ -50,7 +50,7 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 		}
 		if (!(objet instanceof Entreprise)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
-			                                     messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
+			                                     messageHelper.getMessage("error.mauvais_type_snc." + objet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 
 		if (!((Entreprise) objet).isSNC()) {
