@@ -681,35 +681,23 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@NotNull
 	static TypeDemande getTypeDemande(@NotNull GroupDeadlineValidationRequest request) {
 		final ApplicantType applicantType = request.getApplicantType();
+		if (applicantType == null) {
+			throw new IllegalArgumentException("Le type de demandeur doit être renseigné.");
+		}
 		final List<Integer> ctbIds = request.getTaxPayerNumber();
 
-		final TypeDemande typeDemande;
-		if (applicantType == null) {
-			// FIXME (msi) à supprimer en 19R2
-			// mode de compatibilité pré-19R1.C : ce paramètre n'était pas obligatoire, on utilise l'ancient algorithme pour déterminer le type de demandeur.
-			final String ids = ctbIds.stream().map(Object::toString).collect(Collectors.joining(", "));
-			LOGGER.warn("Reçu une requête de validation de demande de délais (période=" + request.getTaxPeriod() + ", ids=[" + ids + "]) " +
-					            "sans information sur le demandeur : détermination automatique à partir du nombre de contribuables.");
-			typeDemande = ctbIds.size() > 1 ? TypeDemande.GROUPEE : TypeDemande.UNITAIRE;
-		}
-		else {
-			// [FISCPROJ-1060] le type de demandeur est spécifié dans la demande
-			switch (applicantType) {
-			case PARTY_HIMSELF:
-				if (ctbIds.size() > 1) {
-					throw new BadRequestException("Une demande unitaire ne doit contenir qu'un seul contribuable (" + ctbIds.size() + " renseignés). ");
-				}
-				typeDemande = TypeDemande.UNITAIRE;
-				break;
-			case AGENT:
-				typeDemande = TypeDemande.GROUPEE;
-				break;
-			default:
-				throw new IllegalArgumentException();
+		// [FISCPROJ-1060] le type de demandeur est spécifié dans la demande
+		switch (applicantType) {
+		case PARTY_HIMSELF:
+			if (ctbIds.size() > 1) {
+				throw new BadRequestException("Une demande unitaire ne doit contenir qu'un seul contribuable (" + ctbIds.size() + " renseignés). ");
 			}
+			return TypeDemande.UNITAIRE;
+		case AGENT:
+			return TypeDemande.GROUPEE;
+		default:
+			throw new IllegalArgumentException();
 		}
-
-		return typeDemande;
 	}
 
 	/**

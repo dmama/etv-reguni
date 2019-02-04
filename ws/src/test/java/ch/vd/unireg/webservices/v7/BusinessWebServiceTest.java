@@ -6013,12 +6013,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	 */
 	@Test
 	public void testGetTypeDemande() {
-		// mode de compatibilité pré-19R1.C
-		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null)));
-		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null, 1)));
-		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null, 1, 2)));
-		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, null, 1, 2, 3)));
-
 		// mode normal
 		assertEquals(TypeDemande.UNITAIRE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.PARTY_HIMSELF)));
 		assertEquals(TypeDemande.GROUPEE, BusinessWebServiceImpl.getTypeDemande(newGroupDeadlineValidationRequest(2019, ApplicantType.AGENT)));
