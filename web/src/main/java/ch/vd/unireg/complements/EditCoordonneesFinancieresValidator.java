@@ -1,10 +1,13 @@
 package ch.vd.unireg.complements;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.iban.IbanValidationException;
 import ch.vd.unireg.iban.IbanValidator;
 
 public class EditCoordonneesFinancieresValidator extends AbstractCoordonneesFinancieresValidator implements Validator {
@@ -31,7 +34,28 @@ public class EditCoordonneesFinancieresValidator extends AbstractCoordonneesFina
 			errors.rejectValue("dateDebut", "error.date.debut.future");
 		}
 
-		validateDateFin(errors, view.getDateDebut(), view.getDateFin());
-		validateIBAN(errors, view.getIban(), ibanValidator);
+		final RegDate dateFin = view.getDateFin();
+		validateDateFin(errors, dateDebut, view.getDateFin());
+
+		final String iban = view.getIban();
+		if (StringUtils.isNotBlank(iban)) {
+			//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide.
+			if (!IbanHelper.areSame(iban, view.getOldIban())) {
+				try {
+					ibanValidator.validate(iban);
+				}
+				catch (IbanValidationException e) {
+					if (StringUtils.isBlank(e.getMessage())) {
+						errors.rejectValue("iban", "error.iban");
+					}
+					else {
+						errors.rejectValue("iban", "error.iban.detail", new Object[]{e.getMessage()}, "IBAN invalide");
+					}
+				}
+			}
+		}
+		else {
+			errors.rejectValue("iban", "error.iban.mandat.tiers.vide");
+		}
 	}
 }
