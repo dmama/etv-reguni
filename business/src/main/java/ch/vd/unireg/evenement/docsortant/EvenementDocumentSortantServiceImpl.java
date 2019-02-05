@@ -214,7 +214,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	@Override
 	public void signaleRefusDelai(DeclarationImpotOrdinairePP di, ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage infoArchivage, boolean local) {
 		signaleDocumentSortant("REDEL",
-		                       TypeDocumentSortant.REFUS_DELAI_PM,
+		                       TypeDocumentSortant.REFUS_DELAI,
 		                       di.getTiers(),
 		                       local,
 		                       di.getPeriode().getAnnee(),

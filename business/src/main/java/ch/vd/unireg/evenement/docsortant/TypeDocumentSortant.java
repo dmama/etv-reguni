@@ -42,6 +42,7 @@ public enum TypeDocumentSortant {
 	DI_PP_ANNEXE_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Annexe immeuble", false),
 	SOMMATION_DI_PP(true, CodeTypeDocumentSortant.DECLARATION, "Sommation de DI", true),
 	CONFIRMATION_DELAI(false, CodeTypeDocumentSortant.DECLARATION, "Confirmation de délai", true),
+	REFUS_DELAI(false, CodeTypeDocumentSortant.DECLARATION, "Refus de délai", true),
 
 	LR(false, CodeTypeDocumentSortant.LISTE_RECAPITULATIVE, "Liste récapitulative IS", true),
 	DUPLICATA_LR(false, CodeTypeDocumentSortant.LISTE_RECAPITULATIVE, "Liste récapitulative IS (duplicata)", false),
