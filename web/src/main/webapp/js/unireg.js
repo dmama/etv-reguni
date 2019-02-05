@@ -101,7 +101,7 @@
 		var previous = null;
 		input.keyup(function() {
 			var current = input.val();
-			if (current != previous) {
+			if (current !== previous) {
 				previous = current;
 				// on met-à-null la valeur chaque fois que le texte de saisie change
 				input.data('selected', null);

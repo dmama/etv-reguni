@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.unireg.mouvement.DestinationEnvoi;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 import ch.vd.unireg.type.Localisation;
 import ch.vd.unireg.type.TypeMouvement;
@@ -20,10 +21,10 @@ public class MouvementEditValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		MouvementDetailView mvtView = (MouvementDetailView) obj;
 		if (mvtView.getTypeMouvement() == TypeMouvement.EnvoiDossier) {
-			if (StringUtils.isBlank(mvtView.getVisaUtilisateurEnvoi())) {
+			if (DestinationEnvoi.UTILISATEUR_ENVOI.equals(mvtView.getDestinationEnvoi()) && StringUtils.isBlank(mvtView.getVisaUtilisateurEnvoi())) {
 				errors.rejectValue("visaUtilisateurEnvoi", "error.utilisateur.collectivite.vide");
 			}
-			if (mvtView.getNoCollAdmDestinataireEnvoi() == null) {
+			if (DestinationEnvoi.COLLECTIVITE.equals(mvtView.getDestinationEnvoi()) && mvtView.getNoCollAdmDestinataireEnvoi() == null) {
 				errors.rejectValue("noCollAdmDestinataireEnvoi", "error.utilisateur.collectivite.vide");
 			}
 		}
