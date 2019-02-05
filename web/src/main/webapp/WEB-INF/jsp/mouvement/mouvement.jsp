@@ -125,6 +125,13 @@
 			<td width="50%" colspan="2">&nbsp;</td>
 		</tr>
 	</table>
+
+		<script>
+			$(function () {
+				//En cas d'erreur on force la selection.
+				selectTypeMouvement($('select#type_mouvement option:selected').val());
+			});
+		</script>
 	</div>
 
 	<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>
