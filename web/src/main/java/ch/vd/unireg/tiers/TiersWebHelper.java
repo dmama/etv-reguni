@@ -46,10 +46,10 @@ public abstract class TiersWebHelper {
 		final boolean fermeOuAnnule = rapport.isAnnule() || rapport.getDateFin() != null;
 
 		if (rapport instanceof ContactImpotSource) {
-			return messageHelper.getMessage("tooltip.rapport.entretiers.contactimpotsource", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.contactimpotsource", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof RepresentationConventionnelle) {
-			return messageHelper.getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof Curatelle) {
 			return messageHelper.getMessage("tooltip.rapport.entretiers.curatelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
@@ -73,7 +73,7 @@ public abstract class TiersWebHelper {
 			return messageHelper.getMessage("tooltip.rapport.entretiers.parente", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
 		}
 		else if (rapport instanceof AssujettissementParSubstitution) {
-			return messageHelper.getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+			return messageHelper.getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
 		}
 		else if (rapport instanceof ActiviteEconomique) {
 			return messageHelper.getMessage("tooltip.rapport.entretiers.activiteeconomique", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, BooleanUtils.toInteger(((ActiviteEconomique) rapport).isPrincipal()));
