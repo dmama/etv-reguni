@@ -131,7 +131,7 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 		                     questionnaire.getPeriode().getAnnee(),
 		                     questionnaire.getNumero(),
 		                     StringUtils.rightPad("Rappel QSNC", 19, ' '),
-		                     new SimpleDateFormat("MMddHHmmssSSS").format(questionnaire.getLogCreationDate()));
+		                     new SimpleDateFormat("MMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 	}
 
 	public void setMessageHelper(MessageHelper messageHelper) {
