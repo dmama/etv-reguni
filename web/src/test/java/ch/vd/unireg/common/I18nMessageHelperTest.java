@@ -42,7 +42,6 @@ import ch.vd.unireg.tiers.Tutelle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class I18nMessageHelperTest extends WebTest {
 	private MessageHelper messageHelper;
@@ -67,269 +66,178 @@ public class I18nMessageHelperTest extends WebTest {
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeContactImpotSource() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(ContactImpotSource.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.contactimpotsource", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+
+		final RapportEntreTiers rapportMock = Mockito.mock(ContactImpotSource.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.contactimpotsource", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeRepresentationConventionnelle() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(RepresentationConventionnelle.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(RepresentationConventionnelle.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.representationconventionnelle", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeCuratelle() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(Curatelle.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.curatelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(Curatelle.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.curatelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeConseilLegal() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(ConseilLegal.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.conseillegal", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(ConseilLegal.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.conseillegal", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeTutelle() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(Tutelle.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.tutelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(Tutelle.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.tutelle", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeAnnuleEtRemplace() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(AnnuleEtRemplace.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.annuleetremplace", nomObjet, objetId, BooleanUtils.toInteger(fermeOuAnnule), nomSujet, sujetId);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(AnnuleEtRemplace.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.annuleetremplace", nomObjet, objetId, BooleanUtils.toInteger(fermeOuAnnule), nomSujet, sujetId);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeAppartenanceMenage() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(AppartenanceMenage.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.appartenancemenage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(AppartenanceMenage.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.appartenancemenage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeRapportPrestationImposable() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(RapportPrestationImposable.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.rapportprestationimposable", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(RapportPrestationImposable.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.rapportprestationimposable", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeParente() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(Parente.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.parente", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(Parente.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.parente", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeAssujettissementParSubstitution() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(AssujettissementParSubstitution.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(AssujettissementParSubstitution.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.assujettissementparsubstitution", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeActiviteEconomique() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(ActiviteEconomique.class);
-			Mockito.when(((ActiviteEconomique) rapportMock).isPrincipal()).thenReturn(Boolean.TRUE);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.activiteeconomique", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, BooleanUtils.toInteger(((ActiviteEconomique) rapportMock).isPrincipal()));
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(ActiviteEconomique.class);
+		Mockito.when(((ActiviteEconomique) rapportMock).isPrincipal()).thenReturn(Boolean.TRUE);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.activiteeconomique", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, BooleanUtils.toInteger(((ActiviteEconomique) rapportMock).isPrincipal()));
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeMandat() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(Mandat.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.mandat", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(Mandat.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.mandat", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeFusionEntreprises() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(FusionEntreprises.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.fusionentreprises", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+
+		final RapportEntreTiers rapportMock = Mockito.mock(FusionEntreprises.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.fusionentreprises", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeScissionEntreprise() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(ScissionEntreprise.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.scissionentreprise", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(ScissionEntreprise.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.scissionentreprise", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeTransfertPatrimoine() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(TransfertPatrimoine.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.transfertpatrimoine", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(TransfertPatrimoine.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.transfertpatrimoine", nomSujet, sujetId, BooleanUtils.toInteger(fermeOuAnnule), nomObjet, objetId);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeAdministrationEntreprise() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(AdministrationEntreprise.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.administrationentreprise", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+
+		final RapportEntreTiers rapportMock = Mockito.mock(AdministrationEntreprise.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.administrationentreprise", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeSocieteDirection() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(SocieteDirection.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.societedirection", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(SocieteDirection.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.societedirection", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeHeritage() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(Heritage.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.heritage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+
+		final RapportEntreTiers rapportMock = Mockito.mock(Heritage.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.heritage", nomSujet, BooleanUtils.toInteger(fermeOuAnnule), nomObjet);
+		assertEquals(tooltip, message);
 	}
 
 	@Test
 	public void testPresenceCleMessageTooltipRapportEntretiersDeTypeLienAssociesEtSNC() throws Exception {
-		try {
-			final RapportEntreTiers rapportMock = Mockito.mock(LienAssociesEtSNC.class);
-			final String tooltip = getRapportEntreTiersTooltips(rapportMock);
-			final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
-			final String message = messageHelper.getMessage("tooltip.rapport.entretiers.lienassociesetsnc", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
-			assertEquals(tooltip, message);
-		}
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
+		final RapportEntreTiers rapportMock = Mockito.mock(LienAssociesEtSNC.class);
+		final String tooltip = getRapportEntreTiersTooltips(rapportMock);
+		final boolean fermeOuAnnule = rapportMock.isAnnule() || rapportMock.getDateFin() != null;
+		final String message = messageHelper.getMessage("tooltip.rapport.entretiers.lienassociesetsnc", nomObjet, BooleanUtils.toInteger(fermeOuAnnule), nomSujet);
+		assertEquals(tooltip, message);
 	}
 
 	private String getRapportEntreTiersTooltips(RapportEntreTiers rapport) throws AdresseException {
