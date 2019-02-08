@@ -13,21 +13,17 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesEtSNCException;
 import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCService;
 import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCServiceImpl;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.message.MessageHelper;
-import ch.vd.unireg.tiers.AutreCommunaute;
-import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
-import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.GenreImpot;
@@ -59,41 +55,28 @@ public class LienAssociesSNCServiceTest {
 	 * Vérifie qu'un établissement ne peut pas servir de sujet (associé), pour les rapports entre tiers Associé - SNC .
 	 */
 	@Test
-	public void testIsAllowedAssociateTypeNonAcceptableDebiteurIS() throws Exception {
-		final DebiteurPrestationImposable objet = getDebiteurIS();
-		final DebiteurPrestationImposable sujet = getDebiteurIS();
+	public void testIsAllowedSujetTypeNonAcceptable() {
 		try {
-			service.isAllowed(sujet, objet, null);
+			service.isAllowed(getDebiteurIS(), getDebiteurIS(), null);
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_associe." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
-	public void testIsAllowedAssociateTypeNonAcceptableCollectiviteAdministrative() throws Exception {
-		final Etablissement objet = getEtablissement();
-		final CollectiviteAdministrative sujet = getCollectiviteAdministrative();
+	public void testIsAllowedObjetTypeNonAcceptableDIS() {
 		try {
-			service.isAllowed(sujet, objet, null);
+			service.isAllowed(getEtablissement(), getDebiteurIS(), null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_associe." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
 		}
-	}
-
-	@Test
-	public void testIsAllowedAssociateTypeNonAcceptableAutreCommunaute() throws Exception {
-		final Etablissement objet = getEtablissement();
-		final AutreCommunaute sujet = getAutreCommunaute();
-		try {
-			service.isAllowed(sujet, objet, null);
-		}
-		catch (LienAssociesEtSNCException ex) {
-			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_associe." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -109,7 +92,9 @@ public class LienAssociesSNCServiceTest {
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -118,7 +103,7 @@ public class LienAssociesSNCServiceTest {
 	 * Vérifie qu'une PM non SNC, n'est pas autorisée, pour les rapports associé - SNC .
 	 */
 	@Test
-	public void testIsAllowedObjetNonSNC() throws Exception {
+	public void testIsAllowedObjetNonSNC() {
 		final Entreprise objet = new Entreprise();
 		objet.setNumero(1234L);
 		final ForFiscalPrincipal dernierForSnc = getForFiscalPrincipal(GenreImpot.SUCCESSION);
@@ -130,81 +115,17 @@ public class LienAssociesSNCServiceTest {
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
 		}
 	}
-
-	/**
-	 * Vérifie qu'un PP <--> PP  ne sont  pas autorisée, pour les rapports associé - SNC .
-	 */
-	@Test
-	public void testIsAllowedObjetNonSNC_PP() throws Exception {
-		final PersonnePhysique objet = getPersonnePhysique();
-		final PersonnePhysique sujet = getPersonnePhysique();
-		try {
-			service.isAllowed(sujet, objet, null);
-		}
-		catch (LienAssociesEtSNCException ex) {
-			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
-		}
-	}
-
-	/**
-	 * Vérifie qu'un PP <--> MenageComun  ne sont  pas autorisée, pour les rapports associé - SNC .
-	 */
-	@Test
-	public void testIsAllowedObjetNonSNC_MenageCommun() throws Exception {
-		final MenageCommun objet = getMenageCommun();
-		final PersonnePhysique sujet = getPersonnePhysique();
-		try {
-			service.isAllowed(sujet, objet, null);
-		}
-		catch (LienAssociesEtSNCException ex) {
-			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
-		}
-	}
-
-
-	/**
-	 * Vérifie qu'un PP <--> AutreCommunaute  ne sont  pas autorisée, pour les rapports associé - SNC .
-	 */
-	@Test
-	public void testIsAllowedObjetNonSNC_AutreCommunaute() throws Exception {
-		final AutreCommunaute objet = getAutreCommunaute();
-		final PersonnePhysique sujet = getPersonnePhysique();
-		try {
-			service.isAllowed(sujet, objet, null);
-		}
-		catch (LienAssociesEtSNCException ex) {
-			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
-		}
-	}
-
-	/**
-	 * Vérifie qu'un PP <--> CollectiviteAdministrative  ne sont  pas autorisée, pour les rapports associé - SNC .
-	 */
-	@Test
-	public void testIsAllowedObjetNonSNC_CollectiviteAdministrative() throws Exception {
-		final CollectiviteAdministrative objet = getCollectiviteAdministrative();
-		final PersonnePhysique sujet = getPersonnePhysique();
-		try {
-			service.isAllowed(sujet, objet, null);
-		}
-		catch (LienAssociesEtSNCException ex) {
-			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
-			Assert.assertEquals(ex.getMessage(), messageHelper.getMessage("error.mauvais_type_snc." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
-		}
-	}
-
 
 	/**
 	 * Vérifie qu'on ne peut pas insérer de doublon de rapports entre tiers.
 	 */
 	@Test
-	public void testIsAllowedExistRapport() throws Exception {
+	public void testIsAllowedExistRapport() {
 		final Entreprise objet = new Entreprise();
 		objet.setNumero(1234L);
 		final ForFiscalPrincipal dernierForSnc = getForFiscalPrincipal(GenreImpot.REVENU_FORTUNE);
@@ -217,20 +138,28 @@ public class LienAssociesSNCServiceTest {
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN);
 		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	/**
 	 * Vérifie la création d'un rapport entre une Entreprise  et une PP.
 	 */
 	@Test
-	public void testIsAllowedPP() throws Exception {
+	public void testIsAllowedPP() {
 		final Entreprise objet = new Entreprise();
 		objet.setNumero(1234L);
 		final ForFiscalPrincipal dernierForSnc = getForFiscalPrincipal(GenreImpot.REVENU_FORTUNE);
 		objet.addForFiscal(dernierForSnc);
 		final PersonnePhysique sujet = getPersonnePhysique();
 		Mockito.when(tiersService.existRapportEntreTiers(Mockito.any(TypeRapportEntreTiers.class), Mockito.any(Contribuable.class), Mockito.any(Contribuable.class), Mockito.any(RegDate.class))).thenReturn(Boolean.FALSE);
-		Assert.assertTrue(service.isAllowed(sujet, objet, date(2018, 12, 31)));
+		try {
+			Assert.assertTrue(service.isAllowed(sujet, objet, date(2018, 12, 31)));
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
 
 	}
 
@@ -238,14 +167,20 @@ public class LienAssociesSNCServiceTest {
 	 * Vérifie la création d'un rapport entre une Entreprise  et une PM.
 	 */
 	@Test
-	public void testIsAllowedPM() throws Exception {
+	public void testIsAllowedPM() {
 		final Entreprise objet = new Entreprise();
 		objet.setNumero(1234L);
 		final ForFiscalPrincipal dernierForSnc = getForFiscalPrincipal(GenreImpot.REVENU_FORTUNE);
 		objet.addForFiscal(dernierForSnc);
 		final Entreprise sujet = new Entreprise();
 		Mockito.when(tiersService.existRapportEntreTiers(Mockito.any(TypeRapportEntreTiers.class), Mockito.any(Contribuable.class), Mockito.any(Contribuable.class), Mockito.any(RegDate.class))).thenReturn(Boolean.FALSE);
-		Assert.assertTrue(service.isAllowed(sujet, objet, date(2018, 12, 31)));
+		try {
+			Assert.assertTrue(service.isAllowed(sujet, objet, date(2018, 12, 31)));
+		}
+		catch (LienAssociesEtSNCException e) {
+			Assert.fail(e.getMessage());
+		}
+
 	}
 
 	@NotNull
@@ -263,27 +198,6 @@ public class LienAssociesSNCServiceTest {
 	@NotNull
 	private PersonnePhysique getPersonnePhysique() {
 		final PersonnePhysique sujet = new PersonnePhysique();
-		sujet.setNumero(5678L);
-		return sujet;
-	}
-
-	@NotNull
-	private MenageCommun getMenageCommun() {
-		final MenageCommun sujet = new MenageCommun();
-		sujet.setNumero(5678L);
-		return sujet;
-	}
-
-	@NotNull
-	private AutreCommunaute getAutreCommunaute() {
-		final AutreCommunaute sujet = new AutreCommunaute();
-		sujet.setNumero(5678L);
-		return sujet;
-	}
-
-	@NotNull
-	private CollectiviteAdministrative getCollectiviteAdministrative() {
-		final CollectiviteAdministrative sujet = new CollectiviteAdministrative();
 		sujet.setNumero(5678L);
 		return sujet;
 	}
