@@ -151,10 +151,10 @@ public abstract class Demenagement extends EvenementEntrepriseInterneDeTraitemen
 			throw new IllegalArgumentException();
 		}
 
-		if (getEtablissementPrincipalAvant().getNumeroEtablissement() == null) {
+		if (getEtablissementPrincipalAvant() != null && getEtablissementPrincipalAvant().getNumeroEtablissement() == null) {
 			throw new IllegalArgumentException("L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
 		}
-		if (getEtablissementPrincipalApres().getNumeroEtablissement() == null) {
+		if (getEtablissementPrincipalApres() != null && getEtablissementPrincipalApres().getNumeroEtablissement() == null) {
 			throw new IllegalArgumentException("L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
 		}
 
@@ -164,7 +164,7 @@ public abstract class Demenagement extends EvenementEntrepriseInterneDeTraitemen
 		}
 
 		// Si on n'a pas d'établissement principal après, c'est qu'on ne l'a pas trouvé en recherchant avec le numéro d'établissement civil principal après, donc ce dernier est nouveau.
-		if (!getEtablissementPrincipalAvant().getNumeroEtablissement().equals(etablissementCivilPrincipalApres.getNumeroEtablissement())) {
+		if (getEtablissementPrincipalAvant() != null && !getEtablissementPrincipalAvant().getNumeroEtablissement().equals(etablissementCivilPrincipalApres.getNumeroEtablissement())) {
 			erreurs.addErreur("Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
 		}
 	}
