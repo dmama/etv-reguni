@@ -152,6 +152,10 @@ public class TiersView {
 
 	private boolean civilSousControleACI;
 
+	private boolean bouclementsRenseignes;
+
+	private boolean dateDebutPremierExerciceRenseignee;
+
 	public boolean isPmOuEtablissement() {
 		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
 	}
@@ -389,6 +393,9 @@ public class TiersView {
 	}
 
 	public RegDate getDateDebutPremierExerciceCommercial() {
+		if (!dateDebutPremierExerciceRenseignee) {
+			return null;
+		}
 		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
 			return exercicesCommerciaux.get(0).getDateDebut();
 		}
@@ -770,4 +777,27 @@ public class TiersView {
 	public void setCommunesImmeubles(List<CommuneView> communesImmeubles) {
 		this.communesImmeubles = communesImmeubles;
 	}
+
+
+
+	public void setBouclementsRenseignes(boolean bouclementsRenseignes) {
+		this.bouclementsRenseignes = bouclementsRenseignes;
+	}
+
+	public boolean isBouclementsRenseignes() {
+		return bouclementsRenseignes;
+	}
+
+	public boolean isDateDebutPremierExerciceRenseignee() {
+		return dateDebutPremierExerciceRenseignee;
+	}
+
+	public void setDateDebutPremierExerciceRenseignee(boolean dateDebutPremierExerciceRenseignee) {
+		this.dateDebutPremierExerciceRenseignee = dateDebutPremierExerciceRenseignee;
+	}
+
+	public boolean isSansInformationsDeBouclements(){
+		return !bouclementsRenseignes && !dateDebutPremierExerciceRenseignee;
+	}
+
 }

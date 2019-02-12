@@ -17,28 +17,48 @@
 	</c:if>
 	<fieldset>
 		<legend><span><fmt:message key="label.bouclements"/></span></legend>
-		<c:if test="${not empty command.exercicesCommerciaux}">
+		<%--<!-- <c:if test="${not empty command.exercicesCommerciaux}"> -->--%>
 			<table>
 				<unireg:nextRowClass reset="1"/>
 				<tr class="<unireg:nextRowClass/>">
 					<td width="25%"><fmt:message key="label.date.debut.premier.exercice.commercial"/>&nbsp;:</td>
-					<td><unireg:regdate regdate="${command.dateDebutPremierExerciceCommercial}"/></td>
+                    <td>
+                    <c:choose>
+                        <c:when test="${!command.dateDebutPremierExerciceRenseignee}">
+                            <span style="font-style: italic;"><fmt:message key="label.bouclements.non.renseigne"/></span>
+                        </c:when>
+                        <c:otherwise>
+                            <unireg:regdate regdate="${command.dateDebutPremierExerciceCommercial}"/>
+                        </c:otherwise>
+                    </c:choose>
+					</td>
 				</tr>
 				<c:set var="exerciceCommercialCourant" value="${command.exerciceCommercialCourant}"/>
 				<tr class="<unireg:nextRowClass/>">
 					<td><fmt:message key="label.date.bouclement.futur"/>&nbsp;:</td>
-					<td>
-						<c:choose>
-							<c:when test="${exerciceCommercialCourant != null}">
-								<unireg:regdate regdate="${exerciceCommercialCourant.dateFin}"/>
-							</c:when>
-							<c:otherwise>
-								<span style="font-style: italic;"><fmt:message key="label.aucune.date.connue"/></span>
-							</c:otherwise>
-						</c:choose>
-						&nbsp;
-						<unireg:raccourciDetail tooltip="Détails des exercices commerciaux" onClick="ExercicesCommerciaux.openList(${entreprise.id});"/>
-					</td>
+                    <c:choose>
+                        <c:when test="${!command.bouclementsRenseignes}">
+                            <td>
+                                <span style="font-style: italic;"><fmt:message key="label.bouclements.non.renseigne"/></span>
+                            </td>
+                        </c:when>
+                        <c:otherwise>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${exerciceCommercialCourant != null}">
+                                        <unireg:regdate regdate="${exerciceCommercialCourant.dateFin}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span style="font-style: italic;"><fmt:message key="label.aucune.date.connue"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                                &nbsp;
+                                <unireg:raccourciDetail tooltip="Détails des exercices commerciaux" onClick="ExercicesCommerciaux.openList(${entreprise.id});"/>
+                            </td>
+                        </c:otherwise>
+                    </c:choose>
+
+
 				</tr>
 			</table>
 
@@ -91,7 +111,6 @@
 					}
 				};
 			</script>
-		</c:if>
 	</fieldset>
 </c:if>
 <!-- Fin bouclements -->

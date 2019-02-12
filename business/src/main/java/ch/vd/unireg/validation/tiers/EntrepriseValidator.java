@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -319,6 +320,20 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		if (entreprise.getBouclements() != null) {
 			for (Bouclement bouclement : entreprise.getBouclements()) {
 				vr.merge(getValidationService().validate(bouclement));
+			}
+		}
+
+		vr.merge(validatePresenceBouclements(entreprise));
+		return vr;
+	}
+
+	protected ValidationResults validatePresenceBouclements(Entreprise entreprise){
+		final ValidationResults vr = new ValidationResults();
+		//Existence d'au moins un for fiscal vaudois
+		final ForFiscalPrincipalPM forVaudois = entreprise.getDernierForFiscalPrincipalVaudois();
+		if (forVaudois !=null) {
+			if (CollectionUtils.isEmpty(entreprise.getBouclements())) {
+				vr.addWarning("Aucune information de bouclement n'est renseignée pour cette entreprise malgré la présence de fors fiscaux. Veuillez renseigner les informations manquantes.");
 			}
 		}
 		return vr;
