@@ -122,10 +122,7 @@ public class ExerciceCommercialController {
 	
 	
 	private List<ExerciceCommercialView> getViewExercicesCommerciaux(Entreprise entreprise, boolean reversed) {
-		if (!entreprise.hasDateDebutPremierExercice() || entreprise.hasBouclements()) {
 
-		}
-		
 		return getViewExercicesCommerciauxCalculees(entreprise, reversed);
 	}
 	

@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.tiers.AllegementFiscal;
 import ch.vd.unireg.tiers.AllegementFiscalCanton;
@@ -20,7 +22,9 @@ import ch.vd.unireg.tiers.MontantMonetaire;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeFlagEntreprise;
 import ch.vd.unireg.validation.AbstractValidatorTest;
 
@@ -410,5 +414,34 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());      // ok, ce n'est pas valide, mais au moins cela n'explose plus...
+	}
+
+	//[SIFISC-30422] Une entreprise sans information de bouclement en base doit lever un warning
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAbsencesBouclements() throws Exception {
+
+		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+
+		//Pas de warning
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasWarnings());
+
+		}
+		addRegimeFiscalVD(entreprise,date(2015,1,1),null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise,date(2015,1,1),null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+		addForPrincipal(entreprise,date(2015,1,1), MotifFor.DEBUT_EXPLOITATION,null,null, MockCommune.Aubonne, GenreImpot.BENEFICE_CAPITAL);
+
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertTrue(vr.hasWarnings());
+			Assert.assertEquals(1, vr.warningsCount());
+
+			final List<String> errors = vr.getWarnings();
+			Assert.assertEquals("Aucune information de bouclement n'est renseignée pour cette entreprise malgré la présence de fors fiscaux. Veuillez renseigner les informations manquantes.",
+					errors.get(0));
+		}
 	}
 }
