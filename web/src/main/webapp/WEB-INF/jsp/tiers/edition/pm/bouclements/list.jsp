@@ -16,7 +16,7 @@
 						<c:choose>
 							<c:when test="${ex.first}">
 								<form:form action="change-date-debut.do" commandName="command" method="post">
-									<unireg:regdate regdate="${ex.dateDebut}"/>
+									<unireg:regdate regdate="${ex.dateDebut}" defaultValue="A renseigner"/>
 									&nbsp;
 									<c:set var="idbase">
 										<unireg:regdate regdate="${ex.dateDebut}" format="yyyyMMdd"/>
@@ -38,7 +38,7 @@
 								</form:form>
 							</c:when>
 							<c:otherwise>
-								<unireg:regdate regdate="${ex.dateDebut}"/>
+								<unireg:regdate regdate="${ex.dateDebut}" defaultValue="calculé à partir de la date de début d'exercice qui est à renseigner"/>
 							</c:otherwise>
 						</c:choose>
 						<c:if test="${ex.first}">
@@ -48,7 +48,7 @@
 						<c:choose>
 							<c:when test="${!ex.withDI && !ex.tooOldToHaveDI}">
 								<form:form action="change-date-fin.do" commandName="command" method="post">
-									<unireg:regdate regdate="${ex.dateFin}"/>
+									<unireg:regdate regdate="${ex.dateFin}" defaultValue="A renseigner"/>
 									&nbsp;
 									<c:set var="idbase">
 										<unireg:regdate regdate="${ex.dateFin}" format="yyyyMMdd"/>

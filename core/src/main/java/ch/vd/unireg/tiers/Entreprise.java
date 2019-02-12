@@ -539,4 +539,14 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return dernierForSnc != null && dernierForSnc.getGenreImpot() == GenreImpot.REVENU_FORTUNE;
 	}
 
+	@Transient
+	public boolean hasBouclements(){
+		return bouclements !=null && !AnnulableHelper.sansElementsAnnules(bouclements).isEmpty();
+	}
+
+	@Transient
+	public boolean hasDateDebutPremierExercice(){
+		return dateDebutPremierExerciceCommercial!=null;
+	};
+
 }

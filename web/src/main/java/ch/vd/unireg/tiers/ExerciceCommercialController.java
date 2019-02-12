@@ -119,7 +119,19 @@ public class ExerciceCommercialController {
 		return entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
 	}
 
+	
+	
 	private List<ExerciceCommercialView> getViewExercicesCommerciaux(Entreprise entreprise, boolean reversed) {
+		if (!entreprise.hasDateDebutPremierExercice() || entreprise.hasBouclements()) {
+
+		}
+		
+		return getViewExercicesCommerciauxCalculees(entreprise, reversed);
+	}
+	
+
+	@NotNull
+	private List<ExerciceCommercialView> getViewExercicesCommerciauxCalculees(Entreprise entreprise, boolean reversed) {
 		final List<DeclarationImpotOrdinairePM> dis = getDeclarationsNonAnnuleesTriees(entreprise);
 		final List<ExerciceCommercial> liste = exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		final List<ExerciceCommercialView> views = new ArrayList<>(liste.size());
@@ -127,7 +139,7 @@ public class ExerciceCommercialController {
 		for (ExerciceCommercial exercice : liste) {
 			final boolean tooOldToHaveDI = exercice.getDateFin().year() < parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
 			final boolean withDI = !tooOldToHaveDI && DateRangeHelper.intersect(exercice, dis);
-			views.add(new ExerciceCommercialView(exercice, first, withDI, tooOldToHaveDI));
+			views.add(new ExerciceCommercialView(exercice, first, withDI, tooOldToHaveDI, entreprise.hasDateDebutPremierExercice(), entreprise.hasBouclements()));
 			first = false;
 		}
 
@@ -137,6 +149,7 @@ public class ExerciceCommercialController {
 		}
 		return views;
 	}
+
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
@@ -152,9 +165,10 @@ public class ExerciceCommercialController {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + pmId);
 		}
 
-		final List<ExerciceCommercialView> viewExercicesCommerciaux = getViewExercicesCommerciaux((Entreprise) tiers, true);
+		final Entreprise entreprise = (Entreprise) tiers;
+		final List<ExerciceCommercialView> viewExercicesCommerciaux = getViewExercicesCommerciaux(entreprise, true);
 
-		model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux));
+		model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux, entreprise));
 		model.addAttribute("exercices", viewExercicesCommerciaux);
 		model.addAttribute("command", new ChangeDateExerciceCommercialView(pmId));
 		model.addAttribute("mode", "no-edit");
@@ -179,7 +193,7 @@ public class ExerciceCommercialController {
 		if (bindingResult.hasErrors()) {
 			final List<ExerciceCommercialView> viewExercicesCommerciaux = getViewExercicesCommerciaux(entreprise, true);
 			model.addAttribute("exercices", viewExercicesCommerciaux);
-			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux));
+			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux,entreprise));
 			model.addAttribute("command", view);
 			model.addAttribute("mode", "add-dd");
 			return "tiers/edition/pm/bouclements/list";
@@ -192,7 +206,8 @@ public class ExerciceCommercialController {
 		final List<ExerciceCommercial> anciensExercicesCommerciaux = tiersService.getExercicesCommerciaux(entreprise);
 		ExerciceCommercial premierExerciceCommercial = anciensExercicesCommerciaux.get(0);
 		RegDate anciennePremiereDateDebutExerciceCommercial = null;
-		if (premierExerciceCommercial != null) {
+		//SIFISC-30422 on a une date de début d'exercice renseigné on active le contrôle
+		if (premierExerciceCommercial != null && entreprise.hasDateDebutPremierExercice()) {
 			anciennePremiereDateDebutExerciceCommercial = premierExerciceCommercial.getDateDebut();
 			if (view.getNouvelleDate().isAfterOrEqual(premierExerciceCommercial.getDateDebut())) {
 				throw new ActionException(String.format("La nouvelle date de début (%s) doit être inférieure à celle du premier exercice commercial.",
@@ -225,7 +240,7 @@ public class ExerciceCommercialController {
 		BouclementHelper.resetBouclements(entreprise, nouveauxBouclements);
 
 		// 5. contrôle final des dates de bouclements
-		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement);
+		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement, entreprise);
 
 		// forçons une validation du tout
 		hibernateTemplate.flush();
@@ -253,7 +268,7 @@ public class ExerciceCommercialController {
 		if (bindingResult.hasErrors()) {
 			final List<ExerciceCommercialView> viewExercicesCommerciaux = getViewExercicesCommerciaux(entreprise, true);
 			model.addAttribute("exercices", viewExercicesCommerciaux);
-			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux));
+			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux,entreprise));
 			model.addAttribute("command", view);
 			model.addAttribute("mode", "edit-dd");
 			return "tiers/edition/pm/bouclements/list";
@@ -266,11 +281,12 @@ public class ExerciceCommercialController {
 		}
 
 		// la date de début du premier exercice commercial ne doit pas s'écarter trop de la date de fin de l'exercice
-		// (comme c'est le premier, on accorde un peu plus...)
+		// (comme c'est le premier, on accorde un peu plus...) N'est valable que si une date de début de premièpre exercice est
+		//renseignée
 		final List<ExerciceCommercial> anciensExercicesCommerciaux = tiersService.getExercicesCommerciaux(entreprise);
 		final int anneePremierBouclement = anciensExercicesCommerciaux.get(0).getDateFin().year();
-		if (anneePremierBouclement - view.getNouvelleDate().year() > 1) {
-			throw new ActionException(String.format("Impossible de déplacer la date de début du premier exercice commercial du %s au %s car celui-ci s'étendrait alors sur plus de deux années civiles.",
+		if (entreprise.hasDateDebutPremierExercice() &&  anneePremierBouclement - view.getNouvelleDate().year() > 1) {
+			throw new ActionException(String.format("Impossible de modifier ou d'ajouter la date de début du premier exercice commercial du %s au %s car celui-ci s'étendrait alors sur plus de deux années civiles.",
 			                                        RegDateHelper.dateToDisplayString(view.getAncienneDate()),
 			                                        RegDateHelper.dateToDisplayString(view.getNouvelleDate())));
 		}
@@ -304,7 +320,7 @@ public class ExerciceCommercialController {
 		if (bindingResult.hasErrors()) {
 			final List<ExerciceCommercialView> viewExercicesCommerciaux = getViewExercicesCommerciaux(entreprise, true);
 			model.addAttribute("exercices", viewExercicesCommerciaux);
-			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux));
+			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux,entreprise));
 			model.addAttribute("command", view);
 			model.addAttribute("mode", "edit-df");
 			model.addAttribute("mode_edit_df", view.getAncienneDate().index());
@@ -354,7 +370,7 @@ public class ExerciceCommercialController {
 		BouclementHelper.resetBouclements(entreprise, nouveauxBouclements);
 
 		// 5. contrôle final des dates de bouclements
-		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement);
+		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement, entreprise);
 
 
 		// forçons une validation du tout
@@ -365,7 +381,11 @@ public class ExerciceCommercialController {
 		return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
 	}
 
-	private boolean isDateDebutAjoutable(List<ExerciceCommercialView> viewExercicesCommerciaux) {
+	private boolean isDateDebutAjoutable(List<ExerciceCommercialView> viewExercicesCommerciaux,Entreprise entreprise) {
+
+		if (!entreprise.hasDateDebutPremierExercice()) {
+			return true;
+		}
 		boolean dateDebutAjoutable = false;
 		if (!viewExercicesCommerciaux.isEmpty()) {
 			dateDebutAjoutable = true;
@@ -373,7 +393,7 @@ public class ExerciceCommercialController {
 			// On ne peut pas ajouter une nouvelle date de début d'exercice commercial
 			// s'il n'existe pas au moins une date de bouclement par année civile
 			ExerciceCommercialView premierEC = viewExercicesCommerciaux.get(viewExercicesCommerciaux.size()-1);
-			if (premierEC.getDateDebut().getOneDayBefore().year() < premierEC.getDateFin().year() - 1) {
+			if (premierEC.getDateFin()!=null && premierEC.getDateDebut().getOneDayBefore().year() < premierEC.getDateFin().year() - 1) {
 				dateDebutAjoutable = false;
 			}
 		}
@@ -381,7 +401,7 @@ public class ExerciceCommercialController {
 	}
 
 	private void controleDatesBouclements(@Valid @ModelAttribute(value = "command") ChangeDateExerciceCommercialView view, List<ExerciceCommercial> anciensExercicesCommerciaux,
-	                                      SortedSet<RegDate> nouvellesDatesBouclement) {
+	                                      SortedSet<RegDate> nouvellesDatesBouclement, Entreprise entreprise) {
 		// contrôle des dates (au moins un bouclement par an sauf potentiellement la première année)
 		// ([SIFISC-18030] ce contrôle n'est effectif qu'à partir de la première année vraiment "unireg" des PM...)
 		final Set<Integer> anneesBouclements = new HashSet<>(nouvellesDatesBouclement.size());
@@ -392,7 +412,7 @@ public class ExerciceCommercialController {
 		final int derniereAnnee = nouvellesDatesBouclement.last().year();
 		final int debutPremierExercice = anciensExercicesCommerciaux.get(0).getDateDebut().year();
 		final int premierePeriodeFiscaleDeclarationsPersonnesMorales = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
-		if (premiereAnnee - debutPremierExercice > 1 && premiereAnnee >= premierePeriodeFiscaleDeclarationsPersonnesMorales) {
+		if (entreprise.hasDateDebutPremierExercice() && premiereAnnee - debutPremierExercice > 1 && premiereAnnee >= premierePeriodeFiscaleDeclarationsPersonnesMorales) {
 			throw new ActionException(String.format("Impossible de déplacer la date de bouclement du %s au %s car alors le premier exercice commercial s'étendrait sur plus de deux années civiles.",
 			                                        RegDateHelper.dateToDisplayString(view.getAncienneDate()),
 			                                        RegDateHelper.dateToDisplayString(view.getNouvelleDate())));

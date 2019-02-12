@@ -12,23 +12,36 @@ public class ExerciceCommercialView implements DateRange {
 	private final boolean first;
 	private final boolean withDI;
 	private final boolean tooOldToHaveDI;
+	private final boolean dateDebutExerciceRenseignee;
+	private final boolean bouclementsRenseignes;
 
-	public ExerciceCommercialView(ExerciceCommercial exercice, boolean first, boolean withDI, boolean tooOldToHaveDI) {
+
+	public ExerciceCommercialView(ExerciceCommercial exercice, boolean first, boolean withDI, boolean tooOldToHaveDI, boolean dateDebutExerciceRenseignee, boolean bouclementsRenseignes) {
 		this.dateDebut = exercice.getDateDebut();
 		this.dateFin = exercice.getDateFin();
 		this.oneYearLong = exercice.getDateDebut().addYears(1).getOneDayBefore() == exercice.getDateFin();
 		this.first = first;
 		this.withDI = withDI;
 		this.tooOldToHaveDI = tooOldToHaveDI;
+		this.dateDebutExerciceRenseignee = dateDebutExerciceRenseignee;
+		this.bouclementsRenseignes = bouclementsRenseignes;
 	}
 
 	@Override
 	public RegDate getDateDebut() {
+		//SIFISC-30339 Si pas de date saisie on n'affiche pas de valeur calculé
+		if (!dateDebutExerciceRenseignee && first) {
+			return null;
+		}
 		return dateDebut;
 	}
 
 	@Override
 	public RegDate getDateFin() {
+		//SIFISC-30339 Si pas de bouclement existant on n'affiche pas de valeur calculé
+		if (!bouclementsRenseignes) {
+			return null;
+		}
 		return dateFin;
 	}
 
@@ -46,5 +59,13 @@ public class ExerciceCommercialView implements DateRange {
 
 	public boolean isTooOldToHaveDI() {
 		return tooOldToHaveDI;
+	}
+
+	public boolean isDateDebutExerciceRenseignee() {
+		return dateDebutExerciceRenseignee;
+	}
+
+	public boolean isBouclementsRenseignes() {
+		return bouclementsRenseignes;
 	}
 }
