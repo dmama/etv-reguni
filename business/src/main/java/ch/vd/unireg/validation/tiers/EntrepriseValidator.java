@@ -37,6 +37,7 @@ import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeFlagEntreprise;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
@@ -329,12 +330,9 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 
 	protected ValidationResults validatePresenceBouclements(Entreprise entreprise){
 		final ValidationResults vr = new ValidationResults();
-		//Existence d'au moins un for fiscal vaudois
-		final ForFiscalPrincipalPM forVaudois = entreprise.getDernierForFiscalPrincipalVaudois();
-		if (forVaudois !=null) {
-			if (CollectionUtils.isEmpty(entreprise.getBouclements())) {
-				vr.addWarning("Aucune information de bouclement n'est renseignée pour cette entreprise malgré la présence de fors fiscaux. Veuillez renseigner les informations manquantes.");
-			}
+		//Existence d'au moins un for fiscal vaudois IBC
+		if (hasForVaudoisIBC(entreprise) && CollectionUtils.isEmpty(entreprise.getBouclements())) {
+			vr.addWarning("Aucune information de bouclement n'est renseignée pour cette entreprise malgré la présence de fors fiscaux. Veuillez renseigner les informations manquantes.");
 		}
 		return vr;
 	}
@@ -411,6 +409,13 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			}
 		}
 		return vr;
+	}
+
+	private boolean hasForVaudoisIBC(Entreprise entreprise){
+		return entreprise.getForsFiscauxNonAnnules(false)
+				.stream()
+				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				.anyMatch(ff->ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL);
 	}
 
 	@Override
