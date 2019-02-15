@@ -23,6 +23,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
@@ -33,6 +34,7 @@ import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.efacture.DocumentEFacture;
 import ch.vd.unireg.efacture.DocumentEFactureDAO;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -464,6 +466,155 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
 				Assert.assertNotNull(delai);
 				Assert.assertEquals("IdentificationDélai", delai.getCleDocument());
+			}
+		});
+	}
+
+
+	@Test
+	public void testReceptionPourRefusDelaiDeclarationPM() throws Exception {
+
+		final RegDate dateDebut = date(2000, 6, 12);
+		final RegDate today = RegDate.get();
+		final RegDate dateEnvoiDocument = today.addMonths(-3);
+		final RegDate delaiRetour = dateEnvoiDocument.addMonths(2);
+		final RegDate dateObtentionNouveauDelai = today;
+		final int anneeDeclaration = 2016;
+
+		// mise en place civile
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
+			@Override
+			protected void init() {
+				// rien ni personne
+			}
+		});
+
+		// mise en place fiscale
+		final long idContribuable = doInNewTransactionAndSession(status -> {
+
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateDebut, null, "Tralala SARL");
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay);
+
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDeclaration);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(anneeDeclaration, 1, 1), date(anneeDeclaration, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, dateEnvoiDocument);
+			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);      // délai initial
+			addDelaiDeclaration(di, dateObtentionNouveauDelai, delaiRetour.addMonths(1), EtatDelaiDocumentFiscal.ACCORDE);     // nouveau délai
+
+			return entreprise.getNumero();
+		});
+
+		// vérification que la clé de visualisation externe du document est vide et récupération de l'identifiant du délai
+		final long idDelai = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idContribuable);
+			Assert.assertNotNull(entreprise);
+
+			final DelaiDeclaration dernierDelai = entreprise.getDeclarations().stream()
+					.map(Declaration::getDelaisDeclaration)
+					.flatMap(Collection::stream)
+					.max(Comparator.comparing(DelaiDeclaration::getDelaiAccordeAu))
+					.orElse(null);
+
+			Assert.assertNotNull(dernierDelai);
+			Assert.assertNull(dernierDelai.getCleDocument());
+			return dernierDelai.getId();
+		});
+
+		// génération du Refus
+		final Quittance quittance = buildQuittance("IdentificationRefusDélai", idContribuable, TypeDocumentEditique.REFUS_DELAI_PM, "Une clé d'archivage");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.REFUS_DELAI_PM, String.valueOf(idDelai)));
+			}
+		});
+
+		// vérification du résultat en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+				Assert.assertNotNull(delai);
+				Assert.assertEquals("IdentificationRefusDélai", delai.getCleDocument());
+			}
+		});
+	}
+
+
+	@Test
+	public void testReceptionPourRefusDelaiDeclarationPP() throws Exception {
+
+		final RegDate dateDebut = date(2000, 6, 12);
+		final RegDate today = RegDate.get();
+		final RegDate dateEnvoiDocument = today.addMonths(-3);
+		final RegDate delaiRetour = dateEnvoiDocument.addMonths(2);
+		final RegDate dateObtentionNouveauDelai = today;
+		final int anneeDeclaration = 2016;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// rien ni personne
+			}
+		});
+
+		// mise en place fiscale
+		final long idContribuable = doInNewTransactionAndSession(status -> {
+
+			final PersonnePhysique nestor = addNonHabitant("Nestor","Burma",date(1980,1,5),Sexe.MASCULIN);
+			addForPrincipal(nestor, dateDebut, MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDeclaration);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_COSSONAY.getNoColAdm());
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(nestor, pf, date(anneeDeclaration, 1, 1), date(anneeDeclaration, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, dateEnvoiDocument);
+			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);      // délai initial
+			addDelaiDeclaration(di, dateObtentionNouveauDelai, delaiRetour.addMonths(1), EtatDelaiDocumentFiscal.ACCORDE);     // nouveau délai
+
+			return nestor.getNumero();
+		});
+
+		// vérification que la clé de visualisation externe du document est vide et récupération de l'identifiant du délai
+		final long idDelai = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique nestor = (PersonnePhysique) tiersDAO.get(idContribuable);
+			Assert.assertNotNull(nestor);
+
+			final DelaiDeclaration dernierDelai = nestor.getDeclarations().stream()
+					.map(Declaration::getDelaisDeclaration)
+					.flatMap(Collection::stream)
+					.max(Comparator.comparing(DelaiDeclaration::getDelaiAccordeAu))
+					.orElse(null);
+
+			Assert.assertNotNull(dernierDelai);
+			Assert.assertNull(dernierDelai.getCleDocument());
+			return dernierDelai.getId();
+		});
+
+		// génération du Refus
+		final Quittance quittance = buildQuittance("IdentificationRefusDélai", idContribuable, TypeDocumentEditique.REFUS_DELAI_PP, "Une clé d'archivage");
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.REFUS_DELAI, String.valueOf(idDelai)));
+			}
+		});
+
+		// vérification du résultat en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+				Assert.assertNotNull(delai);
+				Assert.assertEquals("IdentificationRefusDélai", delai.getCleDocument());
 			}
 		});
 	}
