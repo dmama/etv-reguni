@@ -444,4 +444,28 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 					errors.get(0));
 		}
 	}
+
+	//[SIFISC-30422] Par définition les SNC n'ont pas d'information de bouclement, on ne doit pas warner dessus
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAbsencesBouclementsSurSNC() throws Exception {
+
+		final Entreprise maPetiteSNC = addEntrepriseInconnueAuCivil();
+
+		//Pas de warning
+		{
+			final ValidationResults vr = validate(maPetiteSNC);
+			Assert.assertFalse(vr.hasWarnings());
+
+		}
+		addRegimeFiscalVD(maPetiteSNC,date(2015,1,1),null, MockTypeRegimeFiscal.SOCIETE_PERS);
+		addRegimeFiscalCH(maPetiteSNC,date(2015,1,1),null, MockTypeRegimeFiscal.SOCIETE_PERS);
+
+		addForPrincipal(maPetiteSNC,date(2015,1,1), MotifFor.DEBUT_EXPLOITATION,null,null, MockCommune.Aubonne, GenreImpot.REVENU_FORTUNE);
+
+		{
+			final ValidationResults vr = validate(maPetiteSNC);
+			Assert.assertFalse(vr.hasWarnings());
+		}
+	}
 }
