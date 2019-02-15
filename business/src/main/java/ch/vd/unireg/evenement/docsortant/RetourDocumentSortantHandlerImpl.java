@@ -77,7 +77,7 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		final TraitementRetour traitement = typeDocument != null ? traitements.get(typeDocument) : null;
 		if (traitement == null) {
 			// pas de traitement connu... on ne fait rien
-			LOGGER.info("Aucun traitement connu pour la quittance du type de document sortant " + typeDocument);
+			LOGGER.warn("Aucun traitement connu pour la quittance du type de document sortant " + typeDocument);
 		}
 		else {
 
@@ -224,6 +224,7 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		                              TypeDocumentSortant.REFUS_DELAI_PM,
 		                              TypeDocumentSortant.SURSIS,
 		                              TypeDocumentSortant.CONFIRMATION_DELAI,
+		                              TypeDocumentSortant.REFUS_DELAI,
 		                              TypeDocumentSortant.ACCORD_DELAI_QSNC,
 		                              TypeDocumentSortant.REFUS_DELAI_QSNC),
 		                   new TraitementRetourImpl<>(new HibernateEntityFetcherById<>(hibernateTemplate, DelaiDeclaration.class),
