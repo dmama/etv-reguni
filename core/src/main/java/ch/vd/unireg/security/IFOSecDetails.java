@@ -10,7 +10,7 @@ public interface IFOSecDetails {
 
 	void setIfoSecOIDSigle(String ifoSecOIDSigle);
 
-	IfoSecProfil getIfoSecProfil();
+	ProfileOperateur getIfoSecProfil();
 
-	void setIfoSecProfil(IfoSecProfil ifosecProfil);
+	void setIfoSecProfil(ProfileOperateur ifosecProfil);
 }

@@ -11,17 +11,17 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
-import ch.vd.unireg.interfaces.service.host.IfoSecProfilImpl;
+import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.IfoSecProcedure;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
 
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 
 	private final Map<String, Operateur> operatorsByVisa = new HashMap<>();
 	private final Map<Long, Operateur> operatorsByIndividu = new HashMap<>();
-	private final Map<String, IfoSecProfil> profilesOperatorByIndividu = new HashMap<>();
+	private final Map<String, ProfileOperateur> profilesOperatorByIndividu = new HashMap<>();
 
 	public MockServiceSecuriteService() {
 		init();
@@ -40,7 +40,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	@Override
-	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return profilesOperatorByIndividu.get(visaOperateur);
 	}
 
@@ -66,7 +66,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		operatorsByIndividu.put(noIndividuOperateur, o);
 		operatorsByVisa.put(visa, o);
 
-		final IfoSecProfilImpl profile = new IfoSecProfilImpl();
+		final ProfileOperateurImpl profile = new ProfileOperateurImpl();
 		final List<IfoSecProcedure> procedures = new ArrayList<>();
 		if (roles != null) {
 			for (Role r : roles) {

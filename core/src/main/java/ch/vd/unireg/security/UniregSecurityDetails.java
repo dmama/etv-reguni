@@ -11,7 +11,7 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	private String[] iamRoles = null;
 	private String iamFirstName = null;
 	private String iamLastName = null;
-	private IfoSecProfil ifoSecProfil = null;
+	private ProfileOperateur ifoSecProfil = null;
 	private Integer ifoSecOID = null;
 	private String ifoSecOIDSigle = null;
 
@@ -50,12 +50,12 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	}
 
 	@Override
-	public IfoSecProfil getIfoSecProfil() {
+	public ProfileOperateur getIfoSecProfil() {
 		return ifoSecProfil;
 	}
 
 	@Override
-	public void setIfoSecProfil(@Nullable IfoSecProfil ifosecProfil) {
+	public void setIfoSecProfil(@Nullable ProfileOperateur ifosecProfil) {
 		this.ifoSecProfil = ifosecProfil;
 	}
 

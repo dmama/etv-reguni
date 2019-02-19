@@ -35,7 +35,7 @@ public class IfoSecServiceImpl implements IfoSecService {
 
 		// on test les profils normaux
 
-		final IfoSecProfil profile = securiteService.getProfileUtilisateur(visaOperateur, codeCollectivite);
+		final ProfileOperateur profile = securiteService.getProfileUtilisateur(visaOperateur, codeCollectivite);
 		if (profile == null) {
 			// pas de profile, pas de droit
 			return false;

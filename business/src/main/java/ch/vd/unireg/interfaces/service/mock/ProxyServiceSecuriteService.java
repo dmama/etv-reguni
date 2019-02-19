@@ -8,7 +8,7 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 
 public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 
@@ -33,7 +33,7 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	}
 
 	@Override
-	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return target.getProfileUtilisateur(visaOperateur, codeCollectivite);
 	}
 

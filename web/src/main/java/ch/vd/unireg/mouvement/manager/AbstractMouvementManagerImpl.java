@@ -41,7 +41,7 @@ import ch.vd.unireg.mouvement.ReceptionDossierArchives;
 import ch.vd.unireg.mouvement.ReceptionDossierPersonnel;
 import ch.vd.unireg.mouvement.view.ContribuableView;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.tiers.ForGestion;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
@@ -306,7 +306,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			final List<CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
 			if (collectivites != null && collectivites.size() > 0) {
 				final CollectiviteAdministrative collectivite = collectivites.get(0);
-				final IfoSecProfil profileUtilisateur = serviceSecuriteService.getProfileUtilisateur(visaOperateur, collectivite.getNoColAdm());
+				final ProfileOperateur profileUtilisateur = serviceSecuriteService.getProfileUtilisateur(visaOperateur, collectivite.getNoColAdm());
 				if (profileUtilisateur != null && !StringUtils.isBlank(profileUtilisateur.getNoTelephone())) {
 					noTelephone = String.format("%s (%s)", profileUtilisateur.getNoTelephone().trim(), collectivite.getNomCourt());
 				}

@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClient;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
 
@@ -87,10 +87,10 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	}
 
 	@Override
-	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		try {
 			final ProfilOperateur profile = client.getProfileUtilisateur(visaOperateur, codeCollectivite);
-			return IfoSecProfilImpl.get(profile);
+			return ProfileOperateurImpl.get(profile);
 		}
 
 		catch (ServiceSecuriteClientException e) {

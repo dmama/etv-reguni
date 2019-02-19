@@ -79,7 +79,7 @@ import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.mouvement.BordereauMouvementDossier;
 import ch.vd.unireg.mouvement.ImpressionBordereauMouvementDossierHelper;
 import ch.vd.unireg.mouvement.ImpressionBordereauMouvementDossierHelperParams;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Tiers;
@@ -663,7 +663,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final Integer oid = AuthenticationHelper.getCurrentOID();
 		if (visa != null && oid != null) {
-			IfoSecProfil po = serviceSecurite.getProfileUtilisateur(visa, oid);
+			ProfileOperateur po = serviceSecurite.getProfileUtilisateur(visa, oid);
 			if (po != null) {
 				tel = po.getNoTelephone();
 			}

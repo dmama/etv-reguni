@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 
 public interface ServiceSecuriteService {
 
@@ -42,7 +42,7 @@ public interface ServiceSecuriteService {
 	 *            le code de la collectivité administrative.
 	 * @return le profil que possède un opérateur pour une collectivité administrative.
 	 */
-	IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite);
+	ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite);
 
 
 	/**

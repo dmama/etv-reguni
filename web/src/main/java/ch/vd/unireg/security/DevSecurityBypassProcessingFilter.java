@@ -25,7 +25,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
-import ch.vd.unireg.interfaces.service.host.IfoSecProfilImpl;
+import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
@@ -75,7 +75,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 					// Récupération des infos de bypass IFOSec
 					final Integer oid = Integer.valueOf(SecurityDebugConfig.getIfoSecBypassOID());
 					final String oidSigle = SecurityDebugConfig.getIfoSecBypassOIDSigle();
-					final IfoSecProfil profil = getBypassProfil(visa, oid, oidSigle);
+					final ProfileOperateur profil = getBypassProfil(visa, oid, oidSigle);
 					final List<GrantedAuthority> ifoSecGranted = IFOSecProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
 
 					details.setIfoSecOID(oid);
@@ -98,9 +98,9 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
-	private static IfoSecProfil getBypassProfil(String visa, Integer oid, String oidSigle) {
+	private static ProfileOperateur getBypassProfil(String visa, Integer oid, String oidSigle) {
 
-		final IfoSecProfilImpl profil = new IfoSecProfilImpl();
+		final ProfileOperateurImpl profil = new ProfileOperateurImpl();
 		profil.setVisaOperateur(visa);
 
 		// Les procédures

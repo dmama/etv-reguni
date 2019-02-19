@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.security.IfoSecProcedure;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.IfoSecService;
 import ch.vd.unireg.security.Role;
 
@@ -34,7 +34,7 @@ public class InfoIFOSecController {
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final Integer oid = AuthenticationHelper.getCurrentOID();
 
-		final IfoSecProfil profile = serviceSecurite.getProfileUtilisateur(visa, oid);
+		final ProfileOperateur profile = serviceSecurite.getProfileUtilisateur(visa, oid);
 		List<IfoSecProcedure> proceduresUnireg = null;
 		List<Role> rolesIfoSecByPass = null;
 		List<IfoSecProcedure> proceduresAutres = null;
@@ -55,7 +55,7 @@ public class InfoIFOSecController {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<IfoSecProcedure> getProceduresUnireg(IfoSecProfil profile) {
+	private List<IfoSecProcedure> getProceduresUnireg(ProfileOperateur profile) {
 		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate<IfoSecProcedure>() {
 			@Override
 			public boolean evaluate(IfoSecProcedure p) {
@@ -64,14 +64,14 @@ public class InfoIFOSecController {
 		});
 	}
 
-	private List<Role> getProceduresIfoSecByPass(IfoSecProfil profile) {
+	private List<Role> getProceduresIfoSecByPass(ProfileOperateur profile) {
 		final List<Role> list = new ArrayList<>(ifoSecService.getBypass(profile.getVisaOperateur()));
 		Collections.sort(list);
 		return list;
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<IfoSecProcedure> getProceduresAutres(IfoSecProfil profile) {
+	private List<IfoSecProcedure> getProceduresAutres(ProfileOperateur profile) {
 		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate<IfoSecProcedure>() {
 			@Override
 			public boolean evaluate(IfoSecProcedure p) {

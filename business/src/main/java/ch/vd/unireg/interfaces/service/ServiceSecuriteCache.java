@@ -24,7 +24,7 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.IfoSecProcedure;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 
@@ -35,7 +35,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	{
 		final CacheHelper.ValueRendererFactory factory = new CacheHelper.ValueRendererFactory();
 		factory.addSpecificRenderer(CollectiviteAdministrative.class, coladm -> String.format("CollAdm{no=%d}", coladm.getNoColAdm()));
-		factory.addSpecificRenderer(IfoSecProfil.class, profil -> String.format("{%s (%s %s)}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom()));
+		factory.addSpecificRenderer(ProfileOperateur.class, profil -> String.format("{%s (%s %s)}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom()));
 		factory.addSpecificRenderer(Operateur.class, operateur -> String.format("{%s (%s %s)}", operateur.getCode(), operateur.getPrenom(), operateur.getNom()));
 		factory.addSpecificRenderer(IfoSecProcedure.class, IfoSecProcedure::getCode);
 		RENDERER_FACTORY = factory;
@@ -250,8 +250,8 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
-		final IfoSecProfil  resultat;
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+		final ProfileOperateur resultat;
 		final KeyGetProfileUtilisateurVisaOperateurCodeCollectivite key = new KeyGetProfileUtilisateurVisaOperateurCodeCollectivite(visaOperateur, codeCollectivite);
 		final Element element = cache.get(key);
 		if (element == null) {
@@ -261,7 +261,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 			}
 		}
 		else {
-			resultat = (IfoSecProfil) element.getObjectValue();
+			resultat = (ProfileOperateur) element.getObjectValue();
 		}
 
 		return resultat;

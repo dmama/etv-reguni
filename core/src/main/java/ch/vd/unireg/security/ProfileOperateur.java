@@ -2,7 +2,7 @@ package ch.vd.unireg.security;
 
 import java.util.List;
 
-public interface IfoSecProfil {
+public interface ProfileOperateur {
 
 	/**
 	 * @return l'imprimant du profil opérateur.

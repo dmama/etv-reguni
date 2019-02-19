@@ -6,9 +6,9 @@ import java.util.List;
 
 import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.security.IfoSecProcedure;
-import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.ProfileOperateur;
 
-public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
+public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
 	private static final long serialVersionUID = -5988187763961971993L;
 
@@ -20,10 +20,10 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 	private String titre;
 	private String visaOperateur;
 
-	public IfoSecProfilImpl() {
+	public ProfileOperateurImpl() {
 	}
 
-	public IfoSecProfilImpl(ProfilOperateur profile) {
+	public ProfileOperateurImpl(ProfilOperateur profile) {
 		this.imprimante = profile.getImprimante();
 		this.nom = profile.getNom();
 		this.noTelephone = profile.getNoTelephone();
@@ -107,11 +107,11 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 		this.visaOperateur = visaOperateur;
 	}
 
-	public static IfoSecProfil get(ProfilOperateur profile) {
+	public static ProfileOperateur get(ProfilOperateur profile) {
 		if (profile == null) {
 			return null;
 		}
 
-		return new IfoSecProfilImpl(profile);
+		return new ProfileOperateurImpl(profile);
 	}
 }

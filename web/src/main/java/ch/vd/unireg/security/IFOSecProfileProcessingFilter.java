@@ -20,7 +20,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.IfoSecProfilImpl;
+import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 
 /**
  * Ce filtre est utilisé pour récupérer le profile IFOSec de l'utilisateur connecté et le stocker dans le context de sécurité. Il ne fait aucun contrôle d'accès par lui-même.
@@ -45,7 +45,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 			}
 
 			// On peut maintenant renseigner le profile
-			final IfoSecProfil profil = getProfilOperateur(visa, oid);
+			final ProfileOperateur profil = getProfilOperateur(visa, oid);
 			details.setIfoSecProfil(profil);
 
 			// On ajoute les procédures Ifosec autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
@@ -65,7 +65,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	protected static List<GrantedAuthority> getIfoSecGrantedAuthorities(IfoSecProfil profil) {
+	protected static List<GrantedAuthority> getIfoSecGrantedAuthorities(ProfileOperateur profil) {
 
 		final List<GrantedAuthority> granted;
 
@@ -94,14 +94,14 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	 * @param oid  le numéro de l'office d'impôt
 	 * @return le profil de l'opérateur
 	 */
-	private IfoSecProfil getProfilOperateur(String visa, Integer oid) {
-		final IfoSecProfil profil;
+	private ProfileOperateur getProfilOperateur(String visa, Integer oid) {
+		final ProfileOperateur profil;
 		// Récupération des procedures auxquelles a le droit l'opérateur
 		if (oid != null) {
 			profil = serviceSecurite.getProfileUtilisateur(visa, oid);
 		}
 		else {
-			profil = new IfoSecProfilImpl();
+			profil = new ProfileOperateurImpl();
 		}
 		return profil;
 	}
