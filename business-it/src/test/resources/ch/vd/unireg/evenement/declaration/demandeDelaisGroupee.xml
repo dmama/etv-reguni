@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns:demandeDelai xmlns:ns="http://www.vd.ch/fiscalite/dematerialisation/demande-delai/1">
+<ns:demandeDelai xmlns:ns="http://www.vd.ch/fiscalite/dematerialisation/demande-delai/2">
 	<ns:supervision>
 		<ns:horodatageReception>2017-05-29T03:49:45</ns:horodatageReception>
 		<ns:horodatagePublication>2017-05-19T01:18:33</ns:horodatagePublication>

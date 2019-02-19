@@ -40,14 +40,14 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDelaiDeclaration;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Delai;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeDelai;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeGroupee;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeUnitaire;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DonneesMetier;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Mandataire;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Supervision;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Delai;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DemandeDelai;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DemandeGroupee;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DemandeUnitaire;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DonneesMetier;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Mandataire;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.ObjectFactory;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Supervision;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
@@ -140,7 +140,7 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final ClassPathResource resource = new ClassPathResource("event/di/documentDematDemandeDelai-1.xsd");
+			final ClassPathResource resource = new ClassPathResource("event/di/documentDematDemandeDelai-2.xsd");
 			Source source = new StreamSource(resource.getURL().toExternalForm());
 			schemaCache = sf.newSchema(source);
 		}

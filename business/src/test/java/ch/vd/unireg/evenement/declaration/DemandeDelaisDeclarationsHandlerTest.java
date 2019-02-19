@@ -31,14 +31,14 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Delai;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeDelai;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeGroupee;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DemandeUnitaire;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.DonneesMetier;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Mandataire;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Population;
-import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Supervision;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Delai;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DemandeDelai;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DemandeGroupee;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DemandeUnitaire;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DonneesMetier;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Mandataire;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Population;
+import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Supervision;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1079,7 +1079,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		Arrays.stream(delais)
 				.forEach(d -> {
 					final Population population = d.ctbId > Entreprise.LAST_ID ? Population.PP : Population.PM;
-					demandeGroupee.getDelais().add(new Delai(d.ctbId, population, null, XmlUtils.regdate2xmlcal(d.delai), d.codeRefus, null));
+					demandeGroupee.getDelais().add(new Delai(d.ctbId, population, null, XmlUtils.regdate2xmlcal(d.delai), d.codeRefus, null,false));
 				});
 
 		final DonneesMetier donneesMetier = new DonneesMetier();
@@ -1100,7 +1100,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final Population population = ctbId > Entreprise.LAST_ID ? Population.PP : Population.PM;
 
 		final DemandeUnitaire demandeUnitaire = new DemandeUnitaire();
-		demandeUnitaire.setDelai(new Delai(ctbId.intValue(), population, null, calDelai, codeRefus, null));
+		demandeUnitaire.setDelai(new Delai(ctbId.intValue(), population, null, calDelai, codeRefus, null,false));
 
 		final DonneesMetier donneesMetier = new DonneesMetier();
 		donneesMetier.setPeriodeFiscale(periodeFiscale);
