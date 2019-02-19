@@ -2443,22 +2443,22 @@ public interface TiersService {
 	 *
 	 * Exemple d'utilisation: combler le décalage de valeur qui existe entre la date d'inscription au RC et la première photo de
 	 * l'entreprise dans RCEnt.
-	 *
-	 * @param entreprise L'entreprise concernée
+	 *  @param entreprise L'entreprise concernée
 	 * @param range La période pour laquelle les valeurs civiles doivent être surchargées. La période doit avoir une date de fin.
 	 * @param dateValeur La date à utiliser pour rechercher les valeurs
+	 * @param donneeMinimale Permet d'indiquer si l'on peut bypasser certaines informations incomplete provenant de l'entreprise civil, exemple domicile sur commune faitière et construire une entreprise de facon minimal
 	 */
-	void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur) throws TiersException;
+	void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur, boolean donneeMinimale) throws TiersException;
 
 	/**
 	 * Pour l'établissement connue au civil, crée des surcharges en base des données civiles pour la période fournie avec les valeurs
 	 * retournée par RCEnt à la date de valeur.
-	 *
-	 * @param etablissement L'etablissement concerné
+	 *  @param etablissement L'etablissement concerné
 	 * @param range La période pour laquelle les valeurs civiles doivent être surchargées. La période doit avoir une date de fin.
 	 * @param dateValeur La date à utiliser pour rechercher les valeurs
+	 * @param donneeMinimale Permet d'indiquer si l'on peut bypasser certaines informations incomplete provenant de l'entreprise civil, exemple domicile sur commune faitière et construire une entreprise de facon minimal
 	 */
-	void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur) throws TiersException;
+	void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur, boolean donneeMinimale) throws TiersException;
 
 	/**
 	 * Identifie et construit les communautés d'héritiers pour les tiers spécifiés.

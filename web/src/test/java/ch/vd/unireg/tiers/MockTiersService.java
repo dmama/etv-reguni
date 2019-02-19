@@ -1342,12 +1342,12 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur) throws TiersException {
+	public void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur, boolean donneeMinimale) throws TiersException {
 
 	}
 
 	@Override
-	public void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur) throws TiersException {
+	public void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur, boolean donneeMinimale) throws TiersException {
 
 	}
 

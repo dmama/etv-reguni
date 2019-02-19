@@ -978,7 +978,7 @@ public abstract class EvenementEntrepriseInterne {
 		empecheSurchargeExcessive(range);
 
 		try {
-			context.getTiersService().appliqueDonneesCivilesSurPeriode(entreprise, range, dateValeur);
+			context.getTiersService().appliqueDonneesCivilesSurPeriode(entreprise, range, dateValeur, Boolean.FALSE);
 		}
 		catch (TiersException e) {
 			throw new EvenementEntrepriseException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));
@@ -1010,7 +1010,7 @@ public abstract class EvenementEntrepriseInterne {
 		empecheSurchargeExcessive(range);
 
 		try {
-			context.getTiersService().appliqueDonneesCivilesSurPeriode(etablissement, range, dateValeur);
+			context.getTiersService().appliqueDonneesCivilesSurPeriode(etablissement, range, dateValeur, Boolean.FALSE);
 		}
 		catch (TiersException e) {
 			throw new EvenementEntrepriseException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));

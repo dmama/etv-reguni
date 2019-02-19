@@ -441,7 +441,7 @@ public class TiersServiceImpl implements TiersService {
 		addRapport(new ActiviteEconomique(dateCreation, null, entreprise, etablissement, true), entreprise, etablissement);
 
 		if (dateInscriptionVd != null) {
-			appliqueDonneesCivilesSurPeriode(entreprise, new DateRangeHelper.Range(dateInscriptionVd, dateEvt.getOneDayBefore()), dateEvt);
+			appliqueDonneesCivilesSurPeriode(entreprise, new DateRangeHelper.Range(dateInscriptionVd, dateEvt.getOneDayBefore()), dateEvt, Boolean.TRUE);
 		}
 
 		// NOTE: C'est volontaire si le domicile n'est pas créé. Ca permet de le différencier d'un établissement préexistant dans Unireg.
@@ -7230,7 +7230,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur) throws TiersException {
+	public void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur,boolean donneeMinimale) throws TiersException {
 		if (!entreprise.isConnueAuCivil()) {
 			throw new IllegalArgumentException();
 		}
@@ -7257,7 +7257,7 @@ public class TiersServiceImpl implements TiersService {
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
 			tiersDAO.addAndSave(etablissementPrincipal, domicile);
 		}
-		if (domicileCivil != null) {
+		if (domicileCivil != null && isDomicileSurCommuneFaitiere(domicileCivil.getNumeroOfsAutoriteFiscale(), donneeMinimale, dateValeur)) {
 			tiersDAO.addAndSave(etablissementPrincipal, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissementPrincipal));
 		}
 
@@ -7294,7 +7294,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur) throws TiersException {
+	public void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur, boolean donneeMinimale) throws TiersException {
 
 		if (!etablissement.isConnuAuCivil()) {
 			throw new IllegalArgumentException();
@@ -7320,7 +7320,14 @@ public class TiersServiceImpl implements TiersService {
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
 			tiersDAO.addAndSave(etablissement, domicile);
 		}
-		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissement));
+		if (domicileCivil != null && isDomicileSurCommuneFaitiere(domicileCivil.getNumeroOfsAutoriteFiscale(), donneeMinimale, dateValeur)) {
+			tiersDAO.addAndSave(etablissement, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissement));
+		}
+	}
+
+	private boolean isDomicileSurCommuneFaitiere(Integer numeroOfsAutoriteFiscale, boolean donneeMinimale, RegDate dateValeur) {
+		final Commune commune = serviceInfra.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateValeur);
+		return commune.isPrincipale() && donneeMinimale ? Boolean.FALSE : Boolean.TRUE;
 	}
 
 	@Override
