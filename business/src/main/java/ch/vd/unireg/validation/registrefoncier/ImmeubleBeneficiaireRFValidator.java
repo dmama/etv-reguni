@@ -2,7 +2,9 @@ package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Objects;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.validation.EntityValidatorImpl;
@@ -14,6 +16,7 @@ public class ImmeubleBeneficiaireRFValidator extends EntityValidatorImpl<Immeubl
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ImmeubleBeneficiaireRF beneficiaire) {
 
 		final ValidationResults results = new ValidationResults();

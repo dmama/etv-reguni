@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 
 import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;

@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -34,7 +35,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
 import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;

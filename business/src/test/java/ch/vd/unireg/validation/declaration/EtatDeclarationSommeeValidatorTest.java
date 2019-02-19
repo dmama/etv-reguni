@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.validation.AbstractValidatorTest;
 

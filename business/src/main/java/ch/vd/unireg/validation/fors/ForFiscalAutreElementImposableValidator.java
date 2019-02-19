@@ -3,7 +3,9 @@ package ch.vd.unireg.validation.fors;
 import java.util.EnumSet;
 import java.util.Set;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ForFiscalAutreElementImposable;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -20,6 +22,7 @@ public class ForFiscalAutreElementImposableValidator extends ForFiscalRevenuFort
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ForFiscalAutreElementImposable ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {

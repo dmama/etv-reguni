@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.HibernateEntity;
@@ -55,7 +56,6 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Processeur pour l'implémentation de la génération en masse des tâches d'envoi des questionnaires SNC d'une période fiscale

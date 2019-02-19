@@ -1,11 +1,14 @@
 package ch.vd.unireg.validation.declaration;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 
 public abstract class DeclarationImpotOrdinaireValidator<T extends DeclarationImpotOrdinaire> extends DeclarationValidator<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T di) {
 		final ValidationResults vr = super.validate(di);
 		if (!di.isAnnule()) {

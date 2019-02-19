@@ -6,10 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationServiceImpl;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
-import ch.vd.unireg.validation.ValidationServiceImpl;
 
 import static ch.vd.unireg.validation.registrefoncier.EstimationRFValidatorTest.assertErrors;
 import static ch.vd.unireg.validation.registrefoncier.EstimationRFValidatorTest.assertValide;

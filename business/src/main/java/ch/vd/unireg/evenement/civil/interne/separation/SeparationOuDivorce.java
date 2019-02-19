@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;

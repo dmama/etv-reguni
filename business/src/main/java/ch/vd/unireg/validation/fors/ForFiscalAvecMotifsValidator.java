@@ -1,11 +1,14 @@
 package ch.vd.unireg.validation.fors;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
 
 public abstract class ForFiscalAvecMotifsValidator<T extends ForFiscalAvecMotifs> extends ForFiscalValidator<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {

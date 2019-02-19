@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.tache;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Tache;
 import ch.vd.unireg.type.TypeEtatTache;
@@ -9,6 +11,7 @@ import ch.vd.unireg.validation.EntityValidatorImpl;
 public abstract class TacheValidator<T extends Tache> extends EntityValidatorImpl<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T tache) {
 		final ValidationResults vr = new ValidationResults();
 		if (!tache.isAnnule()) {

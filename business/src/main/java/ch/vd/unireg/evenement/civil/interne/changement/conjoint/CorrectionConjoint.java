@@ -4,8 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -14,6 +13,7 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;

@@ -15,13 +15,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
@@ -32,6 +30,9 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -44,7 +45,6 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.validation.ValidationService;
 
 public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 

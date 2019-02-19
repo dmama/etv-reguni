@@ -21,7 +21,7 @@ import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.AnnulableHelper;

@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
@@ -30,6 +30,7 @@ public abstract class AllegementFoncierValidator<T extends AllegementFoncier> ex
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (entity.getImmeuble() == null) {

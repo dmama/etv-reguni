@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
@@ -26,7 +27,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypePermis;
-import ch.vd.unireg.validation.ValidationService;
 
 import static ch.vd.unireg.metier.PassageNouveauxRentiersSourciersEnMixteProcessor.SourcierData;
 

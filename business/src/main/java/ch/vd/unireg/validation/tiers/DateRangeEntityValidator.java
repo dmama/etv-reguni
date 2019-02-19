@@ -7,13 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public abstract class DateRangeEntityValidator<T extends DateRange> extends EntityValidatorImpl<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T entity) {
 		final ValidationResults results = new ValidationResults();
 

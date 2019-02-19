@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.tache;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPP;
 
 public class TacheEnvoiDeclarationImpotPPValidator extends TacheEnvoiDeclarationImpotValidator<TacheEnvoiDeclarationImpotPP> {
@@ -11,6 +13,7 @@ public class TacheEnvoiDeclarationImpotPPValidator extends TacheEnvoiDeclaration
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(TacheEnvoiDeclarationImpotPP tache) {
 		final ValidationResults vr = super.validate(tache);
 		if (!tache.isAnnule()) {

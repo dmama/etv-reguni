@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -17,6 +17,7 @@ import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -25,7 +26,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

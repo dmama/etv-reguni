@@ -29,6 +29,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
@@ -59,7 +60,6 @@ import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
-import ch.vd.unireg.validation.ValidationService;
 
 public class DeterminationDIsPMAEmettreProcessor {
 

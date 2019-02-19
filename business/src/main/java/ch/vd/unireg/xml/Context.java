@@ -2,6 +2,7 @@ package ch.vd.unireg.xml;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
@@ -27,7 +28,6 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Encapsule quelques services d'unireg

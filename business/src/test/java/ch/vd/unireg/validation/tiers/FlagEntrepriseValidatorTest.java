@@ -3,7 +3,7 @@ package ch.vd.unireg.validation.tiers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.FlagEntreprise;
 import ch.vd.unireg.type.TypeFlagEntreprise;
 import ch.vd.unireg.validation.AbstractValidatorTest;

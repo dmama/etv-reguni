@@ -3,7 +3,7 @@ package ch.vd.unireg.validation.registrefoncier;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;

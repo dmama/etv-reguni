@@ -16,6 +16,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;

@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationMessage;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationMessage;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tache.sync.SynchronizeAction;
@@ -33,7 +34,6 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.utils.RegDateEditor;
-import ch.vd.unireg.validation.ValidationService;
 
 @SuppressWarnings("UnusedDeclaration")
 @Controller

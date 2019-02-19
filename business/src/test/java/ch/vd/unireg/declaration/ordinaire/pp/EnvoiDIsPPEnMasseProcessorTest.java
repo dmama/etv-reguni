@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.EntityValidator;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
@@ -69,8 +72,6 @@ import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
-import ch.vd.unireg.validation.EntityValidator;
-import ch.vd.unireg.validation.ValidationService;
 
 import static ch.vd.unireg.declaration.DeclarationImpotOrdinairePPTest.assertCodeControleIsValid;
 import static org.junit.Assert.assertEquals;
@@ -1857,6 +1858,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final Map<Long, MutableInt> validated = new HashMap<>();
 		final class Validator implements EntityValidator<PersonnePhysique> {
 			@Override
+			@NotNull
 			public ValidationResults validate(PersonnePhysique entity) {
 				synchronized (validated) {
 					final MutableInt count = validated.get(entity.getNumero());

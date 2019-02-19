@@ -33,7 +33,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -149,7 +150,6 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.TransfertPatrimoine;
 import ch.vd.unireg.tiers.Tutelle;
 import ch.vd.unireg.validation.ValidationInterceptor;
-import ch.vd.unireg.validation.ValidationService;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 

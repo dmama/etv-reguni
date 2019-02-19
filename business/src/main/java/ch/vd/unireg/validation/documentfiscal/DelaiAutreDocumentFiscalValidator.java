@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.documentfiscal;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.validation.EntityValidatorImpl;
@@ -13,6 +15,7 @@ public class DelaiAutreDocumentFiscalValidator extends EntityValidatorImpl<Delai
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DelaiAutreDocumentFiscal delai) {
 		final ValidationResults vr = new ValidationResults();
 		if (delai.isAnnule()) {

@@ -6,15 +6,15 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.validation.ValidationService;
 
 public class MockOuvertureForsContribuablesMajeursProcessor extends OuvertureForsContribuablesMajeursProcessor {
 	public MockOuvertureForsContribuablesMajeursProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersDAO tiersDAO, TiersService tiersService,

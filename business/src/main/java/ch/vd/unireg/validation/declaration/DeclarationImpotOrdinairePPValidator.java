@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.declaration;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 
 public class DeclarationImpotOrdinairePPValidator extends DeclarationImpotOrdinaireValidator<DeclarationImpotOrdinairePP> {
@@ -11,6 +13,7 @@ public class DeclarationImpotOrdinairePPValidator extends DeclarationImpotOrdina
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DeclarationImpotOrdinairePP di) {
 		final ValidationResults vr = super.validate(di);
 		if (!di.isAnnule()) {

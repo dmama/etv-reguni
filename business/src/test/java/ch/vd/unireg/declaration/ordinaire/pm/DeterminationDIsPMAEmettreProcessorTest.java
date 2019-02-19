@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -42,7 +43,6 @@ import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatTache;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

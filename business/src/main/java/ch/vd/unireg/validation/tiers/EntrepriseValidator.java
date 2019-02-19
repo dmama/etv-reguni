@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -20,7 +21,7 @@ import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -93,6 +94,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Entreprise entreprise) {
 		final ValidationResults vr = super.validate(entreprise);
 		if (!entreprise.isAnnule()) {

@@ -5,8 +5,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.parametrage.DelaisAccordablesOnline;
 import ch.vd.unireg.parametrage.DelaisAccordablesOnlineDIPM;
@@ -22,6 +24,7 @@ public class ParametreDemandeDelaisOnlineValidator extends EntityValidatorImpl<P
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ParametreDemandeDelaisOnline entity) {
 
 		final ValidationResults results = new ValidationResults();

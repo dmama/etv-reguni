@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.editique.EditiqueException;

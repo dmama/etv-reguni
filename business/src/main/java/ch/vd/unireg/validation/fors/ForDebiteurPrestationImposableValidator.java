@@ -15,7 +15,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.Periodicite;
@@ -49,6 +49,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ForDebiteurPrestationImposable ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {

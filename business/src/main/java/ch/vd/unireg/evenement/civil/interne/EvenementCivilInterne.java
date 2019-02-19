@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;

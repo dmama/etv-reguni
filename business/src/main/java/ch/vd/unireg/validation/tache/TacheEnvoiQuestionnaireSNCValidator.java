@@ -1,7 +1,9 @@
 package ch.vd.unireg.validation.tache;
 
-import ch.vd.registre.base.validation.ValidationHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationHelper;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.TacheEnvoiQuestionnaireSNC;
 
 public class TacheEnvoiQuestionnaireSNCValidator extends TacheEnvoiDocumentValidator<TacheEnvoiQuestionnaireSNC> {
@@ -11,6 +13,7 @@ public class TacheEnvoiQuestionnaireSNCValidator extends TacheEnvoiDocumentValid
 		return TacheEnvoiQuestionnaireSNC.class;
 	}
 
+	@NotNull
 	@Override
 	public ValidationResults validate(TacheEnvoiQuestionnaireSNC tache) {
 		final ValidationResults vr = super.validate(tache);

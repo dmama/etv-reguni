@@ -25,8 +25,9 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -90,7 +91,6 @@ import ch.vd.unireg.type.TypeDocumentEmolument;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
 import ch.vd.unireg.utils.WebContextUtils;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Service offrant des methodes pour gérer le controller DeclarationImpotEditController

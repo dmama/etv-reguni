@@ -8,21 +8,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.foncier.AllegementFoncier;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.ForsParType;
-import ch.vd.unireg.validation.ValidationService;
 
 public abstract class ContribuableImpositionPersonnesMoralesValidator<T extends ContribuableImpositionPersonnesMorales> extends ContribuableValidator<T> {
 
@@ -38,6 +39,7 @@ public abstract class ContribuableImpositionPersonnesMoralesValidator<T extends 
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ctb) {
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {

@@ -12,7 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;

@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationException;
@@ -36,7 +37,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
-import ch.vd.unireg.validation.ValidationService;
 
 public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends BusinessTest {
 

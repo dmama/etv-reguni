@@ -5,11 +5,11 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

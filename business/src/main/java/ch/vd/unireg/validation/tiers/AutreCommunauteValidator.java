@@ -3,9 +3,10 @@ package ch.vd.unireg.validation.tiers;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdressePM;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -14,6 +15,7 @@ import ch.vd.unireg.tiers.AutreCommunaute;
 public class AutreCommunauteValidator extends ContribuableImpositionPersonnesMoralesValidator<AutreCommunaute> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(AutreCommunaute communaute) {
 		final ValidationResults vr = super.validate(communaute);
 		if (!communaute.isAnnule()) {

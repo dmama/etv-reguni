@@ -1,8 +1,10 @@
 package ch.vd.unireg.validation.registrefoncier;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
@@ -15,6 +17,7 @@ public abstract class DroitRFValidator<T extends DroitRF> extends DateRangeEntit
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T entity) {
 		final ValidationResults results = super.validate(entity);
 

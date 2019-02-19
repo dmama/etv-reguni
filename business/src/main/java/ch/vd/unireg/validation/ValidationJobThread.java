@@ -16,7 +16,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;

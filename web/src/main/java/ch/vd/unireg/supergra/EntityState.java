@@ -1,6 +1,6 @@
 package ch.vd.unireg.supergra;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 
 /**
  * Etat d'une entité modifiée lors d'une session SuperGra.

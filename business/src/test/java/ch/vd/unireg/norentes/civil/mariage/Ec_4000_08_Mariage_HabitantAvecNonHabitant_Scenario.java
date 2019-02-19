@@ -3,14 +3,14 @@ package ch.vd.unireg.norentes.civil.mariage;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.norentes.annotation.Check;

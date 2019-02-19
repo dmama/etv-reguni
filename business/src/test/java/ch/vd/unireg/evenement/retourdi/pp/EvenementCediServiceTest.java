@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
@@ -29,7 +30,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -10,11 +10,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdressePM;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -34,6 +35,7 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 	private static final Pattern NOM_PRENOM_ESPACES = Pattern.compile("([^ ]+ )*[^ ]+");
 
 	@Override
+	@NotNull
 	public ValidationResults validate(PersonnePhysique pp) {
 
 		final ValidationResults vr = super.validate(pp);

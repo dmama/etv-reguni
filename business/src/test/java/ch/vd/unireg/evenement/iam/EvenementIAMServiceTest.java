@@ -8,13 +8,13 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.ModeCommunication;
 import ch.vd.unireg.type.PeriodiciteDecompte;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.tiers;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.validation.EntityValidatorImpl;
 
@@ -15,6 +17,7 @@ public class EtatEntrepriseValidator extends EntityValidatorImpl<EtatEntreprise>
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(EtatEntreprise entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {

@@ -2,7 +2,7 @@ package ch.vd.unireg.validation.rapport;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RepresentationLegale;

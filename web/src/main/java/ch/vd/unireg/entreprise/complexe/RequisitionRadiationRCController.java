@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.EditiqueErrorHelper;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.RetourEditiqueControllerHelper;
@@ -30,7 +31,6 @@ import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
 import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.TypeEtatEntreprise;
-import ch.vd.unireg.validation.ValidationService;
 
 @Controller
 @RequestMapping("/processuscomplexe/requisitionradiationrc")

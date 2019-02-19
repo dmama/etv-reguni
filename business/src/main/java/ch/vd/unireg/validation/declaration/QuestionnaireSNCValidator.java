@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.declaration;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 public class QuestionnaireSNCValidator extends DeclarationValidator<QuestionnaireSNC> {
@@ -16,6 +18,7 @@ public class QuestionnaireSNCValidator extends DeclarationValidator<Questionnair
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(QuestionnaireSNC q) {
 		final ValidationResults vr = super.validate(q);
 		if (!q.isAnnule()) {

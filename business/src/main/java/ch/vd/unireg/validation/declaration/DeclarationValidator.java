@@ -2,9 +2,11 @@ package ch.vd.unireg.validation.declaration;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
@@ -14,6 +16,7 @@ import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 public abstract class DeclarationValidator<T extends Declaration> extends DateRangeEntityValidator<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T declaration) {
 		final ValidationResults vr = super.validate(declaration);
 		if (!declaration.isAnnule()) {

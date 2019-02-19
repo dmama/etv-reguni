@@ -6,10 +6,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.RapprochementRF;
 import ch.vd.unireg.registrefoncier.dao.RapprochementRFDAO;
@@ -52,6 +54,7 @@ public class RapprochementRFValidator extends DateRangeEntityValidator<Rapproche
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(RapprochementRF entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {

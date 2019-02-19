@@ -6,7 +6,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.RapprochementRF;
 import ch.vd.unireg.registrefoncier.TiersRF;

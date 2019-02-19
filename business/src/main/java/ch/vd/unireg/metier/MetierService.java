@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;

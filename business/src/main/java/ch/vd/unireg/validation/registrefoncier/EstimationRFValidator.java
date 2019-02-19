@@ -1,8 +1,10 @@
 package ch.vd.unireg.validation.registrefoncier;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
@@ -33,6 +35,7 @@ public class EstimationRFValidator extends DateRangeEntityValidator<EstimationRF
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(EstimationRF entity) {
 		final ValidationResults results = super.validate(entity);
 

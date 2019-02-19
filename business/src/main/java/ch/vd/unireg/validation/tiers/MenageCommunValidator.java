@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdressePM;
 import ch.vd.unireg.adresse.AdresseTiers;

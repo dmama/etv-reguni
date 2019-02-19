@@ -17,10 +17,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
@@ -54,7 +55,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Processor qui rechercher les habitants nouvellement majeurs et qui ouvre les fors principaux.

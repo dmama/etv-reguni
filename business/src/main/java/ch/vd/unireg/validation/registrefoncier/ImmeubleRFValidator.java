@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.validation.EntityValidatorImpl;
@@ -18,6 +18,7 @@ public class ImmeubleRFValidator extends EntityValidatorImpl<ImmeubleRF> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ImmeubleRF immeuble) {
 
 		final ValidationResults results = new ValidationResults();

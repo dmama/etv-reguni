@@ -1,7 +1,8 @@
 package ch.vd.unireg.norentes.civil.annulation.mariage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -18,7 +19,6 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeEvenementCivil;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Scénario de l'annulation de mariage du cas JIRA UNIREG-1086.

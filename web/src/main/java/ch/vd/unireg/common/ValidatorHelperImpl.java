@@ -4,7 +4,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;

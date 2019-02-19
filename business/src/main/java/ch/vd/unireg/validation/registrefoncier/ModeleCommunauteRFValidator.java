@@ -2,13 +2,15 @@ package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Set;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
 import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.unireg.validation.EntityValidatorImpl;
-import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.validation.tiers.TiersValidator;
 
 public class ModeleCommunauteRFValidator extends EntityValidatorImpl<ModeleCommunauteRF> {
@@ -19,6 +21,7 @@ public class ModeleCommunauteRFValidator extends EntityValidatorImpl<ModeleCommu
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ModeleCommunauteRF entity) {
 
 		final ValidationResults results = new ValidationResults();

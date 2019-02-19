@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 
 public interface RapportTravailRequestHandler {
 	/**

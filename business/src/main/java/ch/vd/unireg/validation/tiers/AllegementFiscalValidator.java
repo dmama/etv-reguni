@@ -2,7 +2,9 @@ package ch.vd.unireg.validation.tiers;
 
 import java.math.BigDecimal;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.AllegementFiscal;
 
 public abstract class AllegementFiscalValidator<T extends AllegementFiscal> extends DateRangeEntityValidator<T> {
@@ -23,6 +25,7 @@ public abstract class AllegementFiscalValidator<T extends AllegementFiscal> exte
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T af) {
 		final ValidationResults vr = super.validate(af);
 

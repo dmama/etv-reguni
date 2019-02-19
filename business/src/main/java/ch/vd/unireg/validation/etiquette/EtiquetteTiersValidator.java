@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
@@ -21,6 +21,7 @@ public class EtiquetteTiersValidator extends DateRangeEntityValidator<EtiquetteT
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(EtiquetteTiers entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {

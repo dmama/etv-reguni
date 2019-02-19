@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -34,7 +35,6 @@ import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseRetour;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.validation.ValidationService;
 
 import static ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiquesCalculator.determineFormatDIOrdinaire;
 import static org.junit.Assert.assertEquals;

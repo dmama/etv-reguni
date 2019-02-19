@@ -5,7 +5,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;

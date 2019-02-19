@@ -10,6 +10,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
@@ -21,9 +25,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.OuvertureForsResults.Erreur;
 import ch.vd.unireg.metier.OuvertureForsResults.Traite;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -37,7 +38,6 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypePermis;
-import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;

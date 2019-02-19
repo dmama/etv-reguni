@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackException;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;

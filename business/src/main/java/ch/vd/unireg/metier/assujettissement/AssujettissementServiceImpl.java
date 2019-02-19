@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -20,7 +21,6 @@ import ch.vd.unireg.tiers.ForsParType;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Implémentation du service de détermination de l'assujettissement d'un contribuable à partir de ses fors fiscaux.

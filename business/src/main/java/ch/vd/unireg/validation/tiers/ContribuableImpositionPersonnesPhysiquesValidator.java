@@ -2,9 +2,12 @@ package ch.vd.unireg.validation.tiers;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -13,7 +16,6 @@ import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.ForsParType;
 import ch.vd.unireg.tiers.SituationFamille;
 import ch.vd.unireg.type.ModeImposition;
-import ch.vd.unireg.validation.ValidationService;
 
 public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extends ContribuableImpositionPersonnesPhysiques> extends ContribuableValidator<T> {
 
@@ -24,6 +26,7 @@ public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extend
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ctb) {
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {

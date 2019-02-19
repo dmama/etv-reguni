@@ -1,8 +1,9 @@
 package ch.vd.unireg.validation.etiquette;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.validation.EntityValidatorImpl;
 
@@ -17,6 +18,7 @@ public class EtiquetteValidator extends EntityValidatorImpl<Etiquette> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Etiquette entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {

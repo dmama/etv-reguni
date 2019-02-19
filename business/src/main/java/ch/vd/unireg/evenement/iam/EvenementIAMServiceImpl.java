@@ -5,11 +5,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.TiersDAO;
-import ch.vd.unireg.validation.ValidationService;
 
 public class EvenementIAMServiceImpl implements EvenementIAMService, EvenementIAMHandler {
 

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.DonneesCivilesException;

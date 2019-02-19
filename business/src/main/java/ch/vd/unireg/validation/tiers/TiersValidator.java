@@ -14,13 +14,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -38,7 +40,6 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 import ch.vd.unireg.validation.EntityValidatorImpl;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Classe de base des validateurs de tiers
@@ -47,6 +48,7 @@ import ch.vd.unireg.validation.ValidationService;
 public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImpl<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T tiers) {
 
 		final ValidationResults results = new ValidationResults();

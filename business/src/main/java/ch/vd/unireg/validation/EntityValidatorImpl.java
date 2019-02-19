@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.shared.validation.EntityValidator;
+import ch.vd.shared.validation.ValidationService;
+
 /**
  * Classe de base des validateurs, qui enregistre le validateur dans le service de validation
  * @param <T> le type d'entité validable

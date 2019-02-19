@@ -1,8 +1,9 @@
 package ch.vd.unireg.validation.remarque;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.Remarque;
 import ch.vd.unireg.validation.EntityValidatorImpl;
 
@@ -14,6 +15,7 @@ public class RemarqueValidator extends EntityValidatorImpl<Remarque> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Remarque entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {

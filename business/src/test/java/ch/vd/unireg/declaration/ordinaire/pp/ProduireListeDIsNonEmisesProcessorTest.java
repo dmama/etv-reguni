@@ -6,7 +6,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
@@ -16,6 +16,7 @@ import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -25,7 +26,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.validation.ValidationService;
 
 public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.JobResults;
 import ch.vd.unireg.tiers.Contribuable;

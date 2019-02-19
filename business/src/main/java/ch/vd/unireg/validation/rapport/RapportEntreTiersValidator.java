@@ -2,7 +2,7 @@ package ch.vd.unireg.validation.rapport;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
@@ -18,6 +18,7 @@ public abstract class RapportEntreTiersValidator<T extends RapportEntreTiers> ex
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ret) {
 		final ValidationResults vr = super.validate(ret);
 

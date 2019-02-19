@@ -40,6 +40,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
+	<!-- FIXME (msi) utiliser le ch.vd.shared.validation.ValidationInterceptor (nécessite une version de shared-hibernate à jour) -->
 	<bean id="validationInterceptor" class="ch.vd.unireg.validation.ValidationInterceptor">
 		<property name="parent" ref="modificationInterceptor" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
@@ -307,7 +308,7 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="validationService" class="ch.vd.unireg.validation.ValidationServiceImpl" />
+	<bean id="validationService" class="ch.vd.shared.validation.ValidationServiceImpl" />
 	<bean id="validableEntityNamingService" class="ch.vd.unireg.validation.ValidableEntityNamingServiceImpl"/>
 
 	<bean id="bouclementService" class="ch.vd.unireg.metier.bouclement.BouclementServiceImpl"/>

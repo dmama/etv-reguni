@@ -1,11 +1,12 @@
 package ch.vd.unireg.validation.tiers;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.AllegementFiscalCommune;
@@ -24,6 +25,7 @@ public class AllegementFiscalCommuneValidator extends AllegementFiscalCantonComm
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(AllegementFiscalCommune afc) {
 		final ValidationResults vr = super.validate(afc);
 		if (!afc.isAnnule()) {

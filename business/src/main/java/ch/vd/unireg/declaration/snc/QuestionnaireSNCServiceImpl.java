@@ -15,6 +15,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
@@ -52,7 +53,6 @@ import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDelaiDeclaration;
-import ch.vd.unireg.validation.ValidationService;
 
 public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionnaireSNCServiceImpl.class);

@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.tiers;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.FlagEntreprise;
 
 public class FlagEntrepriseValidator extends DateRangeEntityValidator<FlagEntreprise> {
@@ -26,6 +28,7 @@ public class FlagEntrepriseValidator extends DateRangeEntityValidator<FlagEntrep
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(FlagEntreprise flag) {
 		final ValidationResults vr = super.validate(flag);
 		if (!flag.isAnnule()) {

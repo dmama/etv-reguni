@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.documentfiscal;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.documentfiscal.LettreBienvenue;
 
 /**
@@ -14,6 +16,7 @@ public class LettreBienvenueValidator extends AutreDocumentFiscalAvecSuiviValida
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(LettreBienvenue entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {

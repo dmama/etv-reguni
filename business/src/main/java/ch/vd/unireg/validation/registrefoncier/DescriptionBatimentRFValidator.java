@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.registrefoncier;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
@@ -16,6 +18,7 @@ public class DescriptionBatimentRFValidator extends DateRangeEntityValidator<Des
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DescriptionBatimentRF entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {

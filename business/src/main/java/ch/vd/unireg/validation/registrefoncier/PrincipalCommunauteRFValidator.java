@@ -1,7 +1,9 @@
 package ch.vd.unireg.validation.registrefoncier;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
@@ -17,6 +19,7 @@ public class PrincipalCommunauteRFValidator extends DateRangeEntityValidator<Pri
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(PrincipalCommunauteRF entity) {
 		final ValidationResults results = super.validate(entity);
 

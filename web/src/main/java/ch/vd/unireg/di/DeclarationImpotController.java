@@ -31,7 +31,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.EditiqueErrorHelper;

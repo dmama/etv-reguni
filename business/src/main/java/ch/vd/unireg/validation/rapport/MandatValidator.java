@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.rapport;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Mandat;
@@ -9,6 +11,7 @@ import ch.vd.unireg.tiers.Tiers;
 public class MandatValidator extends RapportEntreTiersValidator<Mandat> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Mandat mandat) {
 		final ValidationResults vr = super.validate(mandat);
 		if (!mandat.isAnnule()) {

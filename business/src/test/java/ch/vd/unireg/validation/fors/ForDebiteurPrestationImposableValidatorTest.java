@@ -15,12 +15,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.ForDebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;

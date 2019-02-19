@@ -1,11 +1,14 @@
 package ch.vd.unireg.validation.tache;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.TacheAnnulationDeclaration;
 
 public abstract class TacheAnnulationDeclarationValidator<T extends TacheAnnulationDeclaration> extends TacheValidator<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T tache) {
 		final ValidationResults vr = super.validate(tache);
 		if (!tache.isAnnule()) {

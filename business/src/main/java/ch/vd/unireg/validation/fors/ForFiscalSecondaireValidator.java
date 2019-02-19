@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifRattachement;
@@ -20,6 +20,7 @@ public class ForFiscalSecondaireValidator extends ForFiscalRevenuFortuneValidato
 		return ForFiscalSecondaire.class;
 	}
 
+	@NotNull
 	@Override
 	public ValidationResults validate(ForFiscalSecondaire ff) {
 		final ValidationResults vr = super.validate(ff);

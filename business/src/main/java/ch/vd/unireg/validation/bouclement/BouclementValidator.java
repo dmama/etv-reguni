@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.bouclement;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.validation.EntityValidatorImpl;
 
@@ -12,6 +14,7 @@ public class BouclementValidator extends EntityValidatorImpl<Bouclement> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Bouclement bouclement) {
 		final ValidationResults vr = new ValidationResults();
 		if (!bouclement.isAnnule()) {

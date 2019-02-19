@@ -8,13 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.EntityValidator;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -37,8 +40,6 @@ import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TarifImpotSource;
 import ch.vd.unireg.type.TypeDroitAcces;
-import ch.vd.unireg.validation.EntityValidator;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -479,6 +480,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 		}
 
 		@Override
+		@NotNull
 		public ValidationResults validate(MenageCommun entity) {
 			final ValidationResults results = new ValidationResults();
 			if (ids.contains(entity.getNumero())) {

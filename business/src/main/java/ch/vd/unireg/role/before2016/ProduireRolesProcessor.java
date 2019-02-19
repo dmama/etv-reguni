@@ -34,6 +34,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -81,7 +82,6 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Processeur spécialisé dans la production des rôles pour les communes vaudoises. Ce processeur doit être appelé par le service 'rôle'

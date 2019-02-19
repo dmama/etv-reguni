@@ -1,7 +1,9 @@
 package ch.vd.unireg.validation.declaration;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -11,6 +13,7 @@ public abstract class EtatDeclarationValidator<T extends EtatDeclaration> extend
 
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ed) {
 
 		final ValidationResults results = new ValidationResults();

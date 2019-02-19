@@ -13,8 +13,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationMessage;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;

@@ -1,10 +1,11 @@
 package ch.vd.unireg.validation.declaration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.validation.EntityValidatorImpl;
@@ -17,6 +18,7 @@ public class DelaiDeclarationValidator extends EntityValidatorImpl<DelaiDeclarat
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DelaiDeclaration delai) {
 		final ValidationResults vr = new ValidationResults();
 		if (delai.isAnnule()) {

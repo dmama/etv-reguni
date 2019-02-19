@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.unireg.declaration.DelaiDeclaration;

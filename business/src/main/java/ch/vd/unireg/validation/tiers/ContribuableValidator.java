@@ -7,15 +7,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -30,7 +33,6 @@ import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeMandat;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Validateur qui se préoccupe de la partie Contribuable d'un tiers contribuable
@@ -49,6 +51,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ctb) {
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {

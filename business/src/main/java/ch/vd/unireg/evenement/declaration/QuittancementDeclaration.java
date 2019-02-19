@@ -18,9 +18,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
-import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.unireg.declaration.DeclarationException;
@@ -37,8 +36,9 @@ import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersDAO;
-import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
+import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;
 
 public class QuittancementDeclaration implements EvenementDeclarationHandler<DeclarationAck>, InitializingBean {
 

@@ -11,7 +11,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
@@ -21,7 +22,6 @@ import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersDAO;
-import ch.vd.unireg.validation.ValidationService;
 
 public class EvenementDeclarationServiceImpl implements EvenementDeclarationService, EvenementDeclarationHandler {
 

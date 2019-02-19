@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.supergra.EntityKey;
 import ch.vd.unireg.supergra.delta.AttributeUpdate;

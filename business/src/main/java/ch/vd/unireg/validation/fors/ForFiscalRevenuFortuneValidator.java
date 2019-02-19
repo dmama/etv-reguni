@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifRattachement;
@@ -17,6 +17,7 @@ public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuF
 	public static final EnumSet<GenreImpot> DEFAULT_GENRE_IMPOTS = EnumSet.of(GenreImpot.REVENU_FORTUNE);
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {

@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdressePM;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -20,7 +23,6 @@ import ch.vd.unireg.tiers.ForDebiteurPrestationImposable;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForsParType;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Validateur de Débiteur de Prestation Imposable
@@ -28,6 +30,7 @@ import ch.vd.unireg.validation.ValidationService;
 public class DebiteurPrestationImposableValidator extends TiersValidator<DebiteurPrestationImposable> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DebiteurPrestationImposable dpi) {
 		final ValidationResults vr = super.validate(dpi);
 		if (!dpi.isAnnule()) {

@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.etiquette.ActionAutoEtiquette;

@@ -10,8 +10,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.tx.TxCallbackException;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationMessage;
 import ch.vd.unireg.common.ActionErrors;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.HttpHelper;

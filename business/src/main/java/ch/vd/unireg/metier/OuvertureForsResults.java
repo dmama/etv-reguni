@@ -7,10 +7,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;

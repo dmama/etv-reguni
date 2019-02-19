@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.registrefoncier;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
@@ -11,6 +13,7 @@ public class SurfaceTotaleRFValidator extends DateRangeEntityValidator<SurfaceTo
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(SurfaceTotaleRF entity) {
 		return super.validate(entity);
 	}

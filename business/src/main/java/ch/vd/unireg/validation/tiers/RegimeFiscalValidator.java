@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
@@ -48,6 +48,7 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(RegimeFiscal rf) {
 		final ValidationResults vr = super.validate(rf);
 		if (!rf.isAnnule()) {

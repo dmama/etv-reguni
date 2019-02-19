@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
 import ch.vd.unireg.tiers.PersonnePhysique;

@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -27,7 +28,6 @@ import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.validation.ValidationService;
 
 public class EvenementCediServiceImpl implements EvenementCediService {
 

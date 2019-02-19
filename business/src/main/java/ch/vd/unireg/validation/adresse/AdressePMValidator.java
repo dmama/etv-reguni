@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.adresse;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdressePM;
 
 public class AdressePMValidator extends AdresseTiersValidator<AdressePM> {
@@ -11,6 +13,7 @@ public class AdressePMValidator extends AdresseTiersValidator<AdressePM> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(AdressePM adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {

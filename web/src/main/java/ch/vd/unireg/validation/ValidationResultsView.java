@@ -3,7 +3,7 @@ package ch.vd.unireg.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 
 public class ValidationResultsView {
 

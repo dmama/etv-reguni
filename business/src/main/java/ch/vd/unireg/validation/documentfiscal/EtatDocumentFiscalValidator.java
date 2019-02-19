@@ -1,7 +1,9 @@
 package ch.vd.unireg.validation.documentfiscal;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.validation.EntityValidatorImpl;
@@ -10,6 +12,7 @@ public abstract class EtatDocumentFiscalValidator<T extends EtatDocumentFiscal> 
 
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T ed) {
 
 		final ValidationResults results = new ValidationResults();

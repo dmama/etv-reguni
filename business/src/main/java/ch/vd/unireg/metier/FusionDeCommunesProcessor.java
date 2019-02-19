@@ -22,11 +22,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
@@ -57,7 +58,6 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.validation.ValidationInterceptor;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Processor qui effectue les changements sur les fors fiscaux suite à une fusion de communes.

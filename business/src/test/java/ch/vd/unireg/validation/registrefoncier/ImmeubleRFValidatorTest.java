@@ -5,7 +5,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;

@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.validation.AbstractValidatorTest;

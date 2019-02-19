@@ -1,7 +1,9 @@
 package ch.vd.unireg.validation.rapport;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.Heritage;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -44,6 +46,7 @@ public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Heritage ret) {
 		final ValidationResults vr = super.validate(ret);
 		if (!ret.isAnnule()) {

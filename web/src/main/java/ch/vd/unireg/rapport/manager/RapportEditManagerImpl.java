@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -22,7 +22,6 @@ import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.unireg.rapport.view.RapportView;

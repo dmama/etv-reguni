@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;

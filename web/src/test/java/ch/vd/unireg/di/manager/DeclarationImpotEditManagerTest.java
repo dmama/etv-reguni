@@ -10,7 +10,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -43,7 +44,6 @@ import ch.vd.unireg.type.TypeAdresseRetour;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

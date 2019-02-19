@@ -6,9 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -35,6 +36,7 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DroitProprieteRF entity) {
 		final ValidationResults results = super.validate(entity);
 

@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
@@ -37,7 +38,6 @@ import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeEtatTache;
-import ch.vd.unireg.validation.ValidationService;
 
 public class ProduireListeDIsNonEmisesProcessor {
 

@@ -5,7 +5,7 @@ import java.util.Collections;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;

@@ -26,7 +26,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseCivileAdapter;
 import ch.vd.unireg.adresse.AdresseDataException;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
@@ -91,7 +92,6 @@ import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
-import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Composant de traitement métier du retour (= contenu) des données d'une DI PM

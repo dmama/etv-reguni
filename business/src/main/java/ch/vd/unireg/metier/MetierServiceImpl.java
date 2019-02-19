@@ -24,7 +24,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
@@ -93,7 +94,6 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 import ch.vd.unireg.utils.UniregModeHelper;
 import ch.vd.unireg.validation.ValidationInterceptor;
-import ch.vd.unireg.validation.ValidationService;
 
 public class MetierServiceImpl implements MetierService {
 

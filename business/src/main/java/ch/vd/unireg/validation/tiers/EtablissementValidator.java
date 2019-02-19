@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.MovingWindow;
@@ -19,6 +21,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 public class EtablissementValidator extends ContribuableValidator<Etablissement> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(Etablissement etb) {
 		final ValidationResults vr = super.validate(etb);
 		if (!etb.isAnnule()) {

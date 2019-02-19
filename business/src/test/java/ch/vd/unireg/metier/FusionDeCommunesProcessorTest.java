@@ -15,7 +15,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -46,7 +47,6 @@ import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

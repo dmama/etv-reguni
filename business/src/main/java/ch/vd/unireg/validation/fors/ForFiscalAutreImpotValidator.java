@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.fors;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ForFiscalAutreImpot;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -13,6 +15,7 @@ public class ForFiscalAutreImpotValidator extends ForFiscalValidator<ForFiscalAu
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ForFiscalAutreImpot ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {

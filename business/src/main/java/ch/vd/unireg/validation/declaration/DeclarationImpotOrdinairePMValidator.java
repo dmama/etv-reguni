@@ -1,8 +1,10 @@
 package ch.vd.unireg.validation.declaration;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 
 public class DeclarationImpotOrdinairePMValidator extends DeclarationImpotOrdinaireValidator<DeclarationImpotOrdinairePM> {
@@ -18,6 +20,7 @@ public class DeclarationImpotOrdinairePMValidator extends DeclarationImpotOrdina
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(DeclarationImpotOrdinairePM di) {
 		final ValidationResults vr = super.validate(di);
 		if (!di.isAnnule()) {

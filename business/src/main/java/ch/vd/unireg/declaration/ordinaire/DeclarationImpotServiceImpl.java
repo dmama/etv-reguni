@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.AddAndSaveHelper;
@@ -114,7 +115,6 @@ import ch.vd.unireg.type.TypeDelaiDeclaration;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
-import ch.vd.unireg.validation.ValidationService;
 
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DATE_DELAI_INVALIDE;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DATE_OBTENTION_INVALIDE;

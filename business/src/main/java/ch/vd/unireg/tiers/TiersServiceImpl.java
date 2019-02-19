@@ -48,7 +48,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseMandataire;
@@ -176,7 +177,6 @@ import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypePermis;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 import ch.vd.unireg.validation.ValidationInterceptor;
-import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.xml.DataHelper;
 
 /**

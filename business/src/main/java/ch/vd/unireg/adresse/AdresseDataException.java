@@ -1,6 +1,6 @@
 package ch.vd.unireg.adresse;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 
 /**
  * Exception levée lorsqu'une adresse ne peut être calculée en raison de problème de données (incohérence, données manquantes, ...)

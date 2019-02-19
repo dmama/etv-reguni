@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.tiers;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
 
 public class FormeJuridiqueFiscaleEntrepriseValidator extends DonneeCivileEntrepriseValidator<FormeJuridiqueFiscaleEntreprise> {
@@ -16,6 +18,7 @@ public class FormeJuridiqueFiscaleEntrepriseValidator extends DonneeCivileEntrep
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(FormeJuridiqueFiscaleEntreprise entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {

@@ -1,8 +1,9 @@
 package ch.vd.unireg.validation.complements;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
@@ -24,6 +25,7 @@ public class CoordonneesFinancieresValidator extends DateRangeEntityValidator<Co
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(CoordonneesFinancieres entity) {
 		final ValidationResults results = super.validate(entity);
 

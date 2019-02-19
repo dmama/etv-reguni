@@ -1,8 +1,10 @@
 package ch.vd.unireg.validation.declaration;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
 
 public class EtatDeclarationsommeeValidator extends EtatDeclarationValidator<EtatDeclarationSommee> {
@@ -12,6 +14,7 @@ public class EtatDeclarationsommeeValidator extends EtatDeclarationValidator<Eta
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(EtatDeclarationSommee ed) {
 		final ValidationResults results = super.validate(ed);
 		if (!ed.isAnnule()) {

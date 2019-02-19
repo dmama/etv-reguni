@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.validation.ValidationServiceImpl;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseServiceImpl;
@@ -67,7 +68,6 @@ import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.validation.ValidationServiceImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

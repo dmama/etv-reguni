@@ -12,7 +12,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -20,7 +21,6 @@ import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.unireg.validation.EntityValidatorImpl;
-import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.validation.tiers.TiersValidator;
 
 public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
@@ -31,6 +31,7 @@ public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(CommunauteRF entity) {
 
 		final ValidationResults results = new ValidationResults();

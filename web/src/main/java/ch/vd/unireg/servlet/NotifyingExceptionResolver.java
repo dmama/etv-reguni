@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.NotificationService;

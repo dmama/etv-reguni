@@ -1,12 +1,15 @@
 package ch.vd.unireg.validation.adresse;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public abstract class AdresseTiersValidator<T extends AdresseTiers> extends DateRangeEntityValidator<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {

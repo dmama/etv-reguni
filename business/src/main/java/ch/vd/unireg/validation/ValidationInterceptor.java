@@ -10,8 +10,9 @@ import org.hibernate.type.Type;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationException;
+import ch.vd.shared.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.EntityKey;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.Switchable;

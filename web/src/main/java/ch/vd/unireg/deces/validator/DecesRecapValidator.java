@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.deces.view.DecesRecapView;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.tiers.PersonnePhysique;

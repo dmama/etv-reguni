@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.declaration.ModeleDocument;

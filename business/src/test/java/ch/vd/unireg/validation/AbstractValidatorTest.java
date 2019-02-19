@@ -2,10 +2,12 @@ package ch.vd.unireg.validation;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.EntityValidator;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.BusinessTest;
 
 public abstract class AbstractValidatorTest<T> extends BusinessTest {
@@ -22,6 +24,7 @@ public abstract class AbstractValidatorTest<T> extends BusinessTest {
 
 	protected abstract String getValidatorBeanName();
 
+	@NotNull
 	protected ValidationResults validate(T entity) {
 		return validator.validate(entity);
 	}

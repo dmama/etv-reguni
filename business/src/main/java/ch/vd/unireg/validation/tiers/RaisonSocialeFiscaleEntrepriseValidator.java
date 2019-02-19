@@ -1,8 +1,9 @@
 package ch.vd.unireg.validation.tiers;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 
 public class RaisonSocialeFiscaleEntrepriseValidator extends DonneeCivileEntrepriseValidator<RaisonSocialeFiscaleEntreprise> {
@@ -18,6 +19,7 @@ public class RaisonSocialeFiscaleEntrepriseValidator extends DonneeCivileEntrepr
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(RaisonSocialeFiscaleEntreprise entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {

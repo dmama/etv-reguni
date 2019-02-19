@@ -2,7 +2,9 @@ package ch.vd.unireg.validation.documentfiscal;
 
 import java.util.List;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuivi;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
@@ -14,6 +16,7 @@ import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
 public abstract class AutreDocumentFiscalAvecSuiviValidator<T extends AutreDocumentFiscalAvecSuivi> extends AutreDocumentFiscalValidator<T> {
 
 	@Override
+	@NotNull
 	public ValidationResults validate(T autreDocumentFiscal) {
 		final ValidationResults vr = super.validate(autreDocumentFiscal);
 		if (!autreDocumentFiscal.isAnnule()) {

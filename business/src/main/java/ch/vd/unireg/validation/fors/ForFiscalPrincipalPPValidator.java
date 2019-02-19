@@ -1,6 +1,8 @@
 package ch.vd.unireg.validation.fors;
 
-import ch.vd.registre.base.validation.ValidationResults;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
@@ -15,6 +17,7 @@ public class ForFiscalPrincipalPPValidator extends ForFiscalPrincipalValidator<F
 	}
 
 	@Override
+	@NotNull
 	public ValidationResults validate(ForFiscalPrincipalPP ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
