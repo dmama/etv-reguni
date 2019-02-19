@@ -19,7 +19,7 @@ public class FormeJuridiqueFiscaleEntrepriseValidator extends DonneeCivileEntrep
 
 	@Override
 	@NotNull
-	public ValidationResults validate(FormeJuridiqueFiscaleEntreprise entity) {
+	public ValidationResults validate(@NotNull FormeJuridiqueFiscaleEntreprise entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 			if (entity.getFormeJuridique() == null) {

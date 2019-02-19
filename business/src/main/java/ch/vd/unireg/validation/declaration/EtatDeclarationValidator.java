@@ -14,7 +14,7 @@ public abstract class EtatDeclarationValidator<T extends EtatDeclaration> extend
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ed) {
+	public ValidationResults validate(@NotNull T ed) {
 
 		final ValidationResults results = new ValidationResults();
 

@@ -95,7 +95,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Entreprise entreprise) {
+	public ValidationResults validate(@NotNull Entreprise entreprise) {
 		final ValidationResults vr = super.validate(entreprise);
 		if (!entreprise.isAnnule()) {
 			vr.merge(validateRegimesFiscaux(entreprise));

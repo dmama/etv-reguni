@@ -15,7 +15,7 @@ public class BouclementValidator extends EntityValidatorImpl<Bouclement> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Bouclement bouclement) {
+	public ValidationResults validate(@NotNull Bouclement bouclement) {
 		final ValidationResults vr = new ValidationResults();
 		if (!bouclement.isAnnule()) {
 

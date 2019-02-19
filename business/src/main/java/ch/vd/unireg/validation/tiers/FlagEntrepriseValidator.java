@@ -29,7 +29,7 @@ public class FlagEntrepriseValidator extends DateRangeEntityValidator<FlagEntrep
 
 	@Override
 	@NotNull
-	public ValidationResults validate(FlagEntreprise flag) {
+	public ValidationResults validate(@NotNull FlagEntreprise flag) {
 		final ValidationResults vr = super.validate(flag);
 		if (!flag.isAnnule()) {
 			// le type est obligatoire

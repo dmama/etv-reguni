@@ -14,7 +14,7 @@ public class AdresseEtrangereValidator extends AdresseSupplementaireValidator<Ad
 
 	@NotNull
 	@Override
-	public ValidationResults validate(AdresseEtrangere adr) {
+	public ValidationResults validate(@NotNull AdresseEtrangere adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			final Integer numeroOfsPays = adr.getNumeroOfsPays();

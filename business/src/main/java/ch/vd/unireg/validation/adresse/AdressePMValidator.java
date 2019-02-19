@@ -14,7 +14,7 @@ public class AdressePMValidator extends AdresseTiersValidator<AdressePM> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(AdressePM adr) {
+	public ValidationResults validate(@NotNull AdressePM adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			if (adr.getType() == null) {

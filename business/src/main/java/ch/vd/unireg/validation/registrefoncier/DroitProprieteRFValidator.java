@@ -37,7 +37,7 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 
 	@Override
 	@NotNull
-	public ValidationResults validate(DroitProprieteRF entity) {
+	public ValidationResults validate(@NotNull DroitProprieteRF entity) {
 		final ValidationResults results = super.validate(entity);
 
 		// une entité annulée est toujours valide...

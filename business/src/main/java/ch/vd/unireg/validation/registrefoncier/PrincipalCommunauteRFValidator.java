@@ -20,7 +20,7 @@ public class PrincipalCommunauteRFValidator extends DateRangeEntityValidator<Pri
 
 	@Override
 	@NotNull
-	public ValidationResults validate(PrincipalCommunauteRF entity) {
+	public ValidationResults validate(@NotNull PrincipalCommunauteRF entity) {
 		final ValidationResults results = super.validate(entity);
 
 		// SIFISC-27135 : La date de début ne doit pas être supérieure à période fiscale N+1

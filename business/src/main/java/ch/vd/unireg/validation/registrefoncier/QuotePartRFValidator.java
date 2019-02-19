@@ -14,7 +14,7 @@ public class QuotePartRFValidator extends DateRangeEntityValidator<QuotePartRF> 
 
 	@Override
 	@NotNull
-	public ValidationResults validate(QuotePartRF entity) {
+	public ValidationResults validate(@NotNull QuotePartRF entity) {
 		return super.validate(entity);
 	}
 

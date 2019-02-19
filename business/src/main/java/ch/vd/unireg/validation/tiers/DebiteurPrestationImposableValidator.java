@@ -31,7 +31,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 
 	@Override
 	@NotNull
-	public ValidationResults validate(DebiteurPrestationImposable dpi) {
+	public ValidationResults validate(@NotNull DebiteurPrestationImposable dpi) {
 		final ValidationResults vr = super.validate(dpi);
 		if (!dpi.isAnnule()) {
 			vr.merge(validatePeriodicites(dpi));

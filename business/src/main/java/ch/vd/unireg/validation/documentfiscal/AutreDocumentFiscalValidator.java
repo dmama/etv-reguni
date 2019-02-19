@@ -14,7 +14,7 @@ public abstract class AutreDocumentFiscalValidator<T extends AutreDocumentFiscal
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T entity) {
+	public ValidationResults validate(@NotNull T entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {
 

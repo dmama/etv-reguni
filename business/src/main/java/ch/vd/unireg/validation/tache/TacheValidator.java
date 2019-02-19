@@ -12,7 +12,7 @@ public abstract class TacheValidator<T extends Tache> extends EntityValidatorImp
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T tache) {
+	public ValidationResults validate(@NotNull T tache) {
 		final ValidationResults vr = new ValidationResults();
 		if (!tache.isAnnule()) {
 			final CollectiviteAdministrative collAdm = tache.getCollectiviteAdministrativeAssignee();

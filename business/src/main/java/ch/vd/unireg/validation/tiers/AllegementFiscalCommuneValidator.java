@@ -26,7 +26,7 @@ public class AllegementFiscalCommuneValidator extends AllegementFiscalCantonComm
 
 	@Override
 	@NotNull
-	public ValidationResults validate(AllegementFiscalCommune afc) {
+	public ValidationResults validate(@NotNull AllegementFiscalCommune afc) {
 		final ValidationResults vr = super.validate(afc);
 		if (!afc.isAnnule()) {
 			if (afc.getNoOfsCommune() != null) {

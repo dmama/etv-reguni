@@ -21,7 +21,7 @@ public class CapitalFiscalEntrepriseValidator extends DonneeCivileEntrepriseVali
 
 	@Override
 	@NotNull
-	public ValidationResults validate(CapitalFiscalEntreprise capital) {
+	public ValidationResults validate(@NotNull CapitalFiscalEntreprise capital) {
 		final ValidationResults vr = super.validate(capital);
 		if (!capital.isAnnule()) {
 			final MontantMonetaire montant = capital.getMontant();

@@ -21,7 +21,7 @@ public class DeclarationImpotOrdinairePMValidator extends DeclarationImpotOrdina
 
 	@Override
 	@NotNull
-	public ValidationResults validate(DeclarationImpotOrdinairePM di) {
+	public ValidationResults validate(@NotNull DeclarationImpotOrdinairePM di) {
 		final ValidationResults vr = super.validate(di);
 		if (!di.isAnnule()) {
 

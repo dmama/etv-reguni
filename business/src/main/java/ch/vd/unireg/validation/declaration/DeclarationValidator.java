@@ -17,7 +17,7 @@ public abstract class DeclarationValidator<T extends Declaration> extends DateRa
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T declaration) {
+	public ValidationResults validate(@NotNull T declaration) {
 		final ValidationResults vr = super.validate(declaration);
 		if (!declaration.isAnnule()) {
 			final PeriodeFiscale periode = declaration.getPeriode();

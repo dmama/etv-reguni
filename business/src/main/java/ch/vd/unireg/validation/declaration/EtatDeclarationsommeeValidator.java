@@ -15,7 +15,7 @@ public class EtatDeclarationsommeeValidator extends EtatDeclarationValidator<Eta
 
 	@Override
 	@NotNull
-	public ValidationResults validate(EtatDeclarationSommee ed) {
+	public ValidationResults validate(@NotNull EtatDeclarationSommee ed) {
 		final ValidationResults results = super.validate(ed);
 		if (!ed.isAnnule()) {
 			final RegDate dateEnvoi = ed.getDateEnvoiCourrier();

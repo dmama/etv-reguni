@@ -15,7 +15,7 @@ public class TacheEnvoiQuestionnaireSNCValidator extends TacheEnvoiDocumentValid
 
 	@NotNull
 	@Override
-	public ValidationResults validate(TacheEnvoiQuestionnaireSNC tache) {
+	public ValidationResults validate(@NotNull TacheEnvoiQuestionnaireSNC tache) {
 		final ValidationResults vr = super.validate(tache);
 		if (!tache.isAnnule()) {
 			ValidationHelper.validate(tache, false, false, vr);

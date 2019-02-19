@@ -40,7 +40,7 @@ public abstract class ContribuableImpositionPersonnesMoralesValidator<T extends 
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ctb) {
+	public ValidationResults validate(@NotNull T ctb) {
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {
 			vr.merge(validateAllegementsFonciers(ctb));

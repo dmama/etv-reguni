@@ -36,7 +36,7 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 
 	@Override
 	@NotNull
-	public ValidationResults validate(PersonnePhysique pp) {
+	public ValidationResults validate(@NotNull PersonnePhysique pp) {
 
 		final ValidationResults vr = super.validate(pp);
 

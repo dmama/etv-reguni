@@ -16,7 +16,7 @@ public class ReceptionDossierPersonnelValidator extends EntityValidatorImpl<Rece
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ReceptionDossierPersonnel entity) {
+	public ValidationResults validate(@NotNull ReceptionDossierPersonnel entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {
 			// [SIFISC-30400] on n'autorise pas les movement dossiers sans le visa...

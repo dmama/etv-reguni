@@ -19,7 +19,7 @@ public class EtiquetteValidator extends EntityValidatorImpl<Etiquette> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Etiquette entity) {
+	public ValidationResults validate(@NotNull Etiquette entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {
 			if (StringUtils.isBlank(entity.getCode())) {

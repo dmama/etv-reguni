@@ -19,7 +19,7 @@ public class DescriptionBatimentRFValidator extends DateRangeEntityValidator<Des
 
 	@Override
 	@NotNull
-	public ValidationResults validate(DescriptionBatimentRF entity) {
+	public ValidationResults validate(@NotNull DescriptionBatimentRF entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 			if (entity.getSurface() == null && entity.getType() == null) {

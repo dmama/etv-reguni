@@ -10,7 +10,7 @@ public abstract class AdresseTiersValidator<T extends AdresseTiers> extends Date
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T adr) {
+	public ValidationResults validate(@NotNull T adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			// L'usage doit être renseigné

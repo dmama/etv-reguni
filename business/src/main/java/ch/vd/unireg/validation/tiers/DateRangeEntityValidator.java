@@ -15,7 +15,7 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T entity) {
+	public ValidationResults validate(@NotNull T entity) {
 		final ValidationResults results = new ValidationResults();
 
 		// une entité annulée est toujours valide...

@@ -9,7 +9,7 @@ public abstract class ForFiscalAvecMotifsValidator<T extends ForFiscalAvecMotifs
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ff) {
+	public ValidationResults validate(@NotNull T ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 			if (ff.getMotifOuverture() != null && ff.getDateDebut() == null) {

@@ -16,7 +16,7 @@ public class AutreCommunauteValidator extends ContribuableImpositionPersonnesMor
 
 	@Override
 	@NotNull
-	public ValidationResults validate(AutreCommunaute communaute) {
+	public ValidationResults validate(@NotNull AutreCommunaute communaute) {
 		final ValidationResults vr = super.validate(communaute);
 		if (!communaute.isAnnule()) {
 			final String nom = communaute.getNom();

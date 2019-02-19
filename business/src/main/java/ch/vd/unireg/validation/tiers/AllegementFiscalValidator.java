@@ -26,7 +26,7 @@ public abstract class AllegementFiscalValidator<T extends AllegementFiscal> exte
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T af) {
+	public ValidationResults validate(@NotNull T af) {
 		final ValidationResults vr = super.validate(af);
 
 		if (!af.isAnnule()) {

@@ -14,7 +14,7 @@ public class SurfaceTotaleRFValidator extends DateRangeEntityValidator<SurfaceTo
 
 	@Override
 	@NotNull
-	public ValidationResults validate(SurfaceTotaleRF entity) {
+	public ValidationResults validate(@NotNull SurfaceTotaleRF entity) {
 		return super.validate(entity);
 	}
 

@@ -18,7 +18,7 @@ public class EtatEntrepriseValidator extends EntityValidatorImpl<EtatEntreprise>
 
 	@Override
 	@NotNull
-	public ValidationResults validate(EtatEntreprise entity) {
+	public ValidationResults validate(@NotNull EtatEntreprise entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {
 			if (entity.getDateObtention() == null) {

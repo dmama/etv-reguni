@@ -23,7 +23,7 @@ public class ForFiscalAutreElementImposableValidator extends ForFiscalRevenuFort
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ForFiscalAutreElementImposable ff) {
+	public ValidationResults validate(@NotNull ForFiscalAutreElementImposable ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 			final TypeAutoriteFiscale typeAutoriteFiscale = ff.getTypeAutoriteFiscale();

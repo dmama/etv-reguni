@@ -1859,7 +1859,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final class Validator implements EntityValidator<PersonnePhysique> {
 			@Override
 			@NotNull
-			public ValidationResults validate(PersonnePhysique entity) {
+			public ValidationResults validate(@NotNull PersonnePhysique entity) {
 				synchronized (validated) {
 					final MutableInt count = validated.get(entity.getNumero());
 					if (count == null) {

@@ -17,7 +17,7 @@ public class PeriodiciteValidator extends EntityValidatorImpl<Periodicite> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Periodicite periodicite) {
+	public ValidationResults validate(@NotNull Periodicite periodicite) {
 		return validatePeriodicite(periodicite);
 	}
 

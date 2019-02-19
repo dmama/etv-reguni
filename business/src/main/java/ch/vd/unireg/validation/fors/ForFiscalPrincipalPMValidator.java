@@ -37,7 +37,7 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ForFiscalPrincipalPM ff) {
+	public ValidationResults validate(@NotNull ForFiscalPrincipalPM ff) {
 		final ValidationResults validate = super.validate(ff);
 
 		if (!ff.isAnnule()) {

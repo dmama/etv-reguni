@@ -21,6 +21,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.validation.ValidationHelper;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -49,7 +50,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T tiers) {
+	public ValidationResults validate(@NotNull T tiers) {
 
 		final ValidationResults results = new ValidationResults();
 
@@ -129,23 +130,8 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 	                                                                        Predicate<? super T> filter,
 	                                                                        ValidationResults results,
 	                                                                        String description) {
-		if (data != null && data.size() > 1) {
-			// filtrage des éléments intéressants
-			final List<T> concernes = data.stream()
-					.filter(AnnulableHelper::nonAnnule)
-					.filter(filter)
-					.collect(Collectors.toList());
-
-			// vérification des overlaps
-			if (concernes.size() > 1) {
-				final List<DateRange> intersections = DateRangeHelper.overlaps(concernes);
-				if (intersections != null) {
-					intersections.stream()
-							.map(range -> String.format("La période %s est couverte par plusieurs %s.", DateRangeHelper.toDisplayString(range), description))
-							.forEach(results::addError);
-				}
-			}
-		}
+		final Predicate<? super T> compositeFilter = range -> AnnulableHelper.nonAnnule(range) && filter.test(range);
+		ValidationHelper.checkNonOverlap(data, compositeFilter, results, description);
 	}
 
 	protected static <T extends DateRange & Annulable, K> void checkNonOverlapByGoup(Collection<T> data,
@@ -154,21 +140,8 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 	                                                                                 ValidationResults results,
 	                                                                                 String description,
 	                                                                                 StringRenderer<? super K> keyRenderer) {
-		if (data != null && data.size() > 1) {
-			// on construit d'abord une map des valeurs regroupées par la clé du groupe
-			final Map<K, List<T>> groups = data.stream()
-					.filter(AnnulableHelper::nonAnnule)
-					.filter(filter)
-					.collect(Collectors.toMap(groupKeyExtractor,
-					                          Collections::singletonList,
-					                          (c1, c2) -> Stream.concat(c1.stream(), c2.stream()).collect(Collectors.toList())));
-
-			// puis on vérifie pour chaque groupe indépendemment
-			for (Map.Entry<K, List<T>> entry : groups.entrySet()) {
-				final String groupDescription = String.format("%s de type '%s'", description, keyRenderer.toString(entry.getKey()));
-				checkNonOverlap(entry.getValue(), x -> true, results, groupDescription);
-			}
-		}
+		final Predicate<? super T> compositeFilter = range -> AnnulableHelper.nonAnnule(range) && filter.test(range);
+		ValidationHelper.checkNonOverlapByGoup(data, compositeFilter, groupKeyExtractor, results, description, keyRenderer::toString);
 	}
 
 	protected ValidationResults validateDeclarations(T tiers) {

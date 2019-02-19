@@ -22,7 +22,7 @@ public class EtablissementValidator extends ContribuableValidator<Etablissement>
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Etablissement etb) {
+	public ValidationResults validate(@NotNull Etablissement etb) {
 		final ValidationResults vr = super.validate(etb);
 		if (!etb.isAnnule()) {
 			vr.merge(validateDomiciles(etb));

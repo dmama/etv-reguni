@@ -22,7 +22,7 @@ public class EtiquetteTiersValidator extends DateRangeEntityValidator<EtiquetteT
 
 	@Override
 	@NotNull
-	public ValidationResults validate(EtiquetteTiers entity) {
+	public ValidationResults validate(@NotNull EtiquetteTiers entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 			if (entity.getEtiquette() == null) {

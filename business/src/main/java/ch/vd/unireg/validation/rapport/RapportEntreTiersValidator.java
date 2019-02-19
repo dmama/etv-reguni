@@ -19,7 +19,7 @@ public abstract class RapportEntreTiersValidator<T extends RapportEntreTiers> ex
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ret) {
+	public ValidationResults validate(@NotNull T ret) {
 		final ValidationResults vr = super.validate(ret);
 
 		if (ret.isAnnule()) {

@@ -14,7 +14,7 @@ public class AdresseCivileValidator extends AdresseTiersValidator<AdresseCivile>
 
 	@NotNull
 	@Override
-	public ValidationResults validate(AdresseCivile adr) {
+	public ValidationResults validate(@NotNull AdresseCivile adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			if (adr.getType() == null) {

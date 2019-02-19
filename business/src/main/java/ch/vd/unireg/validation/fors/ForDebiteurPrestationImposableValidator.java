@@ -50,7 +50,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ForDebiteurPrestationImposable ff) {
+	public ValidationResults validate(@NotNull ForDebiteurPrestationImposable ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 

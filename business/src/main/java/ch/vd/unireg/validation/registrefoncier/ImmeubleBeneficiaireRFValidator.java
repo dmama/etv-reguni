@@ -17,7 +17,7 @@ public class ImmeubleBeneficiaireRFValidator extends EntityValidatorImpl<Immeubl
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ImmeubleBeneficiaireRF beneficiaire) {
+	public ValidationResults validate(@NotNull ImmeubleBeneficiaireRF beneficiaire) {
 
 		final ValidationResults results = new ValidationResults();
 

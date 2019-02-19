@@ -49,7 +49,7 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 
 	@Override
 	@NotNull
-	public ValidationResults validate(RegimeFiscal rf) {
+	public ValidationResults validate(@NotNull RegimeFiscal rf) {
 		final ValidationResults vr = super.validate(rf);
 		if (!rf.isAnnule()) {
 			if (rf.getPortee() == null) {

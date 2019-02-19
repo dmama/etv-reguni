@@ -39,7 +39,7 @@ public abstract class LocalisationDateeValidator<T extends LocalisationDatee> ex
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T entity) {
+	public ValidationResults validate(@NotNull T entity) {
 		final ValidationResults results = super.validate(entity);
 
 		if (entity.isAnnule()) {

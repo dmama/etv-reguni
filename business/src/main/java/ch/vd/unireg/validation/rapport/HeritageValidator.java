@@ -47,7 +47,7 @@ public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Heritage ret) {
+	public ValidationResults validate(@NotNull Heritage ret) {
 		final ValidationResults vr = super.validate(ret);
 		if (!ret.isAnnule()) {
 			final Tiers defunt = tiersDAO.get(ret.getObjetId());

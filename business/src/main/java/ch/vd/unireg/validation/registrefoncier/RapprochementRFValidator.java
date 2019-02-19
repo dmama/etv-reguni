@@ -55,7 +55,7 @@ public class RapprochementRFValidator extends DateRangeEntityValidator<Rapproche
 
 	@Override
 	@NotNull
-	public ValidationResults validate(RapprochementRF entity) {
+	public ValidationResults validate(@NotNull RapprochementRF entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 			// le type de rapprochement est obligatoire

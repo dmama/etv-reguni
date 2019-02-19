@@ -9,7 +9,7 @@ public abstract class DeclarationImpotOrdinaireValidator<T extends DeclarationIm
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T di) {
+	public ValidationResults validate(@NotNull T di) {
 		final ValidationResults vr = super.validate(di);
 		if (!di.isAnnule()) {
 

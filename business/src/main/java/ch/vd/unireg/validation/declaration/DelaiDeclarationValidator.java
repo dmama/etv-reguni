@@ -19,7 +19,7 @@ public class DelaiDeclarationValidator extends EntityValidatorImpl<DelaiDeclarat
 
 	@Override
 	@NotNull
-	public ValidationResults validate(DelaiDeclaration delai) {
+	public ValidationResults validate(@NotNull DelaiDeclaration delai) {
 		final ValidationResults vr = new ValidationResults();
 		if (delai.isAnnule()) {
 			return vr;

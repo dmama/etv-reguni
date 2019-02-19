@@ -13,7 +13,7 @@ public abstract class EtatDocumentFiscalValidator<T extends EtatDocumentFiscal> 
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ed) {
+	public ValidationResults validate(@NotNull T ed) {
 
 		final ValidationResults results = new ValidationResults();
 

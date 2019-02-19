@@ -16,7 +16,7 @@ public class ForFiscalAutreImpotValidator extends ForFiscalValidator<ForFiscalAu
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ForFiscalAutreImpot ff) {
+	public ValidationResults validate(@NotNull ForFiscalAutreImpot ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 			if (ff.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {

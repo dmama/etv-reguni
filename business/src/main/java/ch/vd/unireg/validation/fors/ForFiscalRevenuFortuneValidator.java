@@ -18,7 +18,7 @@ public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuF
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ff) {
+	public ValidationResults validate(@NotNull T ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 

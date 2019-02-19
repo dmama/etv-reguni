@@ -16,7 +16,7 @@ public class DelaiAutreDocumentFiscalValidator extends EntityValidatorImpl<Delai
 
 	@Override
 	@NotNull
-	public ValidationResults validate(DelaiAutreDocumentFiscal delai) {
+	public ValidationResults validate(@NotNull DelaiAutreDocumentFiscal delai) {
 		final ValidationResults vr = new ValidationResults();
 		if (delai.isAnnule()) {
 			return vr;

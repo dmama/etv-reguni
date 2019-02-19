@@ -25,7 +25,7 @@ public class ParametreDemandeDelaisOnlineValidator extends EntityValidatorImpl<P
 
 	@Override
 	@NotNull
-	public ValidationResults validate(ParametreDemandeDelaisOnline entity) {
+	public ValidationResults validate(@NotNull ParametreDemandeDelaisOnline entity) {
 
 		final ValidationResults results = new ValidationResults();
 

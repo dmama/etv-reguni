@@ -20,7 +20,7 @@ public class RaisonSocialeFiscaleEntrepriseValidator extends DonneeCivileEntrepr
 
 	@Override
 	@NotNull
-	public ValidationResults validate(RaisonSocialeFiscaleEntreprise entity) {
+	public ValidationResults validate(@NotNull RaisonSocialeFiscaleEntreprise entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 			if (StringUtils.isBlank(entity.getRaisonSociale())) {

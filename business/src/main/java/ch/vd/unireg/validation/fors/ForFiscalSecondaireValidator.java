@@ -22,7 +22,7 @@ public class ForFiscalSecondaireValidator extends ForFiscalRevenuFortuneValidato
 
 	@NotNull
 	@Override
-	public ValidationResults validate(ForFiscalSecondaire ff) {
+	public ValidationResults validate(@NotNull ForFiscalSecondaire ff) {
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 			if (ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {

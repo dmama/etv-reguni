@@ -12,7 +12,7 @@ public class MandatValidator extends RapportEntreTiersValidator<Mandat> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Mandat mandat) {
+	public ValidationResults validate(@NotNull Mandat mandat) {
 		final ValidationResults vr = super.validate(mandat);
 		if (!mandat.isAnnule()) {
 

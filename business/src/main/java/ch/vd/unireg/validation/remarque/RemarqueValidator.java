@@ -16,7 +16,7 @@ public class RemarqueValidator extends EntityValidatorImpl<Remarque> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(Remarque entity) {
+	public ValidationResults validate(@NotNull Remarque entity) {
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {
 			// [SIFISC-12519] on n'autorise pas les remarques vides...

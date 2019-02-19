@@ -18,7 +18,7 @@ public abstract class DroitRFValidator<T extends DroitRF> extends DateRangeEntit
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T entity) {
+	public ValidationResults validate(@NotNull T entity) {
 		final ValidationResults results = super.validate(entity);
 
 		// une entité annulée est toujours valide...

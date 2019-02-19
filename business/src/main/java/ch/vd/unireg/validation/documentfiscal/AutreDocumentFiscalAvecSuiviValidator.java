@@ -17,7 +17,7 @@ public abstract class AutreDocumentFiscalAvecSuiviValidator<T extends AutreDocum
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T autreDocumentFiscal) {
+	public ValidationResults validate(@NotNull T autreDocumentFiscal) {
 		final ValidationResults vr = super.validate(autreDocumentFiscal);
 		if (!autreDocumentFiscal.isAnnule()) {
 

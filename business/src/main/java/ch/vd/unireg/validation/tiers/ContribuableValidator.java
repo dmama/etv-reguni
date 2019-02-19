@@ -52,7 +52,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T ctb) {
+	public ValidationResults validate(@NotNull T ctb) {
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {
 			vr.merge(validateDecisions(ctb));

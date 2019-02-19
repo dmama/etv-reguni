@@ -32,7 +32,7 @@ public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
 
 	@Override
 	@NotNull
-	public ValidationResults validate(CommunauteRF entity) {
+	public ValidationResults validate(@NotNull CommunauteRF entity) {
 
 		final ValidationResults results = new ValidationResults();
 		if (entity.isAnnule()){

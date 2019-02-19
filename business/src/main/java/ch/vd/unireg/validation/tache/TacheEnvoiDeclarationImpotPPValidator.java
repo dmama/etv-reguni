@@ -14,7 +14,7 @@ public class TacheEnvoiDeclarationImpotPPValidator extends TacheEnvoiDeclaration
 
 	@Override
 	@NotNull
-	public ValidationResults validate(TacheEnvoiDeclarationImpotPP tache) {
+	public ValidationResults validate(@NotNull TacheEnvoiDeclarationImpotPP tache) {
 		final ValidationResults vr = super.validate(tache);
 		if (!tache.isAnnule()) {
 			if (tache.getTypeContribuable() == null) {

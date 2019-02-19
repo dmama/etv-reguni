@@ -36,7 +36,7 @@ public class EstimationRFValidator extends DateRangeEntityValidator<EstimationRF
 
 	@Override
 	@NotNull
-	public ValidationResults validate(EstimationRF entity) {
+	public ValidationResults validate(@NotNull EstimationRF entity) {
 		final ValidationResults results = super.validate(entity);
 
 		// une entité annulée est toujours valide...

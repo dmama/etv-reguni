@@ -17,7 +17,7 @@ public class LettreBienvenueValidator extends AutreDocumentFiscalAvecSuiviValida
 
 	@Override
 	@NotNull
-	public ValidationResults validate(LettreBienvenue entity) {
+	public ValidationResults validate(@NotNull LettreBienvenue entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 

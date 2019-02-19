@@ -19,7 +19,7 @@ public class QuestionnaireSNCValidator extends DeclarationValidator<Questionnair
 
 	@Override
 	@NotNull
-	public ValidationResults validate(QuestionnaireSNC q) {
+	public ValidationResults validate(@NotNull QuestionnaireSNC q) {
 		final ValidationResults vr = super.validate(q);
 		if (!q.isAnnule()) {
 			if (q.getPeriode() == null) {

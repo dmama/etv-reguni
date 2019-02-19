@@ -26,7 +26,7 @@ public class CoordonneesFinancieresValidator extends DateRangeEntityValidator<Co
 
 	@Override
 	@NotNull
-	public ValidationResults validate(CoordonneesFinancieres entity) {
+	public ValidationResults validate(@NotNull CoordonneesFinancieres entity) {
 		final ValidationResults results = super.validate(entity);
 
 		// une entité annulée est toujours valide...

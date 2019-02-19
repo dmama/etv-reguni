@@ -31,7 +31,7 @@ public abstract class AllegementFoncierValidator<T extends AllegementFoncier> ex
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T entity) {
+	public ValidationResults validate(@NotNull T entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (entity.getImmeuble() == null) {
 			vr.addError("immeuble", "L'immeuble est une donnée obligatoire.");

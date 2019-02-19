@@ -481,7 +481,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 
 		@Override
 		@NotNull
-		public ValidationResults validate(MenageCommun entity) {
+		public ValidationResults validate(@NotNull MenageCommun entity) {
 			final ValidationResults results = new ValidationResults();
 			if (ids.contains(entity.getNumero())) {
 				results.addError("Erreur de validation bidon");

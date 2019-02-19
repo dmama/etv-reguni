@@ -14,7 +14,7 @@ public class AdresseAutreTiersValidator extends AdresseTiersValidator<AdresseAut
 
 	@NotNull
 	@Override
-	public ValidationResults validate(AdresseAutreTiers adr) {
+	public ValidationResults validate(@NotNull AdresseAutreTiers adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			if (adr.getType() == null) {

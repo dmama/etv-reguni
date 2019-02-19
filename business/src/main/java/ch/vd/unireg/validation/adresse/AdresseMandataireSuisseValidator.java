@@ -14,7 +14,7 @@ public class AdresseMandataireSuisseValidator extends AdresseMandataireValidator
 
 	@NotNull
 	@Override
-	public ValidationResults validate(AdresseMandataireSuisse adr) {
+	public ValidationResults validate(@NotNull AdresseMandataireSuisse adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			final Integer numeroOrdrePoste = adr.getNumeroOrdrePoste();

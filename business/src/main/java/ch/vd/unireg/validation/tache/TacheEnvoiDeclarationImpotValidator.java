@@ -10,7 +10,7 @@ public abstract class TacheEnvoiDeclarationImpotValidator<T extends TacheEnvoiDe
 
 	@Override
 	@NotNull
-	public ValidationResults validate(T tache) {
+	public ValidationResults validate(@NotNull T tache) {
 		final ValidationResults vr = super.validate(tache);
 		if (!tache.isAnnule()) {
 			ValidationHelper.validate(tache, false, false, vr);
