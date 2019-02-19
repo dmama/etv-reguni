@@ -237,6 +237,17 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rc;
 	}
 
+	/**
+	 * renvoi la liste des collectivites administratives.
+	 * @param codeCollectivites: liste des identifiants de collectivités.
+	 * @param b
+	 * @return
+	 */
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean b) {
+		return rawService.findCollectivitesAdministratives(codeCollectivites, b);
+	}
+
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		return rawService.getAllCantons();
@@ -253,8 +264,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	/**
-	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là, et si elle contient plus d'un élément, renvoie le premier élément
-	 * trouvé valide à la date donnée (<code>null</code> si aucun n'est valide à la date donnée).
+	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là, et si elle contient plus d'un élément, renvoie le premier élément trouvé valide à la date donnée
+	 * (<code>null</code> si aucun n'est valide à la date donnée).
 	 *
 	 * @param candidats    liste des communes potentielles
 	 * @param dateValidite date déterminante en cas de possibilités multiples
@@ -324,9 +335,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	/**
-	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue (si disponible)
-	 * ou un numéro d'ordre poste
-	 *
+	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue (si disponible) ou un numéro d'ordre poste
 	 *
 	 * @param adresse           une adresse
 	 * @param numeroOrdrePostal un numéro d'ordre postal
@@ -448,7 +457,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 				oid = getOfficeImpot(collAdm.getNumeroCollectiviteAdministrative());
 			}
 			else {
-				throw new ServiceInfrastructureException("La collectivité administrative du district " + codeDistrict + " pour la commune "  + noCommune + " manque à l'appel!");
+				throw new ServiceInfrastructureException("La collectivité administrative du district " + codeDistrict + " pour la commune " + noCommune + " manque à l'appel!");
 			}
 		}
 		else {

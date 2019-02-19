@@ -392,6 +392,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		loadMeter.start(new MethodCallDescriptor("findCollectivitesAdministratives"));
+		try {
+			return target.findCollectivitesAdministratives(codeCollectivites, inactif);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public List<LoadDetail> getLoadDetails() {
 		return loadMeter.getLoadDetails();
 	}

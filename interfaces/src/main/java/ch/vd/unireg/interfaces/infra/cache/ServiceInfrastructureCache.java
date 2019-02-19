@@ -10,6 +10,10 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -997,6 +1001,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 		/**
 		 * Il est impératif que ce calcul de hash soit le même dans toutes les sous-classes
+		 *
 		 * @return la valeur de {@link #getNoOfs()}
 		 */
 		@Override
@@ -1148,6 +1153,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private interface KeyGetPaysByCodeIso {
 		@NotNull String getCodeIso();
+
 		int hashCode();
 	}
 
@@ -1430,8 +1436,9 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		cache.removeAll();
 		shortLivedCache.removeAll();
 	}
+
 	/**
-	 *  {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
@@ -1687,6 +1694,42 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			resultat = (List<GenreImpotMandataire>) element.getValue();
 		}
 		return resultat;
+	}
+
+	private static class KeyGetToutesLesCollectiviteAdministrative {
+		@Override
+		public int hashCode() {
+			return HashCodeBuilder.reflectionHashCode(this);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return EqualsBuilder.reflectionEquals(this, obj);
+		}
+
+		@Override
+		public String toString() {
+			return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		}
+	}
+
+
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+
+		final List<CollectiviteAdministrative> resultats;
+
+		final KeyGetToutesLesCollectiviteAdministrative key = new KeyGetToutesLesCollectiviteAdministrative();
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultats = target.findCollectivitesAdministratives(codeCollectivites, inactif);
+			cache.put(new Element(key, resultats));
+		}
+		else {
+			resultats = target.findCollectivitesAdministratives(codeCollectivites, inactif);
+		}
+
+		return resultats;
 	}
 
 	@Override

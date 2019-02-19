@@ -37,7 +37,6 @@ import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientExceptio
 
 /**
  * @author Baba NGOM
- *
  */
 public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastructureRaw {
 
@@ -52,7 +51,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 
 	public static final String CODE_SUISSE = "CH";
 
-	private Map<Integer,Localite> localitesByNPA;
+	private Map<Integer, Localite> localitesByNPA;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setClient(ServiceInfrastructureClient client) {
@@ -278,10 +277,10 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 		try {
 
 			TypeCollectivite[] tabTypesCollectivite = new TypeCollectivite[typesCollectivite.size()];
-			int i=0;
+			int i = 0;
 
 			for (ch.vd.unireg.interfaces.infra.data.TypeCollectivite typeCollectivite : typesCollectivite) {
-				tabTypesCollectivite[i]= new ch.vd.infrastructure.model.rest.TypeCollectivite(typeCollectivite.getCode(),null,null,0);
+				tabTypesCollectivite[i] = new ch.vd.infrastructure.model.rest.TypeCollectivite(typeCollectivite.getCode(), null, null, 0);
 				i++;
 			}
 
@@ -330,6 +329,11 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	@Override
 	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
 		throw new NotImplementedException("La méthode 'getTousLesGenresImpotMandataires' ne doit pas être appelée sur le service host-interface.");
+	}
+
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		throw new NotImplementedException("La méthode 'findCollectivitesAdministratives' ne doit pas être appelée sur le service host-interface.");
 	}
 
 	@Override

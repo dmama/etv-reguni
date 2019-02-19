@@ -11,14 +11,13 @@ import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.ProfileOperateur;
 
 public interface ServiceSecuriteService {
-
 	String SERVICE_NAME = "ServiceSecurite";
+
 
 	/**
 	 * Retourne la liste des collectivités administrative d'un opérateur.
 	 *
-	 * @param visaOperateur
-	 *            le visa de l'opérateur.
+	 * @param visaOperateur le visa de l'opérateur.
 	 * @return la liste des collectivités administrative de l'opérateur.
 	 */
 	// TODO : modifier cette méthode pour ne retourner que les liste des numéros de collectivités administratives (car les collectivités administratives
@@ -36,10 +35,8 @@ public interface ServiceSecuriteService {
 	/**
 	 * Retourne le profil que possède un opérateur pour une collectivité administrative.
 	 *
-	 * @param visaOperateur
-	 *            le visa de l'operateur.
-	 * @param codeCollectivite
-	 *            le code de la collectivité administrative.
+	 * @param visaOperateur    le visa de l'operateur.
+	 * @param codeCollectivite le code de la collectivité administrative.
 	 * @return le profil que possède un opérateur pour une collectivité administrative.
 	 */
 	ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite);
@@ -51,23 +48,22 @@ public interface ServiceSecuriteService {
 	 * @param typesCollectivite
 	 * @return la liste des utilisateurs
 	 */
-	List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) ;
+	List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite);
 
-    /**
+	/**
 	 * Retourne l'operateur pour l'indivu passé en paramètre.
 	 *
 	 * @param individuNoTechnique
-	 * @return l'operateur pour l'indivu passé en paramètre (NOTE: Les champs de CollectiviteOperateur dans le résultat ne sont pas
-	 *         renseignés).
+	 * @return l'operateur pour l'indivu passé en paramètre (NOTE: Les champs de CollectiviteOperateur dans le résultat ne sont pas renseignés).
 	 */
 	Operateur getOperateur(long individuNoTechnique);
 
 	/**
 	 * Recherche un opérateur à partir de son visa.
 	 *
-	 * @param visa
-	 *            le visa de l'opérateur (zaixxx, ...)
+	 * @param visa le visa de l'opérateur (zaixxx, ...)
 	 * @return un opérateur ou <b>null</b> si l'opérateur n'est pas trouvé.
 	 */
 	Operateur getOperateur(@NotNull String visa);
+
 }

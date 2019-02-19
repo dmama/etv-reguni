@@ -3,10 +3,15 @@ package ch.vd.unireg.interfaces.service.host;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.security.IfoSecProcedure;
 import ch.vd.unireg.security.ProfileOperateur;
+import ch.vd.unireg.wsclient.iam.IamUser;
+import ch.vd.unireg.wsclient.refsec.ProfilOperateurRefSec;
 
 public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
@@ -114,4 +119,22 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
 		return new ProfileOperateurImpl(profile);
 	}
+
+	public static ProfileOperateur get(ProfilOperateurRefSec profilOperateurRefSec, @NotNull IamUser iamUser) {
+		if (profilOperateurRefSec == null) {
+			return null;
+		}
+		final ProfileOperateurImpl profil = new ProfileOperateurImpl();
+		profil.setVisaOperateur(profilOperateurRefSec.getVisa());
+		profil.setNom(iamUser.getLastName());
+		profil.setPrenom(iamUser.getFirstName());
+		profil.setNoTelephone(profilOperateurRefSec.getNumeroTelephone());
+
+		final List<IfoSecProcedure> procedures = profilOperateurRefSec.getAuthorizations().stream()
+				.map(authorization -> new IfoSecProcedureImpl(authorization.getCode(), authorization.getName(), authorization.getDescription(), null))
+				.collect(Collectors.toList());
+		profil.setProcedures(procedures);
+		return profil;
+	}
+
 }

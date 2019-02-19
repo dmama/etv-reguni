@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -612,6 +613,24 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 		finally {
 			tracing.end(time, t, "getTousLesGenresImpotMandataires", null);
+		}
+	}
+
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.findCollectivitesAdministratives(codeCollectivites, inactif);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "findCollectivitesAdministratives :", () -> String.format("codeCollectivites=%s , inactif=%s", codeCollectivites.stream()
+					.map(String::valueOf)
+					.collect(Collectors.joining(", ")), Boolean.toString(inactif)));
 		}
 	}
 

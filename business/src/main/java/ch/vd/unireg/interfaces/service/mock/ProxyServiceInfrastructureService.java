@@ -31,8 +31,7 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.TiersDAO;
 
 /**
- * Proxy du service host-infrastructure à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier
- * précisemment l'instance du service civil à utiliser.
+ * Proxy du service host-infrastructure à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance du service civil à utiliser.
  * <p>
  * Ce proxy est initialisé par défaut sur une instance de DefaultMockServiceInfrastructureService.
  */
@@ -200,6 +199,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public CollectiviteAdministrative getRC() throws ServiceInfrastructureException {
 		return target.getRC();
+	}
+
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		return target.findCollectivitesAdministratives(codeCollectivites, inactif);
 	}
 
 	@Override

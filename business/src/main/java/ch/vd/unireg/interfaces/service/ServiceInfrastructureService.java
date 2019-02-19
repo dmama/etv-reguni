@@ -225,8 +225,9 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * Construit et retourne l'URL d'accès à la page de visualisation du document dans RepElec
-	 * @param tiersId   le numéro du tiers
-	 * @param pf        la période fiscale du document, si applicable
+	 *
+	 * @param tiersId     le numéro du tiers
+	 * @param pf          la période fiscale du document, si applicable
 	 * @param cleDocument la clé d'indexation du document dans RepElec
 	 * @return une chaîne de caractères qui contient l'URL demandée
 	 */
@@ -234,6 +235,7 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * Retourne l'URL brutte (= sans résolution de paramètre) de l'application fiscale
+	 *
 	 * @param application application concernée
 	 * @return l'URL brutte correspondante
 	 */
@@ -299,6 +301,13 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	CollectiviteAdministrative getRC() throws ServiceInfrastructureException;
+
+	/**
+	 * @param codeCollectivites: liste des identifiants de collectivites.
+	 * @param inactif:           filtre sur les collectivités.
+	 * @return la liste des collectivités administratives.
+	 */
+	List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif);
 
 	/**
 	 * @param oid l'id d'un office d'impôt

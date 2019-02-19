@@ -184,6 +184,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public void ping() throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}

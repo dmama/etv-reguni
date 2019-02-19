@@ -197,6 +197,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		return fidorService.findCollectivitesAdministratives(codeCollectivites, inactif);
+	}
+
+	@Override
 	public void ping() throws ServiceInfrastructureException {
 		hostService.ping();
 		fidorService.ping();

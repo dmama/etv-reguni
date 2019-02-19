@@ -20,5 +20,5 @@ public interface IfoSecProcedure {
 	/**
 	 * @return le numéro de la procédure.
 	 */
-	int getNumero();
+	Integer getNumero();
 }

@@ -84,6 +84,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 
 		/**
 		 * Il est impératif que ce calcul de hash soit le même dans toutes les sous-classes
+		 *
 		 * @return la valeur de {@link #getNoOfs()}
 		 */
 		@Override
@@ -215,6 +216,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 
 	private interface KeyGetPaysByCodeIso {
 		@NotNull String getCodeIso();
+
 		int hashCode();
 	}
 
@@ -493,6 +495,11 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	@Override
 	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
 		return target.getTousLesGenresImpotMandataires();
+	}
+
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		return target.findCollectivitesAdministratives(codeCollectivites, inactif);
 	}
 
 	@Override

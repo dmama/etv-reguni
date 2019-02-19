@@ -12,12 +12,12 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 	private String code;
 	private String codeActivite;
 	private String designation;
-	private int numero;
+	private Integer numero;
 
 	public IfoSecProcedureImpl() {
 	}
 
-	public IfoSecProcedureImpl(String code, String codeActivite, String designation, int numero) {
+	public IfoSecProcedureImpl(String code, String codeActivite, String designation, Integer numero) {
 		this.code = code;
 		this.codeActivite = codeActivite;
 		this.designation = designation;
@@ -59,16 +59,16 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 	}
 
 	@Override
-	public int getNumero() {
+	public Integer getNumero() {
 		return numero;
 	}
 
-	public void setNumero(int numero) {
+	public void setNumero(Integer numero) {
 		this.numero = numero;
 	}
 
 	public static IfoSecProcedure get(Procedure p) {
-		if (p==null) {
+		if (p == null) {
 			return null;
 		}
 		return new IfoSecProcedureImpl(p);

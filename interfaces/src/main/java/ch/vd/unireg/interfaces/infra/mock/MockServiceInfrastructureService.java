@@ -193,6 +193,11 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			return communesHorsCanton;
 	}
 
+	@Override
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif) {
+		throw new org.apache.commons.lang3.NotImplementedException("findCollectivitesAdministratives");
+	}
+
 	@Nullable
 	@Override
 	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {

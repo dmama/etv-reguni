@@ -277,6 +277,14 @@ public interface ServiceInfrastructureRaw {
 	List<GenreImpotMandataire> getTousLesGenresImpotMandataires();
 
 	/**
+	 *
+	 * @param codeCollectivites, liste des identifiants de collectivités.
+	 * @param inactif, filtre sur les collectivités à remontés.
+	 * @return  la liste des collectivités correspondantes aux identofiants
+	 */
+	List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif);
+
+	/**
 	 * Méthode qui permet de tester que le service infrastructure répond bien. Cette méthode est insensible aux caches.
 	 *
 	 * @throws ServiceInfrastructureException en cas de non-fonctionnement du service infrastructure

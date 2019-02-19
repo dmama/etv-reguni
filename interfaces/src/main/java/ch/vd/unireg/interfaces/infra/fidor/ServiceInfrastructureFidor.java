@@ -364,6 +364,17 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean b) {
+		try {
+			return fidorClient.findCollectivitesAdministratives(codeCollectivites, null, null, null, b).stream()
+					.map(right -> CollectiviteAdministrativeImpl.get(right, this))
+					.collect(Collectors.toList());
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
 	private static final class Warner {
 		private final ThreadLocal<String> lastMsg = new ThreadLocal<>();
 		public void warn(String msg) {

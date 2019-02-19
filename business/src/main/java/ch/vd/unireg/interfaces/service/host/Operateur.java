@@ -2,6 +2,9 @@ package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 
+import ch.vd.unireg.wsclient.iam.IamUser;
+
+
 public class Operateur implements Serializable {
 
 	private String nom;
@@ -11,12 +14,12 @@ public class Operateur implements Serializable {
 	private String code;
 
 
-	public static Operateur get(ch.vd.securite.model.rest.Operateur o){
+	public static Operateur get(ch.vd.securite.model.rest.Operateur o) {
 		if (o == null) {
 			return null;
 		}
 
-		final Operateur op= new Operateur();
+		final Operateur op = new Operateur();
 		op.setNom(o.getNom());
 		op.setPrenom(o.getPrenom());
 		op.setEmail(o.getEmail());
@@ -27,6 +30,18 @@ public class Operateur implements Serializable {
 		return op;
 	}
 
+	public static Operateur get(IamUser iamUser) {
+		if (iamUser == null) {
+			return null;
+		}
+
+		final Operateur op = new Operateur();
+		op.setNom(iamUser.getLastName());
+		op.setPrenom(iamUser.getFirstName());
+		op.setEmail(iamUser.getEmail());
+		op.setCode(iamUser.getIamId());
+		return op;
+	}
 
 
 	public String getNom() {
@@ -53,11 +68,12 @@ public class Operateur implements Serializable {
 		this.email = email;
 	}
 
-
+	@Deprecated
 	public Long getIndividuNoTechnique() {
 		return individuNoTechnique;
 	}
 
+	@Deprecated
 	public void setIndividuNoTechnique(long individuNoTechnique) {
 		this.individuNoTechnique = individuNoTechnique;
 	}
