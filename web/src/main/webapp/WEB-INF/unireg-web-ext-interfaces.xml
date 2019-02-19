@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
 
@@ -12,7 +12,7 @@
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
 		<property name="providers">
 			<list>
-				<ref bean="braveJaxRsProvider"/>
+				<ref bean="braveJaxRsProvider" />
 			</list>
 		</property>
 	</bean>
@@ -26,7 +26,7 @@
 	</bean>
 
 	<bean id="serviceSecuriteServiceTracing" class="ch.vd.unireg.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteServiceHostRest" />
+		<property name="target" ref="#{ '${extprop.switch.securite}' == 'REF-SEC' ? 'serviceSecuriteClientRefSec' : 'serviceSecuriteServiceHostRest' }" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -36,5 +36,12 @@
 	</bean>
 
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
+
+	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.refsec.ServiceSecuriteRefSecImpl">
+		<property name="clientRefSec" ref="refSecClient" />
+		<property name="iamClient" ref="iamClient" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
+
 
 </beans>

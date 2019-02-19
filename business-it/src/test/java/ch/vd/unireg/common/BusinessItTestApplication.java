@@ -100,7 +100,9 @@ public abstract class BusinessItTestApplication {
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_RAW_INTERFACES,
-				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES,
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES_LDAP_IAM,
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES_REFSEC,
 		};
 
 		context = new ClassPathXmlApplicationContext(files);
@@ -164,8 +166,7 @@ public abstract class BusinessItTestApplication {
 	/**
 	 * Charge un fichier Dbunit dans la database préalablement vidée, le fichier doit être au format DBUnit.
 	 *
-	 * @param file
-	 *            le fichier à utiliser
+	 * @param file le fichier à utiliser
 	 */
 	private void loadDataSet(final File file) throws Exception {
 

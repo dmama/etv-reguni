@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="jsonBuilder" class="ch.vd.unireg.wsclient.refsec.json.JsonBuilder" />
+
+	<bean id="ifoSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<constructor-arg value="true" />
+		<constructor-arg value="refSecClientPool-Web" />
+		<property name="baseUrl" value="${extprop.ref.securite.webservice.url}" />
+		<property name="username" value="${extprop.ref.securite.webservice.username}" />
+		<property name="password" value="${extprop.ref.securite.webservice.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="clientrefsecraw" class="ch.vd.unireg.wsclient.refsec.ClientRefSecImpl">
+		<property name="wcPool" ref="ifoSecWebClientPool" />
+		<property name="jsonBuilder" ref="jsonBuilder" />
+		<property name="appName" value="${extprop.ref.securite.webservice.appName}" />
+		<property name="wsResourcePath" value="${extprop.ref.securite.webservice.ws.path}" />
+		<property name="pingResourcePath" value="${extprop.ref.securite.webservice.health.path}" />
+	</bean>
+
+	<bean id="refsecClientTracing" class="ch.vd.unireg.wsclient.refsec.ServiceClientRefSecTracing">
+		<property name="statsService" ref="statsService" />
+		<property name="target" ref="clientrefsecraw" />
+	</bean>
+
+	<alias name="refsecClientTracing" alias="refSecClient" />
+
+</beans>

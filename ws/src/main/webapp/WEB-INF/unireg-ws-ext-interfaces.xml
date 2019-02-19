@@ -21,7 +21,7 @@
 	</bean>
 
 	<bean id="serviceSecuriteServiceTracing" class="ch.vd.unireg.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteServiceHostRest" />
+		<property name="target" ref="#{ '${extprop.switch.securite}' == 'REF-SEC' ? 'serviceSecuriteClientRefSec' : 'serviceSecuriteServiceHostRest' }"/>
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -31,5 +31,12 @@
 	</bean>
 
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
+
+	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.refsec.ServiceSecuriteRefSecImpl">
+		<property name="clientRefSec" ref="refSecClient" />
+		<property name="iamClient" ref="iamClient" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
+
 
 </beans>

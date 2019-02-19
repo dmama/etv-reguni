@@ -75,6 +75,20 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
+	<!-- Service REF -Sec -->
+
+	<bean id="refSecClientRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/refSecClient.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.ClientRefSec" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.ServiceClientRefSecTracing">
+		<property name="target" ref="refSecClientRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+	<alias name="refSecClientTracing" alias="refSecClient" />
+
 	<!-- Gestion de la cohérence des données du cache centralisé -->
 
 	<!-- Data Event Service du cache centralisé Nexus -->

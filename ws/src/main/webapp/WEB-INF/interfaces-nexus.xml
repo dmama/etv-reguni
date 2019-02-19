@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Exécuteur HTTP pour tous les appels spring-remoting de WS vers Nexus -->
 	<bean id="nexusHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
-		<property name="serviceName" value="nexus"/>
+		<property name="serviceName" value="nexus" />
 		<property name="username" value="${extprop.remoting.unireg.nexus.username}" />
 		<property name="password" value="${extprop.remoting.unireg.nexus.password}" />
 		<property name="maxConnectionsPerRoute" value="${extprop.remoting.unireg.nexus.maxConnectionsPerHost}" />
@@ -12,7 +12,7 @@
 		<property name="connectTimeout" value="${extprop.remoting.unireg.nexus.connectTimeout:5000}" />
 		<property name="connectionRequestTimeout" value="${extprop.remoting.unireg.nexus.connectionRequestTimeout:5000}" />
 		<property name="socketTimeout" value="${extprop.remoting.unireg.nexus.socketTimeout:600000}" />
-		<property name="braveHttpTracing" ref="braveHttpTracing"/>
+		<property name="braveHttpTracing" ref="braveHttpTracing" />
 		<property name="preAuthHosts">
 			<list>
 				<!-- active la pré-authentication pour améliorer les performances (= envoi immédiat
@@ -61,5 +61,19 @@
 		<property name="target" ref="serviceInfraRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>
+
+	<!-- Service REF-SEC -->
+
+	<bean id="refSecClientRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/refSecClient.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.ClientRefSec" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.ServiceClientRefSecTracing">
+		<property name="target" ref="refSecClientRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+	<alias name="refSecClientTracing" alias="refSecClient" />
 
 </beans>
