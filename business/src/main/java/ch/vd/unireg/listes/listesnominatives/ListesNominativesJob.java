@@ -1,10 +1,10 @@
 package ch.vd.unireg.listes.listesnominatives;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,21 +18,22 @@ import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamBoolean;
 import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamFile;
 import ch.vd.unireg.scheduler.JobParamInteger;
 
 /**
- * Batch d'extraction des listes nominatives
- * -> TOUS les contribuables avec leurs numéro, nom et prénom
+ * Batch d'extraction des listes nominatives -> TOUS les contribuables avec leurs numéro, nom et prénom
  */
 public class ListesNominativesJob extends JobDefinition {
 
 	public static final String NAME = "ListesNominativesJob";
 
-	public static final String I_NB_THREADS = "nbThreads";
-	public static final String E_ADRESSES_INCLUSES = "typeAdresses";
-	public static final String B_CONTRIBUABLES_PP = "avecContribuablesPP";
-	public static final String B_CONTRIBUABLES_PM = "avecContribuablesPM";
-	public static final String B_DEBITEURS = "avecDebiteurs";
+	private static final String I_NB_THREADS = "nbThreads";
+	private static final String E_ADRESSES_INCLUSES = "typeAdresses";
+	private static final String B_CONTRIBUABLES_PP = "avecContribuablesPP";
+	private static final String B_CONTRIBUABLES_PM = "avecContribuablesPM";
+	private static final String B_DEBITEURS = "avecDebiteurs";
+	private static final String FILE_TIERS_LIST = "FILE_TIERS_LIST";
 
 	private ListesTiersService service;
 
@@ -77,6 +78,14 @@ public class ListesNominativesJob extends JobDefinition {
 		param4.setMandatory(true);
 		param4.setType(new JobParamBoolean());
 		addParameterDefinition(param4, Boolean.FALSE);
+
+		final JobParam param5 = new JobParam();
+		param5.setDescription("Ids des tiers (fichier CSV)");
+		param5.setName(FILE_TIERS_LIST);
+		param5.setMandatory(false);
+		param5.setType(new JobParamFile());
+		addParameterDefinition(param5, null);
+
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -108,18 +117,16 @@ public class ListesNominativesJob extends JobDefinition {
 		final boolean avecContribuablesPM = getBooleanValue(params, B_CONTRIBUABLES_PM);
 		final boolean avecDebiteurs = getBooleanValue(params, B_DEBITEURS);
 
+		final byte[] idsFile = getFileContent(params, FILE_TIERS_LIST);
+		final Set<Long> ids = new HashSet<>(extractIdsFromCSV(idsFile));
+
 		// Extrait les résultats dans une transaction read-only (en fait, plusieurs, pour ne pas avoir de timeout de transaction)
-		final ListesNominativesResults results = service.produireListesNominatives(dateTraitement, nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, statusManager);
+		final ListesNominativesResults results = service.produireListesNominatives(nbThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, dateTraitement, avecDebiteurs, statusManager, ids);
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ListesNominativesRapport rapport = template.execute(new TransactionCallback<ListesNominativesRapport>() {
-			@Override
-			public ListesNominativesRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final ListesNominativesRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		Audit.success("La production des listes nominatives en date du " + dateTraitement + " est terminée.", rapport);
