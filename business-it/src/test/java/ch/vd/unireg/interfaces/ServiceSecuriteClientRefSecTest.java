@@ -3,7 +3,6 @@ package ch.vd.unireg.interfaces;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -28,7 +27,7 @@ public class ServiceSecuriteClientRefSecTest extends BusinessItTest {
 	public void testGetCollectivitesUtilisateur() throws Exception {
 		final List<?> collectivites = service.getCollectivitesUtilisateur("ZAIZZT");
 		assertNotNull(collectivites);
-		assertTrue(collectivites.size() >= 1);
+		assertEquals(1, collectivites.size());
 	}
 
 	@Test

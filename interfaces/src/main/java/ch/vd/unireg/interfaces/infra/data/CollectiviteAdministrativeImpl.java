@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +35,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	private final boolean aci;
 	private final boolean oid;
 	private final boolean valide;
+	private final List<EchangeAciCom> echangeAciCom;
 
 	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target) {
 		if (target == null) {
@@ -77,6 +79,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.aci = target.isACI();
 		this.oid = target.isOID();
 		this.valide = target.isValide();
+		echangeAciCom = null;
 	}
 
 	protected CollectiviteAdministrativeImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureFidor service) {
@@ -96,6 +99,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.aci = Objects.equals(right.getCodeType(), SIGLE_ACI);
 		this.oid = Objects.equals(right.getCodeType(), SIGLE_OID);
 		this.valide = right.getDateFin() == null;
+		this.echangeAciCom = EchangeAciComImpl.get(right.getEchangesAciCom());
 	}
 
 	@Override
@@ -176,6 +180,11 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	@Override
 	public boolean isValide() {
 		return valide;
+	}
+
+	@Override
+	public List<EchangeAciCom> getEchangeAciCom() {
+		return echangeAciCom;
 	}
 
 	@Override

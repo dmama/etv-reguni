@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.mock;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
@@ -10,6 +11,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.EchangeAciCom;
 import ch.vd.unireg.type.TexteCasePostale;
 
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
@@ -433,6 +435,9 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	 */
 	public void setValide(boolean isValide) {
 		this.isValide = isValide;
+	}
+	public List<EchangeAciCom> getEchangeAciCom(){
+		return null;
 	}
 
 	public static Collection<MockCollectiviteAdministrative> getAll() {

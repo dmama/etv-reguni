@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.service.refsec;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.hibernate.cfg.NotYetImplementedException;
 import org.jetbrains.annotations.NotNull;
@@ -8,8 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
+import ch.vd.unireg.interfaces.infra.data.TypeCommunication;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -82,7 +86,9 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visa) {
 		try {
 			final List<Integer> codeCollectivites = clientRefSec.getCodesCollectivitesUtilisateur(visa);
-			return serviceInfrastructureService.findCollectivitesAdministratives(codeCollectivites, false);
+			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.findCollectivitesAdministratives(codeCollectivites, false);
+			return filtreCollectiviteAdministrativeParTypeCommunicationACI(collectivitesAdministratives)
+					.collect(Collectors.toList());
 		}
 		catch (ClientRefSecException e) {
 			throw new ServiceSecuriteException("impossible de récupérer les codes collectivités administrative depuis Refsec de l'operateur   " + visa, e);
@@ -90,6 +96,16 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 		catch (Exception e) {
 			throw new ServiceSecuriteException("impossible de récupérer les collectivités administrative depuis fidor de l'operateur   " + visa, e);
 		}
+	}
+
+	@NotNull
+	private Stream<CollectiviteAdministrative> filtreCollectiviteAdministrativeParTypeCommunicationACI(List<CollectiviteAdministrative> collectivites) {
+		return collectivites.stream()
+				.filter(collectiviteAdministrative ->
+						        collectiviteAdministrative.getEchangeAciCom() == null
+								        || collectiviteAdministrative.getEchangeAciCom().isEmpty()
+								        || collectiviteAdministrative.getEchangeAciCom().stream()
+								        .anyMatch(echangeAciCom -> echangeAciCom.getTypeCommunication().equals(TypeCommunication.ACI) && echangeAciCom.isValidAt(RegDate.get())));
 	}
 
 	@Override
