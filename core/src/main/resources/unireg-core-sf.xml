@@ -38,6 +38,8 @@
 		<value>ch.vd.unireg.documentfiscal.DelaiDocumentFiscal</value>
 		<value>ch.vd.unireg.declaration.DelaiDeclaration</value>
 		<value>ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal</value>
+		<value>ch.vd.unireg.declaration.LiberationDeclaration</value>
+		<value>ch.vd.unireg.documentfiscal.LiberationDocumentFiscal</value>
 		<value>ch.vd.unireg.documentfiscal.EtatDocumentFiscal</value>
 		<value>ch.vd.unireg.declaration.EtatDeclaration</value>
 		<value>ch.vd.unireg.declaration.EtatDeclarationSommee</value>

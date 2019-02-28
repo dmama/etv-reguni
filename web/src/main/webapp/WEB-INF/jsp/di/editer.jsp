@@ -3,6 +3,9 @@
 <c:set var="depuisTache" value="${param.depuisTache}" />
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+	<tiles:put name="head">
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/di.js"/>"></script>
+	</tiles:put>
 	<tiles:put name="title"><fmt:message key="title.edition.di" /></tiles:put>
   	<tiles:put name="fichierAide"><li><a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-di.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a></li></tiles:put>
 	<tiles:put name="body">
@@ -66,6 +69,12 @@
 		<!-- Debut Etats -->
 		<jsp:include page="etat/lister.jsp"/>
 		<!-- Fin Etats -->
+
+		<!-- Debut Liberation -->
+		<jsp:include page="liberation/lister-liberation.jsp">
+			<jsp:param name="entite" value="LiberationDeclaration"/>
+		</jsp:include>
+		<!-- Fin Liberation -->
 
 		<div style="margin-top:1em;">
 			<!-- Debut Boutons -->
@@ -163,7 +172,7 @@
 												var radiosave = form.find('input[id=radio-save]:checked').val();
 												var ischangetype = form.find('#changerType');
 												//si aucun bouton radio sélèctionné avec changement de type , on lève un message d'erreur
-												if (radiosave == null && ischangetype.attr("value") == 'true') {
+												if (radiosave == null && ischangetype.attr("value") === 'true') {
 													alert('Veuillez préciser votre choix concernant la sauvegarde de type de document');
 												}
 												else {
@@ -182,7 +191,7 @@
 
 													var buttons = $('.ui-button');
 													buttons.each(function () {
-														if ($(this).text() == 'Imprimer') {
+														if ($(this).text() === 'Imprimer') {
 															$(this).addClass('ui-state-disabled');
 															$(this).attr('disabled', true);
 														}
@@ -224,8 +233,7 @@
 
 			<!-- Libération de la DI -->
 			<c:if test="${command.allowedLiberation && !command.depuisTache}">
-				<unireg:buttonTo name="Libérer la déclaration" confirm="Voulez-vous vraiment libérer cette déclaration d'impôt ?"
-				                 action="/di/liberer.do" method="post" params='{id:${command.id}}' />
+				<input type="button"  value="<fmt:message key="label.bouton.liberer.di" />" onclick="return di.creerModalLiberationDI(${command.id},'bouton_liberer_di','/di/liberer.do');">
 			</c:if>
 		</div>
 

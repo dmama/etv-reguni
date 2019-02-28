@@ -15,11 +15,13 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.LiberationDeclaration;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.LiberationDocumentFiscal;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
@@ -96,6 +98,8 @@ public class ConsultLogController {
 		AllegementFoncier(AllegementFoncier.class),
 		DroitRF(DroitRF.class),
 		PrincipalCommunauteRF(PrincipalCommunauteRF.class),
+		LiberationDocumentFiscal(LiberationDocumentFiscal.class),
+		LiberationDeclaration(LiberationDeclaration.class),
 		DelaiDocumentFiscal(DelaiDocumentFiscal.class),
 		EtatDocumentFiscal(EtatDocumentFiscal.class);
 

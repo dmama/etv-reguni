@@ -28,6 +28,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -38,6 +39,7 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.declaration.LiberationDeclaration;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -1403,16 +1405,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, totor.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(john,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(totor,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				return null;
 			}
 		});
@@ -1447,18 +1449,18 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, totor.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(john,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				// ramon: la DI pré-existante corresponds parfaitement avec la tâche
 				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				// totor: la DI pré-existante est en conflit avec la tâche => erreur
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(totor,
-				                                                                                                                                                         2007));
+				                                                                                                                                                  2007));
 				return null;
 			}
 		});
@@ -2786,6 +2788,28 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			return apm.getNumero();
 		});
 
+	}
+
+	@Test
+	public void testAjouterDemandeLiberationValide() throws Exception {
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT");
+		assertNotNull(di.getLiberations());
+		assertEquals(di.getLiberations().size(),1);
+	}
+
+	@Test
+	public void testAjouterDemandeLiberationInvalide() {
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		di.addLiberation(new LiberationDeclaration());
+
+		try {
+			service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT");
+			fail();
+		}
+		catch (AjoutDemandeLiberationDIException e) {
+			assertEquals(AjoutDemandeLiberationDIException.Raison.LIBERATION_DEJA_EXISTANT, e.getRaison());
+		}
 	}
 
 	private void verificationCodeControle(long pmId) throws Exception {

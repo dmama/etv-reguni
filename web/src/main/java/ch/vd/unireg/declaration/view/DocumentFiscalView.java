@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.Annulable;
@@ -23,6 +24,7 @@ public abstract class DocumentFiscalView implements Annulable {
 	private final TypeEtatDocumentFiscal etat;
 	private final List<EtatDocumentFiscalView> etats;
 	private final List<DelaiDocumentFiscalView> delais;
+	private final List<LiberationDocumentFiscalView> liberations;
 	private final RegDate delaiAccorde;
 	private final RegDate dateRetour;
 	private final String sourceRetour;
@@ -43,6 +45,10 @@ public abstract class DocumentFiscalView implements Annulable {
 
 		this.etats = initEtats(documentFiscal.getEtats(), infraService, messageHelper);
 		this.delais = initDelais(documentFiscal.getDelais(), documentFiscal.getPremierDelai(), infraService, messageHelper);
+		this.liberations = documentFiscal.getLiberations().stream()
+				.map(LiberationDocumentFiscalView::new)
+				.sorted()
+				.collect(Collectors.toList());
 
 		this.delaiAccorde = documentFiscal.getDelaiAccordeAu();
 		this.dateRetour = documentFiscal.getDateRetour();
@@ -103,5 +109,9 @@ public abstract class DocumentFiscalView implements Annulable {
 
 	public String getSourceRetour() {
 		return sourceRetour;
+	}
+
+	public List<LiberationDocumentFiscalView> getLiberations() {
+		return liberations;
 	}
 }

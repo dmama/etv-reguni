@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.springframework.context.MessageSource;
@@ -33,6 +35,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.EditiqueErrorHelper;
 import ch.vd.unireg.common.Flash;
@@ -41,6 +44,7 @@ import ch.vd.unireg.common.RetourEditiqueControllerHelper;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.common.TicketTimeoutException;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationGenerationOperation;
 import ch.vd.unireg.declaration.DeclarationImpotCriteria;
@@ -69,6 +73,7 @@ import ch.vd.unireg.di.view.DemandeDelaisMandataireView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.unireg.di.view.LibererDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.QuittancerDeclarationView;
@@ -1089,7 +1094,7 @@ public class DeclarationImpotController {
 			sources.add(((EtatDeclarationRetournee) etat).getSource());
 		}
 		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
-		return !sources.isEmpty();
+		return !sources.isEmpty()&& CollectionUtils.isEmpty(di.getLiberations());
 	}
 
 	/**
@@ -1676,8 +1681,30 @@ public class DeclarationImpotController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/liberer.do", method = RequestMethod.GET)
+	public String libererDI(@RequestParam("id") long id, Model model) {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit pour de libération des déclarations d'impôt");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		checkAccessRights(di, false, false, false, false, true, false, false, false, false);
+
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		model.addAttribute("command", new LibererDeclarationImpotView(di.getId(), StringUtils.EMPTY));
+		model.addAttribute("maxlen", 200);
+
+		return "di/liberation/ajout-liberation";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/liberer.do", method = RequestMethod.POST)
-	public String libererDeclaration(@RequestParam("id") long idDeclaration) {
+	public String libererDeclaration(@RequestParam("idDI") long idDeclaration, @RequestParam("motif") String motif) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des déclarations d'impôt.");
@@ -1699,8 +1726,10 @@ public class DeclarationImpotController {
 			return "redirect:/di/editer.do?id=" + idDeclaration;
 		}
 
-		// envoi de la demande de libération
+
 		try {
+			diService.ajouterDemandeLiberationDI(di, motif, AuthenticationHelper.getCurrentPrincipal());
+			// envoi de la demande de libération
 			liberationSender.demandeLiberationDeclarationImpot(di.getTiers().getNumero(),
 			                                                   di.getPeriode().getAnnee(),
 			                                                   di.getNumero(),
@@ -1709,7 +1738,7 @@ public class DeclarationImpotController {
 			Flash.message("La demande de libération de la déclaration a été envoyée au service concerné.");
 			return "redirect:/di/editer.do?id=" + idDeclaration;
 		}
-		catch (EvenementDeclarationException e) {
+		catch (EvenementDeclarationException | AjoutDemandeLiberationDIException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
 	}

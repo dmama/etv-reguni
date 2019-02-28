@@ -116,6 +116,7 @@ public abstract class LengthConstants {
 	public static final int DI_QUALIF = 16;
 	public static final int DI_ADRESSE_RETOUR = 4;
 	public static final int DI_CODE_CONTROLE = 6;
+	public static final int DI_LIBERATION= 200;
 
 	public static final int MODELEDOC_TYPE = 32;
 

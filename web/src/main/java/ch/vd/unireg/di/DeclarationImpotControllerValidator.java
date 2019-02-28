@@ -1,5 +1,7 @@
 package ch.vd.unireg.di;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -24,6 +26,7 @@ import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.unireg.di.view.LibererDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.QuittancerDeclarationView;
@@ -71,7 +74,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationImpotListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| QuittancerDeclarationView.class.equals(clazz)
+				|| QuittancerDeclarationView.class.equals(clazz) || LibererDeclarationImpotView.class.equals(clazz)
 				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || ModifierEtatDelaiDeclarationPPView.class.equals(clazz)
 				|| AjouterDelaiDeclarationPMView.class.equals(clazz) || ModifierEtatDelaiDeclarationPMView.class.equals(clazz);
 	}
@@ -83,7 +86,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 			validateImprimerNouvelleDI((ImprimerNouvelleDeclarationImpotView) target, errors);
 		}
 		else if (target instanceof QuittancerDeclarationView) {
-			validateQuittancerDI((QuittancerDeclarationView)target, errors);
+			validateQuittancerDI((QuittancerDeclarationView) target, errors);
 		}
 		else if (target instanceof ImprimerDuplicataDeclarationImpotView) {
 			valideImprimerDuplicataDI((ImprimerDuplicataDeclarationImpotView) target, errors);
@@ -100,6 +103,26 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		else if (target instanceof ModifierEtatDelaiDeclarationPMView) {
 			valideModifierEtatDelaiDeclarationPM((ModifierEtatDelaiDeclarationPMView) target, errors);
 		}
+		else if (target instanceof LibererDeclarationImpotView) {
+			valideAjoutDemandeLiberation((LibererDeclarationImpotView) target, errors);
+		}
+	}
+
+	private void valideAjoutDemandeLiberation(LibererDeclarationImpotView target, Errors errors) {
+		final DeclarationImpotOrdinaire di = diDAO.get(target.getIdDI());
+		if (di == null) {
+			errors.reject("error.di.inexistante");
+			return;
+		}
+		if(CollectionUtils.isNotEmpty(di.getLiberations())){
+			errors.reject("error.di.deja.ete.liberer");
+			return;
+		}
+
+		if(StringUtils.isNotBlank(target.getMotif())){
+			errors.reject("error.di.liberer.sans.motif");
+		}
+
 	}
 
 	private void validateImprimerNouvelleDI(ImprimerNouvelleDeclarationImpotView view, Errors errors) {

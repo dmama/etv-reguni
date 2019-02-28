@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -196,6 +197,16 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement la date d'impression
 	 */
 	void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException;
+
+	/**
+	 * Ajoute les informations de demande de liberation sur une déclaration d'impot
+	 *
+	 * @param declaration la déclaration d'impôt ordinaire faisant l'objet de la demande de liberation
+	 * @param motif       Motivation de la liberation
+	 * @param visa        le visa du taxateur faisant la demande
+	 * @throws AjoutDemandeLiberationDIException en cas d'erreur qui empêche l'ajout de la demande
+	 */
+	void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa) throws AjoutDemandeLiberationDIException;
 
 	/**
 	 * Ajoute un délai <b>explicite</b> sur une déclaration d'impôt.

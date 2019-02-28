@@ -45,6 +45,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	private Tiers tiers;
 	private Set<DelaiDocumentFiscal> delais; // Ex: Echeances
 	private Set<EtatDocumentFiscal> etats; // Ex: Envois
+	private Set<LiberationDocumentFiscal> liberations;
 
 	@Transient
 	@Override
@@ -88,7 +89,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @return the delais
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable=false, updatable=false, nullable= false)
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
 	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
 	public Set<DelaiDocumentFiscal> getDelais() {
 		return delais;
@@ -116,6 +117,37 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 		final List<DelaiDocumentFiscal> list = new ArrayList<>(getDelais());
 		list.sort(new DelaiDocumentFiscal.Comparator());
 
+		return list;
+	}
+
+	/**
+	 * @return les liberations
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
+	@ForeignKey(name = "FK_LIB_DOCFISC_DOCFISC_ID")
+	public Set<LiberationDocumentFiscal> getLiberations() {
+		return liberations;
+	}
+
+	public void setLiberations(Set<LiberationDocumentFiscal> liberations) {
+		this.liberations = liberations;
+	}
+
+	/**
+	 * @return la liste des états triés par ordre croissant (du plus ancien ou plus récent).
+	 * @see EtatDocumentFiscal.Comparator
+	 */
+	@Transient
+	public List<LiberationDocumentFiscal> getLiberationsSorted() {
+
+		if (getLiberations() == null) {
+			return null;
+		}
+
+		// tri par ordre croissant
+		final List<LiberationDocumentFiscal> list = new ArrayList<>(getLiberations());
+		list.sort(new LiberationDocumentFiscal.Comparator());
 		return list;
 	}
 
@@ -333,6 +365,16 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 		delai.setDocumentFiscal(this);
 		delais.add(delai);
+	}
+
+	public void addLiberation(LiberationDocumentFiscal liberation) {
+
+		if (liberations == null) {
+			liberations = new HashSet<>();
+		}
+
+		liberation.setDocumentFiscal(this);
+		liberations.add(liberation);
 	}
 
 	@Override

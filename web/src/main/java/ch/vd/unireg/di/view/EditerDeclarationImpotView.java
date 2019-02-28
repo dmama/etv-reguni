@@ -21,6 +21,7 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
 import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
+import ch.vd.unireg.declaration.view.LiberationDocumentFiscalView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
@@ -45,6 +46,7 @@ public class EditerDeclarationImpotView {
 	private TypeEtatDocumentFiscal dernierEtat;
 	private List<DelaiDocumentFiscalView> delais;
 	private List<EtatDocumentFiscalView> etats;
+	private List<LiberationDocumentFiscalView> liberations;
 	private boolean isSommable;
 	/**
 	 * VRAI si la DI a été sommée (même si elle est maintenant retournée ou échue)
@@ -90,6 +92,10 @@ public class EditerDeclarationImpotView {
 		this.dernierEtat = getDernierEtat(di);
 		this.delais = initDelais(di, infraService, messageHelper);
 		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageHelper);
+		this.liberations = di.getLiberations().stream()
+				.map(LiberationDocumentFiscalView::new)
+				.sorted()
+				.collect(Collectors.toList());
 		this.isAllowedQuittancement = allowedQuittancement;
 		this.isAllowedDelai = allowedDelai;
 		this.isAllowedSommation = allowedSommation;
@@ -304,5 +310,9 @@ public class EditerDeclarationImpotView {
 
 	public boolean isAllowedDuplicataDirect() {
 		return isDiPM && isAllowedDuplicata;
+	}
+
+	public List<LiberationDocumentFiscalView> getLiberations() {
+		return liberations;
 	}
 }

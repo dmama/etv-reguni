@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +25,7 @@ import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -35,6 +37,7 @@ import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.LiberationDeclaration;
 import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -121,6 +124,7 @@ import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DAT
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DECLARATION_ANNULEE;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.MAUVAIS_ETAT_DECLARATION;
+import static ch.vd.unireg.declaration.AjoutDemandeLiberationDIException.Raison.LIBERATION_DEJA_EXISTANT;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_NON_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_HOLDING;
@@ -499,6 +503,19 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
+	@Override
+	public void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa) throws AjoutDemandeLiberationDIException {
+
+		if(CollectionUtils.isNotEmpty(declaration.getLiberations())){
+			throw  new AjoutDemandeLiberationDIException(LIBERATION_DEJA_EXISTANT, "Une demamde de libération  existe déjà.");
+		}
+		// on ajoute la demande de liberation
+		final LiberationDeclaration liberation = new LiberationDeclaration();
+		liberation.setMotif(motif);
+		liberation.setDateLiberation(RegDate.get());
+		liberation.setLogCreationUser(visa);
+		declaration.addLiberation(liberation);
+	}
 	@Override
 	public void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @Nullable RegDate dateDelai, @NotNull EtatDelaiDocumentFiscal etatDelai, @Nullable DemandeDelaisMandataire demandeMandataire) throws AjoutDelaiDeclarationException {
 

@@ -460,6 +460,16 @@ textarea.add-comment {
 }
 
 /**
+ * Motif liberation
+ */
+
+textarea.add-motif {
+	height: 87px;
+	width: 399px;
+	resize: none;
+}
+
+/**
  * Droits d'accès
  */
 
