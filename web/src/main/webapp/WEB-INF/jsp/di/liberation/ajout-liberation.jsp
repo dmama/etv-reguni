@@ -21,7 +21,7 @@
 					<td>
 						<form:textarea id="motifValue" path="motif" cols="50" rows="6" cssClass="add-motif"/>
 						<script type="text/javascript">
-							let commentaireManuelEFacture = {
+							let motivation = {
 								checkTextAreaLength: function () {
 									let textArea = $('#motifValue')[0];
 
@@ -38,7 +38,7 @@
 									$('#remainingLen').text(remainingLen);
 								}
 							};
-							$(document).everyTime('100ms', commentaireManuelEFacture.checkTextAreaLength);
+							$(document).everyTime('100ms', motivation.checkTextAreaLength);
 						</script>
 					</td>
 
