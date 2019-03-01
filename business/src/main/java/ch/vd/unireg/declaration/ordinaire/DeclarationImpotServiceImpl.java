@@ -504,7 +504,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa) throws AjoutDemandeLiberationDIException {
+	public void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa, String businessId) throws AjoutDemandeLiberationDIException {
 
 		if(CollectionUtils.isNotEmpty(declaration.getLiberations())){
 			throw  new AjoutDemandeLiberationDIException(LIBERATION_DEJA_EXISTANT, "Une demamde de libération  existe déjà.");
@@ -514,6 +514,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		liberation.setMotif(motif);
 		liberation.setDateLiberation(RegDate.get());
 		liberation.setLogCreationUser(visa);
+		liberation.setBusinessId(businessId);
 		declaration.addLiberation(liberation);
 	}
 	@Override

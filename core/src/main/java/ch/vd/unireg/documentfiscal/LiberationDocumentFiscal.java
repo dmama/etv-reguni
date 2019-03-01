@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
@@ -38,6 +40,7 @@ public abstract class LiberationDocumentFiscal extends HibernateEntity implement
 	private Long id;
 	private DocumentFiscal documentFiscal;
 	private RegDate dateLiberation;
+	private String businessId;
 
 	@Transient
 	@Override
@@ -87,6 +90,14 @@ public abstract class LiberationDocumentFiscal extends HibernateEntity implement
 	@Override
 	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return getDocumentFiscal() == null ? null : Collections.singletonList(getDocumentFiscal());
+	}
+
+	public void setBusinessId(String businessId) {
+		this.businessId = businessId;
+	}
+	@Column(name = "MSG_LIB_BUSINESSID", length = LengthConstants.DI_LIBERATION)
+	public String getBusinessId() {
+		return businessId;
 	}
 
 

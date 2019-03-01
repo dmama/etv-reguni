@@ -62,21 +62,21 @@ public class EvenementLiberationDeclarationImpotSenderImpl implements EvenementL
 	}
 
 	@Override
-	public void demandeLiberationDeclarationImpot(long numeroContribuable, int periodeFiscale, int numeroSequence, @NotNull TypeDeclarationLiberee type) throws EvenementDeclarationException {
+	public String demandeLiberationDeclarationImpot(long numeroContribuable, int periodeFiscale, int numeroSequence, @NotNull TypeDeclarationLiberee type) throws EvenementDeclarationException {
 		if (!enabled) {
 			LOGGER.info(String.format("Evénements de demande de libération de déclaration d'impôt désactivés ; la demande de libération de la déclaration %d/%d du contribuable %s n'est donc pas envoyée.",
 			                          periodeFiscale,
 			                          numeroSequence,
 			                          FormatNumeroHelper.numeroCTBToDisplay(numeroContribuable)));
-			return;
+			return null;
 		}
 
 		// maintenant, il faut constituer et envoyer le message
 		final DemandeLiberation demande = buildDemande(numeroContribuable, periodeFiscale, numeroSequence, type);
-		sendMessage(demande);
+		return sendMessage(demande);
 	}
 
-	private void sendMessage(DemandeLiberation demande) throws EvenementDeclarationException {
+	private String sendMessage(DemandeLiberation demande) throws EvenementDeclarationException {
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		if (principal == null) {
 			throw new IllegalArgumentException();
@@ -104,6 +104,7 @@ public class EvenementLiberationDeclarationImpotSenderImpl implements EvenementL
 
 			esbValidator.validate(m);
 			esbTemplate.send(m);
+			return m.getBusinessId();
 		}
 		catch (Exception e) {
 			throw new EvenementDeclarationException(EsbBusinessCode.REPONSE_IMPOSSIBLE, e);

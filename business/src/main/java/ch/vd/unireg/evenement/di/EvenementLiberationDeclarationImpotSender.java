@@ -22,5 +22,5 @@ public interface EvenementLiberationDeclarationImpotSender {
 	 * @param type type de déclaration d'impôt
 	 * @throws EvenementDeclarationException en cas de problème
 	 */
-	void demandeLiberationDeclarationImpot(long numeroContribuable, int periodeFiscale, int numeroSequence, @NotNull TypeDeclarationLiberee type) throws EvenementDeclarationException;
+	String demandeLiberationDeclarationImpot(long numeroContribuable, int periodeFiscale, int numeroSequence, @NotNull TypeDeclarationLiberee type) throws EvenementDeclarationException;
 }

@@ -1094,7 +1094,7 @@ public class DeclarationImpotController {
 			sources.add(((EtatDeclarationRetournee) etat).getSource());
 		}
 		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
-		return !sources.isEmpty()&& CollectionUtils.isEmpty(di.getLiberations());
+		return !sources.isEmpty() && CollectionUtils.isEmpty(di.getLiberations());
 	}
 
 	/**
@@ -1583,7 +1583,7 @@ public class DeclarationImpotController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/editer-pm.do", method = RequestMethod.POST)
 	public String editerEtatDelaiPM(@Valid @ModelAttribute("command") final ModifierEtatDelaiDeclarationPMView view,
-	                                   BindingResult result, Model model, HttpServletResponse response) throws Exception {
+	                                BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
@@ -1728,13 +1728,13 @@ public class DeclarationImpotController {
 
 
 		try {
-			diService.ajouterDemandeLiberationDI(di, motif, AuthenticationHelper.getCurrentPrincipal());
 			// envoi de la demande de libération
-			liberationSender.demandeLiberationDeclarationImpot(di.getTiers().getNumero(),
-			                                                   di.getPeriode().getAnnee(),
-			                                                   di.getNumero(),
-			                                                   di instanceof DeclarationImpotOrdinairePP ? EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PP :
-					                                                   EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			final String businessId = liberationSender.demandeLiberationDeclarationImpot(di.getTiers().getNumero(),
+			                                                                             di.getPeriode().getAnnee(),
+			                                                                             di.getNumero(),
+			                                                                             di instanceof DeclarationImpotOrdinairePP ? EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PP :
+					                                                                             EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			diService.ajouterDemandeLiberationDI(di, motif, AuthenticationHelper.getCurrentPrincipal(), businessId);
 			Flash.message("La demande de libération de la déclaration a été envoyée au service concerné.");
 			return "redirect:/di/editer.do?id=" + idDeclaration;
 		}

@@ -2793,7 +2793,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	@Test
 	public void testAjouterDemandeLiberationValide() throws Exception {
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
-		service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT");
+		service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT", "businessID");
 		assertNotNull(di.getLiberations());
 		assertEquals(di.getLiberations().size(),1);
 	}
@@ -2804,7 +2804,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		di.addLiberation(new LiberationDeclaration());
 
 		try {
-			service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT");
+			service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT", "businessID");
 			fail();
 		}
 		catch (AjoutDemandeLiberationDIException e) {

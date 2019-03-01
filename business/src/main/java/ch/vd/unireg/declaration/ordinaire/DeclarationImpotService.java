@@ -204,9 +204,10 @@ public interface DeclarationImpotService {
 	 * @param declaration la déclaration d'impôt ordinaire faisant l'objet de la demande de liberation
 	 * @param motif       Motivation de la liberation
 	 * @param visa        le visa du taxateur faisant la demande
+	 * @param businessId  businnessId du message de demande de liberation
 	 * @throws AjoutDemandeLiberationDIException en cas d'erreur qui empêche l'ajout de la demande
 	 */
-	void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa) throws AjoutDemandeLiberationDIException;
+	void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa, String businessId) throws AjoutDemandeLiberationDIException;
 
 	/**
 	 * Ajoute un délai <b>explicite</b> sur une déclaration d'impôt.
