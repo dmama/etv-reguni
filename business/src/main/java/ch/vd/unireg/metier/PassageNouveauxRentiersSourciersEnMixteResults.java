@@ -51,16 +51,32 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 		}
 	}
 
-	public static class Erreur {
+
+	public static abstract class NonTraite {
 
 		public final Long noCtb;
 		public final ErreurType raison;
 		public final String details;
 
-		public Erreur(Long noCtb, ErreurType raison, String details) {
+		public NonTraite(Long noCtb, ErreurType raison, String details) {
 			this.noCtb = noCtb;
 			this.raison = raison;
 			this.details = details;
+		}
+	}
+
+	public static class Erreur extends NonTraite{
+
+
+		public Erreur(Long noCtb, ErreurType raison, String details) {
+			super(noCtb,raison,details);
+		}
+	}
+	public static class Ignore extends NonTraite{
+
+
+		public Ignore(Long noCtb, ErreurType raison, String details) {
+			super(noCtb,raison,details);
 		}
 	}
 
@@ -72,7 +88,8 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	public int nbSourciersConjointsIgnores;
 
 	public final List<Traite> sourciersConvertis = new LinkedList<>();
-    public final List<Erreur> sourciersEnErreurs = new LinkedList<>();
+    public final List<NonTraite> sourciersEnErreurs = new LinkedList<>();
+	public final List<NonTraite> sourciersIgnores = new LinkedList<>();
 
 	public boolean interrompu;
 
@@ -82,7 +99,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	}
 
 	public int getNbSourciersTotal() {
-		return nbSourciersTropJeunes + nbSourciersHorsSuisse + nbSourciersConjointsIgnores + sourciersConvertis.size() + sourciersEnErreurs.size();
+		return nbSourciersTropJeunes + nbSourciersHorsSuisse + nbSourciersConjointsIgnores + sourciersConvertis.size() + sourciersEnErreurs.size() + sourciersIgnores.size();
 	}
 
 	@Override
@@ -93,6 +110,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 		nbSourciersConjointsIgnores += right.nbSourciersConjointsIgnores;
 		sourciersEnErreurs.addAll(right.sourciersEnErreurs);
 		sourciersConvertis.addAll(right.sourciersConvertis);
+		sourciersIgnores.addAll(right.sourciersIgnores);
 	}
 
 	@Override
@@ -112,7 +130,16 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	}
 
 	public void addPassageNouveauxRentiersSourciersEnMixteException(PassageNouveauxRentiersSourciersEnMixteException e) {
-		sourciersEnErreurs.add(new Erreur(e.getContribuable().getNumero(), e.getType(), e.getMessage()));
+
+		switch (e.getType()){
+		case DATE_NAISSANCE_NULLE:case DOMICILE_INCONNU:case FOR_FISCAL_POSTERIEUR:
+			sourciersIgnores.add(new Ignore(e.getContribuable().getNumero(), e.getType(), e.getMessage()));
+			break;
+		default:
+			sourciersEnErreurs.add(new Erreur(e.getContribuable().getNumero(), e.getType(), e.getMessage()));
+
+		}
+
 	}
 
 	public void addUnknownException(Long numeroSourcier, Exception e) {

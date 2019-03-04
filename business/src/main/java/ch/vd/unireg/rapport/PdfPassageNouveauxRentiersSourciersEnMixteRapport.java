@@ -57,6 +57,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 				table.addLigne("Nombre de sourciers convertis via leur conjoint:", String.valueOf(results.nbSourciersConjointsIgnores));
 				table.addLigne("Nombre de sourciers non-convertis car trop jeunes :", String.valueOf(results.nbSourciersTropJeunes));
 				table.addLigne("Nombre de sourciers non-convertis car hors-Suisse :", String.valueOf(results.nbSourciersHorsSuisse));
+				table.addLigne("Nombre de sourciers ignorés:", String.valueOf(results.sourciersIgnores.size()));
 				table.addLigne("Nombre de sourciers en erreur:", String.valueOf(results.sourciersEnErreurs.size()));
 				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
@@ -67,8 +68,18 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 		{
 			String filename = "sourciers_convertis.csv";
 			String titre = "Liste des sourciers convertis";
-			String listVide = "(aucun sourcier converti)";
+			String listVide = "(Aucun sourcier converti)";
 			try (TemporaryFile contenu = asCsvFileTraite(results.sourciersConvertis, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
+
+		// Habitants en ignorés
+		{
+			String filename = "sourciers_ignorés.csv";
+			String titre = "Liste des sourciers ignorés";
+			String listVide = "(Aucun sourcier ignoré)";
+			try (TemporaryFile contenu = asCsvFileNonTraite(results.sourciersIgnores, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
@@ -76,12 +87,14 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 		// Habitants en erreurs
 		{
 			String filename = "sourciers_en_erreur.csv";
-			String titre = "Liste des habitants en erreur";
-			String listVide = "(aucun habitant en erreur)";
-			try (TemporaryFile contenu = asCsvFileErreur(results.sourciersEnErreurs, filename, status)) {
+			String titre = "Liste des sourciers en erreur";
+			String listVide = "(Aucun sourcier en erreur)";
+			try (TemporaryFile contenu = asCsvFileNonTraite(results.sourciersEnErreurs, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
+
+
 
 		document.close();
 
@@ -105,8 +118,8 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 		});
 	}
 
-	private static TemporaryFile asCsvFileErreur(List<PassageNouveauxRentiersSourciersEnMixteResults.Erreur> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Erreur>() {
+	private static TemporaryFile asCsvFileNonTraite(List<PassageNouveauxRentiersSourciersEnMixteResults.NonTraite> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.NonTraite>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(CsvHelper.COMMA);
@@ -115,7 +128,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, PassageNouveauxRentiersSourciersEnMixteResults.Erreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, PassageNouveauxRentiersSourciersEnMixteResults.NonTraite elt) {
 				b.append(elt.noCtb).append(COMMA);
 				b.append(elt.raison.description()).append(COMMA);
 				b.append(CsvHelper.asCsvField(elt.details));

@@ -108,8 +108,8 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			@Override
 			public void afterTransactionCommit() {
 				s.setMessage(String.format(
-						"%d sourciers traités sur %d (convertis = %s, erreurs = %s, conjoints ignorés = %s, hors-Suisse = %s, trop jeune = %s)",
-						rapportFinal.getNbSourciersTotal(), list.size(), rapportFinal.sourciersConvertis.size(), rapportFinal.sourciersEnErreurs.size(), rapportFinal.nbSourciersConjointsIgnores,
+						"%d sourciers traités sur %d (convertis = %s, ignorés = %s, erreurs = %s, conjoints ignorés = %s, hors-Suisse = %s, trop jeune = %s)",
+						rapportFinal.getNbSourciersTotal(), list.size(), rapportFinal.sourciersConvertis.size(), rapportFinal.sourciersIgnores.size(),rapportFinal.sourciersEnErreurs.size(), rapportFinal.nbSourciersConjointsIgnores,
 						rapportFinal.nbSourciersHorsSuisse, rapportFinal.nbSourciersTropJeunes), progressMonitor.getProgressInPercent());
 			}
 		}, progressMonitor);
@@ -121,7 +121,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		}
 		else {
 			statusManager.setMessage("Le passage des nouveaux rentiers sourciers en mixte 1 est terminé." + " Nombre de sourciers traités = "
-					+ rapportFinal.sourciersConvertis.size() + ". Nombre d'erreurs = " + rapportFinal.sourciersEnErreurs.size());
+					+ rapportFinal.sourciersConvertis.size()+ ". Nombre d'ignorés = " + rapportFinal.sourciersIgnores.size() + ". Nombre d'erreurs = " + rapportFinal.sourciersEnErreurs.size());
 		}
 
 		rapportFinal.end();
