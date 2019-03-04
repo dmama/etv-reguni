@@ -43,8 +43,11 @@ import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.ordinaire.common.AjouterDelaiPourMandataireProcessor;
+import ch.vd.unireg.declaration.ordinaire.common.AjouterDelaiPourMandataireResults;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
+import ch.vd.unireg.declaration.ordinaire.common.InfosDelaisMandataire;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMProcessor;
@@ -92,6 +95,7 @@ import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataireDAO;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
@@ -170,6 +174,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private TicketService ticketService;
 	private PeriodeImpositionImpotSourceService piisService;
 	private RegimeFiscalService regimeFiscalService;
+	private DemandeDelaisMandataireDAO demandeDelaisMandataireDAO;
 
 	private Set<String> sourcesMonoQuittancement;
 
@@ -183,7 +188,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                   TiersService tiersService, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationPPSender evenementDeclarationPPSender, PeriodeImpositionService periodeImpositionService,
-	                                   AssujettissementService assujettissementService, TicketService ticketService,RegimeFiscalService regimeFiscalService) {
+	                                   AssujettissementService assujettissementService, TicketService ticketService, RegimeFiscalService regimeFiscalService,
+	                                   DemandeDelaisMandataireDAO demandeDelaisMandataireDAO) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -202,6 +208,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.assujettissementService = assujettissementService;
 		this.ticketService = ticketService;
 		this.regimeFiscalService = regimeFiscalService;
+		this.demandeDelaisMandataireDAO = demandeDelaisMandataireDAO;
 		this.sourcesMonoQuittancement = Collections.emptySet();
 	}
 
@@ -303,6 +310,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public void setPiisService(PeriodeImpositionImpotSourceService piisService) {
 		this.piisService = piisService;
+	}
+
+	public void setDemandeDelaisMandataireDAO(DemandeDelaisMandataireDAO demandeDelaisMandataireDAO) {
+		this.demandeDelaisMandataireDAO = demandeDelaisMandataireDAO;
 	}
 
 	/**
@@ -827,6 +838,13 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                                                   RegDate dateTraitement, StatusManager s) {
 		final DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(ids, pf, dateDelai, dateTraitement, s);
+	}
+
+	@Override
+	public AjouterDelaiPourMandataireResults ajouterDelaiPourMandataire(List<InfosDelaisMandataire> infos, RegDate dateDelai, RegDate dateTraitement, StatusManager s) {
+		final AjouterDelaiPourMandataireProcessor processor = new AjouterDelaiPourMandataireProcessor(periodeDAO,hibernateTemplate,transactionManager,tiersService,adresseService,demandeDelaisMandataireDAO,
+				this);
+		return processor.run(infos,dateDelai,dateTraitement,s);
 	}
 
 	/**

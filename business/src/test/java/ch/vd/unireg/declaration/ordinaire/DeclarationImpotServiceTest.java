@@ -64,6 +64,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataireDAO;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -124,6 +125,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	private PeriodeImpositionService periodeImpositionService;
 	private AdresseService adresseService;
 	private DeclarationImpotService diService;
+	private DemandeDelaisMandataireDAO demandeDelaisMandataireDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -150,6 +152,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 		final RegimeFiscalService regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 		diService = getBean(DeclarationImpotService.class, "diService");
+		demandeDelaisMandataireDAO = getBean(DemandeDelaisMandataireDAO.class, "demandeDelaisMandataireDAO");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -159,7 +162,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 */
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService,
 		                                          transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService,
-		                                          assujettissementService, ticketService, regimeFiscalService);
+		                                          assujettissementService, ticketService, regimeFiscalService, demandeDelaisMandataireDAO);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override

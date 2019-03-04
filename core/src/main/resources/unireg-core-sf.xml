@@ -221,6 +221,7 @@
 		<value>ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport</value>
 		<value>ch.vd.unireg.document.ExclureContribuablesEnvoiRapport</value>
 		<value>ch.vd.unireg.document.DemandeDelaiCollectiveRapport</value>
+		<value>ch.vd.unireg.document.AjouterDelaiPourMandataireRapport</value>
 		<value>ch.vd.unireg.document.RapprocherCtbRapport</value>
 		<value>ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport</value>
 		<value>ch.vd.unireg.document.CorrectionFlagHabitantRapport</value>

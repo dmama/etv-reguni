@@ -367,6 +367,13 @@
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
+	<bean id="ajouterDelaiPourMandataireJob" parent="schedulerJob" class="ch.vd.unireg.declaration.ordinaire.common.AjouterDelaiPourMandataireJob">
+		<constructor-arg value="411"/>
+		<constructor-arg value="Ajouter des délais de déclaration sur demande de mandataire"/>
+		<property name="service" ref="diService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <bean id="determineDIsPMJob" parent="schedulerJob" class="ch.vd.unireg.declaration.ordinaire.pm.DeterminerDIsPMJob">
         <constructor-arg value="450"/>
         <constructor-arg value="Déterminer les déclarations d'impôt PM à envoyer et créer des tâches en instance"/>

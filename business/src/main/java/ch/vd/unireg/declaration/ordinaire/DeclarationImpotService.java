@@ -18,7 +18,9 @@ import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.ordinaire.common.AjouterDelaiPourMandataireResults;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
+import ch.vd.unireg.declaration.ordinaire.common.InfosDelaisMandataire;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.unireg.declaration.ordinaire.pm.EnvoiDIsPMResults;
@@ -342,6 +344,16 @@ public interface DeclarationImpotService {
 	 * @param s              un status manager
 	 */
 	DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(final List<Long> ids, int pf, final RegDate dateDelai, final RegDate dateTraitement, final StatusManager s);
+
+	/**
+	 * Ajoute un délai aux déclarations des contribuables spécifiés selon une demande de mandataire identifié par numéro IDE et raison sociale.
+	 *
+	 * @param infos            les informations de délais demandées par les mandataires
+	 * @param dateDelai      la date de délai à appliquer aux déclarations
+	 * @param dateTraitement la date de traitement
+	 * @param s              un status manager
+	 */
+	AjouterDelaiPourMandataireResults ajouterDelaiPourMandataire(final List<InfosDelaisMandataire> infos, final RegDate dateDelai, final RegDate dateTraitement, final StatusManager s);
 
 	/**
 	 * Permet de produire la liste des contribuables ayant une Di transformée en note

@@ -224,7 +224,7 @@ public abstract class PdfRapport extends Document {
 		return CsvHelper.asCsvTemporaryFile(ctbsTraites, filename, status, new CsvHelper.FileFiller<Long>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("NO_CTB");
+				b.append("NO_CTB").append(COMMA).append("PERIODE_FISCALE").append(COMMA).append("STATUT").append(COMMA).append("PERIODE_FISCALE").append(COMMA).append("PERIODE_FISCALE");
 			}
 
 			@Override

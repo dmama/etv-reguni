@@ -7,6 +7,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.ordinaire.StatistiquesCtbs;
 import ch.vd.unireg.declaration.ordinaire.StatistiquesDIs;
+import ch.vd.unireg.declaration.ordinaire.common.AjouterDelaiPourMandataireResults;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.unireg.declaration.ordinaire.common.RattraperEmissionDIPourCyberContexteResults;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMResults;
@@ -29,86 +30,7 @@ import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCEnMasseImporte
 import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.unireg.declaration.source.EnvoiLRsResults;
 import ch.vd.unireg.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.unireg.document.AcomptesRapport;
-import ch.vd.unireg.document.AnnoncesIDERapport;
-import ch.vd.unireg.document.AppariementEtablissementsSecondairesRapport;
-import ch.vd.unireg.document.AssujettiParSubstitutionRapport;
-import ch.vd.unireg.document.CalculParentesRapport;
-import ch.vd.unireg.document.ChangementRegimesFiscauxRapport;
-import ch.vd.unireg.document.CleanupRFProcessorRapport;
-import ch.vd.unireg.document.ComparerForFiscalEtCommuneRapport;
-import ch.vd.unireg.document.ComparerSituationFamilleRapport;
-import ch.vd.unireg.document.CorrectionEtatDeclarationRapport;
-import ch.vd.unireg.document.CorrectionFlagHabitantRapport;
-import ch.vd.unireg.document.DatabaseIndexationRapport;
-import ch.vd.unireg.document.DemandeDelaiCollectiveRapport;
-import ch.vd.unireg.document.DeterminationDIsPMRapport;
-import ch.vd.unireg.document.DeterminationDIsPPRapport;
-import ch.vd.unireg.document.DeterminationQuestionnairesSNCRapport;
-import ch.vd.unireg.document.DeterminerLRsEchuesRapport;
-import ch.vd.unireg.document.DeterminerMouvementsDossiersEnMasseRapport;
-import ch.vd.unireg.document.DumpPeriodesImpositionImpotSourceRapport;
-import ch.vd.unireg.document.EchoirDIsPMRapport;
-import ch.vd.unireg.document.EchoirDIsPPRapport;
-import ch.vd.unireg.document.EchoirQSNCRapport;
-import ch.vd.unireg.document.EnvoiAnnexeImmeubleRapport;
-import ch.vd.unireg.document.EnvoiDIsPMRapport;
-import ch.vd.unireg.document.EnvoiDIsPPRapport;
-import ch.vd.unireg.document.EnvoiFormulairesDemandeDegrevementICIRapport;
-import ch.vd.unireg.document.EnvoiLRsRapport;
-import ch.vd.unireg.document.EnvoiLettresBienvenueRapport;
-import ch.vd.unireg.document.EnvoiQuestionnairesSNCRapport;
-import ch.vd.unireg.document.EnvoiRappelsQuestionnairesSNCRapport;
-import ch.vd.unireg.document.EnvoiSommationLRsRapport;
-import ch.vd.unireg.document.EnvoiSommationsDIsPMRapport;
-import ch.vd.unireg.document.EnvoiSommationsDIsPPRapport;
-import ch.vd.unireg.document.ExclureContribuablesEnvoiRapport;
-import ch.vd.unireg.document.ExtractionDonneesRptRapport;
-import ch.vd.unireg.document.ExtractionRegimesFiscauxRapport;
-import ch.vd.unireg.document.FusionDeCommunesRapport;
-import ch.vd.unireg.document.IdentifierContribuableFromListeRapport;
-import ch.vd.unireg.document.IdentifierContribuableRapport;
-import ch.vd.unireg.document.ImportCodesSegmentRapport;
-import ch.vd.unireg.document.InitialisationIFoncRapport;
-import ch.vd.unireg.document.LienAssociesSNCEnMasseImporterRapport;
-import ch.vd.unireg.document.ListeAssujettisRapport;
-import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
-import ch.vd.unireg.document.ListeDIsNonEmisesRapport;
-import ch.vd.unireg.document.ListeDroitsAccesRapport;
-import ch.vd.unireg.document.ListeEchangeRenseignementsRapport;
-import ch.vd.unireg.document.ListeNoteRapport;
-import ch.vd.unireg.document.ListeTachesEnIsntanceParOIDRapport;
-import ch.vd.unireg.document.ListesNominativesRapport;
-import ch.vd.unireg.document.MajoriteRapport;
-import ch.vd.unireg.document.MigrationMandatairesSpeciauxRapport;
-import ch.vd.unireg.document.MutationsRFDetectorRapport;
-import ch.vd.unireg.document.MutationsRFProcessorRapport;
-import ch.vd.unireg.document.PassageNouveauxRentiersSourciersEnMixteRapport;
-import ch.vd.unireg.document.RappelFormulairesDemandeDegrevementICIRapport;
-import ch.vd.unireg.document.RappelLettresBienvenueRapport;
-import ch.vd.unireg.document.RapprochementTiersRFRapport;
-import ch.vd.unireg.document.RattrapageModelesCommunautesRFProcessorRapport;
-import ch.vd.unireg.document.RattrapageRegimesFiscauxRapport;
-import ch.vd.unireg.document.RattraperDatesMetierDroitProcessorRapport;
-import ch.vd.unireg.document.RattraperEmissionDIPourCyberContexteRapport;
-import ch.vd.unireg.document.RecalculTachesRapport;
-import ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport;
-import ch.vd.unireg.document.ResolutionAdresseRapport;
-import ch.vd.unireg.document.RolePMCommunesRapport;
-import ch.vd.unireg.document.RolePMOfficeRapport;
-import ch.vd.unireg.document.RolePPCommunesRapport;
-import ch.vd.unireg.document.RolePPOfficesRapport;
-import ch.vd.unireg.document.RoleSNCRapport;
-import ch.vd.unireg.document.RolesCommunesPMRapport;
-import ch.vd.unireg.document.RolesCommunesPPRapport;
-import ch.vd.unireg.document.RolesOIDsRapport;
-import ch.vd.unireg.document.RolesOIPMRapport;
-import ch.vd.unireg.document.StatistiquesCtbsRapport;
-import ch.vd.unireg.document.StatistiquesDIsRapport;
-import ch.vd.unireg.document.StatistiquesEvenementsRapport;
-import ch.vd.unireg.document.SuppressionOIDRapport;
-import ch.vd.unireg.document.TraiterEvenementExterneRapport;
-import ch.vd.unireg.document.ValidationJobRapport;
+import ch.vd.unireg.document.*;
 import ch.vd.unireg.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.unireg.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.unireg.droits.ListeDroitsAccesResults;
@@ -841,4 +763,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	DatabaseIndexationRapport generateRapport(DatabaseIndexationResults results, StatusManager status);
+
+	/**
+	 * Génére le rapport d'éxecution de l'ajout des délais demandés par les mandataires pour leurs clients ctbs
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	AjouterDelaiPourMandataireRapport generateRapport(AjouterDelaiPourMandataireResults results, StatusManager status);
 }

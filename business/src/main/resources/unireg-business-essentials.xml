@@ -203,6 +203,7 @@
 		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
 		<property name="piisService" ref="periodeImpositionImpotSourceService"/>
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
+		<property name="demandeDelaisMandataireDAO" ref="demandeDelaisMandataireDAO" />
 	</bean>
 
 	<bean id="qsncService" class="ch.vd.unireg.declaration.snc.QuestionnaireSNCServiceImpl">
