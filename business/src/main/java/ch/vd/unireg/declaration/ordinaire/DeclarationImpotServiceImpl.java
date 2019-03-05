@@ -25,7 +25,7 @@ import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
-import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -128,7 +128,7 @@ import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DAT
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DECLARATION_ANNULEE;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.MAUVAIS_ETAT_DECLARATION;
-import static ch.vd.unireg.declaration.AjoutDemandeLiberationDIException.Raison.LIBERATION_DEJA_EXISTANT;
+import static ch.vd.unireg.declaration.AjoutDemandeLiberationException.Raison.LIBERATION_DEJA_EXISTANT;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_NON_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_HOLDING;
@@ -515,10 +515,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa, String businessId) throws AjoutDemandeLiberationDIException {
+	public void ajouterDemandeLiberationDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull String motif, @NotNull String visa, String businessId) throws AjoutDemandeLiberationException {
 
 		if(CollectionUtils.isNotEmpty(declaration.getLiberations())){
-			throw  new AjoutDemandeLiberationDIException(LIBERATION_DEJA_EXISTANT, "Une demamde de libération  existe déjà.");
+			throw  new AjoutDemandeLiberationException(LIBERATION_DEJA_EXISTANT, "Une demamde de libération  existe déjà.");
 		}
 		// on ajoute la demande de liberation
 		final LiberationDeclaration liberation = new LiberationDeclaration();

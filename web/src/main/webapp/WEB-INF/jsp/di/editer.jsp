@@ -4,7 +4,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head">
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/di.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/liberation.js"/>"></script>
 	</tiles:put>
 	<tiles:put name="title"><fmt:message key="title.edition.di" /></tiles:put>
   	<tiles:put name="fichierAide"><li><a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-di.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a></li></tiles:put>
@@ -233,7 +233,7 @@
 
 			<!-- Libération de la DI -->
 			<c:if test="${command.allowedLiberation && !command.depuisTache}">
-				<input type="button"  value="<fmt:message key="label.bouton.liberer.di" />" onclick="return di.creerModalLiberationDI(${command.id},'bouton_liberer_di','/di/liberer.do');">
+				<input type="button"  value="<fmt:message key="label.bouton.liberer.di" />" onclick="return liberation.creerModalLiberation(${command.id},'bouton_liberer_di','/di/liberer.do', 'Valider libération DI','Libération de DI');">
 			</c:if>
 		</div>
 

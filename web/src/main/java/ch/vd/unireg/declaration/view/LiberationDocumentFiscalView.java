@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.LiberationDeclaration;
+import ch.vd.unireg.declaration.LiberationQuestionnaireSNC;
 import ch.vd.unireg.documentfiscal.LiberationDocumentFiscal;
 
 public class LiberationDocumentFiscalView implements Comparable<LiberationDocumentFiscalView> {
@@ -17,7 +18,7 @@ public class LiberationDocumentFiscalView implements Comparable<LiberationDocume
 		this.id = liberation.getId();
 		this.logModifUser = liberation.getLogModifUser();
 		this.dateLiberation = liberation.getDateLiberation();
-		this.motif = liberation instanceof LiberationDeclaration ? ((LiberationDeclaration) liberation).getMotif() : null;
+		this.motif = liberation instanceof LiberationDeclaration ? ((LiberationDeclaration) liberation).getMotif() : ((LiberationQuestionnaireSNC) liberation).getMotif();
 	}
 
 	public RegDate getDateLiberation() {

@@ -1,10 +1,10 @@
 'use strict';
-var di = {'di': {}};
+var liberation = {'liberation': {}};
 
-(function (di) {
-	di.creerModalLiberationDI = creerModalLiberationDI;
+(function (liberation) {
+	liberation.creerModalLiberation = creerModalLiberation;
 
-	function creerModalLiberationDI(idDI, idModal, action) {
+	function creerModalLiberation(idDI, idModal, action, buttonValidationLabel, titleModal) {
 
 		var dialog = Dialog.create_dialog_div(idModal);
 
@@ -12,12 +12,12 @@ var di = {'di': {}};
 		dialog.load(App.curl(action) + '?id=' + idDI + '&' + new Date().getTime());
 
 		dialog.dialog({
-			              title: "Libération de DI",
+			              title: titleModal,
 			              height: 220,
 			              width: 500,
 			              modal: true,
 			              buttons: {
-				              "Valider libération DI": function (event) {
+				              [buttonValidationLabel]: function (event) {
 					              // les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
 
 					              var form = dialog.find('#formLiberation');
@@ -28,7 +28,7 @@ var di = {'di': {}};
 					              else {
 						              var buttons = $('.ui-button');
 						              buttons.each(function () {
-							              if ($(this).text() === 'Valider libération DI') {
+							              if ($(this).text() === buttonValidationLabel) {
 								              $(this).addClass('ui-state-disabled');
 								              $(this).attr('disabled', true);
 							              }
@@ -44,4 +44,4 @@ var di = {'di': {}};
 			              }
 		              });
 	}
-})(di);
+})(liberation);

@@ -44,7 +44,7 @@ import ch.vd.unireg.common.RetourEditiqueControllerHelper;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.common.TicketTimeoutException;
 import ch.vd.unireg.common.TiersNotFoundException;
-import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationGenerationOperation;
 import ch.vd.unireg.declaration.DeclarationImpotCriteria;
@@ -73,7 +73,7 @@ import ch.vd.unireg.di.view.DemandeDelaisMandataireView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.unireg.di.view.LibererDeclarationImpotView;
+import ch.vd.unireg.di.view.LibererDocumentFiscalView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.QuittancerDeclarationView;
@@ -1696,7 +1696,7 @@ public class DeclarationImpotController {
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-		model.addAttribute("command", new LibererDeclarationImpotView(di.getId(), StringUtils.EMPTY));
+		model.addAttribute("command", new LibererDocumentFiscalView(di.getId(), StringUtils.EMPTY));
 		model.addAttribute("maxlen", 200);
 
 		return "di/liberation/ajout-liberation";
@@ -1704,7 +1704,7 @@ public class DeclarationImpotController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/liberer.do", method = RequestMethod.POST)
-	public String libererDeclaration(@RequestParam("idDI") long idDeclaration, @RequestParam("motif") String motif) {
+	public String libererDeclaration(@RequestParam("idDocument") long idDeclaration, @RequestParam("motif") String motif) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des déclarations d'impôt.");
@@ -1738,7 +1738,7 @@ public class DeclarationImpotController {
 			Flash.message("La demande de libération de la déclaration a été envoyée au service concerné.");
 			return "redirect:/di/editer.do?id=" + idDeclaration;
 		}
-		catch (EvenementDeclarationException | AjoutDemandeLiberationDIException e) {
+		catch (EvenementDeclarationException | AjoutDemandeLiberationException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
 	}

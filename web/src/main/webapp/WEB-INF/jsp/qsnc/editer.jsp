@@ -3,6 +3,9 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.questionnaire.snc" /></tiles:put>
+	<tiles:put name="head">
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/liberation.js"/>"></script>
+	</tiles:put>
 	<tiles:put name="body">
 
 		<%--@elvariable id="isAjoutDelaiAutorise" type="java.lang.Boolean"--%>
@@ -129,6 +132,14 @@
 		</fieldset>
 		<!-- Fin états -->
 
+		<!-- Debut Liberation -->
+			<c:if test="${not empty questionnaire.liberations}">
+				<jsp:include page="../di/liberation/lister-liberation.jsp">
+					<jsp:param name="entite" value="LiberationQuestionnaireSNC"/>
+				</jsp:include>
+			</c:if>
+		<!-- Fin Liberation -->
+
 		<div style="margin-top:1em;">
 			<!-- Debut Boutons -->
 
@@ -185,8 +196,7 @@
 			<!-- Libération du questionnaire -->
 			<authz:authorize access="hasAnyRole('ROLE_QSNC_LIBERATION')">
 			<c:if test="${questionnaire.liberable && !depuisTache}">
-				<unireg:buttonTo name="Libérer le questionnaire" confirm="Voulez-vous vraiment libérer ce questionnaire?"
-								 action="/qsnc/liberer.do" method="post" params='{id:${questionnaire.id}}' />
+				<input type="button" value="<fmt:message key="label.bouton.liberer.di" />" onclick="return liberation.creerModalLiberation(${questionnaire.id},'bouton_liberer_di','/qsnc/liberer.do','Valider liberation QSNC','Libération de Questionnaire SNC');">
 			</c:if>
 			</authz:authorize>
 

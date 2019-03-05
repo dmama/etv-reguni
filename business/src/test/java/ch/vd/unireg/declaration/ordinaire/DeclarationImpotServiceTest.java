@@ -28,7 +28,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison;
-import ch.vd.unireg.declaration.AjoutDemandeLiberationDIException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -2810,8 +2810,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			service.ajouterDemandeLiberationDI(di, "test", "ZAIZZT", "businessID");
 			fail();
 		}
-		catch (AjoutDemandeLiberationDIException e) {
-			assertEquals(AjoutDemandeLiberationDIException.Raison.LIBERATION_DEJA_EXISTANT, e.getRaison());
+		catch (AjoutDemandeLiberationException e) {
+			assertEquals(AjoutDemandeLiberationException.Raison.LIBERATION_DEJA_EXISTANT, e.getRaison());
 		}
 	}
 

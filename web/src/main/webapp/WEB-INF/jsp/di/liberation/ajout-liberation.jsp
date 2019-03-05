@@ -5,7 +5,7 @@
 
 	<tiles:put name="body">
 		<form:form name="formLiberation" id="formLiberation">
-			<input type="hidden" name="idDI" value="${command.idDI}"/>
+			<input type="hidden" name="idDocument" value="${command.idDocument}"/>
 
 			<table cellpadding="3" cellspacing="1">
 				<tr>

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationException;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.editique.EditiqueException;
@@ -161,4 +162,15 @@ public interface QuestionnaireSNCService {
 	EditiqueResultat envoiDemandeDelaiQuestionnaireSNCOnline(Long idDelai, RegDate dateTraitement) throws EditiqueException;
 
 	String envoiDemandeDelaiQuestionnaireSNCBatch(Long idDelai, RegDate dateTraitement) throws EditiqueException;
+
+	/**
+	 * Ajoute les informations de demande de liberation sur un questionnaire SNC
+	 *
+	 * @param qsnc le questionnaire faisant l'objet de la demande de liberation
+	 * @param motif       Motivation de la liberation
+	 * @param visa        le visa du taxateur faisant la demande
+	 * @param businessId  businnessId du message de demande de liberation
+	 * @throws AjoutDemandeLiberationException en cas d'erreur qui empêche l'ajout de la demande
+	 */
+	void ajouterDemandeLiberation(@NotNull QuestionnaireSNC qsnc, @NotNull String motif, @NotNull String visa, String businessId) throws AjoutDemandeLiberationException;
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationException;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.DelaiDeclarationDAO;
@@ -29,6 +31,8 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.EtatDeclarationRappelee;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.LiberationDeclaration;
+import ch.vd.unireg.declaration.LiberationQuestionnaireSNC;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
@@ -53,6 +57,8 @@ import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDelaiDeclaration;
+
+import static ch.vd.unireg.declaration.AjoutDemandeLiberationException.Raison.LIBERATION_DEJA_EXISTANT;
 
 public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionnaireSNCServiceImpl.class);
@@ -395,6 +401,22 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 			throw new EditiqueException(e);
 		}
 
+	}
+
+	@Override
+	public void ajouterDemandeLiberation(@NotNull QuestionnaireSNC qsnc, @NotNull String motif, @NotNull String visa, String businessId) throws AjoutDemandeLiberationException {
+
+		if(CollectionUtils.isNotEmpty(qsnc.getLiberations())){
+			throw  new AjoutDemandeLiberationException(LIBERATION_DEJA_EXISTANT, "Une demamde de libération  existe déjà.");
+		}
+
+		// on ajoute la demande de liberation
+		final LiberationQuestionnaireSNC liberation = new LiberationQuestionnaireSNC();
+		liberation.setMotif(motif);
+		liberation.setDateLiberation(RegDate.get());
+		liberation.setLogCreationUser(visa);
+		liberation.setBusinessId(businessId);
+		qsnc.addLiberation(liberation);
 	}
 
 

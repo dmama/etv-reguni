@@ -26,7 +26,7 @@ import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.unireg.di.view.LibererDeclarationImpotView;
+import ch.vd.unireg.di.view.LibererDocumentFiscalView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.QuittancerDeclarationView;
@@ -74,7 +74,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationImpotListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| QuittancerDeclarationView.class.equals(clazz) || LibererDeclarationImpotView.class.equals(clazz)
+				|| QuittancerDeclarationView.class.equals(clazz) || LibererDocumentFiscalView.class.equals(clazz)
 				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || ModifierEtatDelaiDeclarationPPView.class.equals(clazz)
 				|| AjouterDelaiDeclarationPMView.class.equals(clazz) || ModifierEtatDelaiDeclarationPMView.class.equals(clazz);
 	}
@@ -103,13 +103,13 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		else if (target instanceof ModifierEtatDelaiDeclarationPMView) {
 			valideModifierEtatDelaiDeclarationPM((ModifierEtatDelaiDeclarationPMView) target, errors);
 		}
-		else if (target instanceof LibererDeclarationImpotView) {
-			valideAjoutDemandeLiberation((LibererDeclarationImpotView) target, errors);
+		else if (target instanceof LibererDocumentFiscalView) {
+			valideAjoutDemandeLiberation((LibererDocumentFiscalView) target, errors);
 		}
 	}
 
-	private void valideAjoutDemandeLiberation(LibererDeclarationImpotView target, Errors errors) {
-		final DeclarationImpotOrdinaire di = diDAO.get(target.getIdDI());
+	private void valideAjoutDemandeLiberation(LibererDocumentFiscalView target, Errors errors) {
+		final DeclarationImpotOrdinaire di = diDAO.get(target.getIdDocument());
 		if (di == null) {
 			errors.reject("error.di.inexistante");
 			return;

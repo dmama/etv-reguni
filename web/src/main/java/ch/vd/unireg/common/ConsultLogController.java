@@ -16,6 +16,7 @@ import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.LiberationDeclaration;
+import ch.vd.unireg.declaration.LiberationQuestionnaireSNC;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
@@ -100,6 +101,7 @@ public class ConsultLogController {
 		PrincipalCommunauteRF(PrincipalCommunauteRF.class),
 		LiberationDocumentFiscal(LiberationDocumentFiscal.class),
 		LiberationDeclaration(LiberationDeclaration.class),
+		LiberationQuestionnaireSNC(LiberationQuestionnaireSNC.class),
 		DelaiDocumentFiscal(DelaiDocumentFiscal.class),
 		EtatDocumentFiscal(EtatDocumentFiscal.class);
 

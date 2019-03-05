@@ -2,7 +2,7 @@ package ch.vd.unireg.declaration;
 
 import org.jetbrains.annotations.NotNull;
 
-public class AjoutDemandeLiberationDIException extends DeclarationException {
+public class AjoutDemandeLiberationException extends DeclarationException {
 
 	public enum Raison {
 		DECLARATION_ANNULEE,
@@ -14,7 +14,7 @@ public class AjoutDemandeLiberationDIException extends DeclarationException {
 	@NotNull
 	private final Raison raison;
 
-	public AjoutDemandeLiberationDIException(@NotNull Raison raison, @NotNull String message) {
+	public AjoutDemandeLiberationException(@NotNull Raison raison, @NotNull String message) {
 		super(message);
 		this.raison = raison;
 	}

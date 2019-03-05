@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,7 @@ import ch.vd.unireg.common.RetourEditiqueControllerHelper;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.common.TicketTimeoutException;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.declaration.AjoutDemandeLiberationException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationGenerationOperation;
@@ -55,6 +58,7 @@ import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
 import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
+import ch.vd.unireg.di.view.LibererDocumentFiscalView;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalController;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.TypeImpression;
@@ -480,20 +484,7 @@ public class QuestionnaireSNCController {
 		// appel à éditique
 		final EditiqueResultat retourEditique = doInTransaction(status -> {
 			// récupération du questionnaire
-			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
-			if (questionnaire == null) {
-				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
-			}
-
-			// récupération de l'entreprise et vérification des droits de modification
-			final Tiers tiers = questionnaire.getTiers();
-			if (!(tiers instanceof Entreprise)) {
-				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-			}
-
-			final Entreprise entreprise = (Entreprise) tiers;
-			checkEditRightOnEntreprise(entreprise);
-
+			final QuestionnaireSNC questionnaire = verificationEditionQuestionnaire(questionnaireId);
 			return qsncService.envoiDuplicataQuestionnaireSNCOnline(questionnaire);
 		});
 
@@ -518,6 +509,25 @@ public class QuestionnaireSNCController {
 		checkEditRight(false, true, true, true, false);
 
 		// récupération du questionnaire
+		final QuestionnaireSNC questionnaire = verificationEditionQuestionnaire(questionnaireId);
+
+		// construction de la vue et affichage
+		final QuestionnaireSNCView view = new QuestionnaireSNCEditView(questionnaire,
+		                                                               infraService,
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION) && isLiberable(questionnaire),
+		                                                               messageHelper);
+		model.addAttribute("questionnaire", view);
+		model.addAttribute("depuisTache", tacheId != null);
+		model.addAttribute("tacheId", tacheId);
+		model.addAttribute("isAjoutDelaiAutorise", AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire));
+		model.addAttribute("command", view);
+
+		return "qsnc/editer";
+	}
+
+	@NotNull
+	private QuestionnaireSNC verificationEditionQuestionnaire(@RequestParam("id") long questionnaireId) {
 		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
 		if (questionnaire == null) {
 			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
@@ -530,18 +540,7 @@ public class QuestionnaireSNCController {
 		}
 		final Entreprise entreprise = (Entreprise) tiers;
 		checkEditRightOnEntreprise(entreprise);
-
-		// construction de la vue et affichage
-		final QuestionnaireSNCView view = new QuestionnaireSNCEditView(questionnaire,
-		                                                               infraService,
-		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
-		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION) && isLiberable(questionnaire),
-		                                                               messageHelper);
-		model.addAttribute("questionnaire", view);
-		model.addAttribute("depuisTache", tacheId != null);
-		model.addAttribute("tacheId", tacheId);
-		model.addAttribute("isAjoutDelaiAutorise", AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire));
-		return "qsnc/editer";
+		return questionnaire;
 	}
 
 	@InitBinder(value = AJOUTER_DELAI)
@@ -761,18 +760,7 @@ public class QuestionnaireSNCController {
 		checkEditRight(false, false, false, true, false);
 
 		// récupération du questionnaire
-		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
-		if (questionnaire == null) {
-			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
-		}
-
-		// récupération de l'entreprise et vérification des droits de modification
-		final Tiers tiers = questionnaire.getTiers();
-		if (!(tiers instanceof Entreprise)) {
-			throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-		}
-		final Entreprise entreprise = (Entreprise) tiers;
-		checkEditRightOnEntreprise(entreprise);
+		final QuestionnaireSNC questionnaire = verificationEditionQuestionnaire(questionnaireId);
 
 		// création de la vue et affichage
 		final QuestionnaireSNCQuittancementView view = new QuestionnaireSNCQuittancementView(questionnaire);
@@ -799,18 +787,7 @@ public class QuestionnaireSNCController {
 		doInTransaction(status -> {
 
 			// récupération du questionnaire
-			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, view.getQuestionnaireId());
-			if (questionnaire == null) {
-				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + view.getQuestionnaireId());
-			}
-
-			// récupération de l'entreprise et vérification des droits de modification
-			final Tiers tiers = questionnaire.getTiers();
-			if (!(tiers instanceof Entreprise)) {
-				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-			}
-			final Entreprise entreprise = (Entreprise) tiers;
-			checkEditRightOnEntreprise(entreprise);
+			final QuestionnaireSNC questionnaire = verificationEditionQuestionnaire(view.getQuestionnaireId());
 
 			// quittancement
 			qsncService.quittancerQuestionnaire(questionnaire, view.getDateRetour(), EtatDeclarationRetournee.SOURCE_WEB);
@@ -893,8 +870,38 @@ public class QuestionnaireSNCController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/liberer.do", method = RequestMethod.GET)
+	public String libererDI(@RequestParam("id") long idQuestionnaire, Model model) {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit pour de libération des déclarations d'impôt");
+		}
+
+		final QuestionnaireSNC questionnaireSNC = questionnaireSNCDAO.get(idQuestionnaire);
+		if (questionnaireSNC == null) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.qsnc.inexistante"));
+		}
+		// vérification des droits d'accès
+		checkEditRight(false, false, false, false, true);
+
+		final Contribuable ctb = questionnaireSNC.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// vérification de la libérabilité de la déclaration
+		if (!isLiberable(questionnaireSNC)) {
+			final String message = messageHelper.getMessage("error.qsnc.non.liberable");
+			Flash.error(message);
+			return "redirect:editer.do?id=" + idQuestionnaire;
+		}
+		model.addAttribute("command", new LibererDocumentFiscalView(questionnaireSNC.getId(), StringUtils.EMPTY));
+		model.addAttribute("maxlen", 200);
+
+		return "di/liberation/ajout-liberation";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/liberer.do", method = RequestMethod.POST)
-	public String libererQuestionnaire(@RequestParam("id") long idQuestionnaire) {
+	public String libererQuestionnaire(@RequestParam("idDocument") long idQuestionnaire, @RequestParam("motif") String motif) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des questionnaires SNC.");
@@ -919,14 +926,15 @@ public class QuestionnaireSNCController {
 
 		// envoi de la demande de libération
 		try {
-			liberationSender.demandeLiberationDeclarationImpot(questionnaireSNC.getTiers().getNumero(),
-			                                                   questionnaireSNC.getPeriode().getAnnee(),
-			                                                   questionnaireSNC.getNumero(),
-			                                                   EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			final String businessId = liberationSender.demandeLiberationDeclarationImpot(questionnaireSNC.getTiers().getNumero(),
+			                                                                             questionnaireSNC.getPeriode().getAnnee(),
+			                                                                             questionnaireSNC.getNumero(),
+			                                                                             EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			qsncService.ajouterDemandeLiberation(questionnaireSNC, motif, AuthenticationHelper.getCurrentPrincipal(), businessId);
 			Flash.message("La demande de libération du questionnaire SNC a été envoyée au service concerné.");
 			return "redirect:editer.do?id=" + idQuestionnaire;
 		}
-		catch (EvenementDeclarationException e) {
+		catch (EvenementDeclarationException | AjoutDemandeLiberationException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
 	}
@@ -940,18 +948,7 @@ public class QuestionnaireSNCController {
 		// appel à éditique
 		final EditiqueResultat retourEditique = doInTransaction(status -> {
 			// récupération du questionnaire
-			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
-			if (questionnaire == null) {
-				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
-			}
-
-			// récupération de l'entreprise et vérification des droits de modification
-			final Tiers tiers = questionnaire.getTiers();
-			if (!(tiers instanceof Entreprise)) {
-				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-			}
-			final Entreprise entreprise = (Entreprise) tiers;
-			checkEditRightOnEntreprise(entreprise);
+			final QuestionnaireSNC questionnaire = verificationEditionQuestionnaire(questionnaireId);
 
 			// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
 			final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, true, false, false, messageHelper);
@@ -980,7 +977,7 @@ public class QuestionnaireSNCController {
 			sources.add(((EtatDeclarationRetournee) etat).getSource());
 		}
 		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
-		return !sources.isEmpty();
+		return !sources.isEmpty() && CollectionUtils.isEmpty(questionnaireSNC.getLiberations());
 	}
 
 	private void checkAccessGestionQSNC() {

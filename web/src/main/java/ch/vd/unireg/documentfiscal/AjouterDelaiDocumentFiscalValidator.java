@@ -1,5 +1,7 @@
 package ch.vd.unireg.documentfiscal;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.di.AbstractDelaiControllerValidator;
+import ch.vd.unireg.di.view.LibererDocumentFiscalView;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 import ch.vd.unireg.qsnc.ModifierEtatDelaiQSNCView;
@@ -30,7 +33,7 @@ public class AjouterDelaiDocumentFiscalValidator extends AbstractDelaiController
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return AjouterDelaiDocumentFiscalView.class.isAssignableFrom(clazz) || ModifierEtatDelaiQSNCView.class.equals(clazz);
+		return AjouterDelaiDocumentFiscalView.class.isAssignableFrom(clazz) || ModifierEtatDelaiQSNCView.class.equals(clazz) || LibererDocumentFiscalView.class.equals(clazz);
 	}
 
 	@Override
@@ -42,6 +45,26 @@ public class AjouterDelaiDocumentFiscalValidator extends AbstractDelaiController
 		else if (target instanceof ModifierEtatDelaiQSNCView) {
 			valideModifierEtatDelaiQSNC((ModifierEtatDelaiQSNCView) target, errors);
 		}
+		else if (target instanceof LibererDocumentFiscalView) {
+			valideAjoutDemandeLiberation((LibererDocumentFiscalView) target, errors);
+		}
+	}
+
+	private void valideAjoutDemandeLiberation(LibererDocumentFiscalView target, Errors errors) {
+		final DocumentFiscal di = (DocumentFiscal) sessionFactory.getCurrentSession().get(DocumentFiscal.class, target.getIdDocument());
+		if (di == null) {
+			errors.reject("error.qsnc.inexistante");
+			return;
+		}
+		if (CollectionUtils.isNotEmpty(di.getLiberations())) {
+			errors.reject("error.qsnc.deja.ete.liberer");
+			return;
+		}
+
+		if (StringUtils.isNotBlank(target.getMotif())) {
+			errors.reject("error.qsnc.liberer.sans.motif");
+		}
+
 	}
 
 	private void validateEditionDelai(AjouterDelaiDocumentFiscalView view, Errors errors) {
