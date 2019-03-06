@@ -72,6 +72,7 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	}
 
 	@Override
+	@Deprecated
 	public List<Long> getOperatorsIdsToMigrate() {
 
 		final Query query = getCurrentSession().createQuery("select distinct noIndividuOperateur from DroitAcces where visaOperateur is null order by noIndividuOperateur asc");

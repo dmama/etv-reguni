@@ -373,37 +373,7 @@ public class DroitAccesServiceImpl implements DroitAccesService, ApplicationCont
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		// au démarrage de l'application, on renseigne les visas des opérateurs si nécessaire (migration)
-		// TODO (msi) supprimer cette méthode quand les visas auront été générés en production
-		if (event.getApplicationContext() == this.applicationContext) {
-			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
-			try {
-				final TransactionTemplate template = new TransactionTemplate(transactionManager);
-				final List<Long> ids = template.execute(status -> droitAccesDAO.getOperatorsIdsToMigrate());
-
-				final ParallelBatchTransactionTemplate<Long> t = new ParallelBatchTransactionTemplate<>(ids, 20, 8, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
-				t.execute(new BatchCallback<Long>() {
-					@Override
-					public boolean doInTransaction(List<Long> batch) {
-						for (Long id : batch) {
-							final Operateur operateur = serviceSecuriteService.getOperateur(id);
-							if (operateur == null) {
-								LOGGER.warn("L'opérateur n°" + id + " n'existe pas dans Host-Interfaces. Ses droits seront annulés.");
-								droitAccesDAO.cancelOperateur(id);
-							}
-							else {
-								LOGGER.info("Mémorisation du visa [" + operateur.getCode() + "] pour l'opérateur n°" + id + ".");
-								droitAccesDAO.updateVisa(operateur.getIndividuNoTechnique(), operateur.getCode());
-							}
-						}
-						return true;
-					}
-				}, null);
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-			}
-		}
+	// SIFISC-29729, les numéros opérateurs sont décommisionnés, rien à faire
 	}
 }
 

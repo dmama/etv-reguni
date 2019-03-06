@@ -13,8 +13,6 @@ import ch.vd.unireg.type.Localisation;
 @DiscriminatorValue(value = "ReceptionPersonnel")
 public class ReceptionDossierPersonnel extends ReceptionDossier {
 
-	private long noIndividuRecepteur;
-
 	/**
 	 * Visa du collaborateur récepteur.
 	 */
@@ -26,15 +24,6 @@ public class ReceptionDossierPersonnel extends ReceptionDossier {
 
 	public ReceptionDossierPersonnel(String visaRecepteur) {
 		this.visaRecepteur = visaRecepteur;
-	}
-
-	@Column(name = "NUMERO_INDIVIDU")
-	public long getNoIndividuRecepteur() {
-		return noIndividuRecepteur;
-	}
-
-	public void setNoIndividuRecepteur(long noIndividuRecepteur) {
-		this.noIndividuRecepteur = noIndividuRecepteur;
 	}
 
 	@Column(name = "VISA_COLLABORATEUR", length = 25)
@@ -53,8 +42,4 @@ public class ReceptionDossierPersonnel extends ReceptionDossier {
 		return Localisation.PERSONNE;
 	}
 
-	@Transient
-	public long getNoIndividuDestinataire() {
-		return getNoIndividuRecepteur();
-	}
 }

@@ -47,8 +47,6 @@ import ch.vd.unireg.type.TypeDroitAcces;
 public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<DroitAcces> {
 
 	private Long id;
-	// TODO (msi) supprimer cette propriété quand les visas auront été généré en production
-	private Long noIndividuOperateur;
 	private String visaOperateur;
 	private TypeDroitAcces type;
 	private Niveau niveau;
@@ -60,7 +58,6 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 
 	private DroitAcces(DroitAcces right) {
 		super(right);
-		this.noIndividuOperateur = right.noIndividuOperateur;
 		this.visaOperateur = right.visaOperateur;
 		this.type = right.type;
 		this.niveau = right.niveau;
@@ -81,16 +78,6 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	@Column(name = "NUMERO_IND_OPER")
-	@Index(name = "IDX_NUMERO_IND_OPER")
-	public Long getNoIndividuOperateur() {
-		return noIndividuOperateur;
-	}
-
-	public void setNoIndividuOperateur(Long noIndividuOperateur) {
-		this.noIndividuOperateur = noIndividuOperateur;
 	}
 
 	@Column(name = "VISA_OPERATEUR", length = 25)

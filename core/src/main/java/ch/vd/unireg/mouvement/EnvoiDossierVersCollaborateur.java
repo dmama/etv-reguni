@@ -10,8 +10,6 @@ import org.hibernate.annotations.Index;
 @DiscriminatorValue(value = "EnvoiVersCollaborateur")
 public class EnvoiDossierVersCollaborateur extends EnvoiDossier {
 
-	private long noIndividuDestinataire;
-
 	/**
 	 * Visa du collaborateur destinataire.
 	 */
@@ -22,15 +20,6 @@ public class EnvoiDossierVersCollaborateur extends EnvoiDossier {
 
 	public EnvoiDossierVersCollaborateur(String visaDestinataire) {
 		this.visaDestinataire = visaDestinataire;
-	}
-
-	@Column(name = "NUMERO_INDIVIDU")
-	public long getNoIndividuDestinataire() {
-		return noIndividuDestinataire;
-	}
-
-	public void setNoIndividuDestinataire(long noIndividuDestinataire) {
-		this.noIndividuDestinataire = noIndividuDestinataire;
 	}
 
 	@Column(name = "VISA_COLLABORATEUR", length = 25)
