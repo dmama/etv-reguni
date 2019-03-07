@@ -11151,7 +11151,6 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>NIVEAU</column>
-    <column>NUMERO_IND_OPER</column>
     <column>VISA_OPERATEUR</column>
     <column>TYPE</column>
     <column>TIERS_ID</column>
@@ -11166,7 +11165,6 @@
       <value>20071025</value>                             <!-- DATE_DEBUT -->
       <null/>                                             <!-- DATE_FIN -->
       <value>ECRITURE</value>                             <!-- NIVEAU -->
-      <value>116918</value>                               <!-- NUMERO_IND_OPER -->
       <value>zai123</value>                               <!-- VISA_OPERATEUR -->
       <value>INTERDICTION</value>                         <!-- TYPE -->
       <value>12300002</value>                             <!-- TIERS_ID -->
@@ -11912,7 +11910,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_MOUVEMENT</column>
     <column>ETAT</column>
-    <column>NUMERO_INDIVIDU</column>
     <column>CTB_ID</column>
     <column>COLL_ADMIN_EMETTRICE_ID</column>
     <column>BORDEREAU_ID</column>
@@ -11929,7 +11926,6 @@
       <value>tiers-basic</value>
       <null/>
       <value>TRAITE</value>
-      <value>327706</value>
       <value>86006202</value>
       <null/>
       <null/>
@@ -11949,7 +11945,6 @@
       <value>tiers-basic</value>
       <null/>
       <value>TRAITE</value>
-      <null/>
       <value>86006202</value>
       <null/>
       <null/>

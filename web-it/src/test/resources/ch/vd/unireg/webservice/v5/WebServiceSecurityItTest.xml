@@ -98,7 +98,6 @@
 		<column>ID</column>
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
-		<column>NUMERO_IND_OPER</column>
 		<column>VISA_OPERATEUR</column>
 		<column>TYPE</column>
 		<column>NIVEAU</column>
@@ -108,7 +107,6 @@
 			<value>1</value>
 			<value>20000101</value>
 			<null />
-			<value>1</value>
 			<value>zaiptf</value>
 			<!-- Francis Perroset -->
 			<value>AUTORISATION</value>
@@ -121,7 +119,6 @@
 			<value>2</value>
 			<value>20000101</value>
 			<null />
-			<value>272819</value>
 			<value>zciddo</value>
 			<!-- Daniel Di Lallo -->
 			<value>INTERDICTION</value>
