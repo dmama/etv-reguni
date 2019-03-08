@@ -259,20 +259,32 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 		}
 	}
 
-	private static class RemindableTaxDeclarationEventFactory extends OutputDataFactory<EvenementFiscalDeclarationRappelable, RemindableTaxDeclarationEvent> {
+	private static class RemindableTaxDeclarationEventFactory extends OutputDataFactory<EvenementFiscalDeclarationRappelable, FiscalEvent> {
 		@NotNull
 		@Override
-		public RemindableTaxDeclarationEvent internalBuild(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) throws NotSupportedInHereException {
-			final Declaration declaration = evenementFiscal.getDeclaration();
-			final RemindableTaxDeclarationEvent instance = instanciateRappelable(declaration);
-			final Tiers tiers = evenementFiscal.getTiers();
-			instance.setPartyNumber(safeLongIdToInt(tiers.getNumero()));
-			instance.setPartyKind(extractPartyKind(tiers));
-			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
-			instance.setDateFrom(DataHelper.coreToXMLv2(declaration.getDateDebut()));
-			instance.setDateTo(DataHelper.coreToXMLv2(declaration.getDateFin()));
-			instance.setType(mapType(evenementFiscal.getTypeAction()));
-			return instance;
+		public FiscalEvent internalBuild(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) throws NotSupportedInHereException {
+			switch (evenementFiscal.getTypeAction()){
+			case ECHEANCE:
+				final FutureEvent event;
+				event = new FutureEvent();
+				// [FISCPROJ-98] le type d'événement échéance de qustionnaire SNC n'existe pas en v5, on utilise le type de réserve 'futur' pour cela.
+				event.setType("EXPIRING_PARTNERSHIP_FORM");
+				event.setData1(RegDateHelper.dateToXmlDateString(evenementFiscal.getDateValeur()));
+				event.setData2(String.valueOf(evenementFiscal.getTiers().getNumero()));
+				return event;
+			default:
+				final Declaration declaration = evenementFiscal.getDeclaration();
+				final RemindableTaxDeclarationEvent instance = instanciateRappelable(declaration);
+				final Tiers tiers = evenementFiscal.getTiers();
+				instance.setPartyNumber(safeLongIdToInt(tiers.getNumero()));
+				instance.setPartyKind(extractPartyKind(tiers));
+				instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
+				instance.setDateFrom(DataHelper.coreToXMLv2(declaration.getDateDebut()));
+				instance.setDateTo(DataHelper.coreToXMLv2(declaration.getDateFin()));
+				instance.setType(mapType(evenementFiscal.getTypeAction()));
+				return instance;
+			}
+
 		}
 
 		private static RemindableTaxDeclarationEvent instanciateRappelable(Declaration declaration) {
