@@ -2,12 +2,59 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<!-- Ce fichier définit les beans des services d'interface 'raw'; c'est-à-dire les services internes à Unireg qui offrent des interfaces minimales.
-	Ces services 'raw' sont utilisés par les services standards qui - eux - offrent des interfaces plus complètes. -->
+	<!-- Exécuteur HTTP pour tous les appels spring-remoting de Web vers Nexus -->
+	<bean id="nexusHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
+		<property name="serviceName" value="nexus"/>
+		<property name="username" value="${extprop.remoting.unireg.nexus.username}" />
+		<property name="password" value="${extprop.remoting.unireg.nexus.password}" />
+		<property name="maxConnectionsPerRoute" value="${extprop.remoting.unireg.nexus.maxConnectionsPerHost}" />
+		<property name="maxTotalConnections" value="${extprop.remoting.unireg.nexus.maxTotalConnections}" />
+		<property name="connectTimeout" value="${extprop.remoting.unireg.nexus.connectTimeout:5000}" />
+		<property name="connectionRequestTimeout" value="${extprop.remoting.unireg.nexus.connectionRequestTimeout:5000}" />
+		<property name="socketTimeout" value="${extprop.remoting.unireg.nexus.socketTimeout:600000}" />
+		<property name="braveHttpTracing" ref="braveHttpTracing"/>
+		<property name="preAuthHosts">
+			<list>
+				<!-- active la pré-authentication pour améliorer les performances (= envoi immédiat
+					 du username/password plutôt que d'attendre une réponse HTTP 401 du serveur pour le faire) -->
+				<value>${extprop.remoting.unireg.nexus.host}</value>
+			</list>
+		</property>
+	</bean>
 
-	<import resource="interfaces-${interfaces-mode}.xml"/>
+	<!-- Gestion de la cohérence des données du cache centralisé -->
+
+	<!-- Data Event Service du cache centralisé Nexus -->
+	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener"/>
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="nexusDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
+		<property name="target" ref="nexusDataEventService"/>
+		<property name="statsService" ref="statsService"/>
+		<property name="serviceName" value="NexusDataEvent"/>
+	</bean>
+
+	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus et les entreprises -->
+	<bean id="nexusDataEventListener" class="ch.vd.unireg.data.CivilDataEventSlaveServiceListener">
+		<property name="master" ref="dataEventService"/>
+		<property name="slave" ref="nexusDataEventTracing"/>
+	</bean>
 
 	<!-- Service civil -->
+
+	<bean id="serviceCivilRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceCivil.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
+		<property name="target" ref="serviceCivilRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
 
 	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache">
 		<property name="target" ref="serviceCivilServiceTracing" />
@@ -22,6 +69,18 @@
 
 	<!-- Service Entreprise -->
 
+	<bean id="serviceEntrepriseRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceEntreprise.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
+		<property name="target" ref="serviceEntrepriseRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
 	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.entreprise.cache.ServiceEntrepriseCache">
 		<property name="target" ref="serviceEntrepriseTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
@@ -35,9 +94,31 @@
 
 	<!-- Service UPI -->
 
+	<bean id="serviceUpiRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceUpi.remoting"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.upi.ServiceUpiRaw"/>
+		<property name="executor" ref="nexusHttpRequestExecutor"/>
+	</bean>
+
+	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
+		<property name="target" ref="serviceUpiRemote"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
 	<alias alias="serviceUpiRaw" name="serviceUpiTracing"/>
 
 	<!-- Service infra -->
+
+	<bean id="serviceInfraRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceInfra.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
+		<property name="target" ref="serviceInfraRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
 
 	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
 		<property name="target" ref="serviceInfrastructureTracing" />
@@ -49,5 +130,19 @@
 	</bean>
 
 	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+
+	<!-- Service REF -Sec -->
+
+	<bean id="refSecClientRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/refSecClient.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.ClientRefSec" />
+		<property name="executor" ref="nexusHttpRequestExecutor" />
+	</bean>
+
+	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.ServiceClientRefSecTracing">
+		<property name="target" ref="refSecClientRemote" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+	<alias alias="refSecClient" name="refSecClientTracing" />
 
 </beans>

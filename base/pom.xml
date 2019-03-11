@@ -626,15 +626,6 @@
 			</properties>
 		</profile>
 
-		<!-- ================= Profile pour les développeurs pour éviter l'utilisation du cache centralisé Nexus ================= -->
-
-		<profile>
-			<id>no-nexus</id>
-			<properties>
-				<interfaces-mode>direct</interfaces-mode>
-			</properties>
-		</profile>
-
 		<!-- ================= Profile pour les développeurs pour skipper les tests  ================= -->
 		
 		<profile>
@@ -727,7 +718,6 @@
 		<unireg-ws.appname>unireg-ws</unireg-ws.appname>
 		<unireg-nexus.appname>unireg-nexus</unireg-nexus.appname>
 
-		<interfaces-mode>nexus</interfaces-mode>
 		<iam-security-filters>iamAuthFilter</iam-security-filters>
 
 		<unireg.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/unireg.properties</unireg.properties.path>
