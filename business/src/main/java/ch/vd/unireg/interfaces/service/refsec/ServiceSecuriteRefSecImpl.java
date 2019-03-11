@@ -101,11 +101,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	@NotNull
 	private Stream<CollectiviteAdministrative> filtreCollectiviteAdministrativeParTypeCommunicationACI(List<CollectiviteAdministrative> collectivites) {
 		return collectivites.stream()
-				.filter(collectiviteAdministrative ->
-						        collectiviteAdministrative.getEchangeAciCom() == null
-								        || collectiviteAdministrative.getEchangeAciCom().isEmpty()
-								        || collectiviteAdministrative.getEchangeAciCom().stream()
-								        .anyMatch(echangeAciCom -> echangeAciCom.getTypeCommunication().equals(TypeCommunication.ACI) && echangeAciCom.isValidAt(RegDate.get())));
+				.filter(ServiceSecuriteRefSecImpl::hasTypeCommunicationACI);
 	}
 
 	@Override
@@ -114,6 +110,13 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 		//aucun critère défini pour savoir le la collectivité par defaut, alors on renvoi la 1er de la liste.
 		final CollectiviteAdministrative collectiviteAdministrative = collectivitesUtilisateur.stream().findFirst().orElse(null);
 		return collectiviteAdministrative != null ? collectiviteAdministrative.getNoColAdm() : null;
+	}
+
+	private static boolean hasTypeCommunicationACI(@NotNull CollectiviteAdministrative collectiviteAdministrative) {
+		return collectiviteAdministrative.getEchangeAciCom() == null
+				|| collectiviteAdministrative.getEchangeAciCom().isEmpty()
+				|| collectiviteAdministrative.getEchangeAciCom().stream()
+				.anyMatch(echangeAciCom -> echangeAciCom.getTypeCommunication().equals(TypeCommunication.ACI) && echangeAciCom.isValidAt(RegDate.get()));
 	}
 
 

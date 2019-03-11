@@ -22,8 +22,8 @@ public class EchangeAciComImpl implements EchangeAciCom {
 	public static List<EchangeAciCom> get(List<ch.vd.fidor.xml.colladm.v1.EchangeAciCom> echangesAciCom) {
 		return echangesAciCom.stream()
 				.map(aux -> new EchangeAciComImpl(XmlUtils.cal2regdate(aux.getDateDebut()), XmlUtils.cal2regdate(aux.getDateFin()),
-				                                  aux.getTypeCommunication() != null ? TypeCommunication.valueOf(aux.getTypeCommunication().name()) : null,
-				                                  aux.getSupportEchange() != null ? SupportEchange.valueOf(aux.getSupportEchange().name()) : null))
+				                                  aux.getTypeCommunication() != null ? TypeCommunication.getTypeCommunication(aux.getTypeCommunication()) : null,
+				                                  aux.getSupportEchange() != null ? SupportEchange.getSupportEchange(aux.getSupportEchange()) : null))
 				.collect(Collectors.toList());
 	}
 
