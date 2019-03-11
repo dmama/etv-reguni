@@ -1092,7 +1092,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private static AdresseGenerique.Source getSourceCivilePourTiers(Tiers tiers) {
-		final SourceType sourceType = (tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ENT : SourceType.CIVILE_PERS;
+		final SourceType sourceType = AdresseCivileAdapter.getSourceType(tiers);
 		return new AdresseGenerique.Source(sourceType, tiers);
 	}
 

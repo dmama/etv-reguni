@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -14,6 +15,7 @@ import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.Tiers;
@@ -47,7 +49,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = new Source((tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ENT : SourceType.CIVILE_PERS, tiers);
+		this.source = new Source(getSourceType(tiers), tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 
@@ -56,6 +58,19 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
+		}
+	}
+
+	@NotNull
+	public static AdresseGenerique.SourceType getSourceType(Tiers tiers) {
+		if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+			return SourceType.CIVILE_ENT;
+		}
+		else if (tiers instanceof CollectiviteAdministrative) {
+			return SourceType.INFRA;
+		}
+		else {
+			return SourceType.CIVILE_PERS;
 		}
 	}
 

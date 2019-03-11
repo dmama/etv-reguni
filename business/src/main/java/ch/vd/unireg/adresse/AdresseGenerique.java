@@ -48,6 +48,10 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 	enum SourceType {
 		CIVILE_PERS(false),
 		CIVILE_ENT(false),
+		/**
+		 * Adresse en provenance de l'infrastructure fiscale (Fidor).
+		 */
+		INFRA(false),
 		FISCALE(false),
 		REPRESENTATION(true),
 		TUTELLE(true),
