@@ -107,4 +107,23 @@ public class ListesNominativesProcessorTest extends BusinessTest {
 		assertNotNull(result);
 		assertEquals(result.getNombreTiersTraites(), NUMBER_IDS_CTB);
 	}
+
+	@Test
+	public void testListesNominativesProcessorSansFichierCtbOK() throws Exception {
+		final long dpiId = doInNewTransaction(new AbstractSpringTest.TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2008, 1, 1), date(2008, 12, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2010, 1, 1), date(2010, 12, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
+				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+				return dpi.getNumero();
+			}
+		});
+		final ListesNominativesResults result = processor.run(1, TypeAdresse.FORMATTEE, true, true, new HashSet<>(), RegDate.get(), true, null);
+		assertNotNull(result);
+		assertEquals(result.getNombreTiersTraites(), 1);
+	}
 }

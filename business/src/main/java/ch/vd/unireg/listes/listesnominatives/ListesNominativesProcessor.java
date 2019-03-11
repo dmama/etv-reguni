@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
@@ -153,7 +154,14 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
 			final String inPopulationCriteria = String.join(", ", whereParts);
 
-			final String queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s) AND (%s) ORDER BY tiers.id ASC", inPopulationCriteria, sb.toString());
+			final String queryString;
+			if (StringUtils.isBlank(sb.toString())) {
+				queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s)  ORDER BY tiers.id ASC", inPopulationCriteria);
+			}
+			else {
+				queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s) AND (%s) ORDER BY tiers.id ASC", inPopulationCriteria, sb.toString());
+			}
+
 			final Query query = session.createQuery(queryString);
 			return query.iterate();
 		}
