@@ -13,12 +13,15 @@
 		<property name="denied" value="${extprop.remoteHostFilter.deny}" />
 	</bean>
 
+	<!-- Filtre qui loggue toutes les exceptions qui sortent directement des autres filtres... !-->
+	<bean id="lastChanceExceptionLoggingFilter" class="ch.vd.unireg.servlet.logging.LastChanceExceptionLoggingFilter"/>
+
 	<!-- ======================== FILTER CHAIN ======================= -->
 
 	<!-- La chaine des filtres Spring à appliquer. -->
 	<bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
 		<security:filter-chain-map request-matcher="ant">
-			<security:filter-chain pattern="/**" filters="remoteHostSpringFilter,braveServletFilter" />
+			<security:filter-chain pattern="/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
 		</security:filter-chain-map>
 	</bean>
 

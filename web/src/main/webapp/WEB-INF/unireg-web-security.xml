@@ -40,7 +40,7 @@
 	<bean id="actionExceptionFilter" class="ch.vd.unireg.servlet.ActionExceptionFilter" />
 
 	<!-- Filtre qui loggue toutes les exceptions qui sortent directement des autres filtres... !-->
-	<bean id="lastChanceExceptionLoggingFilter" class="ch.vd.unireg.servlet.LastChanceExceptionLoggingFilter"/>
+	<bean id="lastChanceExceptionLoggingFilter" class="ch.vd.unireg.servlet.logging.LastChanceExceptionLoggingFilter"/>
 
 	<!-- Filtre sur les adresses IP -->
 	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">
