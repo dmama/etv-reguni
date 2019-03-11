@@ -18,7 +18,7 @@
 	</bean>
 
 	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfrastructureMarshaller" />
+		<property name="target" ref="#{ '${extprop.switch.infra}' == 'FIDOR' ? 'serviceInfrastructureFidor' : 'serviceInfrastructureMarshaller' }" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

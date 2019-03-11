@@ -1,12 +1,16 @@
 package ch.vd.unireg.interfaces.infra.data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.xml.XmlUtils;
 
-public class EchangeAciComImpl implements EchangeAciCom {
+public class EchangeAciComImpl implements EchangeAciCom, Serializable {
+
+	private static final long serialVersionUID = -1292041831454613871L;
+
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private TypeCommunication typeCommunication;
