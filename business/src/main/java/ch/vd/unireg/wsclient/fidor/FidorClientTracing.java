@@ -17,6 +17,7 @@ import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
 import ch.vd.fidor.xml.categorieentreprise.v1.CategorieEntreprise;
+import ch.vd.fidor.xml.colladm.v1.AdresseEnvoi;
 import ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative;
 import ch.vd.fidor.xml.colladm.v1.LienCommune;
 import ch.vd.fidor.xml.colladm.v1.TypeCollectiviteAdministrative;
@@ -667,6 +668,27 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		}
 		finally {
 			tracing.end(time, t, "getCollectiviteAdministrative", items, () -> "id=" + id);
+		}
+	}
+
+	@Override
+	public @Nullable AdresseEnvoi getAdresseEnvoi(long id) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final AdresseEnvoi res = target.getAdresseEnvoi(id);
+			if (res != null) {
+				items = 1;
+			}
+			return res;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getAdresseEnvoi", items, () -> "id=" + id);
 		}
 	}
 
