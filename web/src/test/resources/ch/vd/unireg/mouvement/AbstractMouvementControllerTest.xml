@@ -35,14 +35,12 @@
     <column>ID</column>
     <column>CTB_ID</column>
     <column>MVT_TYPE</column>
-    <column>NUMERO_INDIVIDU</column>
     <column>ETAT</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>12300003</value>
       <value>EnvoiVersCollaborateur</value>
-      <value>333908</value>
       <value>TRAITE</value>
     </row>
     <row>
@@ -50,7 +48,6 @@
       <value>2</value>
       <value>12300003</value>
       <value>ReceptionClassementGeneral</value>
-      <null/>
       <value>TRAITE</value>
 	</row>
   </table>

@@ -4033,7 +4033,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_MOUVEMENT</column>
     <column>ETAT</column>
-    <column>NUMERO_INDIVIDU</column>
     <column>CTB_ID</column>
     <column>COLL_ADMIN_EMETTRICE_ID</column>
     <column>BORDEREAU_ID</column>
