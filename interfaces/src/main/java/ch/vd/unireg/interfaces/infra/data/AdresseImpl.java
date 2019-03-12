@@ -87,7 +87,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.rue = rue.map(Rue::getDesignationCourrier).orElse(null);
 		this.titre = null;
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
-		this.noOfsCommuneAdresse = right.getNoOfsCommune();
+		this.noOfsCommuneAdresse = null;
 		this.egid = null;
 		this.ewid = null;
 	}

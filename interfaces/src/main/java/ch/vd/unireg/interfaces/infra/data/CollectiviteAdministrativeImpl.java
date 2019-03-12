@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.fidor.xml.colladm.v1.DecoupageNom;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -90,9 +91,10 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.noColAdm = right.getId();
 		this.noFax = null;
 		this.noTelephone = right.getNoTelephone();
-		this.nomComplet1 = right.getNomComplet();   // TODO (msi) vérifier les utilisations du nom complet (longueur !)
-		this.nomComplet2 = null;
-		this.nomComplet3 = null;
+		final DecoupageNom nomDecoupe = right.getNomDecoupe();
+		this.nomComplet1 = nomDecoupe.getLigne1();
+		this.nomComplet2 = nomDecoupe.getLigne2();
+		this.nomComplet3 = nomDecoupe.getLigne3();
 		this.nomCourt = right.getNomCourt();
 		this.sigle = null;
 		this.sigleCanton = right.getCanton();
