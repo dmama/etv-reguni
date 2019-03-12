@@ -207,17 +207,17 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();
-		assertFormattedAddress(mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress(), "Madame", "Anabela Lopes Magalhaes", "p.a. OFF.CURATELLES & TUTELLES", "Chemin de Mornex 32", "1014 Lausanne Adm cant VD");
+		assertFormattedAddress(mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress(), "Madame", "Anabela Lopes Magalhaes", "p.a. OFF.CURATELLES & TUTELLES", "Chemin de Mornex 32", "1000 Lausanne");
 
-		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertFormattedAddress(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
-		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Monsieur le Juge de Paix de Belmont/Conc",
-				"ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac 2", "1400 Yverdon-les-Bains");
+		assertEquals(1, debtProsecutionAddresses.size());
+		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Justice de Paix des districts du Jura -",
+				"Nord vaudois et du Gros-de-Vaud", "Rue des Moulins 10", "Case Postale 693", "1401 Yverdon-les-Bains");
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
 		assertEquals(OtherPartyAddressType.GUARDIAN, debtProsecutionAddressOfOtherParty.getOtherPartyType());
-		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "Office des curatelles et tutelles", "professionnelles du canton de Vaud", "Chemin de Mornex 32", "1014 Lausanne Adm cant VD");
+		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "Office des curatelles et tutelles", "professionnelles du canton de Vaud", "Chemin de Mornex 32", "1000 Lausanne");
 	}
 
 	@Test
