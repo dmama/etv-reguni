@@ -185,15 +185,7 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.AUCUNE_DECLARATION;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_ANNULEE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_ECHUE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_RAPPELEE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_RETOURNEE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_SOMMEE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_SUSPENDUE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DELAI_DEJA_ACCORDE;
-import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.PLUSIEURS_DECLARATIONS;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.*;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceImpl implements BusinessWebService {
@@ -853,10 +845,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			throw new IllegalArgumentException("Type de tiers non supporté [" + tiers.getClass() + "]");
 		}
 		if (delaisTheoriques.isEmpty()) {
-			// pas de délais théoriques, ce que la demande n'est pas valable (hors délai ou pas de délai configuré)
-			return buildIneligibleCtbResult(tiers.getNumero().intValue(), tiers,
-			                                "Le contribuable n'est pas éligible car il n'y a pas de délai accordable en date du " +
-					                                RegDateHelper.dateToDisplayString(today) + " pour la période fiscale " + periodeFiscale + ".");
+			// [FISCPROJ-1056] pas de délais théoriques : la demande n'est pas valable (hors délai ou pas de délai configuré)
+			result.setRejectionReason(buildRejectionReasonPourDemandeHorsDelai(today));
+			return result;
 		}
 
 		// on ne garde que les délais qui sont réellement accordables
@@ -1041,6 +1032,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		result.setEligible(eligible);
 		result.setRejectionReason(new RejectionReason(code, message, null));
 		return result;
+	}
+
+	@NotNull
+	private static RejectionReason buildRejectionReasonPourDemandeHorsDelai(@NotNull RegDate today) {
+		final String message = DEMANDE_HORS_DELAI.getDefaultMessage().replaceAll("\\{date demande}", RegDateHelper.dateToDisplayString(today));
+		return new RejectionReason(DEMANDE_HORS_DELAI.getCode(), message, null);
 	}
 
 	@NotNull

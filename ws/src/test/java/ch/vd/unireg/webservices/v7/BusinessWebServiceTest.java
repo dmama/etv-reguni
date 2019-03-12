@@ -5922,7 +5922,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	/**
-	 * [FISCPROJ-506] Ce test vérifie qu'on contribuable PP peut ne pas être éligible s'il n'y a pas de délais configuré (par exemple à cause d'une demande trop tardive)
+	 * [FISCPROJ-506][FISCPROJ-1056] Ce test vérifie qu'une demande délai est refusée sur contribuable PP s'il n'y a pas de délais configuré (par exemple à cause d'une demande trop tardive)
 	 */
 	@Test
 	public void testValidateDeadlineRequestPPSansDelaiAccordable() throws Exception {
@@ -5948,17 +5948,18 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			return pp.getNumero();
 		});
 
-		// il doit être possible de demander plusieurs délais
+		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2019, 2, 12); // on se place beaucoup trop tard pour espérer un délai
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'y a pas de délai accordable en date du 12.02.2019 pour la période fiscale 2017.", results);
+			final String message = "Il n'est pas possible d'obtenir un délai en cette période de l'année (demandé le " + RegDateHelper.dateToDisplayString(today) + ")";
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "10", message, date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
 		});
 	}
 
 	/**
-	 * [FISCPROJ-506] Ce test vérifie qu'on contribuable PM peut ne pas être éligible s'il n'y a pas de délais configuré (par exemple à cause d'une demande trop tardive)
+	 * [FISCPROJ-506][FISCPROJ-1056] Ce test vérifie qu'une demande de délai est refusée sur un contribuable PM s'il n'y a pas de délais configuré (par exemple à cause d'une demande trop tardive)
 	 */
 	@Test
 	public void testValidateDeadlineRequestPMSansDelaiAccordable() throws Exception {
@@ -6003,7 +6004,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		doInNewTransaction(status -> {
 			final RegDate today = RegDate.get(2019, 2, 12); // on se place beaucoup trop tard pour espérer un délai
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId, TypeDemande.UNITAIRE, today);
-			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'y a pas de délai accordable en date du 12.02.2019 pour la période fiscale 2017.", results);
+			final String message = "Il n'est pas possible d'obtenir un délai en cette période de l'année (demandé le " + RegDateHelper.dateToDisplayString(today) + ")";
+			assertValidationError(ctbId, PartyType.CORPORATION, "10", message, date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
 		});
 	}

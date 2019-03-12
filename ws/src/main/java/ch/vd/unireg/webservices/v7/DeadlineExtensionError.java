@@ -13,6 +13,7 @@ public enum DeadlineExtensionError {
 	DECLARATION_ECHUE("07", "La DI est déjà échue sur la période fiscale {PF}"),
 	DECLARATION_RAPPELEE("08", "La DI est déjà rappelée sur la période fiscale {PF}"),
 	DELAI_DEJA_ACCORDE("09", "Délai déjà accordé pour au {date délai} sur la période fiscale {PF}"),
+	DEMANDE_HORS_DELAI("10", "Il n'est pas possible d'obtenir un délai en cette période de l'année (demandé le {date demande})"),
 	EN_ATTENTE("99", "Réponse en attente");
 
 	private final String code;
