@@ -27,9 +27,10 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.rueCasePostale">
 			<c:out value="${adresse.rue}"/>
-			<c:if test="${not empty adresse.formattedCasePostale}">
-				<br/><c:out value="${adresse.formattedCasePostale}"/>
+			<c:if test="${not empty adresse.rue and not empty adresse.formattedCasePostale}">
+				<br/>
 			</c:if>
+			<c:out value="${adresse.formattedCasePostale}"/>
 			<c:if test="${adresse.egid != null || adresse.ewid != null}">
 				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 					<a href="#" class="consult staticTip" id="fis-${adresse.usage}-<unireg:regdate regdate="${adresse.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresse.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>

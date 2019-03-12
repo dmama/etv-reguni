@@ -496,7 +496,8 @@ public class AdresseView implements Comparable<AdresseView>, Annulable, DateRang
 	public String getFormattedCasePostale() {
 		if (numeroCasePostale != null && texteCasePostale != null) {
 			return texteCasePostale.format(numeroCasePostale);
-		} else if (numeroCasePostale == null && texteCasePostale != null){
+		}
+		else if (numeroCasePostale == null && texteCasePostale != null) {
 			return texteCasePostale.format();
 		}
 		return "";
