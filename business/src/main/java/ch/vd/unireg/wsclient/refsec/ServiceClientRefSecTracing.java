@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.wsclient.refsec.model.Information;
 import ch.vd.unireg.wsclient.refsec.model.RefSecProfilOperateur;
 import ch.vd.unireg.wsclient.refsec.model.Value;
 
@@ -111,7 +112,7 @@ public class ServiceClientRefSecTracing implements ClientRefSec, InitializingBea
 	}
 
 	@Override
-	public String ping() throws ClientRefSecException {
+	public Information ping() throws ClientRefSecException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

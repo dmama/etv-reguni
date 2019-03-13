@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.wsclient.refsec.ClientRefSec;
+import ch.vd.unireg.wsclient.refsec.model.Information;
 import ch.vd.unireg.wsclient.refsec.model.RefSecProfilOperateur;
 
 import static ch.vd.unireg.webservice.rcent.RcEntClientItTest.TIMEOUT;
@@ -40,10 +41,11 @@ public class RefSecClientItTest extends BusinessItTest {
 
 	@Test(timeout = TIMEOUT)
 	public void testPing() throws Exception {
-		final String pong = clientRefSec.ping();
-		assertNotNull(pong);
-		final String aux = "{" + '"' + "status" + '"' + ":" + '"' + "UP" + '"' + "}";
-		assertEquals(pong, aux);
+		final Information information = clientRefSec.ping();
+		assertNotNull(information);
+		assertNotNull(information.getName());
+		assertEquals(information.getName(), "RefSec");
+		assertNotNull(information.getVersion());
 	}
 
 }
