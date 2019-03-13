@@ -32,15 +32,15 @@ import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.ws.parties.v7.Entry;
-import ch.vd.unireg.ws.parties.v7.Parties;
-import ch.vd.unireg.xml.party.corporation.v5.BusinessYear;
-import ch.vd.unireg.xml.party.corporation.v5.Corporation;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.common.BatchIterator;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.utils.WebServiceV7Helper;
+import ch.vd.unireg.ws.parties.v7.Entry;
+import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.corporation.v5.BusinessYear;
+import ch.vd.unireg.xml.party.corporation.v5.Corporation;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 
 public class Job {
 
@@ -48,7 +48,7 @@ public class Job {
 	private static final String urlWebServiceUnireg = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/v7";
 	private static final String userWebServiceUnireg = "unireg";
 	private static final String pwdWebServiceUnireg = "unireg_1014";
-	private static final String urlWebServiceFidor = "http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5";
+	private static final String urlWebServiceFidor = "http://int-fidor-ws.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5";
 	private static final String userWebServiceFidor = "gvd0unireg";
 	private static final String pwdWebServiceFidor = "Welc0me_";
 
