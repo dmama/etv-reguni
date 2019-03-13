@@ -803,8 +803,8 @@
 		<!-- Délai d'attente avant qu'une impression locale pas nécessairement synchrone soit re-routée vers l'inbox du demandeur -->
 		<editique.locale.async.attente.delai>15</editique.locale.async.attente.delai>
 
-		<wsclient-ref-sec-version>1.2.3-SNAPSHOT</wsclient-ref-sec-version>
-		<unireg-wsclient-iam-version>1.0.2-SNAPSHOT</unireg-wsclient-iam-version>
+		<wsclient-ref-sec-version>1.2.3</wsclient-ref-sec-version>
+		<unireg-wsclient-iam-version>1.0.2</unireg-wsclient-iam-version>
 
 	</properties>
 
