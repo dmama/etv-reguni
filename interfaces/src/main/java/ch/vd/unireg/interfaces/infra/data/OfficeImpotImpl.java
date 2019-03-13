@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.infrastructure.model.rest.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class OfficeImpotImpl extends CollectiviteAdministrativeImpl implements OfficeImpot, Serializable {
 
@@ -15,7 +15,7 @@ public class OfficeImpotImpl extends CollectiviteAdministrativeImpl implements O
 		super(target);
 	}
 
-	public OfficeImpotImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureFidor service) {
+	public OfficeImpotImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureRaw service) {
 		super(right, service);
 		if (!SIGLE_OID.equals(right.getCodeType())) {
 			throw new IllegalArgumentException("La collectivité n'est pas un office d'impôt : type = [" + right.getCodeType() + "]");

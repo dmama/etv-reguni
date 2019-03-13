@@ -89,6 +89,14 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private UniregCacheManager uniregCacheManager;
 
 	/**
+	 * Implémentation cachée du service d'infrastructure, utilisée notamment pour résoudre les rues et les localités sur les adresses.
+	 * <p/>
+	 * Attention : l'utilisation irréfléchie de ce service peut provoquer des récursions infinies !
+	 */
+	@Nullable
+	private ServiceInfrastructureRaw cachedServiceInfra;
+
+	/**
 	 * [FISCPROJ-92] Liste des régimes fiscaux qu'il faut ignorer et qui ne doivent pas apparaître dans Unireg.
 	 */
 	private Set<String> regimesFiscauxBlacklist;
@@ -99,6 +107,10 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
+	}
+
+	public void setCachedServiceInfra(@Nullable ServiceInfrastructureRaw cachedServiceInfra) {
+		this.cachedServiceInfra = cachedServiceInfra;
 	}
 
 	public void setRegimesFiscauxBlacklist(String blackList) {
@@ -206,7 +218,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		try {
 			final ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative collAdm = fidorClient.getCollectiviteAdministrative(noColAdm);
-			return CollectiviteAdministrativeImpl.get(collAdm, this);
+			return getCollectiviteAdministrative(collAdm);
 		}
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
@@ -347,7 +359,8 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		try {
 			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostalesHisto(onrp);
 			if (fidorLocalites != null && !fidorLocalites.isEmpty()) {
-				final Map<Integer, List<Commune>> map = buildHistoMap(getCommunes());
+				final ServiceInfrastructureRaw serviceDelegate = cachedServiceInfra == null ? this : cachedServiceInfra;    // autant que possible, on essaie d'utiliser le cache des communes
+				final Map<Integer, List<Commune>> map = buildHistoMap(serviceDelegate.getCommunes());
 				final List<Localite> localites = new ArrayList<>(fidorLocalites.size());
 				for (PostalLocality fidorLocalite : fidorLocalites) {
 					localites.add(LocaliteImpl.get(fidorLocalite, map));
@@ -367,7 +380,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	public List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean b) {
 		try {
 			return fidorClient.findCollectivitesAdministratives(codeCollectivites, null, null, null, b).stream()
-					.map(right -> CollectiviteAdministrativeImpl.get(right, this))
+					.map(this::getCollectiviteAdministrative)
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
@@ -592,7 +605,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		try {
 			return fidorClient.findCollectivitesAdministratives(null, null, Collections.singletonList(SIGLE_OID), null, true).stream()
-					.map(right -> new OfficeImpotImpl(right, this))
+					.map(right -> new OfficeImpotImpl(right, cachedServiceInfra == null ? this : cachedServiceInfra))
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
@@ -600,11 +613,16 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	@Nullable
+	protected CollectiviteAdministrative getCollectiviteAdministrative(ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right) {
+		return CollectiviteAdministrativeImpl.get(right, cachedServiceInfra == null ? this : cachedServiceInfra);
+	}
+
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		try {
 			return fidorClient.findCollectivitesAdministratives(null, null, null, null, true).stream()
-					.map(right -> CollectiviteAdministrativeImpl.get(right, this))
+					.map(this::getCollectiviteAdministrative)
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {
@@ -619,7 +637,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					.map(TypeCollectivite::getCode)
 					.collect(Collectors.toList());
 			return fidorClient.findCollectivitesAdministratives(null, null, codes, null, true).stream()
-					.map(right -> CollectiviteAdministrativeImpl.get(right, this))
+					.map(this::getCollectiviteAdministrative)
 					.collect(Collectors.toList());
 		}
 		catch (FidorClientException e) {

@@ -11,7 +11,7 @@ import ch.vd.fidor.xml.colladm.v1.DecoupageNom;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
@@ -51,7 +51,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	}
 
 	@Nullable
-	public static CollectiviteAdministrative get(@Nullable ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureFidor service) {
+	public static CollectiviteAdministrative get(@Nullable ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureRaw service) {
 		if (right == null) {
 			return null;
 		}
@@ -83,7 +83,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		echangeAciCom = null;
 	}
 
-	protected CollectiviteAdministrativeImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureFidor service) {
+	protected CollectiviteAdministrativeImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureRaw service) {
 		this.adresse = AdresseImpl.getAt(right.getAdresses(), null, service);
 		this.dateFin = XmlUtils.cal2regdate(right.getDateFin());
 		this.adresseEmail = right.getEmail();

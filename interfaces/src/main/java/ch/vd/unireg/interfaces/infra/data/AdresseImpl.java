@@ -17,7 +17,6 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.fidor.FidorXmlUtils;
-import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
@@ -56,7 +55,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	@Nullable
-	public static Adresse getAt(@NotNull List<ch.vd.fidor.xml.colladm.v1.Adresse> adresses, RegDate date, @NotNull ServiceInfrastructureFidor service) {
+	public static Adresse getAt(@NotNull List<ch.vd.fidor.xml.colladm.v1.Adresse> adresses, RegDate date, @NotNull ServiceInfrastructureRaw service) {
 		return adresses.stream()
 				.filter(a -> FidorXmlUtils.isValid(a, date))
 				.findFirst()
@@ -64,7 +63,7 @@ public class AdresseImpl implements Adresse, Serializable {
 				.orElse(null);
 	}
 
-	public AdresseImpl(@NotNull ch.vd.fidor.xml.colladm.v1.Adresse right, @NotNull ServiceInfrastructureFidor service) {
+	public AdresseImpl(@NotNull ch.vd.fidor.xml.colladm.v1.Adresse right, @NotNull ServiceInfrastructureRaw service) {
 
 		final RegDate dateDebut = XmlUtils.cal2regdate(right.getDateDebut());
 		final Optional<Rue> rue = Optional.ofNullable(right.getEstrid())
