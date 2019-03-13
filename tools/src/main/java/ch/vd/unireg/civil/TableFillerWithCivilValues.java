@@ -61,7 +61,7 @@ public class TableFillerWithCivilValues {
 	private static final String RCPERS_USER = "gvd0unireg";
 	private static final String RCPERS_PWD = "Welc0me_";
 
-	private static final String FIDOR_URL = "http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5";
+	private static final String FIDOR_URL = "http://int-fidor-ws.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5";
 	private static final String FIDOR_USER = "gvd0unireg";
 	private static final String FIDOR_PWD = "Welc0me_";
 

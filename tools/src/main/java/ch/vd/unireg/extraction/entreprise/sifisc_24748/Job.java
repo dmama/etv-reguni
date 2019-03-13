@@ -73,7 +73,7 @@ public class Job {
 	private static final String urlWebServiceUnireg = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/v7";
 	private static final String userWebServiceUnireg = "unireg";
 	private static final String pwdWebServiceUnireg = "unireg_1014";
-	private static final String urlWebServiceFidor = "http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5";
+	private static final String urlWebServiceFidor = "http://int-fidor-ws.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5";
 	private static final String userWebServiceFidor = "gvd0unireg";
 	private static final String pwdWebServiceFidor = "Welc0me_";
 

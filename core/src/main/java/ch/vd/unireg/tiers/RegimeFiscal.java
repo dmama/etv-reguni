@@ -36,7 +36,7 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 	private Entreprise entreprise;
 	private Portee portee;
 	/**
-	 * Le code du type de régime fiscal (01, 109, 41, 41C, 70, ...) tel que défini par Fidor (http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5/regimesFiscauxEtendus)
+	 * Le code du type de régime fiscal (01, 109, 41, 41C, 70, ...) tel que défini par Fidor (http://int-fidor-ws.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5/regimesFiscauxEtendus)
 	 */
 	private String code;
 
