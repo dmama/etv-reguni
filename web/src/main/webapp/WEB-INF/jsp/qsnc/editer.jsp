@@ -196,7 +196,7 @@
 			<!-- Libération du questionnaire -->
 			<authz:authorize access="hasAnyRole('ROLE_QSNC_LIBERATION')">
 			<c:if test="${questionnaire.liberable && !depuisTache}">
-				<input type="button" value="<fmt:message key="label.bouton.liberer.di" />" onclick="return liberation.creerModalLiberation(${questionnaire.id},'bouton_liberer_di','/qsnc/liberer.do','Valider liberation QSNC','Libération de Questionnaire SNC');">
+				<input type="button" value="<fmt:message key="label.bouton.liberer.qsnc" />" onclick="return liberation.creerModalLiberation(${questionnaire.id},'bouton_liberer_di','/qsnc/liberer.do','Valider liberation QSNC','Libération de Questionnaire SNC');">
 			</c:if>
 			</authz:authorize>
 
