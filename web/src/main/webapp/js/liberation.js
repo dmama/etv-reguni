@@ -4,7 +4,7 @@ var liberation = {'liberation': {}};
 (function (liberation) {
 	liberation.creerModalLiberation = creerModalLiberation;
 
-	function creerModalLiberation(idDI, idModal, action, buttonValidationLabel, titleModal) {
+	function creerModalLiberation(idDI, idModal, action, buttonValidationVariableLabel, titleModal) {
 
 		var dialog = Dialog.create_dialog_div(idModal);
 
@@ -17,7 +17,7 @@ var liberation = {'liberation': {}};
 			              width: 500,
 			              modal: true,
 			              buttons: {
-				              [buttonValidationLabel]: function (event) {
+				              [buttonValidationVariableLabel]: function (event) {
 					              // les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
 
 					              var form = dialog.find('#formLiberation');
@@ -28,7 +28,7 @@ var liberation = {'liberation': {}};
 					              else {
 						              var buttons = $('.ui-button');
 						              buttons.each(function () {
-							              if ($(this).text() === buttonValidationLabel) {
+							              if ($(this).text() === buttonValidationVariableLabel) {
 								              $(this).addClass('ui-state-disabled');
 								              $(this).attr('disabled', true);
 							              }
