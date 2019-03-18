@@ -244,18 +244,14 @@ public abstract class PartyStrategy<T extends Party> {
 		copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
 	}
 
-	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE,
-	                                                                                                                    TypeRapportEntreTiers.PARENTE,
-	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
-	                                                                                                                    TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
-	                                                                                                                    TypeRapportEntreTiers.MANDAT,
-	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES,
-	                                                                                                                    TypeRapportEntreTiers.SCISSION_ENTREPRISE,
-	                                                                                                                    TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
-	                                                                                                                    TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
-	                                                                                                                    TypeRapportEntreTiers.SOCIETE_DIRECTION,
-	                                                                                                                    TypeRapportEntreTiers.HERITAGE,
-	                                                                                                                    TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC));
+	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.of(TypeRapportEntreTiers.TUTELLE,
+	                                                                                               TypeRapportEntreTiers.CURATELLE,
+	                                                                                               TypeRapportEntreTiers.CONSEIL_LEGAL,
+	                                                                                               TypeRapportEntreTiers.PRESTATION_IMPOSABLE,
+	                                                                                               TypeRapportEntreTiers.APPARTENANCE_MENAGE,
+	                                                                                               TypeRapportEntreTiers.REPRESENTATION,
+	                                                                                               TypeRapportEntreTiers.ANNULE_ET_REMPLACE
+	);
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
