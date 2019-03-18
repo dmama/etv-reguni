@@ -70,7 +70,9 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		final SecurityListResponse body = response.getBody();
 		Assert.assertNotNull(body);
 		Assert.assertEquals(login.getUserId(), body.getUser());
-		final Map<Integer, AllowedAccess> accesses = body.getPartyAccesses().stream().collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
+		final Map<Integer, AllowedAccess> accesses = body.getPartyAccesses().stream()
+				.filter(p -> p.getAllowedAccess() != null)
+				.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
 		for (long no : noTiers) {
 			Assert.assertEquals(expected, accesses.get((int) no));
 		}
