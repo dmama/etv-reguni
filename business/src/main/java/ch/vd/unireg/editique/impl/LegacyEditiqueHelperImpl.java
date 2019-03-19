@@ -15,10 +15,6 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
@@ -33,6 +29,10 @@ import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ForGestion;
@@ -171,6 +171,9 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 
 	private Expediteur remplitExpediteur(ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final Adresse adresse = ca.getAdresse();
+		if (adresse == null) {
+			throw new ServiceInfrastructureException("Le collectivité administrative n°" + ca.getNoColAdm() + " ne possède pas d'adresse courrier.");
+		}
 		final Commune commune = infraService.getCommuneByAdresse(adresse, null);
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
@@ -255,6 +258,9 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		//
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aciImpotSource = infraService.getACIImpotSource();
 		Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
+		if (adresseAciImpotSource == null) {
+			throw new ServiceInfrastructureException("Le collectivité administrative n°" + aciImpotSource.getNoColAdm() + " ne possède pas d'adresse courrier.");
+		}
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
@@ -298,6 +304,9 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		//
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci = infraService.getACI();
 		Adresse aciAdresse = aci.getAdresse();
+		if (aciAdresse == null) {
+			throw new ServiceInfrastructureException("Le collectivité administrative n°" + aci.getNoColAdm() + " ne possède pas d'adresse courrier.");
+		}
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.adresse.AdresseDataException;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
@@ -340,10 +341,13 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	 * @param noColAdministrative numéro à placer dans "CEDI XX" (c'est le XX) sur la troisième ligne
 	 * @return l'adresse du CEDI à utiliser comme adresse de retour
 	 */
-	protected final CTypeAdresse buildAdresseCEDI(int noColAdministrative) {
+	protected final CTypeAdresse buildAdresseCEDI(int noColAdministrative) throws AdresseException {
 		final CollectiviteAdministrative cedi = infraService.getCEDI();
 		final List<String> lignes = new ArrayList<>(4);
 		final Adresse adresse = cedi.getAdresse();
+		if (adresse == null) {
+			throw new AdresseDataException("Le CEDI ne possède pas d'adresse courrier.");
+		}
 		lignes.add(cedi.getNomComplet1());
 		lignes.add(cedi.getNomComplet2());
 		lignes.add(cedi.getNomCourt() + ' ' + noColAdministrative);
@@ -442,6 +446,10 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		final CTypeExpediteur expediteur = new CTypeExpediteur();
 
 		final Adresse adresse = expediteurPourAdresse.getAdresse();
+		if (adresse == null) {
+			throw new AdresseDataException("Le collectivité administrative n°" + expediteurPourAdresse.getNoColAdm() + " ne possède pas d'adresse courrier.");
+		}
+
 		final AdresseEnvoi adresseEnvoi = new AdresseEnvoi();
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet1());
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet2());
@@ -452,7 +460,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		expediteur.setAdresse(buildAdressePM(adresseEnvoi));
 		expediteur.setAdrMes(expediteurPourTelFaxMail.getAdresseEmail());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
-		expediteur.setLocaliteExpedition(expediteurPourAdresse.getAdresse().getLocalite());
+		expediteur.setLocaliteExpedition(adresse.getLocalite());
 		expediteur.setNumCCP(expediteurPourAdresse.getNoCCP());
 		expediteur.setNumFax(expediteurPourTelFaxMail.getNoFax());
 		expediteur.setNumIBAN(null);
@@ -467,6 +475,10 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		final ch.vd.unireg.xml.editique.pp.CTypeExpediteur expediteur = new ch.vd.unireg.xml.editique.pp.CTypeExpediteur();
 
 		final Adresse adresse = expediteurPourAdresse.getAdresse();
+		if (adresse == null) {
+			throw new AdresseDataException("Le collectivité administrative n°" + expediteurPourAdresse.getNoColAdm() + " ne possède pas d'adresse courrier.");
+		}
+
 		final AdresseEnvoi adresseEnvoi = new AdresseEnvoi();
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet1());
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet2());
@@ -477,7 +489,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		expediteur.setAdresse(buildAdressePP(adresseEnvoi));
 		expediteur.setAdrMes(expediteurPourTelFaxMail.getAdresseEmail());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
-		expediteur.setLocaliteExpedition(expediteurPourAdresse.getAdresse().getLocalite());
+		expediteur.setLocaliteExpedition(adresse.getLocalite());
 		expediteur.setNumCCP(StringUtils.trimToNull(expediteurPourAdresse.getNoCCP()));
 		expediteur.setNumFax(StringUtils.trimToNull(expediteurPourTelFaxMail.getNoFax()));
 		expediteur.setNumIBAN(null);

@@ -543,6 +543,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		}
 
 		final Adresse adrCedi = cedi.getAdresse();
+		if (adrCedi == null) {
+			throw new EditiqueException("Le CEDI ne possède pas d'adresse courrier.");
+		}
 		adresseRetour.setADRES1RETOUR(cedi.getNomComplet1());
 		adresseRetour.setADRES2RETOUR(cedi.getNomComplet2());
 
