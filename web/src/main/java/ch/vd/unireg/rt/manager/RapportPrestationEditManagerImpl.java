@@ -106,7 +106,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		}
 
 		if (!(tiers instanceof PersonnePhysique)) {
-			throw new ObjectNotFoundException(messageHelper.getMessage("error.personne.physique.attendu"));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.personne.physique.attendu",FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero())));
 		}
 		final PersonnePhysique sourcier = (PersonnePhysique) tiers;
 
