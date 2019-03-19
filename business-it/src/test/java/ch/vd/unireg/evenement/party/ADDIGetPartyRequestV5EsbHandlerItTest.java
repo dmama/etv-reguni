@@ -131,8 +131,7 @@ public class ADDIGetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandle
 			assertEquals(ppDB.getRapportsObjet().size(), 1);
 			final RapportEntreTiers rapportEntreTiers = ppDB.getRapportsObjet().iterator().next();
 			assertEquals(rapportEntreTiers.getType(), TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC);
-			// on vérifie qu'aucun rapport de type SNC n'est remontée par le get party V5.
-			assertEquals(pp.getRelationsBetweenParties().size(), 1);
+			assertEquals("on vérifie qu'un rapport de type SNC est remontée par le get party V5",pp.getRelationsBetweenParties().size(), 1);
 			final PartnerRelationship lienAssocieSnc = (PartnerRelationship) pp.getRelationsBetweenParties().get(0);
 			assertNotNull(lienAssocieSnc);
 			assertEquals(lienAssocieSnc.getOtherPartyNumber(), rapportEntreTiers.getSujetId().intValue());
