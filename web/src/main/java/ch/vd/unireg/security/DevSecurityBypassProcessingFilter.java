@@ -117,7 +117,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 		}
 		final List<IfoSecProcedure> listProcedure = codesStream
 				.filter(StringUtils::isNotBlank)
-				.map(code -> new IfoSecProcedureImpl(code, "0", null, 0))
+				.map(code -> new IfoSecProcedureImpl(code, null))
 				.collect(Collectors.toList());
 
 		profil.setProcedures(listProcedure);

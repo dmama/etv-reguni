@@ -33,7 +33,7 @@
 
 	<bean name="refSecClientExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="refSecClient"/>
-		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.ClientRefSec"/>
+		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.RefSecClient"/>
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

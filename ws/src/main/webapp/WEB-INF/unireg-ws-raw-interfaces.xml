@@ -99,11 +99,11 @@
 
 	<bean id="refSecClientRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/refSecClient.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.ClientRefSec" />
+		<property name="serviceInterface" value="ch.vd.unireg.wsclient.refsec.RefSecClient" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.ServiceClientRefSecTracing">
+	<bean id="refSecClientTracing" class="ch.vd.unireg.wsclient.refsec.RefSecClientTracing">
 		<property name="target" ref="refSecClientRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>

@@ -7,28 +7,24 @@ import ch.vd.unireg.security.IfoSecProcedure;
 
 public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 
-	private static final long serialVersionUID = -7517333928144158983L;
+	private static final long serialVersionUID = -6351212176447760801L;
 
-	private String code;
-	private String codeActivite;
-	private String designation;
-	private Integer numero;
+	private final String code;
+	private final String designation;
 
-	public IfoSecProcedureImpl() {
-	}
-
-	public IfoSecProcedureImpl(String code, String codeActivite, String designation, Integer numero) {
+	public IfoSecProcedureImpl(String code, String designation) {
 		this.code = code;
-		this.codeActivite = codeActivite;
 		this.designation = designation;
-		this.numero = numero;
 	}
 
 	public IfoSecProcedureImpl(Procedure p) {
 		this.code = p.getCode();
-		this.codeActivite = p.getCodeActivite();
 		this.designation = p.getDesignation();
-		this.numero = p.getNumero();
+	}
+
+	public IfoSecProcedureImpl(ch.vd.unireg.wsclient.refsec.model.Procedure procedure) {
+		this.code = procedure.getCode();
+		this.designation = procedure.getDescription();
 	}
 
 	@Override
@@ -36,35 +32,9 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 		return code;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	@Override
-	public String getCodeActivite() {
-		return codeActivite;
-	}
-
-	public void setCodeActivite(String codeActivite) {
-		this.codeActivite = codeActivite;
-	}
-
 	@Override
 	public String getDesignation() {
 		return designation;
-	}
-
-	public void setDesignation(String designation) {
-		this.designation = designation;
-	}
-
-	@Override
-	public Integer getNumero() {
-		return numero;
-	}
-
-	public void setNumero(Integer numero) {
-		this.numero = numero;
 	}
 
 	public static IfoSecProcedure get(Procedure p) {

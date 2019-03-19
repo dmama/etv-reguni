@@ -8,17 +8,7 @@ public interface IfoSecProcedure {
 	String getCode();
 
 	/**
-	 * @return le code d'activité de la procédure.
-	 */
-	String getCodeActivite();
-
-	/**
 	 * @return la désignation de la procédure.
 	 */
 	String getDesignation();
-
-	/**
-	 * @return le numéro de la procédure.
-	 */
-	Integer getNumero();
 }

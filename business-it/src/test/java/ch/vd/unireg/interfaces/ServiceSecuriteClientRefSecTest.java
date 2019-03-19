@@ -41,9 +41,7 @@ public class ServiceSecuriteClientRefSecTest extends BusinessItTest {
 	@Test
 	public void testGetProfileUtilisateurCollectiviteInexistante() throws Exception {
 		final ProfileOperateur profileUtilisateur = service.getProfileUtilisateur("ZAIZZT", 0);
-		assertNotNull(profileUtilisateur);
-		assertEquals(0, profileUtilisateur.getProcedures().size());
-		assertNull(profileUtilisateur.getNoTelephone());
+		assertNull(profileUtilisateur);
 	}
 
 }

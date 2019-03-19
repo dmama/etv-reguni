@@ -11,8 +11,8 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
-import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.security.IfoSecProcedure;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
@@ -70,9 +70,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		final List<IfoSecProcedure> procedures = new ArrayList<>();
 		if (roles != null) {
 			for (Role r : roles) {
-				IfoSecProcedureImpl p = new IfoSecProcedureImpl();
-				p.setCode(r.getIfosecCode());
-				procedures.add(p);
+				procedures.add(new IfoSecProcedureImpl(r.getIfosecCode(), null));
 			}
 		}
 		profile.setProcedures(procedures);

@@ -11,7 +11,6 @@ import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.security.IfoSecProcedure;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.wsclient.iam.IamUser;
-import ch.vd.unireg.wsclient.refsec.ProfilOperateurRefSec;
 
 public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
@@ -120,7 +119,8 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 		return new ProfileOperateurImpl(profile);
 	}
 
-	public static ProfileOperateur get(ProfilOperateurRefSec profilOperateurRefSec, @NotNull IamUser iamUser) {
+	// FIXME (msi) un opérateur n'est pas forcément défini dans IAM
+	public static ProfileOperateur get(ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateurRefSec, @NotNull IamUser iamUser) {
 		if (profilOperateurRefSec == null) {
 			return null;
 		}
@@ -130,8 +130,8 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 		profil.setPrenom(iamUser.getFirstName());
 		profil.setNoTelephone(profilOperateurRefSec.getNumeroTelephone());
 
-		final List<IfoSecProcedure> procedures = profilOperateurRefSec.getAuthorizations().stream()
-				.map(authorization -> new IfoSecProcedureImpl(authorization.getCode(), authorization.getName(), authorization.getDescription(), null))
+		final List<IfoSecProcedure> procedures = profilOperateurRefSec.getProcedures().stream()
+				.map(IfoSecProcedureImpl::new)
 				.collect(Collectors.toList());
 		profil.setProcedures(procedures);
 		return profil;
