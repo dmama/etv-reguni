@@ -36,26 +36,51 @@ public abstract class WebServiceHelper {
 	private static final String NULL = "null";
 
 	/**
-	 * Utilisé pour le log d'un appel web-service
+	 * Loggue un appel reçu à un web-service Unireg.
+	 *
 	 * @param accessLogger le logger dans lequel (au niveau INFO) on enverra les informations de l'appel
-	 * @param request requête HTTP entrante (pour y récupérer l'éventuelle donnée d'authentification)
-	 * @param params un <i>supplier</i> capable de donner une description de l'appel
-	 * @param duration durée de l'appel
-	 * @param load nombre d'appel en cours (y compris celui-ci)
-	 * @param contentType le <i>content-type</i> de la réponse fournie, si explicite
-	 * @param status le statut HTTP de la réponse
-	 * @param nbItems dans les cas où cela a un sens, le nombre d'éléments retournés par la requête
-	 * @param t éventuelle exception lancée pendant l'appel
+	 * @param request      requête HTTP entrante (pour y récupérer l'éventuelle donnée d'authentification)
+	 * @param params       un <i>supplier</i> capable de donner une description de l'appel
+	 * @param duration     durée de l'appel
+	 * @param load         nombre d'appel en cours (y compris celui-ci)
+	 * @param contentType  le <i>content-type</i> de la réponse fournie, si explicite
+	 * @param status       le statut HTTP de la réponse
+	 * @param nbItems      dans les cas où cela a un sens, le nombre d'éléments retournés par la requête
+	 * @param t            éventuelle exception lancée pendant l'appel
 	 */
-	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Supplier<String> params, Duration duration, int load, @Nullable MediaType contentType, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
-		if (accessLogger.isInfoEnabled()) {
-			final String user = AuthenticatedUserHelper.getAuthenticatedUser(request);
-			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
-			final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
-			final String itemString = (nbItems == null ? StringUtils.EMPTY : String.format(" => %d item(s)", nbItems));
-			final String typeString = contentType == null ? StringUtils.EMPTY : String.format(" content-type='%s'", contentType);
-			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s%s%s", user, duration.toMillis(), params.get(), load, statusString, typeString, itemString, exceptionString));
+	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Supplier<String> params, Duration duration, int load, @Nullable MediaType contentType, @Nullable Response.Status status, @Nullable Integer nbItems,
+	                                 @Nullable Throwable t) {
+		if (status != null && status.getStatusCode() >= 500) {
+			// erreurs côté serveur : error
+			if (accessLogger.isErrorEnabled()) {
+				final String message = buildAccessMessage(request, params, duration, load, contentType, status, nbItems, t);
+				accessLogger.error(message);
+			}
 		}
+		else if (status != null && status.getStatusCode() >= 400) {
+			// erreurs côté client : warn
+			if (accessLogger.isWarnEnabled()) {
+				final String message = buildAccessMessage(request, params, duration, load, contentType, status, nbItems, t);
+				accessLogger.warn(message);
+			}
+		}
+		else {
+			// par défaut : info
+			if (accessLogger.isInfoEnabled()) {
+				final String message = buildAccessMessage(request, params, duration, load, contentType, status, nbItems, t);
+				accessLogger.info(message);
+			}
+		}
+	}
+
+	protected static String buildAccessMessage(HttpServletRequest request, Supplier<String> params, Duration duration, int load, @Nullable MediaType contentType, @Nullable Response.@Nullable Status status, @Nullable Integer nbItems,
+	                                           @Nullable Throwable t) {
+		final String user = AuthenticatedUserHelper.getAuthenticatedUser(request);
+		final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
+		final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
+		final String itemString = (nbItems == null ? StringUtils.EMPTY : String.format(" => %d item(s)", nbItems));
+		final String typeString = contentType == null ? StringUtils.EMPTY : String.format(" content-type='%s'", contentType);
+		return String.format("[%s] (%d ms) %s load=%d%s%s%s%s", user, duration.toMillis(), params.get(), load, statusString, typeString, itemString, exceptionString);
 	}
 
 	/**
