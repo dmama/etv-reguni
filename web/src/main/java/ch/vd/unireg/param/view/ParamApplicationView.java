@@ -5,7 +5,6 @@ import ch.vd.unireg.parametrage.ParametreEnum;
 
 /**
  * Classe mappant le formulaire de saisie de /param/application.jsp
- *
  */
 @SuppressWarnings({"UnusedDeclaration"})
 public class ParamApplicationView {
@@ -15,6 +14,7 @@ public class ParamApplicationView {
 		save,
 		reset
 	}
+
 	private Action action;
 
 	public Action getAction() {
@@ -67,8 +67,12 @@ public class ParamApplicationView {
 	private String dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI;
 	private String delaiRetourDemandeDegrevementICI;
 	private String delaiEnvoiRappelDemandeDegrevementICI;
+	private String delaiImpressionCadev;
+	private String delaiRetourQuestionnaireSNCRappele;
+	private String delaiAccordeDemandeDelai;
 
-	public ParamApplicationView() {}
+	public ParamApplicationView() {
+	}
 
 	public ParamApplicationView(ParametreAppService service) {
 		this.noel = ParametreEnum.noel.convertirValeurTypeeVersString(service.getNoel());
@@ -110,9 +114,13 @@ public class ParamApplicationView {
 		this.dateLimiteEnvoiMasseDeclarationsUtilitePublique = ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique.convertirValeurTypeeVersString(service.getDateLimiteEnvoiMasseDeclarationsUtilitePublique());
 		this.delaiRetourQuestionnaireSNCEmisManuellement = ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement.convertirValeurTypeeVersString(service.getDelaiRetourQuestionnaireSNCEmisManuellement());
 		this.delaiEnvoiRappelQuestionnaireSNC = ParametreEnum.delaiEnvoiRappelQuestionnaireSNC.convertirValeurTypeeVersString(service.getDelaiEnvoiRappelQuestionnaireSNC());
-		this.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI = ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI.convertirValeurTypeeVersString(service.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI());
+		this.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI =
+				ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI.convertirValeurTypeeVersString(service.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI());
 		this.delaiRetourDemandeDegrevementICI = ParametreEnum.delaiRetourDemandeDegrevementICI.convertirValeurTypeeVersString(service.getDelaiRetourDemandeDegrevementICI());
 		this.delaiEnvoiRappelDemandeDegrevementICI = ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI.convertirValeurTypeeVersString(service.getDelaiEnvoiRappelDemandeDegrevementICI());
+		this.delaiImpressionCadev = ParametreEnum.delaiImpressionCadev.convertirValeurTypeeVersString(service.getDateExpeditionDelaiImpressionCadev());
+		this.delaiRetourQuestionnaireSNCRappele = ParametreEnum.delaiRetourQuestionnaireSNCRappele.convertirValeurTypeeVersString(service.getDelaiRetourQuestionnaireSNCRappele());
+		this.delaiAccordeDemandeDelai = ParametreEnum.delaiAccordeDemandeDelai.convertirValeurTypeeVersString(service.getDateFinDelaiDemandeDelai());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -142,7 +150,7 @@ public class ParamApplicationView {
 		service.setDelaiRetourSommationListeRecapitulative((Integer) ParametreEnum.delaiRetourSommationListeRecapitulative.convertirStringVersValeurTypee(this.delaiRetourSommationListeRecapitulative));
 		service.setDelaiEcheanceSommationListeRecapitualtive((Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitualtive));
 		service.setDelaiRetentionRapportTravailInactif((Integer) ParametreEnum.delaiRetentionRapportTravailInactif.convertirStringVersValeurTypee(this.delaiRetentionRapportTravailInactif));
-		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
+		service.setDateExclusionDecedeEnvoiDI((Integer[]) ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
 		service.setAgeRentierFemme((Integer) ParametreEnum.ageRentierFemme.convertirStringVersValeurTypee(this.ageRentierFemme));
 		service.setAgeRentierHomme((Integer) ParametreEnum.ageRentierHomme.convertirStringVersValeurTypee(this.ageRentierHomme));
 		service.setDelaiMinimalRetourDeclarationImpotPM((Integer) ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiMinimalRetourDeclarationImpotPM));
@@ -155,9 +163,13 @@ public class ParamApplicationView {
 		service.setDateLimiteEnvoiMasseDeclarationsUtilitePublique((Integer[]) ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique.convertirStringVersValeurTypee(this.dateLimiteEnvoiMasseDeclarationsUtilitePublique));
 		service.setDelaiRetourQuestionnaireSNCEmisManuellement((Integer) ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement.convertirStringVersValeurTypee(this.delaiRetourQuestionnaireSNCEmisManuellement));
 		service.setDelaiEnvoiRappelQuestionnaireSNC((Integer) ParametreEnum.delaiEnvoiRappelQuestionnaireSNC.convertirStringVersValeurTypee(this.delaiEnvoiRappelQuestionnaireSNC));
-		service.setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI((Integer[]) ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI.convertirStringVersValeurTypee(this.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI));
+		service.setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(
+				(Integer[]) ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI.convertirStringVersValeurTypee(this.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI));
 		service.setDelaiRetourDemandeDegrevementICI((Integer) ParametreEnum.delaiRetourDemandeDegrevementICI.convertirStringVersValeurTypee(this.delaiRetourDemandeDegrevementICI));
 		service.setDelaiEnvoiRappelDemandeDegrevementICI((Integer) ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI.convertirStringVersValeurTypee(this.delaiEnvoiRappelDemandeDegrevementICI));
+		service.setDateExpeditionDelaiImpressionCadev((Integer) ParametreEnum.delaiImpressionCadev.convertirStringVersValeurTypee(this.delaiImpressionCadev));
+		service.setDelaiRetourQuestionnaireSNCRappele((Integer) ParametreEnum.delaiRetourQuestionnaireSNCRappele.convertirStringVersValeurTypee(this.delaiRetourQuestionnaireSNCRappele));
+		service.setDateFinDelaiDemandeDelai((Integer) ParametreEnum.delaiAccordeDemandeDelai.convertirStringVersValeurTypee(this.delaiAccordeDemandeDelai));
 	}
 
 	public String getNoel() {
@@ -494,5 +506,29 @@ public class ParamApplicationView {
 
 	public void setDelaiEnvoiRappelDemandeDegrevementICI(String delaiEnvoiRappelDemandeDegrevementICI) {
 		this.delaiEnvoiRappelDemandeDegrevementICI = delaiEnvoiRappelDemandeDegrevementICI;
+	}
+
+	public String getDelaiImpressionCadev() {
+		return delaiImpressionCadev;
+	}
+
+	public void setDelaiImpressionCadev(String delaiImpressionCadev) {
+		this.delaiImpressionCadev = delaiImpressionCadev;
+	}
+
+	public String getDelaiRetourQuestionnaireSNCRappele() {
+		return delaiRetourQuestionnaireSNCRappele;
+	}
+
+	public void setDelaiRetourQuestionnaireSNCRappele(String delaiRetourQuestionnaireSNCRappele) {
+		this.delaiRetourQuestionnaireSNCRappele = delaiRetourQuestionnaireSNCRappele;
+	}
+
+	public String getDelaiAccordeDemandeDelai() {
+		return delaiAccordeDemandeDelai;
+	}
+
+	public void setDelaiAccordeDemandeDelai(String delaiAccordeDemandeDelai) {
+		this.delaiAccordeDemandeDelai = delaiAccordeDemandeDelai;
 	}
 }

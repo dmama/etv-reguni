@@ -527,6 +527,22 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public void setDateExpeditionDelaiImpressionCadev(Integer val) {
+		container.setDateExpeditionDelaiImpressionCadev(val);
+	}
+
+	@Override
+	public void setDelaiRetourQuestionnaireSNCRappele(Integer val) {
+		container.setDelaiRetourQuestionnaireSNCRappele(val);
+	}
+
+	@Override
+	public void setDateFinDelaiDemandeDelai(Integer val) {
+		container.setDateFinDelaiDemandeDelai(val);
+	}
+
+
+	@Override
 	public void setDelaiRetourDemandeDegrevementICI(Integer val) {
 		container.setDelaiRetourDemandeDegrevementICI(val);
 	}

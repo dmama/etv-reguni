@@ -434,6 +434,21 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public void setDateExpeditionDelaiImpressionCadev(Integer val) {
+		container.setDateExpeditionDelaiImpressionCadev(val);
+	}
+
+	@Override
+	public void setDelaiRetourQuestionnaireSNCRappele(Integer val) {
+		container.setDelaiRetourQuestionnaireSNCRappele(val);
+	}
+
+	@Override
+	public void setDateFinDelaiDemandeDelai(Integer val) {
+		container.setDateFinDelaiDemandeDelai(val);
+	}
+
+	@Override
 	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
 		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
 	}

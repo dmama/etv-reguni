@@ -90,6 +90,7 @@ public interface ParametreAppAccessor {
 
 	/**
 	 * [UNIREG-2507]
+	 *
 	 * @return l'année minimale acceptée lors de la création de nouveaux fors débiteur.
 	 */
 	Integer getAnneeMinimaleForDebiteur();
@@ -183,5 +184,11 @@ public interface ParametreAppAccessor {
 	void setAgeRentierHomme(Integer val);
 
 	void setDelaiMinimalRetourDeclarationImpotPM(Integer val);
+
+	void setDateExpeditionDelaiImpressionCadev(Integer val);
+
+	void setDelaiRetourQuestionnaireSNCRappele(Integer val);
+
+	void setDateFinDelaiDemandeDelai(Integer val);
 
 }

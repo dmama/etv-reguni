@@ -17,6 +17,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	/**
 	 * Charge le container depuis une liste de paramètres tirés de la base de données
+	 *
 	 * @param parametres les paramètres à charger
 	 */
 	void load(Collection<ParametreApp> parametres) {
@@ -30,7 +31,8 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	/**
 	 * Assigne une nouvelle valeur
-	 * @param key la clé du paramètre
+	 *
+	 * @param key   la clé du paramètre
 	 * @param value la valeur associée
 	 */
 	void put(ParametreEnum key, ParametreApp value) {
@@ -39,6 +41,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	/**
 	 * Récupère la valeur associée à la clé
+	 *
 	 * @param key clé
 	 * @return la valeur (sous forme de {@link String})
 	 */
@@ -408,6 +411,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public void setDateExpeditionDelaiImpressionCadev(Integer val) {
+		setValeur(ParametreEnum.delaiImpressionCadev, val.toString());
+	}
+
+	@Override
 	public void setDelaiEcheanceSommationListeRecapitualtive(Integer val) {
 		setValeur(ParametreEnum.delaiEcheanceSommationListeRecapitualtive, val.toString());
 	}
@@ -570,6 +578,17 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	public void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val) {
 		setValeur(ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI, val.toString());
 	}
+
+	@Override
+	public void setDelaiRetourQuestionnaireSNCRappele(Integer val) {
+		setValeur(ParametreEnum.delaiRetourQuestionnaireSNCRappele, val.toString());
+	}
+
+	@Override
+	public void setDateFinDelaiDemandeDelai(Integer val) {
+		setValeur(ParametreEnum.delaiAccordeDemandeDelai, val.toString());
+	}
+
 
 	@Override
 	public void setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(Integer[] val) {
