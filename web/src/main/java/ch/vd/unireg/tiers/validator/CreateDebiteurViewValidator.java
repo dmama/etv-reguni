@@ -56,7 +56,9 @@ public class CreateDebiteurViewValidator implements Validator {
 		errors.pushNestedPath("complementCoordFinanciere");
 		try {
 			final int errorsBefore = errors.getErrorCount();
-			cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
+			if (!view.getComplementCoordFinanciere().isEmpty()) {
+				cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
+			}
 			if (errors.getErrorCount() > errorsBefore) {
 				errors.reject("onglet.error.complements");
 			}

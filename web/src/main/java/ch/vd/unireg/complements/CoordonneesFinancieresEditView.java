@@ -126,6 +126,6 @@ public class CoordonneesFinancieresEditView implements DateRange, Annulable {
 	}
 
 	public boolean isEmpty() {
-		return StringUtils.isEmpty(iban) && StringUtils.isEmpty(oldIban);
+		return StringUtils.isEmpty(iban) && StringUtils.isEmpty(oldIban) && dateDebut == null;
 	}
 }
