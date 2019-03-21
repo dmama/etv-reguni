@@ -11,7 +11,7 @@
 		<groupId>ch.vd.unireg</groupId>
 		<artifactId>unireg</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>19R1.0.1-SNAPSHOT</version>
+		<version>19R1.0.1</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
