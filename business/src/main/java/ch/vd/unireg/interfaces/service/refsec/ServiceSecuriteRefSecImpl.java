@@ -22,12 +22,11 @@ import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.security.ProfileOperateur;
-import ch.vd.unireg.wsclient.iam.IamClient;
-import ch.vd.unireg.wsclient.iam.IamUser;
 import ch.vd.unireg.wsclient.refsec.RefSecClient;
 import ch.vd.unireg.wsclient.refsec.RefSecClientException;
 import ch.vd.unireg.wsclient.refsec.RefSecClientTracing;
 import ch.vd.unireg.wsclient.refsec.model.ProfilOperateur;
+import ch.vd.unireg.wsclient.refsec.model.User;
 
 
 public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
@@ -35,7 +34,6 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceSecuriteRefSecImpl.class);
 
 	private RefSecClient refSecClient;
-	private IamClient iamClient;
 	private ServiceInfrastructureService serviceInfrastructureService;
 
 
@@ -43,9 +41,10 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	public ProfileOperateur getProfileUtilisateur(String visa, int codeCollectivite) {
 
 		try {
-			final IamUser iamUser = iamClient.getUser(visa);
+
+			final User user = refSecClient.getUser(visa);
 			final ProfilOperateur profile = refSecClient.getProfilOperateur(visa, codeCollectivite);
-			return ProfileOperateurImpl.get(profile, iamUser);
+			return ProfileOperateurImpl.get(profile, user);
 		}
 		catch (RefSecClientException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -60,10 +59,11 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	}
 
 	@Override
+	@Nullable
 	public Operateur getOperateur(@NotNull String visa) {
 		try {
-			final IamUser iamUser = iamClient.getUser(visa);
-			return Operateur.get(iamUser);
+			final User user = refSecClient.getUser(visa);
+			return Operateur.get(user, visa);
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -124,10 +124,6 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 
 	public void setRefSecClient(RefSecClientTracing refSecClient) {
 		this.refSecClient = refSecClient;
-	}
-
-	public void setIamClient(IamClient iamClient) {
-		this.iamClient = iamClient;
 	}
 
 

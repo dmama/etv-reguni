@@ -20,6 +20,7 @@ import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.wsclient.refsec.RefSecClient;
 import ch.vd.unireg.wsclient.refsec.RefSecClientException;
 import ch.vd.unireg.wsclient.refsec.model.ProfilOperateur;
+import ch.vd.unireg.wsclient.refsec.model.User;
 
 public class RefSecClientCache implements RefSecClient, UniregCacheInterface, InitializingBean, DisposableBean {
 
@@ -93,6 +94,44 @@ public class RefSecClientCache implements RefSecClient, UniregCacheInterface, In
 		public int hashCode() {
 			return Objects.hash(visa, collectivite);
 		}
+	}
+
+	private static class KeyGetUser {
+		@NotNull
+		private final String visa;
+
+		public KeyGetUser(@NotNull String visa) {
+			this.visa = visa;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof KeyGetUser)) return false;
+			final KeyGetUser that = (KeyGetUser) o;
+			return visa.equals(that.visa);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(visa);
+		}
+	}
+
+	@Nullable
+	@Override
+	public User getUser(@NotNull String visa) throws RefSecClientException {
+		final User resultat;
+		final KeyGetUser key = new KeyGetUser(visa);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getUser(visa);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (User) element.getObjectValue();
+		}
+		return resultat;
 	}
 
 	@Override

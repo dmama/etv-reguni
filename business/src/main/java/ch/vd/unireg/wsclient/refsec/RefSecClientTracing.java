@@ -10,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.wsclient.refsec.model.ProfilOperateur;
+import ch.vd.unireg.wsclient.refsec.model.User;
 
 public class RefSecClientTracing implements RefSecClient, InitializingBean, DisposableBean {
 
@@ -38,6 +39,23 @@ public class RefSecClientTracing implements RefSecClient, InitializingBean, Disp
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
+		}
+	}
+
+	@Nullable
+	@Override
+	public User getUser(@NotNull String visa) throws RefSecClientException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getUser(visa);
+		}
+		catch (RefSecClientException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getUser", () -> String.format("visa=%s ", visa));
 		}
 	}
 

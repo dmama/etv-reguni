@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.security.IfoSecProcedure;
 import ch.vd.unireg.security.ProfileOperateur;
-import ch.vd.unireg.wsclient.iam.IamUser;
+import ch.vd.unireg.wsclient.refsec.model.User;
 
 public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
@@ -119,15 +119,17 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 		return new ProfileOperateurImpl(profile);
 	}
 
-	// FIXME (msi) un opérateur n'est pas forcément défini dans IAM
-	public static ProfileOperateur get(ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateurRefSec, @NotNull IamUser iamUser) {
+
+	public static ProfileOperateur get(ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateurRefSec, @Nullable User user) {
 		if (profilOperateurRefSec == null) {
 			return null;
 		}
 		final ProfileOperateurImpl profil = new ProfileOperateurImpl();
 		profil.setVisaOperateur(profilOperateurRefSec.getVisa());
-		profil.setNom(iamUser.getLastName());
-		profil.setPrenom(iamUser.getFirstName());
+		if (user != null) {
+			profil.setNom(user.getLastName());
+			profil.setPrenom(user.getFirstName());
+		}
 		profil.setNoTelephone(profilOperateurRefSec.getNumeroTelephone());
 
 		final List<IfoSecProcedure> procedures = profilOperateurRefSec.getProcedures().stream()

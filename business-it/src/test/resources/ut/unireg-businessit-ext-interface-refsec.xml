@@ -15,6 +15,7 @@
 		<property name="appName" value="${testprop.ref.securite.webservice.appName}" />
 		<property name="wsResourcePath" value="${testprop.ref.securite.webservice.ws.path}" />
 		<property name="pingResourcePath" value="${testprop.ref.securite.webservice.health.path}" />
+		<property name="userResourcePath" value="${testprop.ref.securite.webservice.ws.users}" />
 	</bean>
 
 	<alias name="clientrefsecraw" alias="refSecClient" />

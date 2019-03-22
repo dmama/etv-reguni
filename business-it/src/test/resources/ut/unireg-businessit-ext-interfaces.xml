@@ -121,7 +121,6 @@
 
 	<bean id="serviceSecuriteClientRefSec" class="ch.vd.unireg.interfaces.service.refsec.ServiceSecuriteRefSecImpl">
 		<property name="refSecClient" ref="refSecClientTracing" />
-		<property name="iamClient" ref="iamClient" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 

@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.service.host;
 import java.io.Serializable;
 
 import ch.vd.unireg.wsclient.iam.IamUser;
+import ch.vd.unireg.wsclient.refsec.model.User;
 
 
 public class Operateur implements Serializable {
@@ -30,16 +31,16 @@ public class Operateur implements Serializable {
 		return op;
 	}
 
-	public static Operateur get(IamUser iamUser) {
-		if (iamUser == null) {
+	public static Operateur get(User user,String visa) {
+		if (user == null) {
 			return null;
 		}
 
 		final Operateur op = new Operateur();
-		op.setNom(iamUser.getLastName());
-		op.setPrenom(iamUser.getFirstName());
-		op.setEmail(iamUser.getEmail());
-		op.setCode(iamUser.getIamId());
+		op.setNom(user.getLastName());
+		op.setPrenom(user.getFirstName());
+		op.setEmail(user.getEmail());
+		op.setCode(visa);
 		return op;
 	}
 

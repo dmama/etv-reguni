@@ -1,0 +1,352 @@
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/users?iup=usrreg20
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T031834.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/users?iup=usrreg20
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T015737.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/users?iup=zaizzt
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T111631.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/users?iup=ZAIZZT
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T111622.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/users
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T111552.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/users?iup=ZAIZZT
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T111315.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/users?iamUserId=ZAIZZT
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-22T111212.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/authorizations?iamUserId=ZAIZZT
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-19T073103.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIZZT
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-19T073029.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIZZT
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-18T110033.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIZZT&targetDataCode=COLLECTIVITE&targetDataValue=-1&status=ACTIVE
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-18T110006.200.json
+
+###
+
+GET http://int-fidor-ws.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5/listOfCommunesFiscales?numeroOfs=5518
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-18T100058.200.xml
+
+###
+
+GET http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v5/listOfCommunesFiscales?numeroOfs=5518
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-18T095714.503.html
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/actuator/health
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-13T033458.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/actuator/health
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-13T014418.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIZZT&targetDataCode=COLLECTIVITE&targetDataValue=-1&status=ACTIVE
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T043217.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIZZT&targetDataCode=COLLECTIVITE&targetDataValue=-1
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T043056.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA&targetDataCode=COLLECTIVITE&targetDataValue=-1
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T042949.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T042501.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/actuator/info
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T040346.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T040115.206.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/actuator/info
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T040109.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T030924.206.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=zaidra
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T030904.206.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T030834.206.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/actuator/health
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T030816.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-12T030531.206.json
+
+###
+
+GET http://valid-rcent-ws.etat-de-vaud.ch/registres/val-rcent/services/v3/organisation/CT.VD.PARTY/101417385?history=true
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-03-08T040003.200.xml
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-08T015508.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic gvd0unireg Welc0me_
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-08T015409.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Authorization: Basic {{gvd0unireg}} {{Welc0me_}}
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-03-08T015351.401.html
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Accept: */*
+Cache-Control: no-cache
+Authorization: Basic Z3ZkMHVuaXJlZzpXZWxjMG1lXw==
+
+<> 2019-03-08T014216.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=ZAIDRA
+Accept: */*
+Cache-Control: no-cache
+Authorization: Basic Z3ZkMHVuaXJlZzpXZWxjMG1lXw==
+
+<> 2019-03-08T013659.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=zaidra
+Accept: */*
+Cache-Control: no-cache
+Authorization: Basic Z3ZkMHVuaXJlZzpXZWxjMG1lXw==
+
+<> 2019-03-08T013607.200.json
+
+###
+
+GET http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=zaidra
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-03-08T013516.401.html
+
+###
+
+GET https://validation.portail.etat-de-vaud.ch/registres/int-refsecv2/ws/v2/applications/si_fiscal/accesses?iamUserId=zaidra
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-03-08T012956.401.html
+
+###
+

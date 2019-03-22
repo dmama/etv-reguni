@@ -8,8 +8,10 @@ import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.wsclient.refsec.RefSecClient;
 import ch.vd.unireg.wsclient.refsec.model.Procedure;
 import ch.vd.unireg.wsclient.refsec.model.ProfilOperateur;
+import ch.vd.unireg.wsclient.refsec.model.User;
 
 import static ch.vd.unireg.webservice.rcent.RcEntClientItTest.TIMEOUT;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -45,6 +47,16 @@ public class RefSecClientItTest extends BusinessItTest {
 	public void testPofileOperateurInconnu() throws Exception {
 		final ProfilOperateur profile = refSecClient.getProfilOperateur("zaifpt", 22);
 		assertNull(profile);
+	}
+
+	@Test(timeout = TIMEOUT)
+	public void testGetUser() throws Exception {
+		final User user = refSecClient.getUser("Usrreg20");
+		assertNotNull(user);
+		assertEquals("Usrreg20", user.getFirstName());
+		assertEquals("Generic", user.getLastName());
+		assertEquals("noreply@vd.ch", user.getEmail());
+
 	}
 
 	@Test(timeout = TIMEOUT)

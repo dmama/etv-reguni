@@ -20,6 +20,7 @@
 		<property name="appName" value="${extprop.ref.securite.webservice.appName}" />
 		<property name="wsResourcePath" value="${extprop.ref.securite.webservice.ws.path}" />
 		<property name="pingResourcePath" value="${extprop.ref.securite.webservice.health.path}" />
+		<property name="userResourcePath" value="${extprop.ref.securite.webservice.ws.users}" />
 	</bean>
 
 	<bean id="refsecClientTracing" class="ch.vd.unireg.wsclient.refsec.RefSecClientTracing">
