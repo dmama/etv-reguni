@@ -12,7 +12,9 @@ let liberation = {'liberation': {}};
 		dialog.load(App.curl(action) + '?id=' + idDI + '&' + new Date().getTime());
 
 		let modalButtons = {};
-		modalButtons[buttonValidationVariableLabel] = validateButtonFn(buttonValidationVariableLabel, action, dialog);
+		modalButtons[buttonValidationVariableLabel] = function () {
+			validateButtonFn(buttonValidationVariableLabel, action, dialog)
+		};
 		modalButtons["Annuler"] = function () {
 			dialog.dialog("close");
 		};
