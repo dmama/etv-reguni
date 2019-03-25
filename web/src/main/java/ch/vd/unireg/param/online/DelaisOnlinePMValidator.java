@@ -38,34 +38,36 @@ public class DelaisOnlinePMValidator implements Validator {
 		}
 
 		final List<DelaisAccordablesOnlinePMView> periodes = view.getPeriodes();
+		if (periodes != null) {
 
-		final Set<Delai> delaisExistants = new HashSet<>();
-		for (int i = 0; i < periodes.size(); i++) {
-			final DelaisAccordablesOnlinePMView periode = periodes.get(i);
+			final Set<Delai> delaisExistants = new HashSet<>();
+			for (int i = 0; i < periodes.size(); i++) {
+				final DelaisAccordablesOnlinePMView periode = periodes.get(i);
 
-			// on s'assure que toutes les périodes possèdes des délais de début non nuls
-			final Delai delaiDebut = periode.getDelaiDebut();
-			if (delaiDebut == null) {
-				errors.rejectValue("periodes[" + i + "].delaiDebut", "error.delai.debut.obligatoire");
-				continue;
-			}
-			// on s'assure que toutes les périodes possèdes des délais de début non dupliqués
-			else if (delaisExistants.contains(delaiDebut)) {
-				errors.rejectValue("periodes[" + i + "].delaiDebut", "error.delai.debut.duplique");
-			}
-			delaisExistants.add(delaiDebut);
+				// on s'assure que toutes les périodes possèdes des délais de début non nuls
+				final Delai delaiDebut = periode.getDelaiDebut();
+				if (delaiDebut == null) {
+					errors.rejectValue("periodes[" + i + "].delaiDebut", "error.delai.debut.obligatoire");
+					continue;
+				}
+				// on s'assure que toutes les périodes possèdes des délais de début non dupliqués
+				else if (delaisExistants.contains(delaiDebut)) {
+					errors.rejectValue("periodes[" + i + "].delaiDebut", "error.delai.debut.duplique");
+				}
+				delaisExistants.add(delaiDebut);
 
-			// on s'assure que les délais 2 sont vides si les délais 1 sont vides aussi
-			final Delai delai1DemandeUnitaire = periode.getDelai1DemandeUnitaire();
-			final Delai delai2DemandeUnitaire = periode.getDelai2DemandeUnitaire();
-			if (delai1DemandeUnitaire == null && delai2DemandeUnitaire != null) {
-				errors.rejectValue("periodes[" + i + "].delai2DemandeUnitaire", "error.delai2.renseigne.mais.pas.delai1");
-			}
+				// on s'assure que les délais 2 sont vides si les délais 1 sont vides aussi
+				final Delai delai1DemandeUnitaire = periode.getDelai1DemandeUnitaire();
+				final Delai delai2DemandeUnitaire = periode.getDelai2DemandeUnitaire();
+				if (delai1DemandeUnitaire == null && delai2DemandeUnitaire != null) {
+					errors.rejectValue("periodes[" + i + "].delai2DemandeUnitaire", "error.delai2.renseigne.mais.pas.delai1");
+				}
 
-			final Delai delai1DemandeGroupee = periode.getDelai1DemandeGroupee();
-			final Delai delai2DemandeGroupee = periode.getDelai2DemandeGroupee();
-			if (delai1DemandeGroupee == null && delai2DemandeGroupee != null) {
-				errors.rejectValue("periodes[" + i + "].delai2DemandeGroupee", "error.delai2.renseigne.mais.pas.delai1");
+				final Delai delai1DemandeGroupee = periode.getDelai1DemandeGroupee();
+				final Delai delai2DemandeGroupee = periode.getDelai2DemandeGroupee();
+				if (delai1DemandeGroupee == null && delai2DemandeGroupee != null) {
+					errors.rejectValue("periodes[" + i + "].delai2DemandeGroupee", "error.delai2.renseigne.mais.pas.delai1");
+				}
 			}
 		}
 	}
