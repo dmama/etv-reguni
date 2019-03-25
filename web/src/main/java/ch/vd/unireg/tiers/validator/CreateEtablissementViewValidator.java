@@ -3,8 +3,8 @@ package ch.vd.unireg.tiers.validator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.unireg.complements.AddCoordonneesFinancieresValidator;
 import ch.vd.unireg.complements.ComplementsEditCommunicationsValidator;
-import ch.vd.unireg.complements.EditCoordonneesFinancieresValidator;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.view.CreateDebiteurView;
 import ch.vd.unireg.tiers.view.CreateEtablissementView;
@@ -13,12 +13,12 @@ public class CreateEtablissementViewValidator implements Validator {
 
 	private final EtablissementCivilViewValidator civilValidator;
 	private final ComplementsEditCommunicationsValidator cpltCommViewValidator;
-	private final EditCoordonneesFinancieresValidator cpltCoordFinViewValidator;
+	private final AddCoordonneesFinancieresValidator cpltCoordFinViewValidator;
 
 	public CreateEtablissementViewValidator(IbanValidator ibanValidator) {
 		this.civilValidator = new EtablissementCivilViewValidator();
 		this.cpltCommViewValidator = new ComplementsEditCommunicationsValidator();
-		this.cpltCoordFinViewValidator = new EditCoordonneesFinancieresValidator(ibanValidator);
+		this.cpltCoordFinViewValidator = new AddCoordonneesFinancieresValidator(ibanValidator);
 	}
 
 	@Override
@@ -57,9 +57,7 @@ public class CreateEtablissementViewValidator implements Validator {
 		errors.pushNestedPath("complementCoordFinanciere");
 		try {
 			final int errorsBefore = errors.getErrorCount();
-			if (!view.getComplementCoordFinanciere().isEmpty()) {
-				cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
-			}
+			cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
 			if (errors.getErrorCount() > errorsBefore) {
 				errors.reject("onglet.error.complements");
 			}
