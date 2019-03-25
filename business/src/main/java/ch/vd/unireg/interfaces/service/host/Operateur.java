@@ -2,7 +2,6 @@ package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 
-import ch.vd.unireg.wsclient.iam.IamUser;
 import ch.vd.unireg.wsclient.refsec.model.User;
 
 

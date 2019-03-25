@@ -254,17 +254,10 @@
 				<artifactId>jackson-jaxrs-json-provider</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-wsclient-refsec</artifactId>
 				<version>${wsclient-ref-sec-version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ch.vd.unireg</groupId>
-				<artifactId>unireg-wsclient-iam</artifactId>
-				<version>${unireg-wsclient-iam-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -763,7 +756,6 @@
 		<unireg.jaxb2.version>6.17</unireg.jaxb2.version>
 		<servlet.common.version>2.2</servlet.common.version>
 		<wsclient-ref-sec-version>1.2.4</wsclient-ref-sec-version>
-		<unireg-wsclient-iam-version>1.0.2</unireg-wsclient-iam-version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>

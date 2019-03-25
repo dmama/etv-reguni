@@ -59,11 +59,6 @@
 
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
-			<artifactId>unireg-wsclient-iam</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
 		</dependency>
 		<dependency>

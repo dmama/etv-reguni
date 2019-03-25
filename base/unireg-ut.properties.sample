@@ -127,13 +127,6 @@ testprop.rf.import.cache.homedir=/tmp/cache/rf/import
 testprop.rf.import.cache.cachePercent=10
 testprop.rf.import.cache.lockTimeout=60000
 
-# Service IAM
-testprop.ace.ldap.url=ldap://iam-int-ldap-ace.etat-de-vaud.ch:53389
-#testprop.ace.ldap.url=ldap://iam-val-ldap-ace.etat-de-vaud.ch:53389
-testprop.ace.ldap.base=dc=etat-de-vaud,dc=ch
-testprop.ace.ldap.user=uid=registres-siti,ou=applications,ou=people,dc=etat-de-vaud,dc=ch
-testprop.ace.ldap.password=Lausanne
-
 # Service REF-SEC
 #INT
 testprop.ref.securite.webservice.url=http://int-registres-refsecv2-ws.etat-de-vaud.ch/registres/int-refsecv2/

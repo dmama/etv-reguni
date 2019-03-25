@@ -101,7 +101,6 @@ public abstract class BusinessItTestApplication {
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_RAW_INTERFACES,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES,
-				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES_LDAP_IAM,
 				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES_REFSEC,
 		};
 
