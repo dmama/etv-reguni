@@ -5679,6 +5679,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 	}
 
+	/**
+	 * [FISCPROJ-1054] Vérifie qu'aucune délai n'est accordé sur une PM sans date de bouclement (et que le service de ne crashe pas).
+	 */
+	@Test
+	public void testValidateDeadlineRequestPMSansDateBouclement() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+		service.setParametrePeriodeFiscaleDAO(parametrePeriodeFiscaleDAO);
+
+		// on crée un contribuable PM vaudois sans date de bouclement
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addRegimeFiscalVD(pm, date(2000, 2, 1), date(2018, 8, 23), MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), date(2018, 8, 23), MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2018, 8, 22), MotifFor.DEPART_HS, MockCommune.Bex);
+			return pm.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId, TypeDemande.UNITAIRE, RegDate.get());
+			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale 2018.", results);
+			return null;
+		});
+	}
+
 	@Test
 	public void testValidateDeadlineRequestContribuableAvecDeuxDeclarationsEmises() throws Exception {
 

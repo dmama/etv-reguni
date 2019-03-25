@@ -758,7 +758,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		else {
 			final Entreprise entreprise = (Entreprise) tiers;
 			dateProchainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), periodeImposition.getDateFin(), true);
-			if (periodeImposition.getDateFin().isBefore(dateProchainBouclement)) {
+			if (dateProchainBouclement == null || periodeImposition.getDateFin().isBefore(dateProchainBouclement)) {
 				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale " + periodeFiscale + ".");
 			}
 			paramsDemandeDelaisOnline = parametrePeriodeFiscaleDAO.getParamsDemandeDelaisOnline(periodeFiscale, ParametreDemandeDelaisOnline.Type.PM);
