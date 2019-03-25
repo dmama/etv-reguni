@@ -46,7 +46,9 @@ public class DelaisOnlinePPValidator implements Validator {
 
 				// on s'assure que toutes les périodes possèdes des dates de début non nulles
 				if (dateDebut == null) {
-					errors.rejectValue("periodes[" + i + "].dateDebut", "error.date.debut.vide");
+					if (!errors.hasFieldErrors("periodes[" + i + "].dateDebut")) {  // [FISCPROJ-1077] inutile d'agonir l'utilisateur avec plusieurs erreurs
+						errors.rejectValue("periodes[" + i + "].dateDebut", "error.date.debut.vide");
+					}
 					continue;
 				}
 
