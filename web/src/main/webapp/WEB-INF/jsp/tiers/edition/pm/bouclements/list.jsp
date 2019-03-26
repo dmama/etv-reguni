@@ -41,8 +41,6 @@
 								<unireg:regdate regdate="${ex.dateDebut}" defaultValue="calculé à partir de la date de début d'exercice qui est à renseigner"/>
 							</c:otherwise>
 						</c:choose>
-						<c:if test="${ex.first}">
-						</c:if>
 					</display:column>
 					<display:column titleKey="label.date.fin" style="width: 50%;">
 						<c:choose>

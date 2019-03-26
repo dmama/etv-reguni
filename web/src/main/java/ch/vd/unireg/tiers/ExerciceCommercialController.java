@@ -320,7 +320,7 @@ public class ExerciceCommercialController {
 			model.addAttribute("dateDebutAjoutable", isDateDebutAjoutable(viewExercicesCommerciaux,entreprise));
 			model.addAttribute("command", view);
 			model.addAttribute("mode", "edit-df");
-			model.addAttribute("mode_edit_df", view.getAncienneDate().index());
+			model.addAttribute("mode_edit_df", view.getAncienneDate() == null ? "" : view.getAncienneDate().index());
 			return "tiers/edition/pm/bouclements/list";
 		}
 
