@@ -17,10 +17,10 @@
 
 	<bean id="refSecClientRaw" class="ch.vd.unireg.wsclient.refsec.RefSecClientImpl">
 		<property name="wcPool" ref="ifoSecWebClientPool" />
-		<property name="appName" value="${extprop.ref.securite.webservice.appName:si_fiscal}" />
-		<property name="wsResourcePath" value="${extprop.ref.securite.webservice.ws.path:ws/v2/applications}" />
-		<property name="pingResourcePath" value="${extprop.ref.securite.webservice.health.path:actuator/health}" />
-		<property name="userResourcePath" value="${extprop.ref.securite.webservice.ws.users:ws/v2/users}" />
+		<property name="appName" value="${extprop.ref.securite.webservice.appName}" />
+		<property name="wsResourcePath" value="${extprop.ref.securite.webservice.ws.path}" />
+		<property name="pingResourcePath" value="${extprop.ref.securite.webservice.health.path}" />
+		<property name="userResourcePath" value="${extprop.ref.securite.webservice.ws.users}" />
 	</bean>
 
 	<bean id="refsecClientTracing" class="ch.vd.unireg.wsclient.refsec.RefSecClientTracing">
