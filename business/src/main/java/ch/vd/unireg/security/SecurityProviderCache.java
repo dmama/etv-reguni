@@ -382,8 +382,15 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 
 	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		if (type == TypeRapportEntreTiers.APPARTENANCE_MENAGE && dossiersControles.contains(sujetId)) {
-			addToDossiersControles(objetId);
+		if (dossiersControles.contains(sujetId)) {
+			if (type == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
+				// si la personne physique (sujet) est protégée, on ajoute son ménage-commun (objet)
+				addToDossiersControles(objetId);
+			}
+			else if (type == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
+				// [FISCPROJ-1177] si l'entreprise (sujet) est protégée, on ajoute l'établissement correspondant (objet)
+				addToDossiersControles(objetId);
+			}
 		}
 	}
 

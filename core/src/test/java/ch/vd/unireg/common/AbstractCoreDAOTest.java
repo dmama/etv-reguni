@@ -1336,10 +1336,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	/**
-	 * Ajoute un droit d'accès (autorisation ou interdiction) entre un opérateur et un tiers.
+	 * Ajoute un droit d'accès (autorisation ou interdiction) entre un opérateur et un contribuable.
 	 */
-	protected DroitAcces addDroitAcces(@NotNull String visaOperateur, PersonnePhysique pp, TypeDroitAcces type, Niveau niveau, RegDate debut,
-	                                   @Nullable RegDate fin) {
+	protected DroitAcces addDroitAcces(@NotNull String visaOperateur, Contribuable ctb, TypeDroitAcces type, Niveau niveau, RegDate debut, @Nullable RegDate fin) {
 
 		DroitAcces da = new DroitAcces();
 		da.setDateDebut(debut);
@@ -1347,7 +1346,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		da.setVisaOperateur(visaOperateur);
 		da.setType(type);
 		da.setNiveau(niveau);
-		da.setTiers(pp);
+		da.setTiers(ctb);
 
 		da = merge(da);
 		return da;

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -15,6 +14,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -48,7 +49,6 @@ public class SecurityProviderCacheTest extends SecurityTest {
 	 * [UNIREG-1191] Vérifie que la modification d'un droit d'accès met bien à jour le cache.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testModificationDroitAcces() throws Exception {
 
 		setupDefaultTestOperateur();
@@ -87,7 +87,6 @@ public class SecurityProviderCacheTest extends SecurityTest {
 	 * [UNIREG-1191] Vérifie que l'ajout d'un droit d'accès sur composant d'un ménage met bien à jour le cache sur le ménage lui-même.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testModificationDroitAccesMenageCommun() throws Exception {
 
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
@@ -155,7 +154,6 @@ public class SecurityProviderCacheTest extends SecurityTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetDroitAccessWithNullId() throws Exception {
 
 		class Ids {
@@ -187,10 +185,8 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		assertNull(acces.get(2)); // id null -> accès null
 	}
 
-
 	/**
-	 * [SIFISC-9341] après son mariage, le ménage commun d'une collaboratrice de l'ACI n'était pas protégé tant que le cache
-	 * du security-provider n'a pas été nettoyé...
+	 * [SIFISC-9341] après son mariage, le ménage commun d'une collaboratrice de l'ACI n'était pas protégé tant que le cache du security-provider n'a pas été nettoyé...
 	 */
 	@Test
 	public void testCreationMenageSurPersonnePhysiqueProtegee() throws Exception {
@@ -274,5 +270,60 @@ public class SecurityProviderCacheTest extends SecurityTest {
 			}
 		});
 
+	}
+
+	/**
+	 * [FISCPROJ-1177] Ce test vérifie que le cache du security-provider est bien mis-à-jour après la création d'un nouvel établissement et son rattachement à une entreprise protégée : l'établissement doit lui-même être protégé.
+	 */
+	@Test
+	public void testCreationEtablissementSurEntrepriseProtegee() throws Exception {
+
+		final RegDate dateFondation = RegDate.get(2000, 1, 1);
+
+		class Ids {
+			Long entreprise;
+			Long etablissementPrincipal;
+			Long etablissementSecondaire;
+		}
+		final Ids ids = new Ids();
+
+		// on crée une entreprise et son établissement principal
+		doInNewTransactionAndSession(status -> {
+
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite entreprise", dateFondation);
+			final Etablissement etablissementPrincipal = addEtablissement();
+			addActiviteEconomique(entreprise, etablissementPrincipal, dateFondation, null, true);
+
+			// on restreint l'accès sur l'entreprise
+			addDroitAcces("zai1", entreprise, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2013, 1, 1), null);
+
+			ids.entreprise = entreprise.getNumero();
+			ids.etablissementPrincipal = etablissementPrincipal.getNumero();
+			return null;
+		});
+
+		// on vérifie que l'entreprise et l'établissement principal sont bien protégés
+		doInNewTransactionAndSession(status -> {
+			assertNull(cache.getDroitAcces("TOTO", ids.entreprise));
+			assertNull(cache.getDroitAcces("TOTO", ids.etablissementPrincipal));
+			return null;
+		});
+
+		// on crée un nouvel établissement secondaire
+		doInNewTransactionAndSession(status -> {
+
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.entreprise);
+			final Etablissement etablissementSecondaire = addEtablissement();
+			addActiviteEconomique(entreprise, etablissementSecondaire, dateFondation, null, false);
+
+			ids.etablissementSecondaire = etablissementSecondaire.getNumero();
+			return null;
+		});
+
+		// on vérifie que l'établissement secondaire est également protégé
+		doInNewTransactionAndSession(status -> {
+			assertNull(cache.getDroitAcces("TOTO", ids.etablissementSecondaire));
+			return null;
+		});
 	}
 }

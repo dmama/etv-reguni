@@ -11,7 +11,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 /**
  * <pre>
  *   +----------------+                   +------------------+
- *   | Contribuable   |                   | Etablissement    |
+ *   |   Entreprise   |                   |  Etablissement   |
  *   +----------------+                   +------------------+
  *           ^                                        ^
  *           ¦  sujet  +--------------------+  objet  ¦

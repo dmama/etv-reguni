@@ -188,6 +188,10 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 			results.addAll(queryObject.list());
 		}
 
+		//
+		// ATTENTION !! En cas d'ajout de liens, il faut aussi mettre-à-jour la méthode SecurityProviderCache.onRelationshipChange() !
+		//
+
 		return results;
 	}
 }
