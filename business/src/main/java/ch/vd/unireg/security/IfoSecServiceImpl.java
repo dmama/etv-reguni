@@ -41,13 +41,13 @@ public class IfoSecServiceImpl implements IfoSecService {
 			return false;
 		}
 
-		final List<IfoSecProcedure> procedures = profile.getProcedures();
+		final List<ProcedureSecurite> procedures = profile.getProcedures();
 		if (procedures == null) {
 			// pas de procédure, pas de droit
 			return false;
 		}
 
-		for (IfoSecProcedure p : procedures) {
+		for (ProcedureSecurite p : procedures) {
 			String code = p.getCode();
 			Role r = Role.fromIfoSec(code);
 			if (r == role) {

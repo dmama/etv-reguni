@@ -24,7 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
+import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
 import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.utils.UniregModeHelper;
 
@@ -78,9 +78,9 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 					final ProfileOperateur profil = getBypassProfil(visa, oid, oidSigle);
 					final List<GrantedAuthority> ifoSecGranted = IFOSecProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
 
-					details.setIfoSecOID(oid);
-					details.setIfoSecOIDSigle(oidSigle);
-					details.setIfoSecProfil(profil);
+					details.setOID(oid);
+					details.setOIDSigle(oidSigle);
+					details.setProfil(profil);
 					granted.addAll(ifoSecGranted);
 
 					LOGGER.info(String.format("[BYPASS IFOSec] Choix de l'OID %d (%s) pour l'utilisateur %s %s", oid, oidSigle, firstName, lastName));
@@ -112,9 +112,9 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 			codesStream = Arrays.stream(procedureStr.split("[, ]"))
 					.map(code -> code.replace("[", "").replace("]", ""));
 		}
-		final List<IfoSecProcedure> listProcedure = codesStream
+		final List<ProcedureSecurite> listProcedure = codesStream
 				.filter(StringUtils::isNotBlank)
-				.map(code -> new IfoSecProcedureImpl(code, null))
+				.map(code -> new ProcedureSecuriteImpl(code, null))
 				.collect(Collectors.toList());
 
 		return new ProfileOperateurImpl(visa, listProcedure);

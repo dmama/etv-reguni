@@ -33,20 +33,20 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
 		final AbstractAuthenticationToken authentication = AuthenticationHelper.getAuthentication();
-		final IFOSecDetails details = (IFOSecDetails) authentication.getDetails();
+		final SecurityDetails details = (SecurityDetails) authentication.getDetails();
 
-		if (details.getIfoSecProfil() == null) {
+		if (details.getProfil() == null) {
 
 			// On récupère le visa et l'OID de l'utilisateur
 			final String visa = new PrincipalSid(authentication).getPrincipal();
-			final Integer oid = details.getIfoSecOID();
+			final Integer oid = details.getOID();
 			if (StringUtils.isBlank(visa) || oid == null) {
 				throw new IllegalArgumentException();
 			}
 
 			// On peut maintenant renseigner le profile
 			final ProfileOperateur profil = getProfilOperateur(visa, oid);
-			details.setIfoSecProfil(profil);
+			details.setProfil(profil);
 
 			// On ajoute les procédures Ifosec autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
 			final List<GrantedAuthority> granted = new ArrayList<>();
@@ -69,10 +69,10 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 
 		final List<GrantedAuthority> granted;
 
-		final List<IfoSecProcedure> procedures = profil.getProcedures();
+		final List<ProcedureSecurite> procedures = profil.getProcedures();
 		if (procedures != null) {
 			granted = new ArrayList<>();
-			for (IfoSecProcedure procedure : procedures) {
+			for (ProcedureSecurite procedure : procedures) {
 				final String ifoSec = procedure.getCode();
 				final Role role = Role.fromIfoSec(ifoSec);
 				if (role != null) {

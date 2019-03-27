@@ -22,7 +22,7 @@
 					<tr><td style="font-weight: bold">Oid</td><td><%--@elvariable id="oid" type="java.lang.Integer"--%>
 					<c:out value="${oid}" /></td><td>n/a</td></tr>
 					<tr><td style="font-weight: bold">Procédures Unireg</td><td>
-						<%--@elvariable id="proceduresUnireg" type="java.util.List<ch.vd.unireg.security.IfoSecProcedure>"--%>
+							<%--@elvariable id="proceduresUnireg" type="java.util.List<ch.vd.unireg.security.ProcedureSecurite>"--%>
 						<ul>
 						<c:forEach items="${proceduresUnireg}" var="p">
 							<li><c:out value="${p.code}"/> (<c:out value="${p.designation}"/>)</li>
@@ -51,7 +51,7 @@
 						</ul>
 					</td></tr>
 					<tr><td style="font-weight: bold">Procédures autres applications</td><td>
-						<%--@elvariable id="proceduresAutres" type="java.util.List<ch.vd.unireg.security.IfoSecProcedure>"--%>
+							<%--@elvariable id="proceduresAutres" type="java.util.List<ch.vd.unireg.security.ProcedureSecurite>"--%>
 						<ul>
 						<c:forEach items="${proceduresAutres}" var="p">
 							<li><c:out value="${p.code}"/> (<c:out value="${p.designation}"/>)</li>

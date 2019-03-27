@@ -27,7 +27,7 @@ public interface ProfileOperateur {
 	/**
 	 * @return la liste des procédures du profil opérateur.
 	 */
-	List<IfoSecProcedure> getProcedures();
+	List<ProcedureSecurite> getProcedures();
 
 	/**
 	 * @return le titre du profil opérateur.

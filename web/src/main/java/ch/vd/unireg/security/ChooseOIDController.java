@@ -39,9 +39,9 @@ public class ChooseOIDController {
 		final UniregSecurityDetails details = getProfilSecuriteCourant();
 		if (details != null) {
 			// [UNIREG-1242] On reset un éventuel profil de sécurité déjà mémorisé, de manière à ce que le filtre IFOSecAuthenticationProcessingFilter (re)sélectionne bien l'OID choisi.
-			details.setIfoSecOID(null);
-			details.setIfoSecOIDSigle(null);
-			details.setIfoSecProfil(null);
+			details.setOID(null);
+			details.setOIDSigle(null);
+			details.setProfil(null);
 		}
 
 		final String initialUrl = getInitialUrl(session);

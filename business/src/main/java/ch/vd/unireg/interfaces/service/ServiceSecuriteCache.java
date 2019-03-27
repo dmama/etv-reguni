@@ -23,7 +23,7 @@ import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.security.IfoSecProcedure;
+import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
@@ -37,7 +37,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		factory.addSpecificRenderer(CollectiviteAdministrative.class, coladm -> String.format("CollAdm{no=%d}", coladm.getNoColAdm()));
 		factory.addSpecificRenderer(ProfileOperateur.class, profil -> String.format("{%s (%s %s)}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom()));
 		factory.addSpecificRenderer(Operateur.class, operateur -> String.format("{%s (%s %s)}", operateur.getCode(), operateur.getPrenom(), operateur.getNom()));
-		factory.addSpecificRenderer(IfoSecProcedure.class, IfoSecProcedure::getCode);
+		factory.addSpecificRenderer(ProcedureSecurite.class, ProcedureSecurite::getCode);
 		RENDERER_FACTORY = factory;
 	}
 

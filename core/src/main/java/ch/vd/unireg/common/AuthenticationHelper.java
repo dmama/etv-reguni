@@ -77,7 +77,7 @@ public abstract class AuthenticationHelper {
 				return null;
 			}
 		}
-		return getDetails(auth).getIfoSecOID();
+		return getDetails(auth).getOID();
 	}
 
 	private static UniregSecurityDetails getDetails() {
@@ -131,12 +131,12 @@ public abstract class AuthenticationHelper {
 
 	public static void setCurrentOID(int i, String sigle) {
 		final UniregSecurityDetails details = getDetails();
-		details.setIfoSecOID(i);
-		details.setIfoSecOIDSigle(sigle);
+		details.setOID(i);
+		details.setOIDSigle(sigle);
 	}
 
 	public static String getCurrentOIDSigle() {
 		final UniregSecurityDetails details = getDetails();
-		return details.getIfoSecOIDSigle();
+		return details.getOIDSigle();
 	}
 }

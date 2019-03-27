@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
 import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
 import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
-import ch.vd.unireg.security.IfoSecProcedure;
+import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
 
@@ -61,10 +61,10 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 	protected void addOperateur(String visa, long noIndividuOperateur, Role... roles) {
 
-		final List<IfoSecProcedure> procedures = new ArrayList<>();
+		final List<ProcedureSecurite> procedures = new ArrayList<>();
 		if (roles != null) {
 			for (Role r : roles) {
-				procedures.add(new IfoSecProcedureImpl(r.getIfosecCode(), null));
+				procedures.add(new ProcedureSecuriteImpl(r.getIfosecCode(), null));
 			}
 		}
 

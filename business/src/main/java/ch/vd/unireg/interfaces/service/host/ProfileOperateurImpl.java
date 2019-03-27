@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.securite.model.rest.ProfilOperateur;
-import ch.vd.unireg.security.IfoSecProcedure;
+import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.wsclient.refsec.model.User;
 
@@ -21,7 +21,7 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 	@NotNull
 	private final String visaOperateur;
 	@NotNull
-	private final List<IfoSecProcedure> procedures;
+	private final List<ProcedureSecurite> procedures;
 	@Nullable
 	private final String imprimante;
 	@Nullable
@@ -46,7 +46,7 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 	public ProfileOperateurImpl(@NotNull ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateur, @Nullable User user) {
 		this.visaOperateur = profilOperateur.getVisa();
 		this.procedures = Collections.unmodifiableList(profilOperateur.getProcedures().stream()
-				                                               .map(IfoSecProcedureImpl::new)
+				                                               .map(ProcedureSecuriteImpl::new)
 				                                               .collect(Collectors.toList()));
 		this.titre = null;
 		if (user == null) {
@@ -61,7 +61,7 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 		this.imprimante = null;
 	}
 
-	public ProfileOperateurImpl(@NotNull String visa, @NotNull List<IfoSecProcedure> listProcedure) {
+	public ProfileOperateurImpl(@NotNull String visa, @NotNull List<ProcedureSecurite> listProcedure) {
 		this.visaOperateur = visa;
 		this.procedures = Collections.unmodifiableList(listProcedure);
 		this.titre = null;
@@ -72,13 +72,13 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 	}
 
 	@NotNull
-	private List<IfoSecProcedure> initProcedures(ProfilOperateur.Procedures procedures) {
+	private List<ProcedureSecurite> initProcedures(ProfilOperateur.Procedures procedures) {
 		if (procedures == null) {
 			return Collections.emptyList();
 		}
-		final List<IfoSecProcedure> list = new ArrayList<>();
+		final List<ProcedureSecurite> list = new ArrayList<>();
 		for (ch.vd.securite.model.rest.Procedure p : procedures.getProcedure()) {
-			list.add(IfoSecProcedureImpl.get(p));
+			list.add(ProcedureSecuriteImpl.get(p));
 		}
 		return Collections.unmodifiableList(list);
 	}
@@ -109,7 +109,7 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
 	@NotNull
 	@Override
-	public List<IfoSecProcedure> getProcedures() {
+	public List<ProcedureSecurite> getProcedures() {
 		return procedures;
 	}
 

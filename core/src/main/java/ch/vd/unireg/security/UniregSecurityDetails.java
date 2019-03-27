@@ -4,16 +4,16 @@ import java.util.Hashtable;
 
 import org.jetbrains.annotations.Nullable;
 
-public class UniregSecurityDetails extends Hashtable<String, Object> implements IAMDetails, IFOSecDetails {
+public class UniregSecurityDetails extends Hashtable<String, Object> implements IAMDetails, SecurityDetails {
 
-	private static final long serialVersionUID = 7427380869548372766L;
+	private static final long serialVersionUID = -6842871549412020652L;
 
 	private String[] iamRoles = null;
 	private String iamFirstName = null;
 	private String iamLastName = null;
-	private ProfileOperateur ifoSecProfil = null;
-	private Integer ifoSecOID = null;
-	private String ifoSecOIDSigle = null;
+	private ProfileOperateur profil = null;
+	private Integer oid = null;
+	private String sigleOID = null;
 
 	public UniregSecurityDetails() {
 		int z = 0;
@@ -50,32 +50,29 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	}
 
 	@Override
-	public ProfileOperateur getIfoSecProfil() {
-		return ifoSecProfil;
+	public ProfileOperateur getProfil() {
+		return profil;
+	}
+
+	public void setProfil(@Nullable ProfileOperateur profil) {
+		this.profil = profil;
 	}
 
 	@Override
-	public void setIfoSecProfil(@Nullable ProfileOperateur ifosecProfil) {
-		this.ifoSecProfil = ifosecProfil;
+	public Integer getOID() {
+		return oid;
+	}
+
+	public void setOID(@Nullable Integer oid) {
+		this.oid = oid;
 	}
 
 	@Override
-	public Integer getIfoSecOID() {
-		return ifoSecOID;
+	public String getOIDSigle() {
+		return sigleOID;
 	}
 
-	@Override
-	public void setIfoSecOID(@Nullable Integer ifoSecOID) {
-		this.ifoSecOID = ifoSecOID;
-	}
-
-	@Override
-	public String getIfoSecOIDSigle() {
-		return ifoSecOIDSigle;
-	}
-
-	@Override
-	public void setIfoSecOIDSigle(@Nullable String ifoSecOIDSigle) {
-		this.ifoSecOIDSigle = ifoSecOIDSigle;
+	public void setOIDSigle(@Nullable String sigle) {
+		this.sigleOID = sigle;
 	}
 }

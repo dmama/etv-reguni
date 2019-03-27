@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.security.IfoSecProcedure;
 import ch.vd.unireg.security.IfoSecService;
+import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
 
@@ -34,9 +34,9 @@ public class InfoIFOSecController {
 		final Integer oid = AuthenticationHelper.getCurrentOID();
 
 		final ProfileOperateur profile = serviceSecurite.getProfileUtilisateur(visa, oid);
-		List<IfoSecProcedure> proceduresUnireg = null;
+		List<ProcedureSecurite> proceduresUnireg = null;
 		List<Role> rolesIfoSecByPass = null;
-		List<IfoSecProcedure> proceduresAutres = null;
+		List<ProcedureSecurite> proceduresAutres = null;
 		if (profile != null) {
 			proceduresUnireg = getProceduresUnireg(profile);
 			rolesIfoSecByPass = getProceduresIfoSecByPass(profile);
@@ -53,7 +53,7 @@ public class InfoIFOSecController {
 		return "admin/ifosec";
 	}
 
-	private List<IfoSecProcedure> getProceduresUnireg(ProfileOperateur profile) {
+	private List<ProcedureSecurite> getProceduresUnireg(ProfileOperateur profile) {
 		return profile.getProcedures().stream()
 				.filter(p -> p.getCode().startsWith("UR"))
 				.collect(Collectors.toList());
@@ -65,7 +65,7 @@ public class InfoIFOSecController {
 		return list;
 	}
 
-	private List<IfoSecProcedure> getProceduresAutres(ProfileOperateur profile) {
+	private List<ProcedureSecurite> getProceduresAutres(ProfileOperateur profile) {
 		return profile.getProcedures().stream()
 				.filter(p -> !p.getCode().startsWith("UR"))
 				.collect(Collectors.toList());
