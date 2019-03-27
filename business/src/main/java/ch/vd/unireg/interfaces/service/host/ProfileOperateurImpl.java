@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.service.host;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 		this.visaOperateur = profilOperateur.getVisa();
 		this.procedures = Collections.unmodifiableList(profilOperateur.getProcedures().stream()
 				                                               .map(ProcedureSecuriteImpl::new)
+				                                               .sorted(Comparator.comparing(ProcedureSecuriteImpl::getCode)) // SIFISC-30775, on trie les procédures pour faciliter la lisibilité
 				                                               .collect(Collectors.toList()));
 		this.titre = null;
 		if (user == null) {

@@ -1,5 +1,7 @@
 package ch.vd.unireg.webservice.refsec;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
@@ -56,7 +58,13 @@ public class RefSecClientItTest extends BusinessItTest {
 		assertEquals("Usrreg20", user.getFirstName());
 		assertEquals("Generic", user.getLastName());
 		assertEquals("noreply@vd.ch", user.getEmail());
+	}
 
+	@Test(timeout = TIMEOUT)
+	public void testGetCollectiviteUtilisateur() throws Exception {
+		final Set<Integer> ids = refSecClient.getCollectivitesOperateur("zaidra");
+		assertNotNull(ids);
+		assertEquals(new HashSet<>(Arrays.asList(1, 5, 7, 8, 12, 16, 18, 19, 21, 22)), ids);
 	}
 
 	@Test(timeout = TIMEOUT)
