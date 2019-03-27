@@ -101,7 +101,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 			profil = serviceSecurite.getProfileUtilisateur(visa, oid);
 		}
 		else {
-			profil = new ProfileOperateurImpl();
+			profil = new ProfileOperateurImpl(visa, Collections.emptyList());
 		}
 		return profil;
 	}

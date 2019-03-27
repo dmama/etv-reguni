@@ -3,9 +3,8 @@ package ch.vd.unireg.admin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.security.IfoSecProcedure;
-import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.IfoSecService;
+import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
 
 /**
@@ -54,14 +53,10 @@ public class InfoIFOSecController {
 		return "admin/ifosec";
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<IfoSecProcedure> getProceduresUnireg(ProfileOperateur profile) {
-		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate<IfoSecProcedure>() {
-			@Override
-			public boolean evaluate(IfoSecProcedure p) {
-				return p.getCode().startsWith("UR");
-			}
-		});
+		return profile.getProcedures().stream()
+				.filter(p -> p.getCode().startsWith("UR"))
+				.collect(Collectors.toList());
 	}
 
 	private List<Role> getProceduresIfoSecByPass(ProfileOperateur profile) {
@@ -70,14 +65,10 @@ public class InfoIFOSecController {
 		return list;
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private List<IfoSecProcedure> getProceduresAutres(ProfileOperateur profile) {
-		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate<IfoSecProcedure>() {
-			@Override
-			public boolean evaluate(IfoSecProcedure p) {
-				return !p.getCode().startsWith("UR");
-			}
-		});
+		return profile.getProcedures().stream()
+				.filter(p -> !p.getCode().startsWith("UR"))
+				.collect(Collectors.toList());
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

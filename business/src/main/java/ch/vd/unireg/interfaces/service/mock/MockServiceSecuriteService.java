@@ -60,20 +60,19 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	protected void addOperateur(String visa, long noIndividuOperateur, Role... roles) {
-		final Operateur o = new Operateur();
-		o.setCode(visa);
-		o.setIndividuNoTechnique(noIndividuOperateur);
-		operatorsByIndividu.put(noIndividuOperateur, o);
-		operatorsByVisa.put(visa, o);
 
-		final ProfileOperateurImpl profile = new ProfileOperateurImpl();
 		final List<IfoSecProcedure> procedures = new ArrayList<>();
 		if (roles != null) {
 			for (Role r : roles) {
 				procedures.add(new IfoSecProcedureImpl(r.getIfosecCode(), null));
 			}
 		}
-		profile.setProcedures(procedures);
-		profilesOperatorByIndividu.put(visa, profile);
+
+		final Operateur o = new Operateur();
+		o.setCode(visa);
+		o.setIndividuNoTechnique(noIndividuOperateur);
+		operatorsByIndividu.put(noIndividuOperateur, o);
+		operatorsByVisa.put(visa, o);
+		profilesOperatorByIndividu.put(visa, new ProfileOperateurImpl(visa, procedures));
 	}
 }

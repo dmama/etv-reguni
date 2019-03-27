@@ -100,9 +100,6 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 	private static ProfileOperateur getBypassProfil(String visa, Integer oid, String oidSigle) {
 
-		final ProfileOperateurImpl profil = new ProfileOperateurImpl();
-		profil.setVisaOperateur(visa);
-
 		// Les procédures
 		final String procedureStr = SecurityDebugConfig.getIfoSecBypassProcedures(visa);
 
@@ -120,9 +117,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 				.map(code -> new IfoSecProcedureImpl(code, null))
 				.collect(Collectors.toList());
 
-		profil.setProcedures(listProcedure);
-
-		return profil;
+		return new ProfileOperateurImpl(visa, listProcedure);
 	}
 
 }

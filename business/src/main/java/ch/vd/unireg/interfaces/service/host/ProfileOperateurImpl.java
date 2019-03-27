@@ -2,9 +2,11 @@ package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.securite.model.rest.ProfilOperateur;
@@ -14,104 +16,117 @@ import ch.vd.unireg.wsclient.refsec.model.User;
 
 public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 
-	private static final long serialVersionUID = -5988187763961971993L;
+	private static final long serialVersionUID = -5017557393182920869L;
 
-	private String imprimante;
-	private String nom;
-	private String noTelephone;
-	private String prenom;
-	private List<IfoSecProcedure> procedures;
-	private String titre;
-	private String visaOperateur;
+	@NotNull
+	private final String visaOperateur;
+	@NotNull
+	private final List<IfoSecProcedure> procedures;
+	@Nullable
+	private final String imprimante;
+	@Nullable
+	private final String nom;
+	@Nullable
+	private final String noTelephone;
+	@Nullable
+	private final String prenom;
+	@Nullable
+	private final String titre;
 
-	public ProfileOperateurImpl() {
-	}
-
-	public ProfileOperateurImpl(ProfilOperateur profile) {
-		this.imprimante = profile.getImprimante();
-		this.nom = profile.getNom();
-		this.noTelephone = profile.getNoTelephone();
-		this.prenom = profile.getPrenom();
+	public ProfileOperateurImpl(@NotNull ProfilOperateur profile) {
+		this.visaOperateur = profile.getVisaOperateur();
 		this.procedures = initProcedures(profile.getProcedures());
 		this.titre = profile.getTitre();
-		this.visaOperateur = profile.getVisaOperateur();
+		this.prenom = profile.getPrenom();
+		this.nom = profile.getNom();
+		this.noTelephone = profile.getNoTelephone();
+		this.imprimante = profile.getImprimante();
 	}
 
+	public ProfileOperateurImpl(@NotNull ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateur, @Nullable User user) {
+		this.visaOperateur = profilOperateur.getVisa();
+		this.procedures = Collections.unmodifiableList(profilOperateur.getProcedures().stream()
+				                                               .map(IfoSecProcedureImpl::new)
+				                                               .collect(Collectors.toList()));
+		this.titre = null;
+		if (user == null) {
+			this.nom = null;
+			this.prenom = null;
+		}
+		else {
+			this.nom = user.getLastName();
+			this.prenom = user.getFirstName();
+		}
+		this.noTelephone = profilOperateur.getNumeroTelephone();
+		this.imprimante = null;
+	}
+
+	public ProfileOperateurImpl(@NotNull String visa, @NotNull List<IfoSecProcedure> listProcedure) {
+		this.visaOperateur = visa;
+		this.procedures = Collections.unmodifiableList(listProcedure);
+		this.titre = null;
+		this.nom = null;
+		this.prenom = null;
+		this.noTelephone = null;
+		this.imprimante = null;
+	}
+
+	@NotNull
 	private List<IfoSecProcedure> initProcedures(ProfilOperateur.Procedures procedures) {
 		if (procedures == null) {
-			return null;
+			return Collections.emptyList();
 		}
 		final List<IfoSecProcedure> list = new ArrayList<>();
 		for (ch.vd.securite.model.rest.Procedure p : procedures.getProcedure()) {
 			list.add(IfoSecProcedureImpl.get(p));
 		}
-		return list;
+		return Collections.unmodifiableList(list);
 	}
 
+	@Nullable
 	@Override
 	public String getImprimante() {
 		return imprimante;
 	}
 
-	public void setImprimante(String imprimante) {
-		this.imprimante = imprimante;
-	}
-
+	@Nullable
 	@Override
 	public String getNom() {
 		return nom;
 	}
 
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
+	@Nullable
 	@Override
 	public String getNoTelephone() {
 		return noTelephone;
 	}
 
-	public void setNoTelephone(String noTelephone) {
-		this.noTelephone = noTelephone;
-	}
-
+	@Nullable
 	@Override
 	public String getPrenom() {
 		return prenom;
 	}
 
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
-	}
-
+	@NotNull
 	@Override
 	public List<IfoSecProcedure> getProcedures() {
 		return procedures;
 	}
 
-	public void setProcedures(List<IfoSecProcedure> procedures) {
-		this.procedures = procedures;
-	}
-
+	@Nullable
 	@Override
 	public String getTitre() {
 		return titre;
 	}
 
-	public void setTitre(String titre) {
-		this.titre = titre;
-	}
-
+	@NotNull
 	@Override
 	public String getVisaOperateur() {
 		return visaOperateur;
 	}
 
-	public void setVisaOperateur(String visaOperateur) {
-		this.visaOperateur = visaOperateur;
-	}
-
-	public static ProfileOperateur get(ProfilOperateur profile) {
+	@Nullable
+	public static ProfileOperateur get(@Nullable ProfilOperateur profile) {
 		if (profile == null) {
 			return null;
 		}
@@ -119,24 +134,12 @@ public class ProfileOperateurImpl implements ProfileOperateur, Serializable {
 		return new ProfileOperateurImpl(profile);
 	}
 
-
-	public static ProfileOperateur get(ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateurRefSec, @Nullable User user) {
-		if (profilOperateurRefSec == null) {
+	@Nullable
+	public static ProfileOperateur get(@Nullable ch.vd.unireg.wsclient.refsec.model.ProfilOperateur profilOperateur, @Nullable User user) {
+		if (profilOperateur == null) {
 			return null;
 		}
-		final ProfileOperateurImpl profil = new ProfileOperateurImpl();
-		profil.setVisaOperateur(profilOperateurRefSec.getVisa());
-		if (user != null) {
-			profil.setNom(user.getLastName());
-			profil.setPrenom(user.getFirstName());
-		}
-		profil.setNoTelephone(profilOperateurRefSec.getNumeroTelephone());
-
-		final List<IfoSecProcedure> procedures = profilOperateurRefSec.getProcedures().stream()
-				.map(IfoSecProcedureImpl::new)
-				.collect(Collectors.toList());
-		profil.setProcedures(procedures);
-		return profil;
+		return new ProfileOperateurImpl(profilOperateur, user);
 	}
 
 }
