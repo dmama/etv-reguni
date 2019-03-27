@@ -604,7 +604,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		try {
-			return fidorClient.findCollectivitesAdministratives(null, null, Collections.singletonList(SIGLE_OID), null, true).stream()
+			return fidorClient.findCollectivitesAdministratives(null, null, Collections.singletonList(SIGLE_OID), null, false).stream()
 					.map(right -> new OfficeImpotImpl(right, cachedServiceInfra == null ? this : cachedServiceInfra))
 					.collect(Collectors.toList());
 		}
@@ -621,7 +621,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		try {
-			return fidorClient.findCollectivitesAdministratives(null, null, null, null, true).stream()
+			return fidorClient.findCollectivitesAdministratives(null, null, null, null, false).stream()
 					.map(this::getCollectiviteAdministrative)
 					.collect(Collectors.toList());
 		}
@@ -636,7 +636,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			final List<String> codes = typesCollectivite.stream()
 					.map(TypeCollectivite::getCode)
 					.collect(Collectors.toList());
-			return fidorClient.findCollectivitesAdministratives(null, null, codes, null, true).stream()
+			return fidorClient.findCollectivitesAdministratives(null, null, codes, null, false).stream()
 					.map(this::getCollectiviteAdministrative)
 					.collect(Collectors.toList());
 		}

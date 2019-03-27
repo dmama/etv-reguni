@@ -201,20 +201,20 @@ public interface ServiceInfrastructureRaw {
 	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
-	 * @return tous les offices d'impôt de district du canton de Vaud
+	 * @return tous les offices d'impôt *actifs* de district du canton de Vaud
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException;
 
 	/**
-	 * @return la liste des collectivites administratives du canton de Vaud
+	 * @return la liste des collectivites administratives *actives* du canton de Vaud
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException;
 
 	/**
 	 * @param typesCollectivite le type de collectivité administrative
-	 * @return la liste des collectivites administratives du canton de Vaud du type spécifié
+	 * @return la liste des collectivites administratives *actives* du canton de Vaud du type spécifié
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException;
@@ -277,10 +277,9 @@ public interface ServiceInfrastructureRaw {
 	List<GenreImpotMandataire> getTousLesGenresImpotMandataires();
 
 	/**
-	 *
 	 * @param codeCollectivites, liste des identifiants de collectivités.
-	 * @param inactif, filtre sur les collectivités à remontés.
-	 * @return  la liste des collectivités correspondantes aux identofiants
+	 * @param inactif,           filtre sur les collectivités à remontés.
+	 * @return la liste des collectivités correspondantes aux identofiants
 	 */
 	List<CollectiviteAdministrative> findCollectivitesAdministratives(List<Integer> codeCollectivites, boolean inactif);
 
