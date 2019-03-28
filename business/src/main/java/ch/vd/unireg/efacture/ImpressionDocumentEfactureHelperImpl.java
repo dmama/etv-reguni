@@ -113,7 +113,7 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacy
 		return lettresEFacture;
 	}
 
-	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionDocumentEfactureParams params) throws EditiqueException {
+	InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionDocumentEfactureParams params) throws EditiqueException {
 		InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		try {
