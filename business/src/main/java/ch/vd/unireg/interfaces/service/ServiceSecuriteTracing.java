@@ -34,7 +34,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) throws ServiceSecuriteException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -53,7 +53,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -91,7 +91,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public Operateur getOperateur(@NotNull final String visa) {
+	public Operateur getOperateur(@NotNull final String visa) throws ServiceSecuriteException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -110,7 +110,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public ProfileOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) throws ServiceSecuriteException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -126,7 +126,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public List<Operateur> getUtilisateurs(final List<TypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(final List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();

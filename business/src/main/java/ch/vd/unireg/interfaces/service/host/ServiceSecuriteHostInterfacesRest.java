@@ -38,7 +38,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException {
 		try {
 			final ListeCollectiviteAdministrative collectivitesUtilisateurCommunicationTier = client.getCollectivitesUtilisateurCommunicationTier(visaOperateur);
 			final List<ch.vd.infrastructure.model.rest.CollectiviteAdministrative> collectiviteAdministrative = collectivitesUtilisateurCommunicationTier.getCollectiviteAdministrative();
@@ -64,7 +64,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	private static final String IS_ACTIVE = "O";
 
 	@Override
-	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		try {
 			final ListeCollectiviteAdministrative list = client.getCollectivitesUtilisateurCommunicationTier(visaOperateur);
 			if (list == null) {
@@ -87,7 +87,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	}
 
 	@Override
-	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException {
 		try {
 			final ProfilOperateur profile = client.getProfileUtilisateur(visaOperateur, codeCollectivite);
 			return ProfileOperateurImpl.get(profile);
@@ -122,7 +122,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 * @return la liste des utilisateurs
 	 */
 	@Override
-	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		try {
 			List<Operateur> res = new ArrayList<>();
 			ch.vd.infrastructure.model.rest.TypeCollectivite[] tabTypesCollectivite = new ch.vd.infrastructure.model.rest.TypeCollectivite[typesCollectivite.size()];
@@ -167,7 +167,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Operateur getOperateur(@NotNull String visa) {
+	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
 			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateurTous(visa);

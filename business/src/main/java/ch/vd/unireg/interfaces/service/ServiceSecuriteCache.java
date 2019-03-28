@@ -145,7 +145,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException {
 		final List<CollectiviteAdministrative>  resultat;
 		final KeyGetCollectivitesUtilisateurVisaOperateur key = new KeyGetCollectivitesUtilisateurVisaOperateur(visaOperateur);
 		final Element element = cache.get(key);
@@ -185,7 +185,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		final Integer resultat;
 		final KeyGetCollectiviteParDefaut key = new KeyGetCollectiviteParDefaut(visaOperateur);
 		final Element element = cache.get(key);
@@ -250,7 +250,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException {
 		final ProfileOperateur resultat;
 		final KeyGetProfileUtilisateurVisaOperateurCodeCollectivite key = new KeyGetProfileUtilisateurVisaOperateurCodeCollectivite(visaOperateur, codeCollectivite);
 		final Element element = cache.get(key);
@@ -312,7 +312,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 
 		final  List<Operateur>  resultat;
 		final KeyGetUtilisateursTypesCollectivite key = new KeyGetUtilisateursTypesCollectivite(typesCollectivite);
@@ -428,7 +428,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public Operateur getOperateur(@NotNull String visa) {
+	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		final Operateur resultat;
 
 		final KeyGetOperateurByVisa key = new KeyGetOperateurByVisa(visa);

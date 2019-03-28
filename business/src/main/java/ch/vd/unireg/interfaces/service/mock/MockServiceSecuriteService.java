@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
@@ -30,22 +31,22 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	protected abstract void init();
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException {
 		return null;
 	}
 
 	@Override
-	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) {
+	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		return null;
 	}
 
 	@Override
-	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException {
 		return profilesOperatorByIndividu.get(visaOperateur);
 	}
 
 	@Override
-	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		return null;
 	}
 
@@ -55,7 +56,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	@Override
-	public Operateur getOperateur(@NotNull String visa) {
+	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		return operatorsByVisa.get(visa);
 	}
 

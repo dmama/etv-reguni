@@ -3,7 +3,6 @@ package ch.vd.unireg.interfaces.service;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
@@ -23,14 +22,13 @@ public interface ServiceSecuriteService {
 	// TODO : modifier cette méthode pour ne retourner que les liste des numéros de collectivités administratives (car les collectivités administratives
 	//        sont des données d'infrastructure, pas de sécurité. Seule la liste des numéros de collectivités administratives associée avec chaque opérateur
 	//        est une information de sécurité).
-	List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur);
+	List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException;
 
 	/**
 	 * @param visaOperateur le visa d'un opérateur.
 	 * @return l'id de la collectivité administrative par défaut de l'opérateur spécifié ; ou <i>null</i> si l'opérateur est inconnu ou ne possède pas de collectivité administrative par défaut.
 	 */
-	@Nullable
-	Integer getCollectiviteParDefaut(@NotNull String visaOperateur);
+	Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException;
 
 	/**
 	 * Retourne le profil que possède un opérateur pour une collectivité administrative.
@@ -39,7 +37,7 @@ public interface ServiceSecuriteService {
 	 * @param codeCollectivite le code de la collectivité administrative.
 	 * @return le profil que possède un opérateur pour une collectivité administrative.
 	 */
-	ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite);
+	ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException;
 
 
 	/**
@@ -48,7 +46,7 @@ public interface ServiceSecuriteService {
 	 * @param typesCollectivite
 	 * @return la liste des utilisateurs
 	 */
-	List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite);
+	List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException;
 
 	/**
 	 * Retourne l'operateur pour l'indivu passé en paramètre.
@@ -64,6 +62,6 @@ public interface ServiceSecuriteService {
 	 * @param visa le visa de l'opérateur (zaixxx, ...)
 	 * @return un opérateur ou <b>null</b> si l'opérateur n'est pas trouvé.
 	 */
-	Operateur getOperateur(@NotNull String visa);
+	Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException;
 
 }

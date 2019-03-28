@@ -38,7 +38,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 
 
 	@Override
-	public ProfileOperateur getProfileUtilisateur(String visa, int codeCollectivite) {
+	public ProfileOperateur getProfileUtilisateur(String visa, int codeCollectivite) throws ServiceSecuriteException {
 
 		try {
 
@@ -60,7 +60,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 
 	@Override
 	@Nullable
-	public Operateur getOperateur(@NotNull String visa) {
+	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		try {
 			final User user = refSecClient.getUser(visa);
 			return Operateur.get(user, visa);
@@ -73,7 +73,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 
 
 	@Override
-	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		throw new NotYetImplementedException("getAuthorizationsByCodeCollectivite  pas implémenté");
 	}
 
@@ -85,7 +85,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visa) {
+	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visa) throws ServiceSecuriteException {
 		try {
 			final Set<Integer> codeCollectivites = refSecClient.getCollectivitesOperateur(visa);
 			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.findCollectivitesAdministratives(new ArrayList<>(codeCollectivites), false);
@@ -107,7 +107,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	}
 
 	@Override
-	public @Nullable Integer getCollectiviteParDefaut(@NotNull String visa) {
+	public Integer getCollectiviteParDefaut(@NotNull String visa) throws ServiceSecuriteException {
 		final List<CollectiviteAdministrative> collectivitesUtilisateur = getCollectivitesUtilisateur(visa);
 		//aucun critère défini pour savoir le la collectivité par defaut, alors on renvoi la 1er de la liste.
 		final CollectiviteAdministrative collectiviteAdministrative = collectivitesUtilisateur.stream().findFirst().orElse(null);
