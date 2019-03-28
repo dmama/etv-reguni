@@ -63,7 +63,7 @@ public class IbanValidator {
 	 * Valide le code iban
 	 * @param iban
 	 */
-	public final void validate(String iban) throws IbanValidationException {
+	public void validate(String iban) throws IbanValidationException {
 		if (iban == null) {
 			throw new IbanValidationException("Le code IBAN n'est pas renseigné");
 		}
