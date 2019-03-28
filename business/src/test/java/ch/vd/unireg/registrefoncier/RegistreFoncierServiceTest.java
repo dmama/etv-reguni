@@ -2542,7 +2542,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
-
 	/**
 	 * [SIFISC-27133] Vérifie que le paramètre <i>includeAnnules</i> de la méthode <i>buildPrincipalHisto</i> fonctionne bien.
 	 */
@@ -2618,7 +2617,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
 
 			// on vérifie qu'on a bien trois principaux (un défaut + les 2 explicites non-annulés)
-			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, false);
+			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, false, true);
 			assertNotNull(principaux);
 			assertEquals(3, principaux.size());
 
@@ -2654,7 +2653,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
 
 			// on vérifie qu'on a bien qutre principaux (un défaut + les 2 explicites non-annulés + l'annulé)
-			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, true);
+			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, true, true);
 			assertNotNull(principaux);
 			assertEquals(4, principaux.size());
 
@@ -2687,6 +2686,151 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals(ids.pp2, principal3.getAyantDroitId());    // Brigite Widmer
 			assertEquals(dateDebut2, principal3.getDateDebut());
 			assertNull(principal3.getDateFin());
+			assertTrue(principal3.isAnnule());
+			assertFalse(principal3.isParDefaut());
+
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-30674] Vérifie que l'historique des principaux fonctionne correctement dans le cas où le principal par défaut est aussi le principal explicitement demandé.
+	 */
+	@Test
+	public void testBuildPrincipalHistoAvecPrincipalParDefautetExplicite() throws Exception {
+
+		final RegDate dateDebut1 = RegDate.get(2003, 7, 28);
+		final RegDate dateDebut2 = RegDate.get(2005, 4, 12);
+		final RegDate dateDebut3 = RegDate.get(2012, 11, 19);
+
+		final class Ids {
+			Long charles;
+			Long brigitte;
+			Long noemie;
+			Long modele;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final PersonnePhysiqueRF charles = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF brigitte = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF noemie = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			final PersonnePhysique ctb1 = addNonHabitant("Charles", "Widmer", date(1970, 7, 2), Sexe.MASCULIN);
+			final PersonnePhysique ctb2 = addNonHabitant("Brigitte", "Widmer", date(1970, 7, 2), Sexe.FEMININ);
+			final PersonnePhysique ctb3 = addNonHabitant("Noémie", "Widmer", date(1970, 7, 2), Sexe.FEMININ);
+
+			addRapprochementRF(ctb1, charles, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(ctb2, brigitte, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(ctb3, noemie, null, null, TypeRapprochementRF.AUTO);
+
+			// le modèle de communauté
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(charles);
+			modele.addMembre(brigitte);
+			modele.addMembre(noemie);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			// le premier principal est annulé
+			final PrincipalCommunauteRF p1 = new PrincipalCommunauteRF();
+			p1.setModeleCommunaute(modele);
+			p1.setPrincipal(charles);
+			p1.setDateDebut(dateDebut1);
+			p1.setDateFin(dateDebut2.getOneDayBefore());
+			p1.setAnnule(true);
+			modele.addPrincipal(p1);
+
+			// le premier principal non-annulé explicitement renseigné est aussi celui par défaut (Brigitte)
+			final PrincipalCommunauteRF p2 = new PrincipalCommunauteRF();
+			p2.setModeleCommunaute(modele);
+			p2.setPrincipal(brigitte);
+			p2.setDateDebut(dateDebut2);
+			p2.setDateFin(dateDebut3.getOneDayBefore());
+			modele.addPrincipal(p2);
+
+			final PrincipalCommunauteRF p3 = new PrincipalCommunauteRF();
+			p3.setModeleCommunaute(modele);
+			p3.setPrincipal(noemie);
+			p3.setDateDebut(dateDebut3);
+			modele.addPrincipal(p3);
+
+			ids.charles = charles.getId();
+			ids.brigitte = brigitte.getId();
+			ids.noemie = noemie.getId();
+			ids.modele = modele.getId();
+			return null;
+		});
+
+		// on vérifie que les seuls principaux actifs sont retournés avec includeAnnules=false et collate=true
+		doInNewTransaction(status -> {
+
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie qu'on a bien deux principaux : Brigitte (défaut et explicite fusionné) et Noémie
+			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, false, true);
+			assertNotNull(principaux);
+			assertEquals(2, principaux.size());
+
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertNotNull(principal0);
+			assertEquals(ids.brigitte, principal0.getAyantDroitId());    // Brigite Widmer
+			assertNull(principal0.getDateDebut());
+			assertEquals(dateDebut3.getOneDayBefore(), principal0.getDateFin());
+			assertFalse(principal0.isAnnule());
+			assertFalse(principal0.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+			assertNotNull(principal1);
+			assertEquals(ids.noemie, principal1.getAyantDroitId());    // Noémie Widmer
+			assertEquals(dateDebut3, principal1.getDateDebut());
+			assertNull(principal1.getDateFin());
+			assertFalse(principal1.isAnnule());
+
+			return null;
+		});
+
+		// on vérifie que tous les principaux (y compris les annulés et le défaut) sont retournés avec includeAnnules=true et collate=false
+		doInNewTransaction(status -> {
+
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie qu'on a bien quatre principaux (un défaut + les 2 explicites non-annulés + l'annulé)
+			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, true, false);
+			assertNotNull(principaux);
+			assertEquals(4, principaux.size());
+
+			// le principal par défaut
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertNotNull(principal0);
+			assertNull(principal0.getAyantDroitId());    // Brigite Widmer
+			assertNull(principal0.getDateDebut());
+			assertEquals(dateDebut2.getOneDayBefore(), principal0.getDateFin());
+			assertFalse(principal0.isAnnule());
+			assertTrue(principal0.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+			assertNotNull(principal1);
+			assertEquals(ids.brigitte, principal1.getAyantDroitId());    // Brigite Widmer
+			assertEquals(dateDebut2, principal1.getDateDebut());
+			assertEquals(dateDebut3.getOneDayBefore(), principal1.getDateFin());
+			assertFalse(principal1.isAnnule());
+			assertFalse(principal1.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal2 = principaux.get(2);
+			assertNotNull(principal2);
+			assertEquals(ids.noemie, principal2.getAyantDroitId());    // Noémie Widmer
+			assertEquals(dateDebut3, principal2.getDateDebut());
+			assertNull(principal2.getDateFin());
+			assertFalse(principal2.isAnnule());
+
+			// le principal annulé
+			final CommunauteRFPrincipalInfo principal3 = principaux.get(3);
+			assertNotNull(principal3);
+			assertEquals(ids.charles, principal3.getAyantDroitId());    // Charles Widmer
+			assertEquals(dateDebut1, principal3.getDateDebut());
+			assertEquals(dateDebut2.getOneDayBefore(), principal3.getDateFin());
 			assertTrue(principal3.isAnnule());
 			assertFalse(principal3.isParDefaut());
 

@@ -789,15 +789,15 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull RegroupementCommunauteRF regroupement) {
 
 		// on calcule l'histo du modèle de communauté
-		final List<CommunauteRFPrincipalInfo> histo = buildPrincipalHisto(regroupement.getModele(), false);
+		final List<CommunauteRFPrincipalInfo> histo = buildPrincipalHisto(regroupement.getModele(), false, true);
 
 		// on le réduit à la durée de validité du regroupement
 		return DateRangeHelper.extract(histo, regroupement.getDateDebut(), regroupement.getDateFin(), CommunauteRFPrincipalInfo::adapter);
 	}
 
-	@Override
 	@NotNull
-	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules) {
+	@Override
+	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules, boolean collate) {
 
 		// on détermine le principal par défaut
 		final Long defaultPrincipal = modeleCommunaute.getMembres().stream()
@@ -828,8 +828,8 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		// on les combine ensemble
 		final List<CommunauteRFPrincipalInfo> combined = DateRangeHelper.override(defaultHisto, principauxInfo, CommunauteRFPrincipalInfo::adapter);
 
-		// on fusionne les périodes qui peuvent l'être
-		final List<CommunauteRFPrincipalInfo> histo = DateRangeHelper.collate(combined);
+		// on fusionne les périodes qui peuvent l'être (si demandé)
+		final List<CommunauteRFPrincipalInfo> histo = collate ? DateRangeHelper.collate(combined) : combined;
 
 		if (includeAnnules) {
 			// on inclut les principaux annulés si demandé
@@ -844,7 +844,6 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		return histo;
 	}
-
 
 	@NotNull
 	@Override

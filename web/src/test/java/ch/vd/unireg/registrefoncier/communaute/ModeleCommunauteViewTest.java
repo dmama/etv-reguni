@@ -54,7 +54,7 @@ public class ModeleCommunauteViewTest {
 		modele.setRegroupements(Collections.emptySet());
 
 		// retourne une liste de principaux dont les deux derniers sont annulés
-		Mockito.when(registreFoncierService.buildPrincipalHisto(modele, true)).thenReturn(Arrays.asList(
+		Mockito.when(registreFoncierService.buildPrincipalHisto(modele, true, false)).thenReturn(Arrays.asList(
 				new CommunauteRFPrincipalInfo(1L, elisabeth.getId(), null, null, null, 12345678L, true),
 				new CommunauteRFPrincipalInfo(1L, michel.getId(), date(2017, 1, 1), null, new Date(), 12345679L, false),
 				new CommunauteRFPrincipalInfo(1L, catherine.getId(), date(2018, 1, 1), null, new Date(), 12345680L, false)

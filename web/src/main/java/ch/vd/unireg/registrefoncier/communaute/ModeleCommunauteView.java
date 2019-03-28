@@ -35,7 +35,10 @@ public class ModeleCommunauteView {
 		this.membres = modele.getMembres().stream()
 				.map(m -> new MembreCommunauteView(m, tiersService, registreFoncierService))
 				.collect(Collectors.toList());
-		this.principaux = registreFoncierService.buildPrincipalHisto(modele, true).stream()
+		this.principaux = registreFoncierService.buildPrincipalHisto(modele,
+		                                                             true,  // on veut voir les principaux annulés
+		                                                             false) // on veut différencier les principaux explicites du principal par défaut
+				.stream()
 				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true)) // du plus récent au plus vieux
 				.map(p -> new PrincipalCommunauteRFView(p, tiersService, registreFoncierService))
 				.collect(Collectors.toList());

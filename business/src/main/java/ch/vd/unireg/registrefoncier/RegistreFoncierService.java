@@ -147,10 +147,11 @@ public interface RegistreFoncierService {
 	 *
 	 * @param modeleCommunaute un modèle de communauté
 	 * @param includeAnnules   <i>vrai</i> s'il faut inclure les principaux annulés; <i>faux</i> autrement.
+	 * @param collate          <i>vrai</i> s'il faut fusionner les principaux identiques qui se suivent; <i>faux</i> autrement.
 	 * @return l'historique des principaux
 	 */
 	@NotNull
-	List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules);
+	List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules, boolean collate);
 
 	/**
 	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.
