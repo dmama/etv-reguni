@@ -2,10 +2,15 @@ package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.wsclient.refsec.model.User;
 
 
-public class Operateur implements Serializable {
+public class Operateur implements Serializable, Comparable {
 
 	private String nom;
 	private String prenom;
@@ -30,7 +35,7 @@ public class Operateur implements Serializable {
 		return op;
 	}
 
-	public static Operateur get(User user,String visa) {
+	public static Operateur get(User user, String visa) {
 		if (user == null) {
 			return null;
 		}
@@ -84,5 +89,34 @@ public class Operateur implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	@Override
+	public int compareTo(@NotNull Object o) {
+		return ObjectUtils.compare(nom, ((Operateur) o).getNom(), false);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+
+		if (!(o instanceof Operateur)) return false;
+
+		final Operateur operateur = (Operateur) o;
+
+		return new EqualsBuilder()
+				.append(getNom(), operateur.getNom())
+				.append(getPrenom(), operateur.getPrenom())
+				.append(getCode(), operateur.getCode())
+				.isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37)
+				.append(getNom())
+				.append(getPrenom())
+				.append(getCode())
+				.toHashCode();
 	}
 }

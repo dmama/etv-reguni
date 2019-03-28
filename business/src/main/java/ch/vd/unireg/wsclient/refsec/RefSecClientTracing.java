@@ -1,5 +1,6 @@
 package ch.vd.unireg.wsclient.refsec;
 
+import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -88,6 +89,22 @@ public class RefSecClientTracing implements RefSecClient, InitializingBean, Disp
 		}
 		finally {
 			tracing.end(time, t, "getCollectivitesOperateur", () -> String.format("visa=%s", visa));
+		}
+	}
+
+	@Override
+	public List<User> getUsersFromCollectivite(@NotNull Integer collectivite) throws RefSecClientException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getUsersFromCollectivite(collectivite);
+		}
+		catch (RefSecClientException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getUsersFromCollectivite", () -> String.format("visa=%d ", collectivite));
 		}
 	}
 

@@ -1,12 +1,13 @@
 package ch.vd.unireg.interfaces.service.refsec;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.hibernate.cfg.NotYetImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -74,7 +75,25 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 
 	@Override
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
-		throw new NotYetImplementedException("getAuthorizationsByCodeCollectivite  pas implémenté");
+		try {
+			final Set<Operateur> resultat = new HashSet<>();
+			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.getCollectivitesAdministratives(typesCollectivite);
+			collectivitesAdministratives.forEach(collectivite -> {
+				final List<User> usersFromCollectivite = refSecClient.getUsersFromCollectivite(collectivite.getNoColAdm());
+				final Set<Operateur> operateurs = usersFromCollectivite.stream()
+						.map(User::getVisa)
+						.map(uip -> Operateur.get(refSecClient.getUser(uip), uip))
+						.collect(Collectors.toSet());
+				resultat.addAll(operateurs);
+			});
+			final List<Operateur> operateurs = new ArrayList<>(resultat);
+			Collections.sort(operateurs);
+			return operateurs;
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new ServiceSecuriteException("impossible de récupérer la liste des operateurs ", e);
+		}
 	}
 
 	@Override

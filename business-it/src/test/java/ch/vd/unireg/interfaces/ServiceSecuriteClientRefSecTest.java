@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,7 +8,9 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 
@@ -59,5 +62,13 @@ public class ServiceSecuriteClientRefSecTest extends BusinessItTest {
 				.sorted(Comparator.comparing(ProcedureSecurite::getCode))
 				.collect(Collectors.toList());
 		assertEquals(sorted, profile.getProcedures());
+	}
+
+	@Test
+	public void testGetUtilisateursCollectivite() throws Exception {
+		final List<TypeCollectivite> colls = Arrays.asList(TypeCollectivite.SIGLE_ACI, TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD,
+		                                                   TypeCollectivite.SIGLE_ACIPP, TypeCollectivite.SIGLE_CIR, TypeCollectivite.SIGLE_S_ACI);
+		final List<Operateur> utilisateurs = service.getUtilisateurs(colls);
+		assertNotNull(utilisateurs);
 	}
 }

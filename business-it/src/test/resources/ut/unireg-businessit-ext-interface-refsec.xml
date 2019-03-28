@@ -12,10 +12,10 @@
 
 	<bean id="clientrefsecraw" class="ch.vd.unireg.wsclient.refsec.RefSecClientImpl">
 		<property name="wcPool" ref="ifoSecWebClientPool" />
-		<property name="appName" value="${testprop.ref.securite.webservice.appName:si_fiscal}" />
-		<property name="wsResourcePath" value="${testprop.ref.securite.webservice.ws.path:ws/v2/applications}" />
-		<property name="pingResourcePath" value="${testprop.ref.securite.webservice.health.path:actuator/health}" />
-		<property name="userResourcePath" value="${testprop.ref.securite.webservice.ws.users:ws/v2/users}" />
+		<property name="appName" value="${testprop.ref.securite.webservice.appName}" />
+		<property name="wsResourcePath" value="${testprop.ref.securite.webservice.ws.path}" />
+		<property name="pingResourcePath" value="${testprop.ref.securite.webservice.health.path}" />
+		<property name="userResourcePath" value="${testprop.ref.securite.webservice.ws.users}" />
 	</bean>
 
 	<alias name="clientrefsecraw" alias="refSecClient" />

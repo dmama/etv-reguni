@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.refsec;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -187,6 +188,46 @@ public class RefSecClientCache implements RefSecClient, UniregCacheInterface, In
 		else {
 			//noinspection unchecked
 			resultat = (Set<Integer>) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyGetUsersFromCollectivite {
+		@NotNull
+		private final Integer collectivite;
+
+		private KeyGetUsersFromCollectivite(@NotNull Integer collectivite) {
+			this.collectivite = collectivite;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof KeyGetUsersFromCollectivite)) return false;
+			final KeyGetUsersFromCollectivite that = (KeyGetUsersFromCollectivite) o;
+			return collectivite.equals(that.collectivite);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(collectivite);
+		}
+	}
+
+	@Override
+	public List<User> getUsersFromCollectivite(@NotNull Integer collectivite) throws RefSecClientException {
+		final List<User> resultat;
+
+		final KeyGetUsersFromCollectivite key = new KeyGetUsersFromCollectivite(collectivite);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getUsersFromCollectivite(collectivite);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			//noinspection unchecked
+			resultat = (List<User>) element.getObjectValue();
 		}
 
 		return resultat;
