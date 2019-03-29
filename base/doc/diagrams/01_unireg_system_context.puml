@@ -1,5 +1,5 @@
 @startuml 01_unireg_system_context
-!include C4_Container.puml
+!include c4/C4_Container.puml
 
 Person(personAlias, "Opérateur de l'ACI", "(OIDs, CAT, cellule registre, ...)")
 ' Container(containerAlias, "Label", "Technology", "Optional Description")

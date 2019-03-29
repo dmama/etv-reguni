@@ -1,5 +1,5 @@
 @startuml 02_unireg_component_diagram_flux_evenements
-!include C4_Container.puml
+!include c4/C4_Container.puml
 
 LAYOUT_LEFT_RIGHT
 

@@ -1,5 +1,5 @@
 @startuml 03_unireg_component_diagram_service_infrastructure
-!include C4_Container.puml
+!include c4/C4_Container.puml
 
 title Beans Spring du service d'infrastructure
 

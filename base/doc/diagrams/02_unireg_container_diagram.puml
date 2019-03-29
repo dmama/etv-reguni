@@ -1,5 +1,5 @@
 @startuml 02_unireg_container_diagram
-!include C4_Container.puml
+!include c4/C4_Container.puml
 
 Person(personAlias, "Opérateur de l'ACI", "(OIDs, CAT, cellule registre, ...)")
 System(systemClient, "Application cliente", "(TAO, SIPF, D-Perm, ...)")
