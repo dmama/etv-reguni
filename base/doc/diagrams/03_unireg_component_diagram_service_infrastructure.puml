@@ -1,0 +1,36 @@
+@startuml 03_unireg_component_diagram_service_infrastructure
+!include C4_Container.puml
+
+title Beans Spring du service d'infrastructure
+
+Container_Boundary(uniregWeb, "Unireg Web") {
+
+    Container(webBeanClient, "Some Bean", "Spring Bean", "Client du service d'instrastructure")
+
+    Container(webInfrastructureService, "ServiceInfrastructureService", "Spring Bean", "Implémentation haut-niveau")
+	Container(webInfrastructureCache, "ServiceInfrastructureCache", "Spring Bean", "Cache mémoire")
+	Container(webInfrastructureTracing, "ServiceInfrastructureTracing", "Spring Bean", "Tracing des appels")
+	Container(webInfraRemote, "ServiceInfraRemote", "Spring Bean", "Invoker Spring-remoting")
+
+	Rel_D(webBeanClient, webInfrastructureService, "Utilise")
+	Rel_R(webInfrastructureService, webInfrastructureCache, "Utilise")
+	Rel_D(webInfrastructureCache, webInfrastructureTracing, "Utilise")
+	Rel_L(webInfrastructureTracing, webInfraRemote, "Délègue")
+}
+
+Container_Boundary(uniregNexus, "Unireg Nexus") {
+    Container(nexusInfrastructureEndPoint, "ServiceInfrastructureEndPoint", "Spring Bean", "Statistiques des appels")
+	Container(nexusInfrastructureCache, "ServiceInfrastructureCache", "Spring Bean", "Cache mémoire")
+	Container(nexusInfrastructureTracing, "ServiceInfrastructureTracing", "Spring Bean", "Tracing des appels")
+	Container(nexusInfrastructureFidor, "ServiceInfrastructureFidor", "Spring Bean", "Implémentation Fidor du service")
+	Container(fidorClient, "fidorClient", "Spring Bean", "Client Fidor bas-niveau")
+
+	Rel_R(nexusInfrastructureEndPoint, nexusInfrastructureCache, "Délègue")
+	Rel_D(nexusInfrastructureCache, nexusInfrastructureTracing, "Utilise")
+	Rel_L(nexusInfrastructureTracing, nexusInfrastructureFidor, "Délègue")
+	Rel_D(nexusInfrastructureFidor, fidorClient, "Utilise")
+}
+
+Rel_D(webInfraRemote, nexusInfrastructureEndPoint, "Appelle", "Spring-remoting/HTTP")
+
+@enduml

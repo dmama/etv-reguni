@@ -1,0 +1,34 @@
+@startuml 01_unireg_system_context
+!include C4_Container.puml
+
+Person(personAlias, "Opérateur de l'ACI", "(OIDs, CAT, cellule registre, ...)")
+' Container(containerAlias, "Label", "Technology", "Optional Description")
+System(systemUnireg, "Unireg", "Registres des contribuables du Canton de Vaud")
+System(systemTAO, "TAO", "Taxation")
+System(systemSIPF, "SIPF", "Perception")
+System(systemDPERM, "D-Perm", "Dossier permanent")
+System(systemCyberAdmin, "Cyber-Admin", "")
+System(systemCAT, "CAT", "Centre d'appels téléphoniques")
+System(systemCEDI, "CEDI", "Centre d'enregistrement des déclarations d'impôt")
+System(systemESB, "ESB", "Entreprise Service Bus")
+System(systemFidor, "Fidor", "Données d'infrastructure fiscale")
+System(systemRefSec, "RefSec", "Référentiel de sécurité")
+System(systemRCPers, "RCPers", "Registre cantonal des personnes")
+System(systemRCEnt, "RCEnt", "Registre cantonal des entreprises")
+
+Rel(personAlias, systemUnireg, "Consulte et édite les tiers", "Web")
+Rel(systemTAO, systemUnireg, "Consulte les tiers", "WS")
+Rel(systemSIPF, systemUnireg, "Consulte les tiers", "WS")
+Rel(systemDPERM, systemUnireg, "Consulte les tiers", "WS")
+Rel(systemCyberAdmin, systemUnireg, "Ajoute des délais sur les DIs", "WS/JMS")
+Rel(systemCAT, systemUnireg, "Consulte les tiers", "WS")
+Rel(systemCEDI, systemUnireg, "Quittance les déclarations", "JMS")
+' Rel(systemESB, systemUnireg, "Reçoit des notifications", "JMS")
+
+Rel(systemUnireg, systemESB, "Emet des événements fiscaux", "JMS")
+Rel(systemUnireg, systemFidor, "Consulte les données d'infrastructure", "WS")
+Rel(systemUnireg, systemRefSec, "Consulte les données de sécurité", "WS")
+Rel(systemUnireg, systemRCPers, "Consulte les personnes physiques", "WS")
+Rel(systemUnireg, systemRCEnt, "Consulte les personnes morales", "WS")
+
+@enduml

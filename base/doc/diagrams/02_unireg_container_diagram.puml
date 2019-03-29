@@ -1,0 +1,43 @@
+@startuml 02_unireg_container_diagram
+!include C4_Container.puml
+
+Person(personAlias, "Opérateur de l'ACI", "(OIDs, CAT, cellule registre, ...)")
+System(systemClient, "Application cliente", "(TAO, SIPF, D-Perm, ...)")
+ContainerDb(oracleDB, "Base de données", "Oracle", "Persistence des données métier")
+
+
+System_Boundary(c1, "Unireg") {
+    Container(uniregNexus, "Nexus", "Spring, CXF, ehcache, BerkeleyDB", "Accès centralisé aux ressources externes et caches")
+	Container(uniregWeb, "Web", "Spring, Hibernate, MVC, JSP, Lucene", "Interface Web, batches, services JMS et moteur de recherche")
+	Container(uniregWS, "WS", "Spring, Hibernate, CXF, Rest XML+JSON", "Web-services")
+	ContainerDb(berkeleyDB, "Base de données", "BerkeleyDB", "Cache persistent de données externes")
+}
+
+System(systemESB, "ESB", "Entreprise Service Bus")
+System(systemFidor, "Fidor", "Données d'infrastructure fiscale")
+System(systemRefSec, "RefSec", "Référentiel de sécurité")
+System(systemRCPers, "RCPers", "Registre cantonal des personnes")
+System(systemRCEnt, "RCEnt", "Registre cantonal des entreprises")
+
+Rel(uniregWeb, uniregNexus, "Appels de services", "Spring-remoting")
+Rel_R(uniregWeb, oracleDB, "Lecture/écriture", "Hibernate/JDBC")
+Rel_R(uniregWeb, uniregWS, "Emet des événements internes", "JMS")
+
+Rel(uniregWS, uniregNexus, "Appels de services", "Spring-remoting")
+Rel_L(uniregWS, uniregWeb, "Recherche des tiers", "Spring-remoting")
+Rel_R(uniregWS, oracleDB, "Lecture/écriture", "Hibernate/JDBC")
+Rel_D(uniregWS, systemESB, "Emet des événements fiscaux", "JMS")
+
+Rel(uniregNexus, systemFidor, "Consulte les données d'infrastructure", "WS")
+Rel(uniregNexus, systemRefSec, "Consulte les données de sécurité", "WS")
+Rel(uniregNexus, systemRCPers, "Consulte les personnes physiques", "WS")
+Rel(uniregNexus, systemRCEnt, "Consulte les personnes morales", "WS")
+Rel_R(uniregNexus, berkeleyDB, "Stocke des données externes", "Java")
+
+Rel_D(personAlias, uniregWeb, "Consulte et édite les tiers", "Web")
+Rel_D(systemClient, uniregWS, "Consulte les tiers", "WS")
+Rel_D(systemClient, uniregWeb, "Fait une demande asynchrone", "JMS")
+
+
+
+@enduml
