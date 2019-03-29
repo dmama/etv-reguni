@@ -53,16 +53,6 @@ public interface ServiceSecuriteService {
 	List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException;
 
 	/**
-	 * Retourne l'operateur pour l'indivu passé en paramètre.
-	 *
-	 * @param individuNoTechnique un numéro d'individu
-	 * @return l'operateur pour l'indivu passé en paramètre (NOTE: Les champs de CollectiviteOperateur dans le résultat ne sont pas renseignés).
-	 */
-	// FIXME (msi) supprimer cette méthode
-	@Nullable
-	Operateur getOperateur(long individuNoTechnique);
-
-	/**
 	 * Recherche un opérateur à partir de son visa.
 	 *
 	 * @param visa le visa de l'opérateur (zaixxx, ...)

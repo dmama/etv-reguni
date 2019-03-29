@@ -98,14 +98,6 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 		}
 	}
 
-	@Nullable
-	@Override
-	@Deprecated
-	public Operateur getOperateur(long individuNoTechnique) {
-		LOGGER.error("getOperateur avec individuNoTechnique n''est plus supporter, merci d'utiliser getOperateur avec le visa");
-		return null;
-	}
-
 	@NotNull
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visa) throws ServiceSecuriteException {

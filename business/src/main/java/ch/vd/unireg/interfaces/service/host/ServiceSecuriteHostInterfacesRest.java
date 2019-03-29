@@ -158,22 +158,6 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 */
 	@Nullable
 	@Override
-	public Operateur getOperateur(long individuNoTechnique) {
-		try {
-			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
-			final ch.vd.securite.model.rest.Operateur operateurTous = client.getOperateurTous(individuNoTechnique);
-			return Operateur.get(operateurTous);
-		}
-		catch (Exception e) {
-			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur correspondant au numéro d'individu " + individuNoTechnique, e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Nullable
-	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides

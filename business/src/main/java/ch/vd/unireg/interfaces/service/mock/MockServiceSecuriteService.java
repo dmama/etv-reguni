@@ -23,7 +23,6 @@ import ch.vd.unireg.security.Role;
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 
 	private final Map<String, Operateur> operatorsByVisa = new HashMap<>();
-	private final Map<Long, Operateur> operatorsByIndividu = new HashMap<>();
 	private final Map<String, ProfileOperateur> profilesOperatorByIndividu = new HashMap<>();
 
 	public MockServiceSecuriteService() {
@@ -58,12 +57,6 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 	@Nullable
 	@Override
-	public Operateur getOperateur(long individuNoTechnique) {
-		return operatorsByIndividu.get(individuNoTechnique);
-	}
-
-	@Nullable
-	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		return operatorsByVisa.get(visa);
 	}
@@ -80,7 +73,6 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		final Operateur o = new Operateur();
 		o.setCode(visa);
 		o.setIndividuNoTechnique(noIndividuOperateur);
-		operatorsByIndividu.put(noIndividuOperateur, o);
 		operatorsByVisa.put(visa, o);
 		profilesOperatorByIndividu.put(visa, new ProfileOperateurImpl(visa, procedures));
 	}

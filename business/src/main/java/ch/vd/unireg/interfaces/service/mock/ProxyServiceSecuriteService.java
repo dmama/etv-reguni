@@ -50,12 +50,6 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 
 	@Nullable
 	@Override
-	public Operateur getOperateur(long individuNoTechnique) {
-		return target.getOperateur(individuNoTechnique);
-	}
-
-	@Nullable
-	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		return target.getOperateur(visa);
 	}

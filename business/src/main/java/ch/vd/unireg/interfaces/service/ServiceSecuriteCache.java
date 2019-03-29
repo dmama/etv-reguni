@@ -335,62 +335,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		return resultat;
 	}
 
-	private static class KeyGetOperateurByNoIndividu {
-
-		private final long noIndividu;
-
-		public KeyGetOperateurByNoIndividu(long noIndividu) {
-			this.noIndividu = noIndividu;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + (int) (noIndividu ^ (noIndividu >>> 32));
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetOperateurByNoIndividu other = (KeyGetOperateurByNoIndividu) obj;
-			return noIndividu == other.noIndividu;
-		}
-
-		@Override
-		public String toString() {
-			return "KeyGetOperateurByNoIndividu{" +
-					"noIndividu=" + noIndividu +
-					'}';
-		}
-	}
-
-	@Nullable
-	@Override
-	public Operateur getOperateur(long individuNoTechnique) {
-		final Operateur resultat;
-
-		final KeyGetOperateurByNoIndividu key = new KeyGetOperateurByNoIndividu(individuNoTechnique);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getOperateur(individuNoTechnique);
-			if (resultat != null) {      // on ne sauvegarde que les résultats non-vides
-				cache.put(new Element(key, resultat));
-			}
-		}
-		else {
-			resultat = (Operateur) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
 	private static class KeyGetOperateurByVisa {
 
 		private final String visa;

@@ -76,26 +76,6 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 
 	@Nullable
 	@Override
-	public Operateur getOperateur(final long individuNoTechnique) {
-		Throwable t = null;
-		int items = 0;
-		final long time = tracing.start();
-		try {
-			final Operateur operateur = target.getOperateur(individuNoTechnique);
-			items = operateur != null ? 1 : 0;
-			return operateur;
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getOperateur", items, () -> String.format("individuNoTechnique=%d", individuNoTechnique));
-		}
-	}
-
-	@Nullable
-	@Override
 	public Operateur getOperateur(@NotNull final String visa) throws ServiceSecuriteException {
 		Throwable t = null;
 		int items = 0;
