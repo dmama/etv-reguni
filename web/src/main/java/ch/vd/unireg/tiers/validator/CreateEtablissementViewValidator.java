@@ -57,7 +57,9 @@ public class CreateEtablissementViewValidator implements Validator {
 		errors.pushNestedPath("complementCoordFinanciere");
 		try {
 			final int errorsBefore = errors.getErrorCount();
-			cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
+			if (!view.getComplementCoordFinanciere().isEmpty()) {   // [SIFISC-30948] lors de la création d'un tiers, les coordonnées financières ne sont pas obligatoires
+				cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
+			}
 			if (errors.getErrorCount() > errorsBefore) {
 				errors.reject("onglet.error.complements");
 			}

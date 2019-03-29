@@ -23,7 +23,7 @@ public class EditCoordonneesFinancieresValidatorTest {
 	private IbanValidator ibanValidator;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		ibanValidator = Mockito.mock(IbanValidator.class);
 		validator = new EditCoordonneesFinancieresValidator(ibanValidator);
 	}
@@ -32,7 +32,7 @@ public class EditCoordonneesFinancieresValidatorTest {
 	 * Ce test s'assure qu'il est possible de modifier des coordonnées financières avec une date de début nulle
 	 */
 	@Test
-	public void testValidateDateDebutNulle() throws IbanValidationException {
+	public void testValidateDateDebutNulle() {
 
 		// un vue avec une date de début nulle
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
@@ -48,7 +48,7 @@ public class EditCoordonneesFinancieresValidatorTest {
 	 * Ce test s'assure qu'il n'est pas possible de modifier des coordonnées financières avec une date de début dans le futur
 	 */
 	@Test
-	public void testValidateDateDebutDansLeFutur() throws IbanValidationException {
+	public void testValidateDateDebutDansLeFutur() {
 
 		// un vue avec une date de début nulle
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
@@ -71,7 +71,7 @@ public class EditCoordonneesFinancieresValidatorTest {
 	 * Ce test s'assure qu'il n'est pas possible de modifier des coordonnées financières avec des dates de début et de fin incohérentes
 	 */
 	@Test
-	public void testValidateDateDebutEtFinIncoherentes() throws IbanValidationException {
+	public void testValidateDateDebutEtFinIncoherentes() {
 
 		// un vue avec une date de fin avant la date de début
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
@@ -133,5 +133,25 @@ public class EditCoordonneesFinancieresValidatorTest {
 		final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, bindingResult);
 		assertFalse(bindingResult.hasErrors());
+	}
+
+	/**
+	 * [SIFISC-30995] Ce test s'assure qu'il n'est pas possible de modifier des coordonnées financières complétement vides
+	 */
+	@Test
+	public void testValidateCoordonneesVides() {
+
+		// un vue toute vide
+		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
+
+		final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(view, "view");
+		validator.validate(view, bindingResult);
+		assertTrue(bindingResult.hasErrors());
+
+		final List<ObjectError> errors = bindingResult.getAllErrors();
+		assertEquals(1, errors.size());
+
+		final ObjectError objectError = errors.get(0);
+		assertEquals("error.iban.mandat.tiers.vide", objectError.getCode());
 	}
 }

@@ -25,11 +25,10 @@ public class AddCoordonneesFinancieresValidator extends AbstractCoordonneesFinan
 		final CoordonneesFinancieresEditView view = (CoordonneesFinancieresEditView) obj;
 
 		// validation de la plage de validité
-		if (!view.isEmpty()) {
-			validateDateDebut(errors, view.getDateDebut());
-			validateDateFin(errors, view.getDateDebut(), view.getDateFin());
-			validateIBAN(errors, view.getIban(), ibanValidator);
-		}
+		validateDateDebut(errors, view.getDateDebut());
+		validateDateFin(errors, view.getDateDebut(), view.getDateFin());
+
+		validateIBAN(errors, view.getIban(), ibanValidator);
 	}
 
 }

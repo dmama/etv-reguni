@@ -3,8 +3,8 @@ package ch.vd.unireg.tiers.validator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.unireg.complements.AddCoordonneesFinancieresValidator;
 import ch.vd.unireg.complements.ComplementsEditCommunicationsValidator;
-import ch.vd.unireg.complements.EditCoordonneesFinancieresValidator;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.view.CreateNonHabitantView;
 
@@ -12,12 +12,12 @@ public class CreateNonHabitantViewValidator implements Validator {
 
 	private final NonHabitantCivilViewValidator civilViewValidator;
 	private final ComplementsEditCommunicationsValidator cpltCommViewValidator;
-	private final EditCoordonneesFinancieresValidator cpltCoordFinViewValidator;
+	private final AddCoordonneesFinancieresValidator cpltCoordFinViewValidator;
 
 	public CreateNonHabitantViewValidator(IbanValidator ibanValidator) {
 		this.civilViewValidator = new NonHabitantCivilViewValidator();
 		this.cpltCommViewValidator = new ComplementsEditCommunicationsValidator();
-		this.cpltCoordFinViewValidator = new EditCoordonneesFinancieresValidator(ibanValidator);
+		this.cpltCoordFinViewValidator = new AddCoordonneesFinancieresValidator(ibanValidator);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class CreateNonHabitantViewValidator implements Validator {
 		errors.pushNestedPath("complementCoordFinanciere");
 		try {
 			final int errorsBefore = errors.getErrorCount();
-			if (!view.getComplementCoordFinanciere().isEmpty()) {
+			if (!view.getComplementCoordFinanciere().isEmpty()) {   // [SIFISC-30948] lors de la création d'un tiers, les coordonnées financières ne sont pas obligatoires
 				cpltCoordFinViewValidator.validate(view.getComplementCoordFinanciere(), errors);
 			}
 			if (errors.getErrorCount() > errorsBefore) {

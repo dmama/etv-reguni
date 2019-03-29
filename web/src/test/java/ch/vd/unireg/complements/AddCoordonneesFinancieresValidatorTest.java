@@ -22,7 +22,7 @@ public class AddCoordonneesFinancieresValidatorTest {
 	private IbanValidator ibanValidator;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		ibanValidator = Mockito.mock(IbanValidator.class);
 		validator = new AddCoordonneesFinancieresValidator(ibanValidator);
 	}
@@ -31,7 +31,7 @@ public class AddCoordonneesFinancieresValidatorTest {
 	 * Ce test s'assure qu'il n'est pas possible d'ajouter des coordonnées financières avec une date de début nulle
 	 */
 	@Test
-	public void testValidateDateDebutNulle() throws IbanValidationException {
+	public void testValidateDateDebutNulle() {
 
 		// un vue avec une date de début nulle
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
@@ -54,7 +54,7 @@ public class AddCoordonneesFinancieresValidatorTest {
 	 * Ce test s'assure qu'il n'est pas possible d'ajouter des coordonnées financières avec une date de début dans le futur
 	 */
 	@Test
-	public void testValidateDateDebutDansLeFutur() throws IbanValidationException {
+	public void testValidateDateDebutDansLeFutur() {
 
 		// un vue avec une date de début nulle
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
@@ -77,7 +77,7 @@ public class AddCoordonneesFinancieresValidatorTest {
 	 * Ce test s'assure qu'il n'est pas possible d'ajouter des coordonnées financières avec des dates de début et de fin incohérentes
 	 */
 	@Test
-	public void testValidateDateDebutEtFinIncoherentes() throws IbanValidationException {
+	public void testValidateDateDebutEtFinIncoherentes() {
 
 		// un vue avec une date de fin avant la date de début
 		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
@@ -121,4 +121,30 @@ public class AddCoordonneesFinancieresValidatorTest {
 		assertEquals("error.iban.detail", error0.getCode());
 		assertEquals("iban", error0.getField());
 	}
+
+	/**
+	 * [SIFISC-30995] Ce test s'assure qu'il n'est pas possible d'ajouter des coordonnées financières complétement vides
+	 */
+	@Test
+	public void testValidateCoordonneesVides() {
+
+		// un vue toute vide
+		final CoordonneesFinancieresEditView view = new CoordonneesFinancieresEditView();
+
+		final BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(view, "view");
+		validator.validate(view, bindingResult);
+		assertTrue(bindingResult.hasErrors());
+
+		final List<ObjectError> errors = bindingResult.getAllErrors();
+		assertEquals(2, errors.size());
+
+		final FieldError error0 = (FieldError) errors.get(0);
+		assertEquals("dateDebut", error0.getField());
+		assertEquals("error.date.debut.vide", error0.getCode());
+
+		final FieldError error1 = (FieldError) errors.get(1);
+		assertEquals("iban", error1.getField());
+		assertEquals("error.iban.mandat.tiers.vide", error1.getCode());
+	}
+
 }
