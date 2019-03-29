@@ -1,0 +1,57 @@
+@startuml 02_unireg_component_diagram_flux_evenements
+!include C4_Container.puml
+
+LAYOUT_LEFT_RIGHT
+
+title Flux des événements JMS de Unireg
+
+System(systemRCPers, "RCPers", "Registre cantonal des personnes")
+System(systemRCEnt, "RCEnt", "Registre cantonal des entreprises")
+System(systemCapistrata, "Capitastra", "Registre foncier")
+System(systemCEDI, "CEDI", "Centre d'enregistrement des déclarations d'impôt")
+System(systemEmpACI, "EmpACI", "Passerelle Employeur-ACI")
+System(systemIAMDeb, "IAM Débiteurs", "Prestations électronique pour les débiteurs")
+System(systemEditique, "Editique", "Impression")
+System(systemEFacture, "E-Facture", "Facturation électronique")
+System(systemCyberAdmin, "Cyber-Admin", "Prestations électroniques à la population")
+System(systemFidor, "Fidor", "Données d'infrastructure fiscale")
+System(systemReqDes, "ReqDes", "Prestations électronique pour les notaires")
+System(systemDpermICI, "???", "???")
+
+ContainerDb(oracleDB, "Base de données", "Oracle", "Persistence des données métier")
+
+System_Boundary(c1, "Unireg") {
+	Container(uniregWeb, "Web", "Spring, Hibernate, MVC, JSP, Lucene", "Interface Web, batches, services JMS et moteur de recherche")
+	Container(uniregWS, "WS", "Spring, Hibernate, CXF, Rest XML+JSON", "Web-services")
+}
+
+Rel(uniregWeb, uniregWS, "Déclenchement de l'envoi des événements fiscaux", "JMS (Internal)")
+Rel_R(uniregWeb, oracleDB, "Ecriture des événements fiscaux", "JDBC")
+Rel_R(uniregWS, oracleDB, "Lecture des événements fiscaux", "JDBC")
+
+System(systemClient, "Applications clientes", "(TAO, SIPF, D-Perm, ...)")
+System(systemDPERM, "D-Perm", "Dossier permanent")
+System(systemADDI, "ADDI", "Envoi électronique des DIs")
+System(systemCyberContext, "CyberContext", "Context des prestations Cyber")
+System(systemTAOAdmin, "TAO-Admin", "Console d'administration JMS")
+
+Rel(systemRCPers, uniregWeb, "Evénements sur les personnes", "JMS")
+Rel(systemRCEnt, uniregWeb, "Evénements sur les entreprises", "JMS")
+Rel(systemCapistrata, uniregWeb, "Exports hebdomadaires des immeubles", "JMS")
+Rel(systemCEDI, uniregWeb, "Quittancements et retours des déclarations", "JMS")
+Rel(systemEmpACI, uniregWeb, "Quittancements et retours des LRs", "JMS")
+Rel(systemIAMDeb, uniregWeb, "Informations sur les débiteurs", "JMS")
+Rel(systemEditique, uniregWeb, "Retours d'impression", "JMS")
+Rel(systemEFacture, uniregWeb, "Inscriptions/désinscriptions", "JMS")
+Rel(systemCyberAdmin, uniregWeb, "Demandes de délais sur les DIs", "JMS")
+Rel(systemFidor, uniregWeb, "Evénements sur les données d'infrastructure", "JMS")
+Rel(systemReqDes, uniregWeb, "Evénements affaires foncières", "JMS")
+Rel(systemDpermICI, uniregWeb, "Retours des formulaires de dégrèvement ICI", "JMS")
+
+Rel(uniregWS, systemClient, "Evénements fiscaux", "JMS (Broadcast)")
+Rel(uniregWeb, systemDPERM, "Documents à indexer", "JMS")
+Rel(uniregWeb, systemADDI, "Ouverture/fermeture des droits de dépôt", "JMS")
+Rel(uniregWeb, systemCyberContext, "Codes de contrôle des DIs", "JMS")
+Rel(uniregWeb, systemTAOAdmin, "Erreurs", "JMS")
+
+@enduml
