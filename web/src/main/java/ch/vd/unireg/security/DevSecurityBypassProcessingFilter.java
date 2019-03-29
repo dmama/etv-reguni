@@ -76,7 +76,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 					final Integer oid = Integer.valueOf(SecurityDebugConfig.getIfoSecBypassOID());
 					final String oidSigle = SecurityDebugConfig.getIfoSecBypassOIDSigle();
 					final ProfileOperateur profil = getBypassProfil(visa, oid, oidSigle);
-					final List<GrantedAuthority> ifoSecGranted = IFOSecProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
+					final List<GrantedAuthority> ifoSecGranted = SecuriteProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
 
 					details.setOID(oid);
 					details.setOIDSigle(oidSigle);

@@ -54,7 +54,7 @@
 	</bean>
 
 	<!-- Récupère le profil IFOSec et le stocke dans le context de sécurité -->
-	<bean id="ifoSecProfileFilter" class="ch.vd.unireg.security.IFOSecProfileProcessingFilter">
+	<bean id="securiteProfileFilter" class="ch.vd.unireg.security.SecuriteProfileProcessingFilter">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
@@ -75,7 +75,7 @@
 			<security:filter-chain pattern="/chooseOID.do"  filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,${iam-security-filters}" />
 			<!-- les pages normales -->
 			<security:filter-chain pattern="/**/*.do"       filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,
-																	 exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,rateLimiterFilter,chooseOIDFilter,ifoSecProfileFilter,
+																	 exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,rateLimiterFilter,chooseOIDFilter,securiteProfileFilter,
 																	 contextHolderAwareRequestFilter,actionExceptionFilter" />
 			<!-- les ressources statiques -->
 			<security:filter-chain pattern="/**"            filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />

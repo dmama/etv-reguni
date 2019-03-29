@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 /**
  * Ce filtre est utilisé pour récupérer le profile IFOSec de l'utilisateur connecté et le stocker dans le context de sécurité. Il ne fait aucun contrôle d'accès par lui-même.
  */
-public class IFOSecProfileProcessingFilter extends GenericFilterBean {
+public class SecuriteProfileProcessingFilter extends GenericFilterBean {
 
 	private ServiceSecuriteService serviceSecurite;
 
