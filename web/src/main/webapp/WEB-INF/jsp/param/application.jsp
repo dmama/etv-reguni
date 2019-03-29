@@ -60,6 +60,9 @@
 	</tiles:put>
   	<tiles:put name="body">
  		<sf:form method="post" modelAttribute="params">
+		    <sf:input type="hidden" path="delaiImpressionCadev"/>
+		    <sf:input type="hidden" path="delaiRetourQuestionnaireSNCRappele"/>
+		    <sf:input type="hidden" path="delaiAccordeDemandeDelai"/>
  			<table>
  				<thead>
 	                <tr>
