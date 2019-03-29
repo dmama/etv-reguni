@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.rest.ListeCollectiviteAdministrative;
 import ch.vd.securite.model.rest.ListeOperateurs;
@@ -36,6 +37,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	}
 
 
+	@NotNull
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException {
@@ -63,6 +65,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 
 	private static final String IS_ACTIVE = "O";
 
+	@Nullable
 	@Override
 	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		try {
@@ -86,6 +89,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 		}
 	}
 
+	@Nullable
 	@Override
 	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException {
 		try {
@@ -121,6 +125,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 * @param typesCollectivite
 	 * @return la liste des utilisateurs
 	 */
+	@NotNull
 	@Override
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		try {
@@ -151,6 +156,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		try {
@@ -166,6 +172,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		try {

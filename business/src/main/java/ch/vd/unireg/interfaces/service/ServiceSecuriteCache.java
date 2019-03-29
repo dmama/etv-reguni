@@ -9,6 +9,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -143,6 +144,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 	}
 
+	@NotNull
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException {
@@ -184,6 +186,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 	}
 
+	@Nullable
 	@Override
 	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		final Integer resultat;
@@ -249,6 +252,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 	}
 
+	@Nullable
 	@Override
 	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException {
 		final ProfileOperateur resultat;
@@ -310,6 +314,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 	}
 
+	@NotNull
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
@@ -366,6 +371,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 	}
 
+	@Nullable
 	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		final Operateur resultat;
@@ -427,6 +433,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		}
 	}
 
+	@Nullable
 	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		final Operateur resultat;

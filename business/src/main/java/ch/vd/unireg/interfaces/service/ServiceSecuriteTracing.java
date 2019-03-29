@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.service;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -33,6 +34,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		this.statsService = statsService;
 	}
 
+	@NotNull
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) throws ServiceSecuriteException {
 		Throwable t = null;
@@ -52,6 +54,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		}
 	}
 
+	@Nullable
 	@Override
 	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		Throwable t = null;
@@ -71,6 +74,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		}
 	}
 
+	@Nullable
 	@Override
 	public Operateur getOperateur(final long individuNoTechnique) {
 		Throwable t = null;
@@ -90,6 +94,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		}
 	}
 
+	@Nullable
 	@Override
 	public Operateur getOperateur(@NotNull final String visa) throws ServiceSecuriteException {
 		Throwable t = null;
@@ -109,6 +114,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		}
 	}
 
+	@Nullable
 	@Override
 	public ProfileOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) throws ServiceSecuriteException {
 		Throwable t = null;
@@ -125,6 +131,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		}
 	}
 
+	@NotNull
 	@Override
 	public List<Operateur> getUtilisateurs(final List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		Throwable t = null;

@@ -38,6 +38,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	private ServiceInfrastructureService serviceInfrastructureService;
 
 
+	@Nullable
 	@Override
 	public ProfileOperateur getProfileUtilisateur(String visa, int codeCollectivite) throws ServiceSecuriteException {
 
@@ -73,6 +74,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	}
 
 
+	@NotNull
 	@Override
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		try {
@@ -96,6 +98,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 		}
 	}
 
+	@Nullable
 	@Override
 	@Deprecated
 	public Operateur getOperateur(long individuNoTechnique) {
@@ -103,6 +106,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 		return null;
 	}
 
+	@NotNull
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visa) throws ServiceSecuriteException {
 		try {
@@ -125,6 +129,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 				.filter(ServiceSecuriteRefSecImpl::hasTypeCommunicationACI);
 	}
 
+	@Nullable
 	@Override
 	public Integer getCollectiviteParDefaut(@NotNull String visa) throws ServiceSecuriteException {
 		final List<CollectiviteAdministrative> collectivitesUtilisateur = getCollectivitesUtilisateur(visa);

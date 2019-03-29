@@ -1,11 +1,13 @@
 package ch.vd.unireg.interfaces.service.mock;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
@@ -30,31 +32,37 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 	protected abstract void init();
 
+	@NotNull
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) throws ServiceSecuriteException {
-		return null;
+		return Collections.emptyList();
 	}
 
+	@Nullable
 	@Override
 	public Integer getCollectiviteParDefaut(@NotNull String visaOperateur) throws ServiceSecuriteException {
 		return null;
 	}
 
+	@Nullable
 	@Override
 	public ProfileOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteException {
 		return profilesOperatorByIndividu.get(visaOperateur);
 	}
 
+	@NotNull
 	@Override
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
-		return null;
+		return Collections.emptyList();
 	}
 
+	@Nullable
 	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		return operatorsByIndividu.get(individuNoTechnique);
 	}
 
+	@Nullable
 	@Override
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		return operatorsByVisa.get(visa);
