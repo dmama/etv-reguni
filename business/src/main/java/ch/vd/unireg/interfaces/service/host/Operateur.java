@@ -93,7 +93,7 @@ public class Operateur implements Serializable, Comparable {
 
 	@Override
 	public int compareTo(@NotNull Object o) {
-		return ObjectUtils.compare(nom, ((Operateur) o).getNom(), false);
+		return ObjectUtils.compare(nom, ((Operateur) o).getNom(), true);
 	}
 
 	@Override

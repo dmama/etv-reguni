@@ -79,15 +79,17 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) throws ServiceSecuriteException {
 		try {
 			final Set<Operateur> resultat = new HashSet<>();
+			final Set<User> usersFromCollectivite = new HashSet<>();
 			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.getCollectivitesAdministratives(typesCollectivite);
-			collectivitesAdministratives.forEach(collectivite -> {
-				final List<User> usersFromCollectivite = refSecClient.getUsersFromCollectivite(collectivite.getNoColAdm());
-				final Set<Operateur> operateurs = usersFromCollectivite.stream()
-						.map(User::getVisa)
-						.map(uip -> Operateur.get(refSecClient.getUser(uip), uip))
-						.collect(Collectors.toSet());
-				resultat.addAll(operateurs);
-			});
+
+			collectivitesAdministratives.forEach(collectivite -> usersFromCollectivite.addAll(refSecClient.getUsersFromCollectivite(collectivite.getNoColAdm())));
+
+			resultat.addAll(usersFromCollectivite.stream()
+					                .map(User::getVisa)
+					                .distinct()
+					                .map(uip -> Operateur.get(refSecClient.getUser(uip), uip))
+					                .collect(Collectors.toSet()));
+
 			final List<Operateur> operateurs = new ArrayList<>(resultat);
 			Collections.sort(operateurs);
 			return operateurs;
