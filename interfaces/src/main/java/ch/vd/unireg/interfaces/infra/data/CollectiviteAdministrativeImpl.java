@@ -96,7 +96,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.nomComplet2 = nomDecoupe.getLigne2();
 		this.nomComplet3 = nomDecoupe.getLigne3();
 		this.nomCourt = right.getNomCourt();
-		this.sigle = null;
+		this.sigle = right.getSigle();
 		this.sigleCanton = right.getCanton();
 		this.aci = Objects.equals(right.getCodeType(), SIGLE_ACI);
 		this.oid = Objects.equals(right.getCodeType(), SIGLE_OID);
