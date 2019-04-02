@@ -253,11 +253,11 @@ public class ArriveePrincipale extends Arrivee {
 			if (pp != null) {
 				final RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 				if (rapportMenage != null) {
-					MenageCommun mc = (MenageCommun)context.getTiersService().getTiers(rapportMenage.getObjetId());
+					MenageCommun mc = (MenageCommun) context.getTiersService().getTiers(rapportMenage.getObjetId());
 					final ForFiscalPrincipal forFP = mc.getForFiscalPrincipalAt(getDate());
 					if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && nouvelleCommune.getNoOFS() != forFP.getNumeroOfsAutoriteFiscale()) {
 						erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a un for principal vaudois " +
-								"différent de celui du menage commun (ctb:%s) qu'il est sensé rejoindre", pp.getNumero(),mc.getNumero()));
+								                                "différent de celui du menage commun (ctb:%s) qu'il est sensé rejoindre", pp.getNumero(), mc.getNumero()));
 					}
 				}
 
@@ -311,7 +311,7 @@ public class ArriveePrincipale extends Arrivee {
 		if (ancienneAdresse != null && ancienneAdresse.getDateDebut() != null && getDate().isBeforeOrEqual(ancienneAdresse.getDateDebut())) {
 			erreurs.addErreur("La date d'arrivée principale est antérieure à la date de début de l'ancienne adresse");
 		}
-		if (ancienneAdresse != null && (ancienneAdresse.getDateFin() == null || getDate().isBeforeOrEqual(ancienneAdresse.getDateFin())) ){
+		if (ancienneAdresse != null && (ancienneAdresse.getDateFin() == null || getDate().isBeforeOrEqual(ancienneAdresse.getDateFin()))) {
 			erreurs.addErreur("La date d'arrivée principale est antérieure à la date de fin de l'ancienne adresse");
 		}
 
@@ -354,19 +354,19 @@ public class ArriveePrincipale extends Arrivee {
 		// fonction de l'ancienne commune exclusivement
 		final MotifFor motif;
 		if (previousLocation != null) {
-		    switch (previousLocation) {
-		        case HORS_CANTON:
-			        motif = MotifFor.ARRIVEE_HC;
-			        break;
-		        case CANTON_VD:
-			        motif = MotifFor.DEMENAGEMENT_VD;
-			        break;
-		        case HORS_SUISSE:
-			        motif = MotifFor.ARRIVEE_HS;
-			        break;
-		        default:
-			        throw new IllegalArgumentException("Valeur invalide : " + previousLocation);
-		    }
+			switch (previousLocation) {
+			case HORS_CANTON:
+				motif = MotifFor.ARRIVEE_HC;
+				break;
+			case CANTON_VD:
+				motif = MotifFor.DEMENAGEMENT_VD;
+				break;
+			case HORS_SUISSE:
+				motif = MotifFor.ARRIVEE_HS;
+				break;
+			default:
+				throw new IllegalArgumentException("Valeur invalide : " + previousLocation);
+			}
 		}
 		else {
 			motif = null;
@@ -423,7 +423,7 @@ public class ArriveePrincipale extends Arrivee {
 
 	/**
 	 * @param first date de début d'un trou
-	 * @param last date de début de "l'après trou"
+	 * @param last  date de début de "l'après trou"
 	 * @return si le trou dure moins
 	 */
 	private static boolean isDifferenceTwoYearsOrLess(RegDate first, RegDate last) {
@@ -616,7 +616,8 @@ public class ArriveePrincipale extends Arrivee {
 				}
 				else if (determination.getRattrapageDepartHSInconnu() != null) {
 					Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
-					openForFiscalPrincipalAvecRattrapage(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(), determination.getRattrapageDepartHSInconnu());
+					openForFiscalPrincipalAvecRattrapage(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(),
+					                                     determination.getRattrapageDepartHSInconnu());
 				}
 				else {
 					Audit.info(getNumeroEvenement(), "Mise-à-jour du fors fiscal avec mode d'imposition [" + determination.getModeImposition() + ']');
@@ -693,8 +694,7 @@ public class ArriveePrincipale extends Arrivee {
 	}
 
 	/**
-	 * Crée ou met-à-jour le for fiscal principal pour le contribuable principal, son conjoint et le ménage - en fonction de leur état civil
-	 * et fiscal.
+	 * Crée ou met-à-jour le for fiscal principal pour le contribuable principal, son conjoint et le ménage - en fonction de leur état civil et fiscal.
 	 * <p/>
 	 * On regarde les adresses de domicile des membres du couple :
 	 * <ul>
@@ -703,9 +703,10 @@ public class ArriveePrincipale extends Arrivee {
 	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
 	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
 	 * </ul>
-	 * @param arrivant personne physique concernée par l'arrivée
+	 *
+	 * @param arrivant     personne physique concernée par l'arrivée
 	 * @param menageCommun le ménage commun
-	 * @param warnings liste des erreurs à peupler en cas de problème
+	 * @param warnings     liste des erreurs à peupler en cas de problème
 	 * @throws EvenementCivilException en cas de souci
 	 */
 	private void createOrUpdateForFiscalPrincipalOnCouple(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
@@ -797,7 +798,7 @@ public class ArriveePrincipale extends Arrivee {
 			}
 			else {
 				Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + determination.getModeImposition() + ']');
-				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determineModeImposition(ffpMenage,determination.getModeImposition()));
+				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determineModeImposition(ffpMenage, determination.getModeImposition()));
 			}
 		}
 	}
@@ -862,6 +863,7 @@ public class ArriveePrincipale extends Arrivee {
 	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
 	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
 	 * </ul>
+	 *
 	 * @param arrivant personne physique concernée par l'arrivée
 	 * @param ensemble ensemble du ménage et des personnes physiques le composant
 	 * @return une commune selon les règles édictées plus haut
@@ -905,7 +907,7 @@ public class ArriveePrincipale extends Arrivee {
 						// alors cela devient compliqué... --> traitemant manuel
 						if (communes.size() > 2) {
 							final StringBuilder b = new StringBuilder();
-							for (int i = 1 ; i < communes.size() ; ++ i) {
+							for (int i = 1; i < communes.size(); ++i) {
 								final Commune ancienneCommune = communes.get(i - 1).getCommune();
 								final String nomAncienneCommune = ancienneCommune != null ? String.format("%s (%d)", ancienneCommune.getNomOfficiel(), ancienneCommune.getNoOFS()) : "HC/HS";
 								final Commune nouvelleCommune = communes.get(i).getCommune();
@@ -980,8 +982,9 @@ public class ArriveePrincipale extends Arrivee {
 
 	/**
 	 * Retourne la commune de domicile de la personne physique concernée
+	 *
 	 * @param date date de référence
-	 * @param pp personne physique concernée
+	 * @param pp   personne physique concernée
 	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
 	 */
 	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, ServiceInfrastructureException {
@@ -1043,7 +1046,7 @@ public class ArriveePrincipale extends Arrivee {
 	}
 
 	@Override
-	protected boolean isArriveeRedondanteAnterieurPourIndividuEnMenage(){
+	protected boolean isArriveeRedondanteAnterieurPourIndividuEnMenage() {
 		boolean isRedondant = getPrincipalPP() != null;
 		if (isRedondant) {
 			final RegDate dateArrivee = getDateArriveeEffective(getDate());
