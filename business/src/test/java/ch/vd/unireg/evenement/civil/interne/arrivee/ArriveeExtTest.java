@@ -2893,8 +2893,12 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 	}
 
+
+	/**
+	 * [SIFISC-30926] Fix erreur lors de la reception RCpers d'un membre sourcier sur un menage sourcier mixte, s'assurer que l'évènement est bien traité sans erreur, et que le mode imposition reste inchangé.
+	 */
 	@Test
-	public void testArriveeConjointSurMenageEnModeImpositionSourcierMixte() throws Exception {
+	public void testArriveeConjointSurMenageAvecModeImpositionSourcierMixte() throws Exception {
 		final long noIndividuLui = 36712456523468L;
 		final long noIndividuElle = 10000010L;
 		final RegDate dateMariage = date(2017, 1, 1);
@@ -2903,7 +2907,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = RegDate.get(2010, 7, 1);
 		removeTiersIndexData();
 		//
-		// Crée un individu
+		// Créer un menage civil
 		//
 		class ServiceCivil extends MockServiceCivil {
 
@@ -2928,7 +2932,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		serviceCivil.setUp(civil);
 
 		//
-		// Crée un non-habitant avec le même prénom/nom que l'individu qui arrive, mais sans date naissance
+		// Créer un menage commun marié seul, avec monsieur habitant voidois et madame hors suisse.
 		//
 		class Ids {
 			Long lui;
@@ -2955,54 +2959,49 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		//
-		// Traite l'événement d'arrivée
+		// Traite l'événement d'arrivée de Madame en Suisse
 		//
+		doInNewTransactionAndSession(status -> {
+			final ArriveePrincipale arrivee =
+					new ArriveePrincipale(civil.juliette, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, date(2017, 7, 14), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvellesAdresses.principale, context);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final ArriveePrincipale arrivee = new ArriveePrincipale(civil.juliette, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, date(2017, 7, 14), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvellesAdresses.principale, context);
-
-				final MessageCollector collector = buildMessageCollector();
+			final MessageCollector collector = buildMessageCollector();
+			try {
 				arrivee.validate(collector, collector);
-
-				try {
-					arrivee.handle(collector);
-					arrivee.checkCompleteness(collector, collector);
-					assertFalse(collector.hasErreurs());
-					assertFalse(collector.hasWarnings());
-					collector.clear();
-					//verifier que le couple est toujours sourcier Mixte
-				}
-				catch (EvenementCivilException e) {
-					Assert.fail("L'événement d'arrivée n'aurait pas dû lever une erreur !! [  erreur: " + e.getMessage() + " ]");
-				}
+				arrivee.handle(collector);
+				arrivee.checkCompleteness(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+				collector.clear();
 			}
+			catch (EvenementCivilException e) {
+				Assert.fail("L'événement d'arrivée n'aurait pas dû lever une erreur !! [  erreur: " + e.getMessage() + " ]");
+			}
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// On vérifique que la for principal sur le menagecommun
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
+		//
+		//Verifier que le For du couple est toujours sourcier Mixte et que Monsieur et Madame nônt pas de for fiscaux.
+		//
+		doInNewTransactionAndSession(status -> {
+			// On vérifique que la for principal sur le menagecommun
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
 
-				final ForFiscalPrincipalPP forsMenage = mc.getDernierForFiscalPrincipal();
-				assertNotNull(forsMenage);
-				assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                   MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, forsMenage);
+			final ForFiscalPrincipalPP forsMenage = mc.getDernierForFiscalPrincipal();
+			assertNotNull(forsMenage);
+			assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			                   MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, forsMenage);
 
-				// On vérifique que la for principal de Monsieur
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				assertNotNull(lui);
-				assertNull("For est porté par le menage", lui.getDernierForFiscalPrincipal());
+			// On vérifique que la for principal de Monsieur
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			assertNotNull(lui);
+			assertNull("For est porté par le menage", lui.getDernierForFiscalPrincipal());
 
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
-				assertNotNull(elle);
-				assertNull("For est porté par le menage", elle.getDernierForFiscalPrincipal());
-
-			}
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+			assertNotNull(elle);
+			assertNull("For est porté par le menage", elle.getDernierForFiscalPrincipal());
+			return null;
 		});
-
 	}
 }
