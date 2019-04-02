@@ -1,5 +1,6 @@
 package ch.vd.unireg.evenement.civil.interne.arrivee;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -762,7 +763,7 @@ public class ArriveePrincipale extends Arrivee {
 			// SIFISC-28216 mais si l'arrivée correspond à la date d'ouverture du for existant, on considère qu'on traite l'événement d'arrivée *simultanée*
 			//              du conjoint et à ce moment-là, on veut garder le motif d'ouverture normal (ARRIVEE_HS ou ARRIVEE_HC) pour calculer correctement
 			//              le mode d'imposition
-			if (ffpMenage.getModeImposition() != determination.getModeImposition()) {
+			if (!isSameModeImposition(ffpMenage.getModeImposition(), determination.getModeImposition())) {
 				// [SIFISC-28216] si le mode d'imposition change, l'événement doit être traité manuellement
 				throw new EvenementCivilException(String.format("Le contribuable arrivant [%s] dans le ménage [%s] est suisse ou possède un permis C : " +
 						                                                "le mode d'imposition du for fiscal principal du ménage doit être changé en [" +
@@ -796,9 +797,27 @@ public class ArriveePrincipale extends Arrivee {
 			}
 			else {
 				Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + determination.getModeImposition() + ']');
-				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
+				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determineModeImposition(ffpMenage,determination.getModeImposition()));
 			}
 		}
+	}
+
+	private ModeImposition determineModeImposition(ForFiscalPrincipalPP ffpMenage, @NotNull ModeImposition modeImposition) {
+		if (ffpMenage == null) {
+			return modeImposition;
+		}
+		return modeImposition == ModeImposition.SOURCE
+				&& Arrays.asList(ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2).contains(ffpMenage.getModeImposition()) ?
+				ffpMenage.getModeImposition() : modeImposition;
+	}
+
+	private boolean isSameModeImposition(@NotNull ModeImposition modeImpositionMenage, @NotNull ModeImposition modeImposition) {
+		//SIFISC-30926
+		if (modeImposition == ModeImposition.SOURCE || modeImpositionMenage == ModeImposition.SOURCE) {
+			final List<ModeImposition> modeImpositions = Arrays.asList(ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2);
+			return (modeImpositionMenage != modeImposition) ? (modeImpositions.contains(modeImposition) || modeImpositions.contains(modeImpositionMenage)) : Boolean.TRUE;
+		}
+		return modeImpositionMenage == modeImposition;
 	}
 
 	private static boolean isArriveeDecaleeConjointSurForVaudois(@Nullable ForFiscalPrincipalPP ffpMenage, @NotNull RegDate dateEvenement) {

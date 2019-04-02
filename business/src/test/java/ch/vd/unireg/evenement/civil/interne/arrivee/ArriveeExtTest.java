@@ -62,7 +62,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	public ArriveeExtTest() {
 		setWantIndexationTiers(true);
 	}
-	
+
 	@Test
 	public void testCompletenessIndividuSeul() throws Exception {
 
@@ -114,14 +114,15 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * Détection d'erreurs pour les différents cas d'événements invalides.
 				 */
 				final ArriveePrincipale sansIndividu = new ArriveePrincipale(null, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
-				                                                       nouvellesAdresses.principale, context);
+				                                                             nouvellesAdresses.principale, context);
 				sansIndividu.checkCompleteness(collector, collector);
 				assertTrue(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 				collector.clear();
 
-				final ArriveePrincipale sansNouvelleAdressePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
-				                                                                       null, context);
+				final ArriveePrincipale sansNouvelleAdressePrincipal =
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, anciennesAdresses.principale,
+						                      null, context);
 				sansNouvelleAdressePrincipal.checkCompleteness(collector, collector);
 				assertTrue(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
@@ -159,9 +160,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				// marie l'individu, mais seul
 				marieIndividu(pierre, RegDate.get(1985, 7, 11));
@@ -198,7 +199,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				collector.clear();
 
 				final ArriveePrincipale sansNouvelleAdressePrincipal = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), null, MockCommune.Cossonay, null,
-				                                                                       null, context);
+				                                                                             null, context);
 				sansNouvelleAdressePrincipal.checkCompleteness(collector, collector);
 				assertTrue(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
@@ -239,17 +240,17 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.PlaceDeLaVille, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, RegDate.get(1980,
-						1, 1), veilleArrivee);
+				                                                                                                1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 
 				// marie les individus
 				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
@@ -351,9 +352,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 			}
 		});
 
@@ -470,8 +471,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	/**
-	 * Teste qu'une arrivée sur une commune composée de fractions (L'Abbaye, Le Chenit et le Lieu) génère bien une exception pour
-	 * insuffisance d'information (on a besoin de la fraction précise).
+	 * Teste qu'une arrivée sur une commune composée de fractions (L'Abbaye, Le Chenit et le Lieu) génère bien une exception pour insuffisance d'information (on a besoin de la fraction précise).
 	 */
 	@Test
 	public void testValidateAdressePrincipaleCommunesComposeesFractions() throws Exception {
@@ -787,9 +787,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
@@ -974,15 +974,15 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
@@ -1061,9 +1061,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
@@ -1158,9 +1158,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
@@ -1258,23 +1258,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 
 				// nationalité
 				addOrigine(pierre, MockCommune.Lausanne);
@@ -1301,7 +1301,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * L'événement d'arrivée
 				 */
 				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
-						MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+				                                        MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
 				 * Vérification que les individus n'existent pas en base avant leurs arrivées
@@ -1398,23 +1398,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				// nationalité
 				addOrigine(pierre, MockCommune.Lausanne);
@@ -1548,23 +1548,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				           dateArriveInitiale, veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				// nationalité
 				addOrigine(pierre, MockCommune.Lausanne);
@@ -1609,7 +1609,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * L'événement d'arrivée
 				 */
 				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
-						MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+				                                        MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
 				 * Arrivée
@@ -1692,9 +1692,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				// nationalité
 				addOrigine(pierre, MockCommune.Lausanne);
@@ -1772,7 +1772,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
 		final RegDate dateArrivee = RegDate.get(2004, 7, 1);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
-		final RegDate dateMariage =  RegDate.get(1979, 7, 11);
+		final RegDate dateMariage = RegDate.get(1979, 7, 11);
 
 		/*
 		 * Création des données du mock service civil
@@ -1913,7 +1913,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	 */
 	@Test
 	public void testHandleArriveeIndividuAvecNonHabitantDeHorsCanton() throws Exception {
-		
+
 		final RegDate dateArrivee = RegDate.get(2007, 11, 19);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
 		final long numeroIndividu = 254879;
@@ -1925,30 +1925,30 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				final RegDate dateNaissance = RegDate.get(1987, 5, 1);
-				
+
 				MockIndividu bea = addIndividu(numeroIndividu, dateNaissance, "Duval", "Béatrice", false);
-				
+
 				// adresses avant l'arrivée
 				addAdresse(bea, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(bea, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(bea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(bea, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
-				
+				           null);
+
 				addOrigine(bea, MockCommune.Lausanne);
 				addNationalite(bea, MockPays.Suisse, dateNaissance, null);
 			}
 		});
-		
+
 		final Individu individu = serviceCivil.getIndividu(numeroIndividu, dateArrivee);
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
-		
+
 		final long numeroCTB = doInNewTransaction(new TxCallback<Long>() {
 			@SuppressWarnings("deprecation")
 			@Override
@@ -1965,9 +1965,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 
 		});
-		
+
 		globalTiersIndexer.sync();
-		
+
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -2023,13 +2023,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 	}
-	
+
 	/**
 	 * Test de l'arrivée hors-canton d'un individu avec recherche du non-habitant correspondant dans unireg.
 	 */
 	@Test
 	public void testHandleArriveeCoupleNonHabitantsDeHorsCanton() throws Exception {
-		
+
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
 		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
@@ -2040,7 +2040,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateNaissancePierre = RegDate.get(1953, 11, 2);
 		final RegDate dateNaissanceJulie = RegDate.get(1957, 4, 19);
-		
+
 		/*
 		 * Création des données du mock service civil
 		 */
@@ -2052,23 +2052,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
-						veilleArrivee);
+				           veilleArrivee);
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
-						null);
+				           null);
 
 				// nationalité
 				addOrigine(pierre, MockCommune.Lausanne);
@@ -2082,22 +2082,22 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
-		
+
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
-		
+
 		final class Couple {
 			final long idPrincipal;
 			final long idConjoint;
-			
+
 			public Couple(long idPrincipal, long idConjoint) {
 				this.idPrincipal = idPrincipal;
 				this.idConjoint = idConjoint;
 			}
 		}
-		
+
 		final Couple coupleContribuables = doInNewTransaction(new TxCallback<Couple>() {
 			@Override
 			public Couple execute(TransactionStatus status) throws Exception {
@@ -2105,9 +2105,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * Création des non-habitants
 				 */
 				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.save(addNonHabitant("Pierre", "Dupont", dateNaissancePierre, Sexe.MASCULIN));
-				
+
 				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.save(addNonHabitant("Julie", "Goux", dateNaissanceJulie, Sexe.FEMININ));
-				
+
 				/*
 				 * Création des habitants et de leurs situations avant l'arrivée
 				 */
@@ -2121,7 +2121,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 
 		});
-		
+
 		assertNotNull(coupleContribuables);
 		final long noCTBPrincipal = coupleContribuables.idPrincipal;
 		final long noCTBConjoint = coupleContribuables.idConjoint;
@@ -2442,7 +2442,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final long noIndividuPierre = 1;
 		final long noIndividuJulie = 2;
-		final RegDate dateMariage =  RegDate.get(1979, 7, 11);
+		final RegDate dateMariage = RegDate.get(1979, 7, 11);
 		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
 		final RegDate dateSeparationFiscale = RegDate.get(1999, 5, 31);
 		final RegDate dateDepart = RegDate.get(2006, 6, 30);
@@ -2891,5 +2891,118 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				}
 			}
 		});
+	}
+
+	@Test
+	public void testArriveeConjointSurMenageEnModeImpositionSourcierMixte() throws Exception {
+		final long noIndividuLui = 36712456523468L;
+		final long noIndividuElle = 10000010L;
+		final RegDate dateMariage = date(2017, 1, 1);
+		final RegDate dateNaissanceElle = date(1991, 12, 11);
+		final RegDate dateNaissanceLui = date(1983, 1, 27);
+		final RegDate dateArrivee = RegDate.get(2010, 7, 1);
+		removeTiersIndexData();
+		//
+		// Crée un individu
+		//
+		class ServiceCivil extends MockServiceCivil {
+
+			private MockIndividu romeo;
+			private MockIndividu juliette;
+
+			@Override
+			protected void init() {
+				romeo = addIndividu(noIndividuLui, dateNaissanceLui, "Riahi", "Sami", true);
+				addNationalite(romeo, MockPays.France, date(1983, 1, 1), null);
+				addAdresse(romeo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceLui, null);
+				addAdresse(romeo, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceLui, null);
+
+				juliette = addIndividu(noIndividuElle, dateNaissanceElle, "Azizi", "Zohra", false);
+				addNationalite(juliette, MockPays.France, dateNaissanceElle, null);
+				marieIndividus(romeo, juliette, dateMariage);
+			}
+		}
+
+
+		final ServiceCivil civil = new ServiceCivil();
+		serviceCivil.setUp(civil);
+
+		//
+		// Crée un non-habitant avec le même prénom/nom que l'individu qui arrive, mais sans date naissance
+		//
+		class Ids {
+			Long lui;
+			Long elle;
+			Long menage;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			final PersonnePhysique elle = addNonHabitant(noIndividuElle, "Zohra", "Azizi", dateNaissanceElle, Sexe.FEMININ);
+			ids.lui = lui.getId();
+			ids.elle = elle.getId();
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun menage = couple.getMenage();
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			ids.menage = menage.getNumero();
+			return null;
+		});
+
+		globalTiersIndexer.sync();
+
+		final Individu individu = serviceCivil.getIndividu(noIndividuLui, null);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+
+		//
+		// Traite l'événement d'arrivée
+		//
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final ArriveePrincipale arrivee = new ArriveePrincipale(civil.juliette, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, date(2017, 7, 14), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvellesAdresses.principale, context);
+
+				final MessageCollector collector = buildMessageCollector();
+				arrivee.validate(collector, collector);
+
+				try {
+					arrivee.handle(collector);
+					arrivee.checkCompleteness(collector, collector);
+					assertFalse(collector.hasErreurs());
+					assertFalse(collector.hasWarnings());
+					collector.clear();
+					//verifier que le couple est toujours sourcier Mixte
+				}
+				catch (EvenementCivilException e) {
+					Assert.fail("L'événement d'arrivée n'aurait pas dû lever une erreur !! [  erreur: " + e.getMessage() + " ]");
+				}
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// On vérifique que la for principal sur le menagecommun
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
+
+				final ForFiscalPrincipalPP forsMenage = mc.getDernierForFiscalPrincipal();
+				assertNotNull(forsMenage);
+				assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                   MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, forsMenage);
+
+				// On vérifique que la for principal de Monsieur
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+				assertNotNull(lui);
+				assertNull("For est porté par le menage", lui.getDernierForFiscalPrincipal());
+
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+				assertNotNull(elle);
+				assertNull("For est porté par le menage", elle.getDernierForFiscalPrincipal());
+
+			}
+		});
+
 	}
 }
