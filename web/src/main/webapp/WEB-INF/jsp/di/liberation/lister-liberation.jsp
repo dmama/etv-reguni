@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<c:set var="entite" value="${param.entite}" />
 <fieldset>
 	<legend><span><fmt:message key="label.liberation.panel.title"/></span></legend>
 	<c:if test="${not empty command.liberations}">
@@ -19,7 +18,7 @@
 			</display:column>
 
 			<display:column style="action">
-				<unireg:consulterLog entityNature="${entite}" entityId="${liberation.id}"/>
+				<unireg:consulterLog entityNature="${liberation.entity}" entityId="${liberation.id}"/>
 			</display:column>
 
 		</display:table>

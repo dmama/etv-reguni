@@ -2141,7 +2141,7 @@ var Modifier = {
 		var link = element;
 	    var href = link.href;
 		return ( href != null && href !== "" && href.indexOf("#") <0  &&
-	    		(link.target =='' || link.target =="_self") && link.onclick == null)
+	    		(link.target ==='' || link.target ==="_self") && link.onclick == null)
 	},
 
 	setIsModified : function( modified) {
@@ -2774,9 +2774,10 @@ var Decl = {
 
 				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais, true, true);
 				var etats = Decl._buidlEtatsTable(di.etats, false);
+				var liberation = Decl._buildLiberationTable(di.liberations);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
-				dialog.html(info + delais + etats);
+				dialog.html(info + delais + etats + liberation);
 
 				dialog.dialog({
 					title: "Détails de la déclaration d'impôt",
@@ -2847,9 +2848,10 @@ var Decl = {
 
 				var delais = Decl._buildDelaisPPISTable(qsnc.delais);
 				var etats = Decl._buidlEtatsTable(qsnc.etats, false);
+				var liberation = Decl._buildLiberationTable(qsnc.liberations);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
-				dialog.html(info + delais + etats);
+				dialog.html(info + delais + etats + liberation);
 
 				dialog.dialog({
 					              title: "Détails du questionnaire SNC",
@@ -3067,6 +3069,36 @@ var Decl = {
 		return html;
 	},
 
+	_buildLiberationTable: function (liberations) {
+		let html = ' ';
+		if (liberations && liberations.length > 0) {
+			//var info = '<fieldset class="information"><legend><span>Caractéristiques du document fiscal</span></legend>';
+			html = '<fieldset><legend><span>Liberation</span></legend>';
+			html +=
+				'<table id="liberation" class="display"><thead>' +
+					'<tr>' +
+						'<th>Date</th>' +
+						'<th>Utilisateur</th>' +
+						'<th>Motif de libération</th>' +
+						'<th></th>' +
+					'</tr>' +
+				'</thead>' +
+
+				'<tbody>';
+			for (let i in liberations) {
+				//noinspection JSUnfilteredForInLoop
+				let l = liberations[i];
+				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + '">';
+				html += '<td>' + RegDate.format(l.dateLiberation) + '</td>';
+				html += '<td>' + StringUtils.escapeHTML(l.logModifUser) + '</td>';
+				html += '<td>' + StringUtils.escapeHTML(l.motif) + '</td>';
+				html += '<td>' + Link.consulterLog(l.entity, l.id) + '</td></tr>';
+			}
+			html += '</tbody></table></fieldset>\n';
+		}
+		return html;
+	},
+
 	_buildDelaisPMTable: function (delais, avecDecision, avecTypeDelai) {
 		var html = '';
 		if (delais) {
@@ -3198,6 +3230,7 @@ var Decl = {
 				html += '<td>' + Link.consulterLog('EtatDocumentFiscal', e.id) + '</td></tr>';
 			}
 		}
+		html += '</tbody></table></fieldset>\n';
 		return html;
 	}
 };

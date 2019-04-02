@@ -71,9 +71,7 @@
 		<!-- Fin Etats -->
 
 		<!-- Debut Liberation -->
-		<jsp:include page="liberation/lister-liberation.jsp">
-			<jsp:param name="entite" value="LiberationDeclaration"/>
-		</jsp:include>
+		<jsp:include page="liberation/lister-liberation.jsp"/>
 		<!-- Fin Liberation -->
 
 		<div style="margin-top:1em;">

@@ -134,9 +134,7 @@
 
 		<!-- Debut Liberation -->
 			<c:if test="${not empty questionnaire.liberations}">
-				<jsp:include page="../di/liberation/lister-liberation.jsp">
-					<jsp:param name="entite" value="LiberationQuestionnaireSNC"/>
-				</jsp:include>
+				<jsp:include page="../di/liberation/lister-liberation.jsp"/>
 			</c:if>
 		<!-- Fin Liberation -->
 
