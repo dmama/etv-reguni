@@ -158,6 +158,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 
 		try {
 			final Marshaller marshaller = jaxbContextPM.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
 			final DocumentBuilder db = dbf.newDocumentBuilder();
@@ -188,6 +189,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 
 		try {
 			final Marshaller marshaller = jaxbContextPP.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
 			final DocumentBuilder db = dbf.newDocumentBuilder();
