@@ -1,6 +1,5 @@
 package ch.vd.unireg.evenement.civil.interne.arrivee;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -828,6 +827,7 @@ public class ArriveePrincipale extends Arrivee {
 		final MenageCommun menage = ensemble.getMenage();
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final ModeImposition modeImpositionActuel = (ffpMenage == null ? null : ffpMenage.getModeImposition());
 
 		// la liste des membres connus
 		final List<PersonnePhysique> members = Stream.of(principal, conjoint)
@@ -836,12 +836,14 @@ public class ArriveePrincipale extends Arrivee {
 
 		final ModeImpositionDetermination modeImpositionTheorique = determineModeImposition(menage, dateEvenement, motifOuverture, ffpMenage, members);
 
-		if (ffpMenage != null && ffpMenage.getModeImposition() == null) {
-			return modeImpositionTheorique;
+		if (modeImpositionTheorique.getModeImposition() == ModeImposition.SOURCE &&
+				(modeImpositionActuel == ModeImposition.MIXTE_137_1 || modeImpositionActuel == ModeImposition.MIXTE_137_2)) {
+			// [SIFISC-30926] Si le mode d'imposition théorique est source-pure et que le mode d'imposition du ménage était sourcier-mixte,
+			//                alors on garde le mode d'imposition sourcier-mixte existant.
+			return new ModeImpositionDetermination(modeImpositionActuel, modeImpositionTheorique.getRattrapageDepartHSInconnu());
 		}
-		return ffpMenage != null && modeImpositionTheorique.modeImposition == ModeImposition.SOURCE
-				&& Arrays.asList(ModeImposition.MIXTE_137_1, ModeImposition.MIXTE_137_2).contains(ffpMenage.getModeImposition()) ?
-				new ModeImpositionDetermination(ffpMenage.getModeImposition(), null) : modeImpositionTheorique;
+
+		return modeImpositionTheorique;
 	}
 
 	/**
