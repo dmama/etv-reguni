@@ -610,12 +610,13 @@
 			</modules>
 		</profile>
 
-		<!-- ================= Profile pour les développeurs pour bypasser la sécurité IAM en local ================= -->
+		<!-- ================= Profile pour les développeurs pour bypasser la sécurité IAM et RefSec en local ================= -->
 
 		<profile>
 			<id>dev</id>
 			<properties>
 				<iam-security-filters>bypassSecurityFilter,iamAuthFilter</iam-security-filters>
+				<securite-service-name>serviceSecurityDebug</securite-service-name>
 			</properties>
 		</profile>
 
@@ -712,6 +713,7 @@
 		<unireg-nexus.appname>unireg-nexus</unireg-nexus.appname>
 
 		<iam-security-filters>iamAuthFilter</iam-security-filters>
+		<securite-service-name>serviceSecuriteCache</securite-service-name>
 
 		<unireg.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/unireg.properties</unireg.properties.path>
 		<credentials.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/credentials.properties</credentials.properties.path>

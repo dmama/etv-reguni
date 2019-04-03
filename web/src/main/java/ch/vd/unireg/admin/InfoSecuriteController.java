@@ -1,7 +1,7 @@
 package ch.vd.unireg.admin;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,8 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteBypass;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.security.IfoSecService;
 import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
@@ -24,8 +24,7 @@ import ch.vd.unireg.security.Role;
 @Controller
 public class InfoSecuriteController {
 
-	private ServiceSecuriteService serviceSecurite;
-	private IfoSecService ifoSecService;
+	private ServiceSecuriteService securiteService;
 
 	@RequestMapping(value = "/admin/ifosec.do")
 	public String index() {
@@ -38,7 +37,7 @@ public class InfoSecuriteController {
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final Integer oid = AuthenticationHelper.getCurrentOID();
 
-		final ProfileOperateur profile = serviceSecurite.getProfileUtilisateur(visa, oid);
+		final ProfileOperateur profile = securiteService.getProfileUtilisateur(visa, oid);
 		List<ProcedureSecurite> proceduresUnireg = null;
 		List<Role> rolesIfoSecByPass = null;
 		List<ProcedureSecurite> proceduresAutres = null;
@@ -65,9 +64,15 @@ public class InfoSecuriteController {
 	}
 
 	private List<Role> getProceduresIfoSecByPass(ProfileOperateur profile) {
-		final List<Role> list = new ArrayList<>(ifoSecService.getBypass(profile.getVisaOperateur()));
-		Collections.sort(list);
-		return list;
+		if (securiteService instanceof ServiceSecuriteBypass) {
+			final ServiceSecuriteBypass securiteBypass = (ServiceSecuriteBypass) this.securiteService;
+			return securiteBypass.getBypass(profile.getVisaOperateur()).stream()
+					.sorted(Comparator.naturalOrder())
+					.collect(Collectors.toList());
+		}
+		else {
+			return Collections.emptyList();
+		}
 	}
 
 	private List<ProcedureSecurite> getProceduresAutres(ProfileOperateur profile) {
@@ -76,13 +81,8 @@ public class InfoSecuriteController {
 				.collect(Collectors.toList());
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceSecurite(ServiceSecuriteService serviceSecurite) {
-		this.serviceSecurite = serviceSecurite;
-	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setIfoSecService(IfoSecService ifoSecService) {
-		this.ifoSecService = ifoSecService;
+	public void setSecuriteService(ServiceSecuriteService securiteService) {
+		this.securiteService = securiteService;
 	}
 }

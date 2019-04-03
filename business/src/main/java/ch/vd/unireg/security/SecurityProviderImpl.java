@@ -10,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.type.Niveau;
 
 /**
@@ -24,7 +25,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	private static final String PREFIX_TEST_UNITAIRE = "[UT] ";
 
 	private SecuriteDossierService securiteDossierService;
-	private IfoSecService ifoSecService;
+	private ServiceSecuriteService securiteService;
 	private boolean bypassUnitTest;
 
 	/**
@@ -38,7 +39,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 			return role != Role.VISU_LIMITE;
 		}
 
-		return ifoSecService.isGranted(role, visaOperateur, codeCollectivite);
+		return securiteService.isGranted(role, visaOperateur, codeCollectivite);
 	}
 
 	/**
@@ -83,9 +84,8 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 		securiteDossierService = service;
 	}
 
-
-	public void setIfoSecService(IfoSecService ifosSecService) {
-		this.ifoSecService = ifosSecService;
+	public void setSecuriteService(ServiceSecuriteService securiteService) {
+		this.securiteService = securiteService;
 	}
 
 	@Override

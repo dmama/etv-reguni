@@ -36,6 +36,12 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<alias alias="serviceSecuriteService" name="serviceSecuriteCache"/>
+	<!-- Service de sécurité pour le dév qui permet de bypasser certains droits (voir propriété 'extprop.ifosec.debug') -->
+	<!-- (uniquement actif en compilant avec le profil maven 'dev') -->
+	<bean id="serviceSecurityDebug" class="ch.vd.unireg.interfaces.service.ServiceSecuriteDebug">
+		<property name="target" ref="serviceSecuriteCache"/>
+	</bean>
+
+	<alias alias="serviceSecuriteService" name="${securite-service-name}"/>
 
 </beans>

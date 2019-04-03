@@ -86,7 +86,7 @@
 
 	<bean id="securityDebugConfig" class="ch.vd.unireg.security.SecurityDebugConfig">
 		<property name="properties" ref="uniregExternalProperties" />
-		<property name="ifoSecService" ref="ifoSecService" />
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
 	<!-- ===================== HTTP REQUEST SECURITY ==================== -->
@@ -122,13 +122,9 @@
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 	</bean>
 
-	<bean id="ifoSecService" class="ch.vd.unireg.security.IfoSecServiceImpl">
-		<property name="securiteService" ref="serviceSecuriteService" />
-	</bean>
-	
 	<bean id="securityProviderImpl" class="ch.vd.unireg.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
 		<property name="securiteDossierService" ref="securiteDossierService" />
-		<property name="ifoSecService" ref="ifoSecService" />
+		<property name="securiteService" ref="serviceSecuriteService" />
 	</bean>
 
 	<bean id="securityProviderCache" class="ch.vd.unireg.security.SecurityProviderCache">

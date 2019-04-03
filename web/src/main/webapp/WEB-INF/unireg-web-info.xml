@@ -26,8 +26,7 @@
 	</bean>
 
 	<bean id="infoSecuriteController" class="ch.vd.unireg.admin.InfoSecuriteController">
-		<property name="serviceSecurite" ref="serviceSecuriteService" />
-		<property name="ifoSecService" ref="ifoSecService" />
+		<property name="securiteService" ref="serviceSecuriteService" />
 	</bean>
 
 </beans>

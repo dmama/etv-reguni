@@ -8,11 +8,52 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.ProcedureSecurite;
 import ch.vd.unireg.security.ProfileOperateur;
+import ch.vd.unireg.security.Role;
 
 public interface ServiceSecuriteService {
 
 	String SERVICE_NAME = "ServiceSecurite";
+
+	/**
+	 * Vérifie que l'opérateur spécifié possède le rôle spécifié.
+	 *
+	 * @param role
+	 *            le rôle dont on veut vérifier l'allocation.
+	 * @param visaOperateur
+	 *            le visa de l'opérateur
+	 * @param codeCollectivite
+	 *            le code de la collectivité de l'opérateur
+	 *
+	 * @return <b>vrai</b> si le rôle spécifié est alloué; <b>faux</b> autrement.
+	 */
+	default boolean isGranted(@NotNull Role role, @NotNull String visaOperateur, int codeCollectivite) {
+
+		final ProfileOperateur profile = getProfileUtilisateur(visaOperateur, codeCollectivite);
+		if (profile == null) {
+			// pas de profile, pas de droit
+			return false;
+		}
+
+		final List<ProcedureSecurite> procedures = profile.getProcedures();
+		if (procedures == null) {
+			// pas de procédure, pas de droit
+			return false;
+		}
+
+		for (ProcedureSecurite p : procedures) {
+			final String code = p.getCode();
+			final Role r = Role.fromIfoSec(code);
+			if (r == role) {
+				// c'est bon, la procédure est trouvée
+				return true;
+			}
+		}
+
+		// pas de procédure trouvée, pas de droit
+		return false;
+	}
 
 	/**
 	 * Retourne la liste des collectivités administrative d'un opérateur.

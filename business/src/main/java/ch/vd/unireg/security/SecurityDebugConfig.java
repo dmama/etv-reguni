@@ -2,20 +2,26 @@ package ch.vd.unireg.security;
 
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.common.EncodingFixHelper;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteBypass;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.utils.UniregProperties;
 
 /**
  * Permet de récupérer les informations de debug liées à la sécurité. Ces informations doivent être stockées dans un fichier properties.
  *
- * @author <a href="mailto:abenaissi@cross-systems.ch">Akram BEN AISSI</a>
+ * TODO (msi) à fusionner dans le ServiceSecuriteDebug
  */
 public class SecurityDebugConfig implements InitializingBean {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityDebugConfig.class);
+
 	public static UniregProperties properties;
-	private static String reloadEachTime;
 	private static boolean iamDebug;
 	private static String iamBypassApplication;
 	private static String iamBypassUser;
@@ -28,16 +34,8 @@ public class SecurityDebugConfig implements InitializingBean {
 	private static String ifoSecBypassProcedures;
 	private static boolean ifoSecBypassUnitTest;
 
-	private IfoSecService ifoSecService;
-
-	// Reload la sécurité
-	public static boolean isReloadEachTime() {
-		boolean reload = false;
-		if (reloadEachTime != null) {
-			reload = reloadEachTime.equals("true");
-		}
-		return reload;
-	}
+	@Nullable
+	private ServiceSecuriteBypass securityBypass;
 
 	// IAM
 	public static boolean isIamDebug() {
@@ -115,8 +113,10 @@ public class SecurityDebugConfig implements InitializingBean {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setIfoSecService(IfoSecService ifoSecService) {
-		this.ifoSecService = ifoSecService;
+	public void setServiceSecurite(ServiceSecuriteService serviceSecurite) {
+		if (serviceSecurite instanceof ServiceSecuriteBypass) {
+			this.securityBypass = (ServiceSecuriteBypass) serviceSecurite;
+		}
 	}
 
 	private String getStringProp(String key) {
@@ -137,7 +137,6 @@ public class SecurityDebugConfig implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (properties != null) {
-			reloadEachTime = getStringProp("extprop.security.reload.each.time");
 			iamDebug = getBooleanProp("extprop.iam.debug");
 			iamBypassApplication = getStringProp("extprop.iam.bypass.application");
 			iamBypassUser = getStringProp("extprop.iam.bypass.user");
@@ -146,22 +145,28 @@ public class SecurityDebugConfig implements InitializingBean {
 			iamBypassRoles = getStringProp("extprop.iam.bypass.roles");
 			ifoSecDebug = getBooleanProp("extprop.ifosec.debug");
 
-			if (ifoSecDebug) {
+			if (ifoSecDebug && securityBypass == null) {
+				LOGGER.warn("\n************************************************ Attention ********************************************************\n" +
+						            "* le debug de la sécurité est activé, mais l'application n'a pas été compilée avec le profil 'dev' => pas d'effet *\n" +
+						            "*******************************************************************************************************************");
+			}
+
+			if (ifoSecDebug && securityBypass != null) {
 				ifoSecBypassOID = getStringProp("extprop.ifosec.bypass.oid.no");
 				ifoSecBypassOIDSigle = getStringProp("extprop.ifosec.bypass.oid.sigle");
 				ifoSecBypassProcedures = getStringProp("extprop.ifosec.bypass.procedures");
 				ifoSecBypassUnitTest = getBooleanProp("extprop.ifosec.bypass.unittest");
 
 				// Bypass global
-				Integer oid = 0;
+				int oid = 0;
 				try {
-					oid = Integer.valueOf(ifoSecBypassOID);
+					oid = Integer.parseInt(ifoSecBypassOID);
 				}
 				catch (NumberFormatException e) {
 					// on ignore
 				}
 				IfoSecBypass globalBypass = new IfoSecBypass(oid, ifoSecBypassOIDSigle, ifoSecBypassProcedures);
-				ifoSecService.addBypass(globalBypass);
+				securityBypass.addBypass(globalBypass);
 
 				// Bypass par user
 				final Map<String, String> all = properties.getAllProperties();
@@ -170,7 +175,7 @@ public class SecurityDebugConfig implements InitializingBean {
 						String user = entry.getKey().substring("extprop.ifosec.bypass.procedures.".length());
 						String procedures = entry.getValue();
 						IfoSecBypass bypass = new IfoSecBypass(user, oid, ifoSecBypassOIDSigle, procedures);
-						ifoSecService.addBypass(bypass);
+						securityBypass.addBypass(bypass);
 					}
 				}
 			}
