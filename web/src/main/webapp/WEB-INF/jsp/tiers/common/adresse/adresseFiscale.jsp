@@ -32,7 +32,7 @@
 			</c:if>
 			<c:out value="${adresse.formattedCasePostale}"/>
 			<c:if test="${adresse.egid != null || adresse.ewid != null}">
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+				<authz:authorize access="hasAnyRole('VISU_ALL')">
 					<a href="#" class="consult staticTip" id="fis-${adresse.usage}-<unireg:regdate regdate="${adresse.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresse.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
 					<div id="fis-${adresse.usage}-<unireg:regdate regdate="${adresse.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresse.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
 						<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresse.egid != null}"><c:out value="${adresse.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>

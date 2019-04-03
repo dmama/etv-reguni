@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut LR -->
 <c:if test="${!command.tiers.annule}">
-	<authz:authorize access="hasAnyRole('ROLE_LR')">
+	<authz:authorize access="hasAnyRole('LR')">
 		<table border="0">
 			<tr>
 				<td>

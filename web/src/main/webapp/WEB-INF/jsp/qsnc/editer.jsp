@@ -83,7 +83,7 @@
 			<legend><span><fmt:message key="label.etats"/></span></legend>
 
 			<c:if test="${!depuisTache}">
-				<authz:authorize access="hasAnyRole('ROLE_QSNC_QUITTANCEMENT')">
+				<authz:authorize access="hasAnyRole('QSNC_QUITTANCEMENT')">
 					<table id="quittancerBouton" border="0">
 						<tr>
 							<td>
@@ -118,7 +118,7 @@
 					</display:column>
 					<display:column style="action">
 						<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
-						<authz:authorize access="hasAnyRole('ROLE_QSNC_QUITTANCEMENT')">
+						<authz:authorize access="hasAnyRole('QSNC_QUITTANCEMENT')">
 							<c:if test="${!etat.annule && etat.etat == 'RETOURNE'}">
 								<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
 								               action="/qsnc/annuler-quittance.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
@@ -152,7 +152,7 @@
 			</c:choose>
 
 			<!-- Bouton de rappel -->
-			<authz:authorize access="hasAnyRole('ROLE_QSNC_RAPPEL')">
+			<authz:authorize access="hasAnyRole('QSNC_RAPPEL')">
 				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.rappelable}">
 					<input type="button" value="<fmt:message key="label.bouton.rappeler"/>" class="button_to" onclick="return EnvoiRappel.execute(${questionnaire.id});"/>
 					<script type="application/javascript">
@@ -171,14 +171,14 @@
 			</authz:authorize>
 
 			<!-- Bouton d'impression de duplicata -->
-			<authz:authorize access="hasAnyRole('ROLE_QSNC_DUPLICATA')">
+			<authz:authorize access="hasAnyRole('QSNC_DUPLICATA')">
 				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.duplicable}">
 					<unireg:buttonTo name="Duplicata" action="/qsnc/duplicata.do" method="post" params='{id:${questionnaire.id}}'/>
 				</c:if>
 			</authz:authorize>
 
 			<!-- Bouton annulation de questionnaire -->
-			<authz:authorize access="hasAnyRole('ROLE_QSNC_EMISSION')">
+			<authz:authorize access="hasAnyRole('QSNC_EMISSION')">
 				<c:if test="${!questionnaire.annule}">
 					<c:if test="${tacheId == null}">
 						<unireg:buttonTo name="Annuler questionnaire" confirm="Voulez-vous vraiment annuler ce questionnaire SNC ?"
@@ -192,7 +192,7 @@
 			</authz:authorize>
 
 			<!-- Libération du questionnaire -->
-			<authz:authorize access="hasAnyRole('ROLE_QSNC_LIBERATION')">
+			<authz:authorize access="hasAnyRole('QSNC_LIBERATION')">
 			<c:if test="${questionnaire.liberable && !depuisTache}">
 				<input type="button" value="<fmt:message key="label.bouton.liberer.qsnc" />" onclick="return liberation.creerModalLiberation(${questionnaire.id},'bouton_liberer_di','/qsnc/liberer.do','Valider libération QSNC','Libération de Questionnaire SNC');">
 			</c:if>

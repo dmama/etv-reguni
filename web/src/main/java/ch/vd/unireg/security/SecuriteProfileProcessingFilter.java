@@ -76,7 +76,7 @@ public class SecuriteProfileProcessingFilter extends GenericFilterBean {
 				final String ifoSec = procedure.getCode();
 				final Role role = Role.fromIfoSec(ifoSec);
 				if (role != null) {
-					granted.add(new SimpleGrantedAuthority(role.getCode()));
+					granted.add(new SimpleGrantedAuthority("ROLE_" + role));    // voir DefaultWebSecurityExpressionHandler#defaultRolePrefix
 				}
 			}
 		}

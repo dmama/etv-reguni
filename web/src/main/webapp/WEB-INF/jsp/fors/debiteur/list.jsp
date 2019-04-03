@@ -15,7 +15,7 @@
 				<fieldset>
 					<legend><span><fmt:message key="label.fors.fiscaux" /></span></legend>
 
-					<authz:authorize access="hasAnyRole('ROLE_CREATE_DPI', 'ROLE_MODIF_FISCAL_DPI')">
+					<authz:authorize access="hasAnyRole('CREATE_MODIF_DPI', 'MODIF_FISCAL_DPI')">
 						<table border="0">
 							<tr class="<unireg:nextRowClass/>" >
 								<td>
@@ -54,7 +54,7 @@
 						<%-- Date de fermeture --%>
 						<display:column sortable ="true" titleKey="label.date.fer" sortProperty="dateFermeture">
 							<fmt:formatDate value="${forFiscal.dateFermeture}" pattern="dd.MM.yyyy"/>
-							<authz:authorize access="hasAnyRole('ROLE_CREATE_DPI', 'ROLE_MODIF_FISCAL_DPI')">
+							<authz:authorize access="hasAnyRole('CREATE_MODIF_DPI', 'MODIF_FISCAL_DPI')">
 								<c:if test="${forFiscal.dateFermeture != null && forFiscal.dernierForPrincipalOuDebiteur}">
 									<unireg:linkTo name="" action="/fors/debiteur/reopen.do" method="POST" params="{forId:${forFiscal.id}}" link_class="reOpen"
 									               title="Ré-ouvrir le for" confirm="Voulez-vous vraiment ré-ouvrir ce for fiscal ?" />
@@ -71,7 +71,7 @@
 
 						<%-- Actions --%>
 						<display:column style="action">
-							<authz:authorize access="hasAnyRole('ROLE_CREATE_DPI', 'ROLE_MODIF_FISCAL_DPI')">
+							<authz:authorize access="hasAnyRole('CREATE_MODIF_DPI', 'MODIF_FISCAL_DPI')">
 								<c:if test="${!forFiscal.annule}">
 									<c:if test="${forFiscal.dateFermeture == null}">
 										<unireg:linkTo name="" action="/fors/debiteur/edit.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />

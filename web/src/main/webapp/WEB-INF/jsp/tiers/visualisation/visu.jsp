@@ -45,7 +45,7 @@
 		<unireg:nextRowClass reset="1"/>
 
 		<c:if test="${layout == null || layout != 'dialog'}"> <%-- [SIFISC-6223] --%>
-			<authz:authorize access="hasAnyRole('ROLE_SUPERGRA')">
+			<authz:authorize access="hasAnyRole('SUPERGRA')">
 				<div style="position:relative;">
 					<div style="position:absolute; top:-1.5em; right:0;" class="noprint">
 						<a href="<c:url value="/supergra/entity/show.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
@@ -61,19 +61,19 @@
 		<!--onglets-->
 		<div id="tiersTabs">
 			<ul id="menuTiersTabs">
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_VISU_FORS')">
+				<authz:authorize access="hasAnyRole('VISU_ALL', 'VISU_FORS')">
 					<c:if test="${command.natureTiers != 'Etablissement'}">
 						<li id="fiscalTab">
 							<a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a>
 						</li>
 					</c:if>
 				</authz:authorize>
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+				<authz:authorize access="hasAnyRole('VISU_ALL')">
 					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 						<li id="civilTab">
 							<a href="#tabContent_civilTab">
 								<fmt:message key="label.civil"/>
-								<authz:authorize access="hasAnyRole('ROLE_MODIF_VD_ORD')">
+								<authz:authorize access="hasAnyRole('MODIF_VD_ORD')">
 									<c:if test="${command.withCanceledIndividu}">
 										<span class="ongletCivilAvecIndividuAnnule" title="<fmt:message key="label.individu.annule.tooltip"/>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 									</c:if>
@@ -85,7 +85,7 @@
 				<li id="adressesTab">
 					<a href="#tabContent_adressesTab"><fmt:message key="label.adresse" /></a>
 				</li>
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+				<authz:authorize access="hasAnyRole('VISU_ALL')">
 					<li id="complementsTab">
 						<a href="#tabContent_complementsTab"><fmt:message key="label.complements" /></a>
 					</li>
@@ -102,7 +102,7 @@
 					<li id="dossiersApparentesTab">
 						<a href="#tabContent_dossiersApparentesTab"><fmt:message key="label.dossiers.apparentes" /></a>
 					</li>
-					<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+					<authz:authorize access="hasAnyRole('VISU_ALL')">
 						<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
 							<li id="diTab">
 								<a href="#tabContent_diTab"><fmt:message key="label.di" /></a>
@@ -141,7 +141,7 @@
 
 				<unireg:ifEfacture>
 					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-						<authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_GEST_EFACTURE')">
+						<authz:authorize access="hasAnyRole('VISU_ALL', 'GEST_EFACTURE')">
 							<li id="efactureTab">
 								<a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
 							</li>
@@ -150,7 +150,7 @@
 				</unireg:ifEfacture>
 
 				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-					<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+					<authz:authorize access="hasAnyRole('VISU_ALL')">
 						<li id="etiquetteTab">
 							<a href="#tabContent_etiquetteTab"><span><fmt:message key="label.etiquettes"/></span></a>
 						</li>
@@ -158,28 +158,28 @@
 				</c:if>
 
 				<c:if test="${command.natureTiers == 'Entreprise'}">
-					<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+					<authz:authorize access="hasAnyRole('VISU_ALL')">
 						<li id="degrevementExoTab">
 							<a href="#tabContent_degrevementExoTab"><span><fmt:message key="label.degrevements.exonerations"/></span></a>
 						</li>
 					</authz:authorize>
 				</c:if>
 
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_REMARQUE_TIERS')">
+				<authz:authorize access="hasAnyRole('VISU_ALL', 'REMARQUE_TIERS')">
 					<li id="remarqueTab">
 						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab"><fmt:message key="label.remarques" /></a>
 					</li>
 				</authz:authorize>
 			</ul>
 
-			<authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_VISU_FORS')">
+			<authz:authorize access="hasAnyRole('VISU_ALL', 'VISU_FORS')">
 				<c:if test="${command.natureTiers != 'Etablissement'}">
 					<div id="tabContent_fiscalTab" class="situation_fiscale">
 						<jsp:include page="fiscal/fiscal.jsp"/>
 					</div>
 				</c:if>
 			</authz:authorize>
-			<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+			<authz:authorize access="hasAnyRole('VISU_ALL')">
 				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 					<div id="tabContent_civilTab" class="editTiers">
 						<jsp:include page="civil/civil.jsp"/>
@@ -189,7 +189,7 @@
 			<div id="tabContent_adressesTab" class="adresses">
 				<jsp:include page="adresse/adresse.jsp"/>
 			</div>
-			<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+			<authz:authorize access="hasAnyRole('VISU_ALL')">
 				<div id="tabContent_complementsTab" class="editTiers">
 					<jsp:include page="complement.jsp"/>
 				</div>
@@ -208,7 +208,7 @@
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="dossiers-apparentes.jsp"/>
 				</div>
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+				<authz:authorize access="hasAnyRole('VISU_ALL')">
 					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
 						<div id="tabContent_diTab" class="visuTiers">
 							<c:choose>
@@ -254,7 +254,7 @@
 
 			<unireg:ifEfacture>
 	            <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-	                <authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_GEST_EFACTURE')">
+	                <authz:authorize access="hasAnyRole('VISU_ALL', 'GEST_EFACTURE')">
 	                    <div id="tabContent_efactureTab" class="visuTiers">
 	                        <jsp:include page="efacture.jsp"/>
 	                    </div>
@@ -263,7 +263,7 @@
 			</unireg:ifEfacture>
 
 			<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+				<authz:authorize access="hasAnyRole('VISU_ALL')">
 					<div id="tabContent_etiquetteTab" class="visuTiers">
 						<jsp:include page="etiquette.jsp"/>
 					</div>
@@ -271,14 +271,14 @@
 			</c:if>
 
 			<c:if test="${command.natureTiers == 'Entreprise'}">
-				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+				<authz:authorize access="hasAnyRole('VISU_ALL')">
 					<div id="tabContent_degrevementExoTab" class="visuTiers">
 						<jsp:include page="pm/degrevement-exoneration/degrevement-exoneration.jsp"/>
 					</div>
 				</authz:authorize>
 			</c:if>
 
-            <authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_REMARQUE_TIERS')">
+            <authz:authorize access="hasAnyRole('VISU_ALL', 'REMARQUE_TIERS')">
 				<div id="tabContent_remarqueTab" class="visuTiers">
 						<jsp:include page="../common/remarque/remarques.jsp">
 							<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />

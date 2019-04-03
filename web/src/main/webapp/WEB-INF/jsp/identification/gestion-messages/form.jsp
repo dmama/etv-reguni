@@ -166,7 +166,7 @@
 			</c:when>		
 		
 			<c:otherwise>
-                <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_GEST_BO', 'ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_MW_IDENT_CTB_VISU')">
+                <authz:authorize access="hasAnyRole('MW_IDENT_CTB_GEST_BO', 'MW_IDENT_CTB_ADMIN', 'MW_IDENT_CTB_VISU')">
 
 
                     <tr class="<unireg:nextRowClass/>" >

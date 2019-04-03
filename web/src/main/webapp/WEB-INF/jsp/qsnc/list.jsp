@@ -10,7 +10,7 @@
 		<!-- Debut Caracteristiques generales -->
 		<fieldset>
 			<legend><span><fmt:message key="label.caracteristiques.questionnaires.snc" /></span></legend>
-			<authz:authorize access="hasAnyRole('ROLE_QSNC_EMISSION')">
+			<authz:authorize access="hasAnyRole('QSNC_EMISSION')">
 				<table border="0">
 					<tr><td>
 						<unireg:linkTo name="Ajouter" action="/qsnc/choisir.do" method="get" params="{tiersId:${command.ctbId},url_memorize:false}" title="Ajouter un questionnaire" link_class="add noprint"/>
@@ -46,7 +46,7 @@
 						</c:if>
 					</display:column>
 					<display:column style="action">
-						<authz:authorize access="hasAnyRole('ROLE_QSNC_RAPPEL', 'ROLE_QSNC_DUPLICATA', 'ROLE_QSNC_QUITTANCEMENT')">
+						<authz:authorize access="hasAnyRole('QSNC_RAPPEL', 'QSNC_DUPLICATA', 'QSNC_QUITTANCEMENT')">
 							<c:if test="${!qsnc.annule}">
 								<unireg:linkTo name="" action="/qsnc/editer.do" method="get" params="{id:${qsnc.id}}" title="Editer le questionnaire" link_class="edit"/>
 							</c:if>

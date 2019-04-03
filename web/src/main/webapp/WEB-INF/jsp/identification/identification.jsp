@@ -156,14 +156,14 @@
 
 			    <!-- Bouton de passage en expertise -->
 			    <c:if test="${!hideSoumissionExpertise}">
-				    <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_CELLULE_BO', 'ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_NCS_IDENT_CTB_CELLULE_BO', 'ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO')">
+				    <authz:authorize access="hasAnyRole('MW_IDENT_CTB_CELLULE_BO', 'MW_IDENT_CTB_ADMIN', 'NCS_IDENT_CTB_CELLULE_BO', 'LISTE_IS_IDENT_CTB_CELLULE_BO')">
 					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/soumettre-expertise.do" method="post" name="label.bouton.expertiser" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${messageData.id},source:'${source}'}"/>
 				    </authz:authorize>
 			    </c:if>
 
 			    <!-- Bouton de non-identification -->
 			    <c:if test="${!hideNonIdentifiable}">
-				    <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_GEST_BO', 'ROLE_MW_IDENT_CTB_ADMIN')">
+				    <authz:authorize access="hasAnyRole('MW_IDENT_CTB_GEST_BO', 'MW_IDENT_CTB_ADMIN')">
 					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/non-identifie.do" name="label.bouton.identification.impossible" method="get" params="{id:${messageData.id},source:'${source}'}"/>
 				    </authz:authorize>
 			    </c:if>

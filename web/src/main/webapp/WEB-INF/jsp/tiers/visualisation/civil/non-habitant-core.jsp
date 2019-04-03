@@ -9,7 +9,7 @@
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
-			<authz:authorize access="hasAnyRole('ROLE_MODIF_VD_ORD')">
+			<authz:authorize access="hasAnyRole('MODIF_VD_ORD')">
 				<c:set var="bindIndividu" value="command.${param.pathIndividu}" scope="request"/>
 				<spring:bind path="${bindIndividu}">
 					<c:if test="${status.value != null && status.value.canceled}">

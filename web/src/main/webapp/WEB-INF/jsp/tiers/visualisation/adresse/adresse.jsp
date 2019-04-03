@@ -16,7 +16,7 @@
 		</c:if>
 		</td>
 
-		<authz:authorize access="hasAnyRole('ROLE_SUPERGRA')">
+		<authz:authorize access="hasAnyRole('SUPERGRA')">
 			<td id="timeline" align="right">
 				<a href='<c:url value="/adresses/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>
 			</td>

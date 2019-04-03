@@ -12,7 +12,7 @@
 		<fieldset>
 			<legend><span><fmt:message key="caracteristiques.di" /></span></legend>
 			<c:if test="${command.ctbPP}">
-				<authz:authorize access="hasAnyRole('ROLE_DI_EMIS_PP')">
+				<authz:authorize access="hasAnyRole('DI_EMIS_PP')">
 					<table border="0">
 						<tr><td>
 							<unireg:linkTo name="Ajouter" action="/di/choisir-pp.do" method="get" params="{tiersId:${command.ctbId},url_memorize:false}" title="Ajouter une déclaration" link_class="add noprint"/>
@@ -21,7 +21,7 @@
 				</authz:authorize>
 			</c:if>
 			<c:if test="${command.ctbPM}">
-				<authz:authorize access="hasAnyRole('ROLE_DI_EMIS_PM')">
+				<authz:authorize access="hasAnyRole('DI_EMIS_PM')">
 					<table border="0">
 						<tr><td>
 							<unireg:linkTo name="Ajouter" action="/di/choisir-pm.do" method="get" params="{tiersId:${command.ctbId},url_memorize:false}" title="Ajouter une déclaration" link_class="add noprint"/>
@@ -67,12 +67,12 @@
 					</display:column>
 					<display:column style="action">
 						<c:if test="${di.diPP}">
-							<authz:authorize access="hasAnyRole('ROLE_DI_QUIT_PP', 'ROLE_DI_DELAI_PP', 'ROLE_DI_SOM_PP', 'ROLE_DI_DUPLIC_PP')">
+							<authz:authorize access="hasAnyRole('DI_QUIT_PP', 'DI_DELAI_PP', 'DI_SOM_PP', 'DI_DUPLIC_PP')">
 								<c:if test="${!di.annule}">
 									<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 								</c:if>
 							</authz:authorize>
-							<authz:authorize access="hasAnyRole('ROLE_DI_DESANNUL_PP')">
+							<authz:authorize access="hasAnyRole('DI_DESANNUL_PP')">
 								<c:if test="${di.annule}">
 									<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler-pp.do" method="post" params="{id:${di.id}}"
 									               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
@@ -80,12 +80,12 @@
 							</authz:authorize>
 						</c:if>
 						<c:if test="${di.diPM}">
-							<authz:authorize access="hasAnyRole('ROLE_DI_QUIT_PM', 'ROLE_DI_DELAI_PM', 'ROLE_DI_SOM_PM', 'ROLE_DI_DUPLIC_PM', 'ROLE_DI_SUPENDRE_PM', 'ROLE_DI_DESUPENDRE_PM')">
+							<authz:authorize access="hasAnyRole('DI_QUIT_PM', 'DI_DELAI_PM', 'DI_SOM_PM', 'DI_DUPLIC_PM', 'DI_SUSPENDRE_PM', 'DI_DESUSPENDRE_PM')">
 								<c:if test="${!di.annule}">
 									<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 								</c:if>
 							</authz:authorize>
-							<authz:authorize access="hasAnyRole('ROLE_DI_DESANNUL_PM')">
+							<authz:authorize access="hasAnyRole('DI_DESANNUL_PM')">
 								<c:if test="${di.annule}">
 									<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler-pm.do" method="post" params="{id:${di.id}}"
 									               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
