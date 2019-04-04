@@ -3,7 +3,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<tiles:put name="title">Détails IFOSec de l'utilisateur <authz:authentication property="principal.username"/></tiles:put>
+	<tiles:put name="title">Détails des procédures de l'utilisateur <authz:authentication property="principal.username"/></tiles:put>
 
 	<tiles:put name="body">
 

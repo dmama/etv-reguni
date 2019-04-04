@@ -17,17 +17,22 @@ import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
 
 /**
- * Ce contrôleur affiche des informations sur les procédures Ifosec allouées sur l'utilisateur courant. Il est donc en read-only.
+ * Ce contrôleur affiche des informations sur les procédures de sécurité allouées sur l'utilisateur courant. Il est donc en read-only.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @Controller
-public class InfoIFOSecController {
+public class InfoSecuriteController {
 
 	private ServiceSecuriteService serviceSecurite;
 	private IfoSecService ifoSecService;
 
 	@RequestMapping(value = "/admin/ifosec.do")
+	public String index() {
+		return "redirect:securite.do";
+	}
+
+	@RequestMapping(value = "/admin/securite.do")
 	public String index(Model mav) {
 
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
@@ -50,7 +55,7 @@ public class InfoIFOSecController {
 		mav.addAttribute("proceduresAutres", proceduresAutres);
 		mav.addAttribute("roles", Role.values());
 
-		return "admin/ifosec";
+		return "admin/securite";
 	}
 
 	private List<ProcedureSecurite> getProceduresUnireg(ProfileOperateur profile) {
