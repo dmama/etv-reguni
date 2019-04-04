@@ -34,7 +34,7 @@ let liberation = {'liberation': {}};
 		let form = popUpDialog.find('#formLiberation');
 		let motif = form.find('textarea[id=motifValue]').val();
 		if (motif === null || motif === "") {
-			alert('Veuillez préciser le motif de liberation de la DI');
+			alert('Veuillez préciser le motif de libération');
 		}
 		else {
 			var buttons = $('.ui-button');
