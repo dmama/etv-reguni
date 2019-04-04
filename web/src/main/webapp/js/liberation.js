@@ -33,7 +33,7 @@ let liberation = {'liberation': {}};
 
 		let form = popUpDialog.find('#formLiberation');
 		let motif = form.find('textarea[id=motifValue]').val();
-		if (motif === null || motif === "") {
+		if (!motif ||motif.length === 0 || !motif.trim()) {
 			alert('Veuillez préciser le motif de libération');
 		}
 		else {
