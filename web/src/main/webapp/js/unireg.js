@@ -3073,7 +3073,7 @@ var Decl = {
 		let html = ' ';
 		if (liberations && liberations.length > 0) {
 			//var info = '<fieldset class="information"><legend><span>Caractéristiques du document fiscal</span></legend>';
-			html = '<fieldset><legend><span>Liberation</span></legend>';
+			html = '<fieldset><legend><span>Libération</span></legend>';
 			html +=
 				'<table id="liberation" class="display"><thead>' +
 					'<tr>' +
