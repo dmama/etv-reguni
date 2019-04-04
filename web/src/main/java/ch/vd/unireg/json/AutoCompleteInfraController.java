@@ -8,7 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -157,8 +160,8 @@ public class AutoCompleteInfraController {
 
 		if (categories.contains(InfraCategory.COLLECTIVITE_ADMINISTRATIVE)) {
 			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(
-					Arrays.asList(TypeCollectivite.SIGLE_ACI,TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD,TypeCollectivite.SIGLE_ACIPP,TypeCollectivite.SIGLE_CIR,
-							TypeCollectivite.SIGLE_S_ACI));
+					Arrays.asList(TypeCollectivite.SIGLE_ACI, TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD, TypeCollectivite.SIGLE_ACIPP, TypeCollectivite.SIGLE_CIR,
+					              TypeCollectivite.SIGLE_S_ACI));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
 					if (StringComparator.toLowerCaseWithoutAccent(c.getNomCourt()).startsWith(term)) {
@@ -172,7 +175,7 @@ public class AutoCompleteInfraController {
 			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Collections.singletonList(TypeCollectivite.SIGLE_JPAIX));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
-					final String nomComplet = String.format("%s %s", c.getNomComplet1(), c.getNomComplet2());
+					final String nomComplet = Stream.of(c.getNomComplet1(), c.getNomComplet2()).filter(StringUtils::isNotEmpty).collect(Collectors.joining(" "));
 					if (StringComparator.toLowerCaseWithoutAccent(nomComplet).startsWith(term)) {
 						list.add(new AutoCompleteItem(nomComplet, nomComplet, String.valueOf(c.getNoColAdm())));
 					}
