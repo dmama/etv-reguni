@@ -4,6 +4,7 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.DocumentFiscal;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.LiberationDocumentFiscal;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.DonneeCivileEntreprise;
 
@@ -19,6 +20,7 @@ public enum EntityType {
 	DocumentFiscal(DocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal"),
 	EtatDocument(EtatDocumentFiscal.class, "état du document", "l'état du document", "de l'état du document"),
 	DelaiDocument(DelaiDocumentFiscal.class, "délai du document", "le délai du document", "du délai du document"),
+	LiberationDocument(LiberationDocumentFiscal.class, "libération du document", "libération du document", "de la libération du document"),
 	RapportEntreTiers(ch.vd.unireg.tiers.RapportEntreTiers.class, "rapport entre tiers", "le rapport entre tiers", "du rapport en tiers"),
 	IdentificationPersonne(ch.vd.unireg.tiers.IdentificationPersonne.class, "identification de personne", "l'identification de personne", "de l'identification de personne"),
 	IdentificationEntreprise(ch.vd.unireg.tiers.IdentificationEntreprise.class, "identification d'entreprise", "l'identification d'entreprise", "de l'identification d'entreprise"),
