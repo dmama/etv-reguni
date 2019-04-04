@@ -2,22 +2,22 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="ifoSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+	<bean id="refSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
 		<constructor-arg value="true" />
-		<constructor-arg value="refSecClientPool-Web" />
+		<constructor-arg value="refSecWebClientPool" />
 		<property name="baseUrl" value="${testprop.ref.securite.webservice.url}" />
 		<property name="username" value="${testprop.ref.securite.webservice.username}" />
 		<property name="password" value="${testprop.ref.securite.webservice.password}" />
 	</bean>
 
-	<bean id="clientrefsecraw" class="ch.vd.unireg.wsclient.refsec.RefSecClientImpl">
-		<property name="wcPool" ref="ifoSecWebClientPool" />
+	<bean id="refSecClientRaw" class="ch.vd.unireg.wsclient.refsec.RefSecClientImpl">
+		<property name="wcPool" ref="refSecWebClientPool" />
 		<property name="appName" value="${testprop.ref.securite.webservice.appName}" />
 		<property name="wsResourcePath" value="${testprop.ref.securite.webservice.ws.path}" />
 		<property name="pingResourcePath" value="${testprop.ref.securite.webservice.health.path}" />
 		<property name="userResourcePath" value="${testprop.ref.securite.webservice.ws.users}" />
 	</bean>
 
-	<alias name="clientrefsecraw" alias="refSecClient" />
+	<alias alias="refSecClient" name="refSecClientRaw" />
 
 </beans>

@@ -2,9 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="ifoSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+	<bean id="refSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
 		<constructor-arg value="true" />
-		<constructor-arg value="refSecClientPool-Web" />
+		<constructor-arg value="refSecWebClientPool" />
 		<property name="baseUrl" value="${extprop.ref.securite.webservice.url}" />
 		<property name="username" value="${extprop.ref.securite.webservice.username}" />
 		<property name="password" value="${extprop.ref.securite.webservice.password}" />
@@ -16,7 +16,7 @@
 	</bean>
 
 	<bean id="refSecClientRaw" class="ch.vd.unireg.wsclient.refsec.RefSecClientImpl">
-		<property name="wcPool" ref="ifoSecWebClientPool" />
+		<property name="wcPool" ref="refSecWebClientPool" />
 		<property name="appName" value="${extprop.ref.securite.webservice.appName}" />
 		<property name="wsResourcePath" value="${extprop.ref.securite.webservice.ws.path}" />
 		<property name="pingResourcePath" value="${extprop.ref.securite.webservice.health.path}" />
