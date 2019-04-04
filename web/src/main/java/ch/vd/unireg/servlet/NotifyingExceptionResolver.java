@@ -61,7 +61,7 @@ public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ord
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
 		boolean ignoreException = (ex instanceof ObjectNotFoundException // exception levée lorsque l'utilisateur entre des données erronées
-								|| ex instanceof AccessDeniedException   // exception levée lorsque l'utilisateur ne possède par de profil IfoSec
+								|| ex instanceof AccessDeniedException   // exception levée lorsque l'utilisateur ne possède par de profil de sécurité
 								|| ex instanceof ActionException         // exception catchée gracieusement au niveau de la classe de base des contrôleurs
 								|| ex instanceof ValidationException);   // exception catchée gracieusement au niveau de la classe de base des contrôleurs
 

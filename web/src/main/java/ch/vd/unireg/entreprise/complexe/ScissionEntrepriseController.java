@@ -56,7 +56,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 	private SearchTiersComponent searchResultanteComponent;
 
 	private void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de scission d'entreprise.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe de scission d'entreprise.",
 		                Role.SCISSION_ENTREPRISE);
 	}
 

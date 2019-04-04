@@ -57,7 +57,7 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	private static final String TABLE_NAME = "tableEvtsEch";
 	private static final int PAGE_SIZE = 25;
 	private static final String DEFAULT_FIELD = "id";
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements civils";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de gestion des événements civils";
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 
 	private TiersMapHelper tiersMapHelper;

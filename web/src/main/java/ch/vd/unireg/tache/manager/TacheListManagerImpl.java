@@ -265,7 +265,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		}
 
 		if (coreCriteria.getOid() == null) { //l'utilisateur a choisit TOUS =>  Filtre sur les OID de l'utilisateur
-			if (!SecurityDebugConfig.isIfoSecDebug()) {
+			if (!SecurityDebugConfig.isSecurityDebug()) {
 
 				// [SIFISC-22880] si l'utilisateur est loggué dans la collectivité 22, "Tous" signifie "Tous", non-limité aux
 				// collectivités dans lesquelles l'utilisateur à des droits

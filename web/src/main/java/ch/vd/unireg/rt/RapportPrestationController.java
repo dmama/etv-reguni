@@ -50,8 +50,8 @@ public class RapportPrestationController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationController.class);
 
-	public static final String DROIT_CONSULTATION_RT = "vous ne possédez pas le droit IfoSec de consultation des rapports de prestations imposables";
-	public static final String DROIT_MODIFICATION_RT = "vous ne possédez pas le droit IfoSec de modification des rapports de prestations imposables";
+	public static final String DROIT_CONSULTATION_RT = "vous ne possédez pas les droits de consultation des rapports de prestations imposables";
+	public static final String DROIT_MODIFICATION_RT = "vous ne possédez pas les droits de modification des rapports de prestations imposables";
 
 	private static final String TABLE_NAME = "rapportPrestation";
 	private static final int PAGE_SIZE = 10;

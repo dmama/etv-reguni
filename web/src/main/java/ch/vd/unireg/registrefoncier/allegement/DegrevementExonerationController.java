@@ -1320,7 +1320,7 @@ public class DegrevementExonerationController {
 	public String ajouterDelai(@Valid @ModelAttribute("ajouterDelai") final AjouterDelaiDocumentFiscalView view, BindingResult result) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une demande de dégrèvement ICI");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'une demande de dégrèvement ICI");
 		}
 
 		final Long id = view.getIdDocumentFiscal();
@@ -1357,7 +1357,7 @@ public class DegrevementExonerationController {
 	public String annulerDelai(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une demande de dégrèvement ICI.");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'une demande de dégrèvement ICI.");
 		}
 
 		final DelaiDocumentFiscal delai = (DelaiDocumentFiscal) sessionFactory.getCurrentSession().get(DelaiDocumentFiscal.class, id);
@@ -1381,7 +1381,7 @@ public class DegrevementExonerationController {
 	public String ajouterQuittance(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des demandes de dégrèvement ICI.");
 		}
 
 		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
@@ -1407,7 +1407,7 @@ public class DegrevementExonerationController {
 	public String ajouterQuittance(@Valid @ModelAttribute("ajouterQuittance") final AjouterQuittanceDocumentFiscalView view, BindingResult result) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des demandes de dégrèvement ICI.");
 		}
 
 		if (result.hasErrors()) {
@@ -1442,7 +1442,7 @@ public class DegrevementExonerationController {
 	public String annulerQuittancement(@RequestParam("id") final long id) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des demandes de dégrèvement ICI.");
 		}
 
 		// Vérifie les paramètres
@@ -1471,7 +1471,7 @@ public class DegrevementExonerationController {
 	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
@@ -1496,7 +1496,7 @@ public class DegrevementExonerationController {
 	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des demandes de dégrèvement ICI.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de désannulation des demandes de dégrèvement ICI.");
 		}
 
 		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
@@ -1533,7 +1533,7 @@ public class DegrevementExonerationController {
 	                                                   HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de demande de dégrèvement.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour imprimer des duplicata de demande de dégrèvement.");
 		}
 
 		final DemandeDegrevementICI doc = getDemandeDegrevement(id);

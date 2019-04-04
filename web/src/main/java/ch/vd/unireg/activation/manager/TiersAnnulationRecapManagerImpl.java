@@ -87,7 +87,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 
 			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
 			if (!droitOk) {
-				throw new AccessDeniedException("Vous ne possédez pas les droit IfoSec d'annulation/désactivation des tiers de nature " + tiers.getNatureTiers());
+				throw new AccessDeniedException("Vous ne possédez par les droits d'annulation/désactivation des tiers de nature " + tiers.getNatureTiers());
 			}
 
 			if (tiersAnnulationRecapView.getNumeroTiersRemplacant() != null) {

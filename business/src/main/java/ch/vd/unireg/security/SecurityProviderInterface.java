@@ -7,7 +7,7 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.Niveau;
 
 /**
- * Interface du provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers).
+ * Interface du provider de sécurité qui regroupe la sécurité fiscale (procédures) et celle d'Unireg (accès aux dossiers).
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

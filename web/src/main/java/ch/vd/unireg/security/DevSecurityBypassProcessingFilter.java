@@ -29,7 +29,7 @@ import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
- * Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties.
+ * Filtre qui permet de bypasser en développement la sécurité IAM/RefSec en fonction des paramètres du fichier unireg.properties.
  */
 public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
@@ -40,14 +40,14 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-		if (AuthenticationHelper.getAuthentication() == null && (SecurityDebugConfig.isIamDebug() || SecurityDebugConfig.isIfoSecDebug())) {
+		if (AuthenticationHelper.getAuthentication() == null && (SecurityDebugConfig.isIamDebug() || SecurityDebugConfig.isSecurityDebug())) {
 
 			final String environnement = UniregModeHelper.getEnvironnement();
 			if (!DEV_ENVS.contains(environnement)) {
-				LOGGER.warn("Le bypass des fonctionnalités de sécurité n'est disponible qu'en développement. Aucune fonction bypassée.");
+				LOGGER.warn("Le bypass de la sécurité n'est disponible qu'en développement. Aucune fonction bypassée.");
 			}
 			else if (!SecurityDebugConfig.isIamDebug()) {
-				LOGGER.warn("Le bypass des fonctionnalités IFOSec nécessite l'activation du bypass des fonctionnalités d'IAM. Aucune fonction bypassée.");
+				LOGGER.warn("Le bypass de la sécurité nécessite l'activation du bypass des fonctionnalités d'IAM. Aucune fonction bypassée.");
 			}
 			else {
 
@@ -71,19 +71,19 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 				final List<GrantedAuthority> granted = new ArrayList<>();
 				granted.add(new SimpleGrantedAuthority(visa));
 
-				if (SecurityDebugConfig.isIfoSecDebug()) {
-					// Récupération des infos de bypass IFOSec
-					final Integer oid = Integer.valueOf(SecurityDebugConfig.getIfoSecBypassOID());
-					final String oidSigle = SecurityDebugConfig.getIfoSecBypassOIDSigle();
+				if (SecurityDebugConfig.isSecurityDebug()) {
+					// Récupération des infos de bypass de sécurité
+					final Integer oid = Integer.valueOf(SecurityDebugConfig.getSecurityBypassOID());
+					final String oidSigle = SecurityDebugConfig.getSecurityBypassOIDSigle();
 					final ProfileOperateur profil = getBypassProfil(visa, oid, oidSigle);
-					final List<GrantedAuthority> ifoSecGranted = SecuriteProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
+					final List<GrantedAuthority> grantedAuthorities = SecuriteProfileProcessingFilter.getGrantedAuthorities(profil);
 
 					details.setOID(oid);
 					details.setOIDSigle(oidSigle);
 					details.setProfil(profil);
-					granted.addAll(ifoSecGranted);
+					granted.addAll(grantedAuthorities);
 
-					LOGGER.info(String.format("[BYPASS IFOSec] Choix de l'OID %d (%s) pour l'utilisateur %s %s", oid, oidSigle, firstName, lastName));
+					LOGGER.info(String.format("[BYPASS Sécurité] Choix de l'OID %d (%s) pour l'utilisateur %s %s", oid, oidSigle, firstName, lastName));
 				}
 
 				// On peut maintenant enregistrer le context de sécurité
@@ -101,12 +101,12 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 	private static ProfileOperateur getBypassProfil(String visa, Integer oid, String oidSigle) {
 
 		// Les procédures
-		final String procedureStr = SecurityDebugConfig.getIfoSecBypassProcedures(visa);
+		final String procedureStr = SecurityDebugConfig.getSecurityBypassProcedures(visa);
 
 		final Stream<String> codesStream;
 		if ("ALL".equals(procedureStr)) {
 			codesStream = Arrays.stream(Role.values())
-					.map(Role::getIfosecCode);
+					.map(Role::getCodeProcedure);
 		}
 		else {
 			codesStream = Arrays.stream(procedureStr.split("[, ]"))

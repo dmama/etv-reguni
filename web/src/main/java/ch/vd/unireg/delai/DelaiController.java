@@ -67,17 +67,17 @@ public class DelaiController {
 		final Declaration declaration = delai.getDeclaration();
 		if (declaration instanceof DeclarationImpotOrdinairePP) {
 			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-				throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des délais sur les déclarations d'impôt des personnes physiques.");
 			}
 		}
 		else if (declaration instanceof DeclarationImpotOrdinairePM) {
 			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-				throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes morales.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des délais sur les déclarations d'impôt des personnes morales.");
 			}
 		}
 		else if (declaration instanceof DeclarationImpotSource) {
 			if (!SecurityHelper.isGranted(securityProvider, Role.LR)) {
-				throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des listes récapitulatives.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des listes récapitulatives.");
 			}
 		}
 		else if (declaration == null) {

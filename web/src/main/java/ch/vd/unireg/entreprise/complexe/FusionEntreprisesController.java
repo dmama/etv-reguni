@@ -58,7 +58,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	private SearchTiersComponent searchAbsorbeeComponent;
 
 	private void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de fusion d'entreprises.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe de fusion d'entreprises.",
 		                Role.FUSION_ENTREPRISES);
 	}
 

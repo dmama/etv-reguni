@@ -222,7 +222,7 @@ public class RapportController {
 		// checks de sécurité
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 		if (!autorisationManager.isEditAllowed(tiers)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur ce tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des rapports-entre-tiers sur ce tiers");
 		}
 
 		model.addAttribute("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
@@ -276,7 +276,7 @@ public class RapportController {
 		controllerUtils.checkAccesDossierEnLecture(numeroTiers);
 		controllerUtils.checkAccesDossierEnLecture(numeroTiersLie);
 		if (!autorisationManager.isEditAllowed(tiers)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + numeroTiers);
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des rapports-entre-tiers sur le tiers n°" + numeroTiers);
 		}
 
 		//vérification des droits de création de rapport entre tiers non travail par rapportEditManager
@@ -320,7 +320,7 @@ public class RapportController {
 		controllerUtils.checkAccesDossierEnEcriture(numeroTiers);
 		controllerUtils.checkAccesDossierEnEcriture(numeroTiersLie);
 		if (!autorisationManager.isEditAllowed(tiers)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + numeroTiers);
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des rapports-entre-tiers sur le tiers n°" + numeroTiers);
 		}
 
 		try {
@@ -364,7 +364,7 @@ public class RapportController {
 		controllerUtils.checkAccesDossierEnLecture(objetId);
 		controllerUtils.checkAccesDossierEnLecture(sujetId);
 		if (!rapportEditManager.isEditionAllowed(idRapport, sens)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + objetId + " et le tiers n°" + sujetId);
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition du rapport-entre-tiers entre le tiers n°" + objetId + " et le tiers n°" + sujetId);
 		}
 
 		final RapportView rapportView = rapportEditManager.get(idRapport, sens);
@@ -405,7 +405,7 @@ public class RapportController {
 		controllerUtils.checkAccesDossierEnEcriture(numeroTiers);
 		controllerUtils.checkAccesDossierEnEcriture(numeroTiersLie);
 		if (!rapportEditManager.isEditionAllowed(view.getId(), view.getSensRapportEntreTiers())) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + numeroTiers + " et le tiers n°" + numeroTiersLie);
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition du rapport-entre-tiers entre le tiers n°" + numeroTiers + " et le tiers n°" + numeroTiersLie);
 		}
 
 		try {
@@ -527,7 +527,7 @@ public class RapportController {
 		controllerUtils.checkAccesDossierEnEcriture(objetId);
 
 		if (!rapportEditManager.isEditionAllowed(rapportId, sens)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + objetId + " et le tiers n°" + sujetId);
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition du rapport-entre-tiers entre le tiers n°" + objetId + " et le tiers n°" + sujetId);
 		}
 
 		// annulation du rapport
@@ -566,7 +566,7 @@ public class RapportController {
 	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les rapports entre tiers d'un contribuable");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour visualiser les rapports entre tiers d'un contribuable");
 		}
 
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
@@ -609,7 +609,7 @@ public class RapportController {
 	public RapportsPage parentes(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les parentés d'un contribuable");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour visualiser les parentés d'un contribuable");
 		}
 
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
@@ -639,7 +639,7 @@ public class RapportController {
 	public List<DebiteurView> debiteurs(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour visualiser les immeubles d'un contribuable");
 		}
 
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
@@ -670,7 +670,7 @@ public class RapportController {
 	                                   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les établissements d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour visualiser les établissements d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnLecture(tiersId);

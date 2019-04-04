@@ -10,7 +10,7 @@
           http://www.springframework.org/schema/aop
           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
+	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/RefSec en fonction des paramètres du fichier unireg.properties -->
 	<bean id="bypassSecurityFilter" class="ch.vd.unireg.security.DevSecurityBypassProcessingFilter" />
 
 	<!-- Bean qui permet d'utiliser le champ 'access' dans les tags authz:authorize -->
@@ -53,7 +53,7 @@
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
-	<!-- Récupère le profil IFOSec et le stocke dans le context de sécurité -->
+	<!-- Récupère le profil de sécurité et le stocke dans le context de sécurité -->
 	<bean id="securiteProfileFilter" class="ch.vd.unireg.security.SecuriteProfileProcessingFilter">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>

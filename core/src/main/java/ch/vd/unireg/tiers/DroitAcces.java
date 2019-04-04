@@ -23,7 +23,7 @@ import ch.vd.unireg.type.TypeDroitAcces;
  * Représente l'autorisation ou l'interdiction d'accès entre un opérateur (représenté par son numéro d'individu) et un dossier (représenté
  * par son contribuable personne physique ou d'entreprise).
  * <p>
- * La sécurité des dossiers est une couche spécialisée qui s'ajoute au contrôle d'accès fait par IFOSEC. IFOSEC gère le contrôle d'accès de
+ * La sécurité des dossiers est une couche spécialisée qui s'ajoute au contrôle d'accès fait par RefSec. RefSec gère le contrôle d'accès de
  * manière global sur l'application en fonction de l'opérateur connecté, alors que le contrôle des dossiers gère l'accès particuliers à
  * certains dossiers sensibles (personnes célèbres, politiciens, forfaits fiscaux, ...). Il est recommendé de lire les spécifications
  * "Vérifier l'accès d'un dossier", "Gérer l'accès à un dossier" et "Tenir le registre des tiers" avant toutes choses.
@@ -31,7 +31,7 @@ import ch.vd.unireg.type.TypeDroitAcces;
  * Le principe base est que pour une personne physique :
  * <ul>
  * <li><b>sans autorisation ni interdiction</b> : tous les opérateurs peuvent y accèder en lecture et en écriture (pour autant que les
- * droits IFOSEC le permettent)</li>
+ * droits RefSec le permettent)</li>
  * <li><b>avec des droits d'accès de type 'autorisation'</b> : seuls les opérateurs autorisés peuvent y accéder. Les autres opérateurs
  * perdent implicitement le droit d'accès.</li>
  * <li><b>avec des droits d'accès de type 'interdiction'</b> : les opérateurs spécifiés perdent le droit d'accès. Les autres opérateurs ne

@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.efacture.manager.EfactureManager;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
@@ -53,19 +53,19 @@ public class EFactureController implements MessageSourceAware {
 
 	private static void checkDroitVisuEfacture(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.GEST_EFACTURE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour visualiser l'historique e-facture d'un contribuable");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour visualiser l'historique e-facture d'un contribuable");
 		}
 	}
 
 	private static void checkDroitGestionaireEfacture(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_EFACTURE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour interagir avec les états e-facture d'un contribuable");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour interagir avec les états e-facture d'un contribuable");
 		}
 	}
 
 	private static void checkDroitQuittanceurEnSerie(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_EFACTURE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les retours de confirmation d'inscription e-Facture");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour gérer les retours de confirmation d'inscription e-Facture");
 		}
 	}
 

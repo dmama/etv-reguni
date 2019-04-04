@@ -66,7 +66,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		final List<ProcedureSecurite> procedures = new ArrayList<>();
 		if (roles != null) {
 			for (Role r : roles) {
-				procedures.add(new ProcedureSecuriteImpl(r.getIfosecCode(), null));
+				procedures.add(new ProcedureSecuriteImpl(r.getCodeProcedure(), null));
 			}
 		}
 

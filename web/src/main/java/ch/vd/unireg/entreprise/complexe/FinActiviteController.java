@@ -29,7 +29,7 @@ public class FinActiviteController extends AbstractProcessusComplexeRechercheCon
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de fin d'activité d'entreprise.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe de fin d'activité d'entreprise.",
 		                Role.FIN_ACTIVITE_ENTREPRISE);
 	}
 

@@ -115,7 +115,7 @@ public class CivilEtablissementEditController {
 		if (tiers instanceof Etablissement) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 			}
 			checkEditionAutorisee((Etablissement) tiers);
 			final EtablissementView view = entrepriseService.getEtablissement((Etablissement) tiers);
@@ -149,7 +149,7 @@ public class CivilEtablissementEditController {
 
 		final Autorisations auth = getAutorisations(tiers);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 		}
 
 		return showRaisonSociale(model, new EditRaisonEnseigneEtablissementView((Etablissement) tiers));
@@ -176,7 +176,7 @@ public class CivilEtablissementEditController {
 		final Etablissement etablissement = (Etablissement) tiers;
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 		}
 
 		checkEditionAutorisee((Etablissement) tiers);
@@ -199,7 +199,7 @@ public class CivilEtablissementEditController {
 
 		final Autorisations auth = getAutorisations(tiers);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 		}
 
 		model.addAttribute("command", new EditEnseigneEtablissementView((Etablissement) tiers));
@@ -223,7 +223,7 @@ public class CivilEtablissementEditController {
 		final Etablissement etablissement = (Etablissement) tiers;
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 		}
 
 		etablissement.setEnseigne(LiteralStringHelper.stripExtraSpacesAndBlanks(view.getEnseigne()));
@@ -241,7 +241,7 @@ public class CivilEtablissementEditController {
 
 		final Autorisations auth = getAutorisations(tiers);
 		if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 		}
 
 		return showEditIdeEtablissement(model, new ContribuableInfosEntrepriseView((Etablissement) tiers), id);
@@ -274,7 +274,7 @@ public class CivilEtablissementEditController {
 
 		final Autorisations auth = getAutorisations(tiers);
 		if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {      // FIXME: Et aussi IDE?
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'etablissements.");
 		}
 		tiersService.setIdentifiantEntreprise((Etablissement) tiers, StringUtils.trimToNull(view.getIde()));
 
@@ -295,7 +295,7 @@ public class CivilEtablissementEditController {
 		final Etablissement etablissement = (Etablissement) tiers;
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de domiciles.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de domiciles.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -325,7 +325,7 @@ public class CivilEtablissementEditController {
 		final Etablissement etablissement = (Etablissement) tiers;
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de domiciles.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de domiciles.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -344,7 +344,7 @@ public class CivilEtablissementEditController {
 
 		final Autorisations auth = getAutorisations(domicile.getEtablissement());
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de domiciles.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de domiciles.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
 		return showEditDomicile(model, new DomicileView.Edit(domicile, peutEditerDateFin));
@@ -372,7 +372,7 @@ public class CivilEtablissementEditController {
 		final Etablissement etablissement = domicile.getEtablissement();
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de domiciles.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de domiciles.");
 		}
 
 		if (!domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale()) || domicile.getDateFin() != view.getDateFin()) {
@@ -409,7 +409,7 @@ public class CivilEtablissementEditController {
 
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de domiciles.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de suppression de domiciles.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(etablissement.getNumero());

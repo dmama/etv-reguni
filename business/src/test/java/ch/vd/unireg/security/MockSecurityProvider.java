@@ -15,7 +15,7 @@ import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.type.Niveau;
 
 /**
- * Mock du service de SecurityProvider (qui ne s'occupe pour le moment que des droits ifosec)
+ * Mock du service de SecurityProvider (qui ne s'occupe pour le moment que des rôles)
  */
 public class MockSecurityProvider implements SecurityProviderInterface {
 

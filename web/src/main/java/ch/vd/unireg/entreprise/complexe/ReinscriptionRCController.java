@@ -32,7 +32,7 @@ public class ReinscriptionRCController extends AbstractProcessusComplexeRecherch
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de ré-inscription au RC d'une entreprise radiée.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe de ré-inscription au RC d'une entreprise radiée.",
 		                Role.REINSCRIPTION_RC_ENTREPRISE);
 	}
 

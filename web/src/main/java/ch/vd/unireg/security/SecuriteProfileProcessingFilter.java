@@ -23,7 +23,7 @@ import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 
 /**
- * Ce filtre est utilisé pour récupérer le profile IFOSec de l'utilisateur connecté et le stocker dans le context de sécurité. Il ne fait aucun contrôle d'accès par lui-même.
+ * Ce filtre est utilisé pour récupérer le profil de sécurité de l'utilisateur connecté et le stocker dans le context de sécurité. Il ne fait aucun contrôle d'accès par lui-même.
  */
 public class SecuriteProfileProcessingFilter extends GenericFilterBean {
 
@@ -48,10 +48,10 @@ public class SecuriteProfileProcessingFilter extends GenericFilterBean {
 			final ProfileOperateur profil = getProfilOperateur(visa, oid);
 			details.setProfil(profil);
 
-			// On ajoute les procédures Ifosec autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
+			// On ajoute les procédures autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
 			final List<GrantedAuthority> granted = new ArrayList<>();
 			granted.add(new SimpleGrantedAuthority(profil.getVisaOperateur()));
-			granted.addAll(getIfoSecGrantedAuthorities(profil));
+			granted.addAll(getGrantedAuthorities(profil));
 
 			// Pour mettre-à-jour la liste des procédures autorisées, il faut créer un nouvel object 'user'
 			final User user = new User(visa, "noPwd", true, true, true, true, granted);
@@ -65,7 +65,7 @@ public class SecuriteProfileProcessingFilter extends GenericFilterBean {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	protected static List<GrantedAuthority> getIfoSecGrantedAuthorities(ProfileOperateur profil) {
+	protected static List<GrantedAuthority> getGrantedAuthorities(ProfileOperateur profil) {
 
 		final List<GrantedAuthority> granted;
 
@@ -73,8 +73,8 @@ public class SecuriteProfileProcessingFilter extends GenericFilterBean {
 		if (procedures != null) {
 			granted = new ArrayList<>();
 			for (ProcedureSecurite procedure : procedures) {
-				final String ifoSec = procedure.getCode();
-				final Role role = Role.fromIfoSec(ifoSec);
+				final String code = procedure.getCode();
+				final Role role = Role.fromCodeProcedure(code);
 				if (role != null) {
 					granted.add(new SimpleGrantedAuthority("ROLE_" + role));    // voir DefaultWebSecurityExpressionHandler#defaultRolePrefix
 				}

@@ -1,6 +1,5 @@
 package ch.vd.unireg.rapport;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +14,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.web.util.NestedServletException;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.rapport.view.RapportView;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.AppartenanceMenage;
@@ -43,7 +42,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"JavaDoc"})
 public class RapportControllerTest extends WebTest {
 
 	private RapportController controller;
@@ -98,7 +96,7 @@ public class RapportControllerTest extends WebTest {
 		}
 		catch (NestedServletException e) {
 			final AccessDeniedException cause = (AccessDeniedException) e.getCause();
-			assertEquals("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + ids.menage + " et le tiers n°" + ids.jean, cause.getMessage());
+			assertEquals("Vous ne possédez pas les droits d'édition du rapport-entre-tiers entre le tiers n°" + ids.menage + " et le tiers n°" + ids.jean, cause.getMessage());
 		}
 	}
 

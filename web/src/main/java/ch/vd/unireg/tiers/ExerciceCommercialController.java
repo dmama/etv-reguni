@@ -136,7 +136,7 @@ public class ExerciceCommercialController {
 	public String showEditBouclements(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des bouclements des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des bouclements des personnes morales.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(pmId);
 
@@ -160,7 +160,7 @@ public class ExerciceCommercialController {
 	public String ajouteNouvelleDateDebut(@Valid @ModelAttribute(value = "command") ChangeDateExerciceCommercialView view, BindingResult bindingResult, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des bouclements des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des bouclements des personnes morales.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(view.getPmId());
 
@@ -200,7 +200,7 @@ public class ExerciceCommercialController {
 	public String changeDateDebut(@Valid @ModelAttribute(value = "command") ChangeDateExerciceCommercialView view, BindingResult bindingResult, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des bouclements des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des bouclements des personnes morales.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(view.getPmId());
 
@@ -246,7 +246,7 @@ public class ExerciceCommercialController {
 	public String changeDateFin(@Valid @ModelAttribute(value = "command") ChangeDateExerciceCommercialView view, BindingResult bindingResult, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des bouclements des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des bouclements des personnes morales.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(view.getPmId());
 

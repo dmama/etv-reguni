@@ -58,7 +58,7 @@ public class EvenementReqDesController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementReqDesController.class);
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements des notaires.";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de gestion des événements des notaires.";
 	private static final int RECYCLING_MAX_WAITING_TIME_MS = 3000;      // 3 secondes
 
 	public static final String CRITERIA_NAME = "reqdesCriteria";

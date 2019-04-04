@@ -85,8 +85,8 @@ public class Job {
 	private static final String UNIREG_URL = "unireg.ws.url";
 	private static final String UNIREG_USER = "unireg.ws.user";
 	private static final String UNIREG_PASSWORD = "unireg.ws.password";
-	private static final String UNIREG_IFOSEC_USER = "unireg.ifosec.user";
-	private static final String UNIREG_IFOSEC_OID = "unireg.ifosec.oid";
+	private static final String UNIREG_SEC_USER = "unireg.sec.user";
+	private static final String UNIREG_SEC_OID = "unireg.sec.oid";
 
 	private static final String FIDOR_URL = "fidor.ws.url";
 	private static final String FIDOR_USER = "fidor.ws.user";
@@ -105,8 +105,8 @@ public class Job {
 			UNIREG_URL,
 			UNIREG_USER,
 			UNIREG_PASSWORD,
-			UNIREG_IFOSEC_USER,
-			UNIREG_IFOSEC_OID,
+			UNIREG_SEC_USER,
+			UNIREG_SEC_OID,
 
 			FIDOR_URL,
 			FIDOR_USER,
@@ -324,8 +324,8 @@ public class Job {
 			final Parties parties = WebServiceV7Helper.getParties(getParameter(parameters, UNIREG_URL),
 			                                                      getParameter(parameters, UNIREG_USER),
 			                                                      getParameter(parameters, UNIREG_PASSWORD),
-			                                                      getParameter(parameters, UNIREG_IFOSEC_USER),
-			                                                      Integer.valueOf(getParameter(parameters, UNIREG_IFOSEC_OID)),
+			                                                      getParameter(parameters, UNIREG_SEC_USER),
+			                                                      Integer.valueOf(getParameter(parameters, UNIREG_SEC_OID)),
 			                                                      input,
 			                                                      PARTS);
 			final List<OutputData> output = new ArrayList<>(input.size());

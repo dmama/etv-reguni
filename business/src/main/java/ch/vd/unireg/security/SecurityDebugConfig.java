@@ -28,11 +28,11 @@ public class SecurityDebugConfig implements InitializingBean {
 	private static String iamBypassFirstName;
 	private static String iamBypassLastName;
 	private static String iamBypassRoles;
-	private static boolean ifoSecDebug;
-	private static String ifoSecBypassOID;
-	private static String ifoSecBypassOIDSigle;
-	private static String ifoSecBypassProcedures;
-	private static boolean ifoSecBypassUnitTest;
+	private static boolean securityDebug;
+	private static String securityBypassOID;
+	private static String securityBypassOIDSigle;
+	private static String securityBypassProcedures;
+	private static boolean securityBypassUnitTest;
 
 	@Nullable
 	private ServiceSecuriteBypass securityBypass;
@@ -69,29 +69,29 @@ public class SecurityDebugConfig implements InitializingBean {
 	}
 
 	// IFO-SEC
-	public static boolean isIfoSecDebug() {
-		return ifoSecDebug;
+	public static boolean isSecurityDebug() {
+		return securityDebug;
 	}
 
-	public static String getIfoSecBypassOID() {
-		return ifoSecBypassOID;
+	public static String getSecurityBypassOID() {
+		return securityBypassOID;
 	}
 
-	public static String getIfoSecBypassOIDSigle() {
-		return ifoSecBypassOIDSigle;
+	public static String getSecurityBypassOIDSigle() {
+		return securityBypassOIDSigle;
 	}
 
-	public static boolean isIfoSecBypassUnitTest() {
-		return ifoSecBypassUnitTest;
+	public static boolean isSecurityBypassUnitTest() {
+		return securityBypassUnitTest;
 	}
 
-	public static String getIfoSecBypassProcedures(String user) {
+	public static String getSecurityBypassProcedures(String user) {
 		String bypass = null;
 		if (properties != null) {
-			bypass = properties.getProperty("extprop.ifosec.bypass.procedures." + user);
+			bypass = properties.getProperty("extprop.security.bypass.procedures." + user);
 		}
 		if (bypass == null) {
-			bypass = ifoSecBypassProcedures;
+			bypass = securityBypassProcedures;
 		}
 		return bypass;
 	}
@@ -100,8 +100,8 @@ public class SecurityDebugConfig implements InitializingBean {
 	 * Setter réservé à Spring. Ne pas l'utiliser depuis du code Java !
 	 */
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setIfoSecBypassUnitTest(boolean ifoSecBypassUnitTest) {
-		SecurityDebugConfig.ifoSecBypassUnitTest = ifoSecBypassUnitTest;
+	public void setSecurityBypassUnitTest(boolean value) {
+		SecurityDebugConfig.securityBypassUnitTest = value;
 	}
 
 	/**
@@ -143,38 +143,38 @@ public class SecurityDebugConfig implements InitializingBean {
 			iamBypassFirstName = getStringProp("extprop.iam.bypass.firstname");
 			iamBypassLastName = getStringProp("extprop.iam.bypass.lastname");
 			iamBypassRoles = getStringProp("extprop.iam.bypass.roles");
-			ifoSecDebug = getBooleanProp("extprop.ifosec.debug");
+			securityDebug = getBooleanProp("extprop.security.debug");
 
-			if (ifoSecDebug && securityBypass == null) {
+			if (securityDebug && securityBypass == null) {
 				LOGGER.warn("\n************************************************ Attention ********************************************************\n" +
 						            "* le debug de la sécurité est activé, mais l'application n'a pas été compilée avec le profil 'dev' => pas d'effet *\n" +
 						            "*******************************************************************************************************************");
 			}
 
-			if (ifoSecDebug && securityBypass != null) {
-				ifoSecBypassOID = getStringProp("extprop.ifosec.bypass.oid.no");
-				ifoSecBypassOIDSigle = getStringProp("extprop.ifosec.bypass.oid.sigle");
-				ifoSecBypassProcedures = getStringProp("extprop.ifosec.bypass.procedures");
-				ifoSecBypassUnitTest = getBooleanProp("extprop.ifosec.bypass.unittest");
+			if (securityDebug && securityBypass != null) {
+				securityBypassOID = getStringProp("extprop.security.bypass.oid.no");
+				securityBypassOIDSigle = getStringProp("extprop.security.bypass.oid.sigle");
+				securityBypassProcedures = getStringProp("extprop.security.bypass.procedures");
+				securityBypassUnitTest = getBooleanProp("extprop.security.bypass.unittest");
 
 				// Bypass global
 				int oid = 0;
 				try {
-					oid = Integer.parseInt(ifoSecBypassOID);
+					oid = Integer.parseInt(securityBypassOID);
 				}
 				catch (NumberFormatException e) {
 					// on ignore
 				}
-				IfoSecBypass globalBypass = new IfoSecBypass(oid, ifoSecBypassOIDSigle, ifoSecBypassProcedures);
+				SecurityBypass globalBypass = new SecurityBypass(oid, securityBypassOIDSigle, securityBypassProcedures);
 				securityBypass.addBypass(globalBypass);
 
 				// Bypass par user
 				final Map<String, String> all = properties.getAllProperties();
 				for (Map.Entry<String, String> entry : all.entrySet()) {
-					if (entry.getKey().startsWith("extprop.ifosec.bypass.procedures.")) {
-						String user = entry.getKey().substring("extprop.ifosec.bypass.procedures.".length());
+					if (entry.getKey().startsWith("extprop.security.bypass.procedures.")) {
+						String user = entry.getKey().substring("extprop.security.bypass.procedures.".length());
 						String procedures = entry.getValue();
-						IfoSecBypass bypass = new IfoSecBypass(user, oid, ifoSecBypassOIDSigle, procedures);
+						SecurityBypass bypass = new SecurityBypass(user, oid, securityBypassOIDSigle, procedures);
 						securityBypass.addBypass(bypass);
 					}
 				}

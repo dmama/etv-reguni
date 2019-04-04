@@ -29,7 +29,7 @@ public class FailliteController extends AbstractProcessusComplexeRechercheContro
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de faillite d'entreprise.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe de faillite d'entreprise.",
 		                Role.FAILLITE_ENTREPRISE);
 	}
 

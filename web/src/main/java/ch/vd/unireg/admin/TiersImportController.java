@@ -109,7 +109,7 @@ public class TiersImportController {
 	public String importBuiltinScript(@RequestParam("fileName") String fileName, @RequestParam("action") String action) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
@@ -147,7 +147,7 @@ public class TiersImportController {
 	public String importUploadedScript(@Valid ScriptBean script, BindingResult result) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();

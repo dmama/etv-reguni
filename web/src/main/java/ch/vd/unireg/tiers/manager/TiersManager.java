@@ -1034,7 +1034,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers retourne tjs false si le tiers n'est pas une PP ou un ménage
+	 * @return true sur l'utilisateur connecté à les droits d'édition et sécurité dossiers de modif le tiers retourne tjs false si le tiers n'est pas une PP ou un ménage
 	 */
 	protected boolean checkDroitEdit(Tiers tiers) {
 		return autorisationManager.isEditAllowed(tiers);

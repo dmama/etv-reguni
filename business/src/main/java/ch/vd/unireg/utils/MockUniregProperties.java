@@ -16,7 +16,7 @@ public class MockUniregProperties extends UniregPropertiesImpl {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		addProperty("extprop.ifosec.debug", "true");
+		addProperty("extprop.security.debug", "true");
 		addProperty("iam.logout.url", "https://{HOST}/iam/accueil/");
 	}
 }

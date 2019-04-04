@@ -12,17 +12,17 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.security.IfoSecBypass;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityBypass;
 
 /**
  * Service de sécurité pour les développeurs qui permet de bypasser certaines procédures de sécurité.
  */
 public class ServiceSecuriteDebug implements ServiceSecuriteService, ServiceSecuriteBypass {
 
-	private IfoSecBypass globalBypass = null;
-	private final Map<String, IfoSecBypass> bypassPerUser = new HashMap<>();
+	private SecurityBypass globalBypass = null;
+	private final Map<String, SecurityBypass> bypassPerUser = new HashMap<>();
 	private ServiceSecuriteService target;
 
 	public void setTarget(ServiceSecuriteService target) {
@@ -30,7 +30,7 @@ public class ServiceSecuriteDebug implements ServiceSecuriteService, ServiceSecu
 	}
 
 	@Override
-	public void addBypass(IfoSecBypass bypass) {
+	public void addBypass(SecurityBypass bypass) {
 		if (bypass.getUser() == null) {
 			this.globalBypass = bypass;
 		}
@@ -48,7 +48,7 @@ public class ServiceSecuriteDebug implements ServiceSecuriteService, ServiceSecu
 			roles.addAll(globalBypass.getProcedures());
 		}
 
-		final IfoSecBypass bypass = bypassPerUser.get(visa);
+		final SecurityBypass bypass = bypassPerUser.get(visa);
 		if (bypass != null) {
 			roles.addAll(bypass.getProcedures());
 		}
@@ -59,13 +59,13 @@ public class ServiceSecuriteDebug implements ServiceSecuriteService, ServiceSecu
 	@Override
 	public boolean isGranted(@NotNull Role role, @NotNull String visaOperateur, int codeCollectivite) {
 
-		// on test les éventuels bypasses de IfoSec
+		// on test les éventuels bypasses de sécurité
 
 		if (globalBypass != null && globalBypass.isGranted(role, codeCollectivite)) {
 			return true;
 		}
 
-		final IfoSecBypass userBypass = bypassPerUser.get(visaOperateur);
+		final SecurityBypass userBypass = bypassPerUser.get(visaOperateur);
 		if (userBypass != null && userBypass.isGranted(role, codeCollectivite)) {
 			return true;
 		}

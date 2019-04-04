@@ -216,14 +216,14 @@ public class QuestionnaireSNCController {
 			rolesRequis.add(Role.QSNC_LIBERATION);
 		}
 		if (!rolesRequis.isEmpty() && !SecurityHelper.isAnyGranted(securityProvider, rolesRequis.toArray(new Role[0]))) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec requis pour effectuer cette opération.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits requis pour effectuer cette opération.");
 		}
 	}
 
 	private void checkEditRightOnEntreprise(Entreprise entreprise) throws AccessDeniedException {
 		final Autorisations autorisations = autorisationManager.getAutorisations(entreprise, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isQuestionnairesSNC()) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit de procéder à des modifications autours des questionnaires SNC sur cette entreprise.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de procéder à des modifications autours des questionnaires SNC sur cette entreprise.");
 		}
 	}
 
@@ -874,7 +874,7 @@ public class QuestionnaireSNCController {
 	public String libererDI(@RequestParam("id") long idQuestionnaire, Model model) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit pour de libération des déclarations d'impôt");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de libération des déclarations d'impôt");
 		}
 
 		final QuestionnaireSNC questionnaireSNC = questionnaireSNCDAO.get(idQuestionnaire);
@@ -904,7 +904,7 @@ public class QuestionnaireSNCController {
 	public String libererQuestionnaire(@RequestParam("idDocument") long idQuestionnaire, @RequestParam("motif") String motif) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des questionnaires SNC.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de libération des questionnaires SNC.");
 		}
 
 		final QuestionnaireSNC questionnaireSNC = questionnaireSNCDAO.get(idQuestionnaire);

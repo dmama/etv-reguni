@@ -41,7 +41,7 @@ public abstract class AnnulationRepriseFinActiviteController extends AbstractPro
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted(String.format("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe %s d'entreprise.", processDescription),
+		checkAnyGranted(String.format("Vous ne possédez pas les droits d'accès au processus complexe %s d'entreprise.", processDescription),
 		                Role.FIN_ACTIVITE_ENTREPRISE);
 	}
 

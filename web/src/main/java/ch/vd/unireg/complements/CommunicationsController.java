@@ -67,7 +67,7 @@ public class CommunicationsController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des compléments d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des compléments d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(id);
@@ -91,7 +91,7 @@ public class CommunicationsController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements() || !autorisations.isComplementsCommunications()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des points de communication d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des points de communication d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(id);

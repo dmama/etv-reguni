@@ -98,7 +98,7 @@ public class CoordonneesFinancieresController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des compléments d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des compléments d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -129,7 +129,7 @@ public class CoordonneesFinancieresController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des compléments d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des compléments d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -160,7 +160,7 @@ public class CoordonneesFinancieresController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements() || !autorisations.isComplementsCoordonneesFinancieres()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des coordonnées financières d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des coordonnées financières d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -196,7 +196,7 @@ public class CoordonneesFinancieresController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(coords.getTiers(), AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des compléments d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des compléments d'un tiers");
 		}
 
 		final Long tiersId = coords.getTiers().getNumero();
@@ -227,7 +227,7 @@ public class CoordonneesFinancieresController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements() || !autorisations.isComplementsCoordonneesFinancieres()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des coordonnées financières d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des coordonnées financières d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -278,7 +278,7 @@ public class CoordonneesFinancieresController {
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 		if (!autorisations.isComplements() || !autorisations.isComplementsCoordonneesFinancieres()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des coordonnées financières d'un tiers");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des coordonnées financières d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);

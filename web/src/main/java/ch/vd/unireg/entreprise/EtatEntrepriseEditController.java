@@ -98,7 +98,7 @@ public class EtatEntrepriseEditController {
 		if (tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isEtatsPM()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des états d'entreprise.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des états d'entreprise.");
 			}
 			final EntrepriseView view = entrepriseService.getEntreprise((Entreprise) tiers);
 			return showEditEtats(model, id, view);
@@ -129,7 +129,7 @@ public class EtatEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isEtatsPM()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création d'états d'entreprise.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création d'états d'entreprise.");
 		}
 
 		final AddEtatEntrepriseView view = new AddEtatEntrepriseView(entreprise);
@@ -157,7 +157,7 @@ public class EtatEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isEtatsPM()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création d'états d'entreprise.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création d'états d'entreprise.");
 		}
 
 
@@ -192,7 +192,7 @@ public class EtatEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isEtatsPM()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression d'états d'entreprise.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de suppression d'états d'entreprise.");
 		}
 
 		tiersService.annuleEtatEntreprise(etatEntreprise);

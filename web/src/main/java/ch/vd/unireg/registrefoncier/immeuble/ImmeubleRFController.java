@@ -55,7 +55,7 @@ import ch.vd.unireg.tiers.TiersService;
 @RequestMapping(value = "/registrefoncier/immeuble")
 public class ImmeubleRFController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de visualisation des données du Registre Foncier";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de visualisation des données du Registre Foncier";
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;

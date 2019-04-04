@@ -72,7 +72,7 @@ public class FourreNeutreController {
 
 	private static void checkDroitFourreNeutre(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_FOURRE_NEUTRE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les fourres neutres");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour gérer les fourres neutres");
 		}
 	}
 

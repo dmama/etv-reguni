@@ -22,7 +22,7 @@ import ch.vd.unireg.security.SecurityCheck;
 @RequestMapping("/param/app")
 public class ParamApplicationController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des paramètres";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de gestion des paramètres";
 
 	private ParamApplicationManager manager;
 	private Validator validator;

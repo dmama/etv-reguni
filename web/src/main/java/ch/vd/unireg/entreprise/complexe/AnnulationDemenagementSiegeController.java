@@ -56,7 +56,7 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe d'annulation de déménagement de siège d'entreprise.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe d'annulation de déménagement de siège d'entreprise.",
 		                Role.DEMENAGEMENT_SIEGE_ENTREPRISE);
 	}
 

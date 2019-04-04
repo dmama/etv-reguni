@@ -3,8 +3,10 @@ package ch.vd.unireg.security;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
- * Liste des rôles IFOSec utilisés dans Unireg
+ * Liste des rôles de sécurité utilisés dans Unireg
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -164,38 +166,38 @@ public enum Role {
 
 	TESTER("");
 
-	private static HashMap<String, Role> ifoSec2Role;
-	private final String ifosecCode;
+	private static HashMap<String, Role> codeMap;
+	private final String codeProcedure;
 
-	Role(String ifosecCode) {
-		this.ifosecCode = ifosecCode;
+	Role(String codeProcedure) {
+		this.codeProcedure = codeProcedure;
 	}
 
-	public String getIfosecCode() {
-		return ifosecCode;
+	public String getCodeProcedure() {
+		return codeProcedure;
 	}
 
-	public static Role fromIfoSec(String code) {
-		return getIfoSec2Role().get(code);
+	public static Role fromCodeProcedure(@NotNull String code) {
+		return getCodeMap().get(code);
 	}
 
-	private static Map<String, Role> getIfoSec2Role() {
-		if (ifoSec2Role == null) {
+	private static Map<String, Role> getCodeMap() {
+		if (codeMap == null) {
 			// lazy-init pour laisser le temps au UniregModeHelper de s'initializer.
-			initIfoSec2Role();
+			initCode2Role();
 		}
-		return ifoSec2Role;
+		return codeMap;
 	}
 
-	private static synchronized void initIfoSec2Role() {
-		if (ifoSec2Role == null) {
-			ifoSec2Role = new HashMap<>();
+	private static synchronized void initCode2Role() {
+		if (codeMap == null) {
+			codeMap = new HashMap<>();
 
 			for (Role role : Role.values()) {
-				if (ifoSec2Role.containsKey(role.getIfosecCode())) {
-					throw new IllegalArgumentException("Le code IfoSec " + role.getIfosecCode() + " est défini deux fois !");
+				if (codeMap.containsKey(role.getCodeProcedure())) {
+					throw new IllegalArgumentException("Le code " + role.getCodeProcedure() + " est défini deux fois !");
 				}
-				ifoSec2Role.put(role.getIfosecCode(), role);
+				codeMap.put(role.getCodeProcedure(), role);
 			}
 		}
 	}

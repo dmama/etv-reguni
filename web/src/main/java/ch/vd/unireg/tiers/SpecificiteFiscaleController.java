@@ -133,7 +133,7 @@ public class SpecificiteFiscaleController {
 
 	private void checkDroitModificationRegimesFiscaux() throws AccessDeniedException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.REGIMES_FISCAUX)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des régimes fiscaux des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des régimes fiscaux des personnes morales.");
 		}
 	}
 
@@ -397,7 +397,7 @@ public class SpecificiteFiscaleController {
 
 	private void checkDroitModificationAllegements() throws AccessDeniedException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.ALLEGEMENTS_FISCAUX)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des allègements fiscaux des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des allègements fiscaux des personnes morales.");
 		}
 	}
 
@@ -543,7 +543,7 @@ public class SpecificiteFiscaleController {
 
 	private void checkDroitModificationFlags() throws AccessDeniedException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des spécificités fiscales des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la modification des spécificités fiscales des personnes morales.");
 		}
 	}
 

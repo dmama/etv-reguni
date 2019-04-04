@@ -38,7 +38,7 @@ public class AnnulationTransfertPatrimoineController extends AbstractProcessusCo
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe d'annulation de transfert de patrimoine.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe d'annulation de transfert de patrimoine.",
 		                Role.TRANSFERT_PATRIMOINE_ENTREPRISE);
 	}
 

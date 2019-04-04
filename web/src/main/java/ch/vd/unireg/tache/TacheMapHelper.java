@@ -120,7 +120,7 @@ public class TacheMapHelper extends CommonMapHelper {
 	public Map<Integer, String> initMapOfficeImpotUtilisateur() {
 
 		final Map<Integer, String> map = new HashMap<>();
-		if (!SecurityDebugConfig.isIfoSecDebug()) {
+		if (!SecurityDebugConfig.isSecurityDebug()) {
 			final List<CollectiviteAdministrative> collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 			if (collectivites != null) {
 				for (CollectiviteAdministrative collectivite : collectivites) {

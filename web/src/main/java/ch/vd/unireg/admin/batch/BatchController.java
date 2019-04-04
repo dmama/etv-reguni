@@ -96,7 +96,7 @@ public class BatchController {
 
 		try {
 			if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-				throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'administration pour l'application Unireg");
 			}
 
 			// Récupère les données de la requête
@@ -184,7 +184,7 @@ public class BatchController {
 
 		try {
 			if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-				throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+				throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 			}
 
 			batchScheduler.stopJob(name, Duration.ofSeconds(30));

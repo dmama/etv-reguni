@@ -63,7 +63,7 @@ public class CommunauteRFController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(CommunauteRFController.class);
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec d'élection du principal de communauté RF";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits d'élection du principal de communauté RF";
 
 	private AyantDroitRFDAO ayantDroitDAO;
 	private ModeleCommunauteRFDAO modeleCommunauteDAO;

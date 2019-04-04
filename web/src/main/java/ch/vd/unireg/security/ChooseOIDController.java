@@ -38,7 +38,7 @@ public class ChooseOIDController {
 
 		final UniregSecurityDetails details = getProfilSecuriteCourant();
 		if (details != null) {
-			// [UNIREG-1242] On reset un éventuel profil de sécurité déjà mémorisé, de manière à ce que le filtre IFOSecAuthenticationProcessingFilter (re)sélectionne bien l'OID choisi.
+			// [UNIREG-1242] On reset un éventuel profil de sécurité déjà mémorisé, de manière à ce que le filtre SecuriteProfileProcessingFilter (re)sélectionne bien l'OID choisi.
 			details.setOID(null);
 			details.setOIDSigle(null);
 			details.setProfil(null);
@@ -60,7 +60,7 @@ public class ChooseOIDController {
 	@RequestMapping(value = "/chooseOID.do", method = RequestMethod.POST)
 	public String chooseOID(@Valid @ModelAttribute("command") final ChooseOIDView view, HttpSession session) throws URISyntaxException {
 		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-		return "redirect:" + setParam(view.getInitialUrl(), ChooseOIDProcessingFilter.IFOSEC_OID_PARAM, String.valueOf(view.getSelectedOID()));
+		return "redirect:" + setParam(view.getInitialUrl(), ChooseOIDProcessingFilter.OID_PARAM, String.valueOf(view.getSelectedOID()));
 	}
 
 	/**

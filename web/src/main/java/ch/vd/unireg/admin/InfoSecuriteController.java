@@ -39,18 +39,18 @@ public class InfoSecuriteController {
 
 		final ProfileOperateur profile = securiteService.getProfileUtilisateur(visa, oid);
 		List<ProcedureSecurite> proceduresUnireg = null;
-		List<Role> rolesIfoSecByPass = null;
+		List<Role> rolesSecuriteByPass = null;
 		List<ProcedureSecurite> proceduresAutres = null;
 		if (profile != null) {
 			proceduresUnireg = getProceduresUnireg(profile);
-			rolesIfoSecByPass = getProceduresIfoSecByPass(profile);
+			rolesSecuriteByPass = getProceduresSecuriteByPass(profile);
 			proceduresAutres= getProceduresAutres(profile);
 		}
 
 		mav.addAttribute("visa", visa);
 		mav.addAttribute("oid", oid);
 		mav.addAttribute("proceduresUnireg", proceduresUnireg);
-		mav.addAttribute("rolesIfoSecByPass", rolesIfoSecByPass);
+		mav.addAttribute("rolesSecuriteByPass", rolesSecuriteByPass);
 		mav.addAttribute("proceduresAutres", proceduresAutres);
 		mav.addAttribute("roles", Role.values());
 
@@ -63,7 +63,7 @@ public class InfoSecuriteController {
 				.collect(Collectors.toList());
 	}
 
-	private List<Role> getProceduresIfoSecByPass(ProfileOperateur profile) {
+	private List<Role> getProceduresSecuriteByPass(ProfileOperateur profile) {
 		if (securiteService instanceof ServiceSecuriteBypass) {
 			final ServiceSecuriteBypass securiteBypass = (ServiceSecuriteBypass) this.securiteService;
 			return securiteBypass.getBypass(profile.getVisaOperateur()).stream()

@@ -40,7 +40,7 @@ public abstract class AnnulationRevocationFailliteController extends AbstractPro
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted(String.format("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe %s de faillite d'entreprise.", processDescription),
+		checkAnyGranted(String.format("Vous ne possédez pas les droits d'accès au processus complexe %s de faillite d'entreprise.", processDescription),
 		                Role.FAILLITE_ENTREPRISE);
 	}
 

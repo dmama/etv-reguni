@@ -67,7 +67,7 @@ public class AnnonceIDEController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnnonceIDEController.class);
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de suivi des annonces à l'IDE";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de suivi des annonces à l'IDE";
 
 	private static final String DEFAULT_FIELD = "noticeRequestId";
 	private static final String TABLE_NAME = "annonce";

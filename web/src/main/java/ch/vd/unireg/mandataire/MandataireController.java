@@ -196,25 +196,25 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	private void checkDroitAccesMandatairesCourrier() {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_MANDAT_GENERAL, Role.MODIF_MANDAT_SPECIAL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration des mandats de types général et spécial.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'administration des mandats de types général et spécial.");
 		}
 	}
 
 	private void checkDroitAccesMandatairesGeneraux() {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_MANDAT_GENERAL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration des mandats de type général.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'administration des mandats de type général.");
 		}
 	}
 
 	private void checkDroitAccesMandatairesSpeciaux() {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_MANDAT_SPECIAL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration des mandats de type spécial.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'administration des mandats de type spécial.");
 		}
 	}
 
 	private void checkDroitAccesMandatairesPerception() {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_MANDAT_TIERS)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration des mandats de type tiers.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'administration des mandats de type tiers.");
 		}
 	}
 

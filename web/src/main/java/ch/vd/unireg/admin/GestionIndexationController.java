@@ -109,7 +109,7 @@ public class GestionIndexationController {
 	public String reindexTiers(@ModelAttribute final GestionIndexation data) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final Long id = data.getId();
@@ -129,7 +129,7 @@ public class GestionIndexationController {
 	public String reloadIndividu(@ModelAttribute final GestionIndexation data) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final Long id = data.getIndNo();

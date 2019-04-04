@@ -56,7 +56,7 @@ import ch.vd.unireg.utils.RegDateEditor;
 @RequestMapping("/param/periode")
 public class ParamPeriodeController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec sur l'écran de paramétrisation des périodes";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits sur l'écran de paramétrisation des périodes";
 
 	private static final String PARAMETER_PERIODE_ID = "pf";
 	private static final String PARAMETER_MODELE_ID = "md";

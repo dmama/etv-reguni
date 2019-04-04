@@ -14,7 +14,7 @@ import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.type.Niveau;
 
 /**
- * Implémentation du provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers).
+ * Implémentation du provider de sécurité qui regroupe la sécurité fiscale (procédures) et celle d'Unireg (accès aux dossiers).
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -90,17 +90,17 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		bypassUnitTest = SecurityDebugConfig.isIfoSecBypassUnitTest();
+		bypassUnitTest = SecurityDebugConfig.isSecurityBypassUnitTest();
 
 		if (bypassUnitTest) {
 
-			LOGGER.warn("+---------------------------------------------------------------------------------------+");
-			LOGGER.warn("| Attention ! IfoSec est en mode 'test unitaire' : certaines procédures sont bypassées. |");
-			LOGGER.warn("+---------------------------------------------------------------------------------------+");
+			LOGGER.warn("+--------------------------------------------------------------------------------------------+");
+			LOGGER.warn("| Attention ! La sécurité est en mode 'test unitaire' : certaines procédures sont bypassées. |");
+			LOGGER.warn("+--------------------------------------------------------------------------------------------+");
 
 			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 			try {
-				Audit.warn("IfoSec est en mode 'test unitaire'.");
+				Audit.warn("La sécurité est en mode 'test unitaire'.");
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -114,7 +114,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 				return true;
 			}
 			else {
-				LOGGER.warn("**** Attention ! Le bypass IfoSec est activé mais l'utilisateur [" + visa + "] ne commence pas par " + PREFIX_TEST_UNITAIRE + ": aucune procédure bypassée ****");
+				LOGGER.warn("**** Attention ! Le bypass de sécurité est activé mais l'utilisateur [" + visa + "] ne commence pas par " + PREFIX_TEST_UNITAIRE + ": aucune procédure bypassée ****");
 			}
 		}
 		return false;

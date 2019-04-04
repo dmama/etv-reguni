@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.Contribuable;
@@ -110,7 +110,7 @@ public class DecisionAciController {
 
 		final Autorisations auth = getAutorisations(ctb);
 		if (!auth.isDecisionsAci()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de décisions ACI.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de décisions ACI.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -133,7 +133,7 @@ public class DecisionAciController {
 
 		final Autorisations auth = getAutorisations(ctb);
 		if (!auth.isDecisionsAci()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de décisions ACI.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de décisions ACI.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
@@ -174,7 +174,7 @@ public class DecisionAciController {
 
 		final Autorisations auth = getAutorisations(decisionAci.getContribuable());
 		if (!auth.isDecisionsAci()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de décision ACI.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de décision ACI.");
 		}
 
 		final Long tiersId = decisionAci.getContribuable().getNumero();
@@ -201,7 +201,7 @@ public class DecisionAciController {
 
 		final Autorisations auth = getAutorisations(decisionAci.getContribuable());
 		if (!auth.isDecisionsAci()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de décision ACI.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de décision ACI.");
 		}
 
 		final Long numero = ctb.getNumero();
@@ -231,7 +231,7 @@ public class DecisionAciController {
 		final Autorisations auth = getAutorisations((Contribuable) tiers);
 
 		if (!auth.isDecisionsAci()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'annulation de décision ACI.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'annulation de décision ACI.");
 		}
 
 		//On annule l'ancienne décision

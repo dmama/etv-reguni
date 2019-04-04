@@ -44,7 +44,7 @@ import static java.util.stream.Collectors.toList;
 public class ImportRFController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImportRFController.class);
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de suivi des imports du Registre Foncier";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de suivi des imports du Registre Foncier";
 
 	private static final String TABLE_IMPORT_LIST = "importEvent";
 	private static final String TABLE_MUTATION_LIST = "mutation";

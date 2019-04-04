@@ -30,7 +30,7 @@ public class LettreBienvenueController {
 
 	private static void checkDroitQuittanceurEnSerie(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les retours en masse de lettres de bienvenue.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour gérer les retours en masse de lettres de bienvenue.");
 		}
 	}
 

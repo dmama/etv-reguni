@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.registrefoncier.SituationRF;
@@ -43,7 +43,7 @@ import ch.vd.unireg.tiers.view.CommuneView;
 @RequestMapping(value = "/registrefoncier/situation/surcharge")
 public class SituationSurchargeRFController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de gestion des fractions de communes RF";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits de gestion des fractions de communes RF";
 	private static final String TABLE_SITUATIONS = "situation";
 	private static final int SITUATION_PAGE_SIZE = 25;
 

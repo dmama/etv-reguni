@@ -17,5 +17,5 @@ public interface SecurityDetails {
 	 */
 	ProfileOperateur getProfil();
 
-	void setProfil(ProfileOperateur ifosecProfil);
+	void setProfil(ProfileOperateur profil);
 }

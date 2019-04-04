@@ -38,7 +38,7 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe d'annulation de scission d'entreprise.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe d'annulation de scission d'entreprise.",
 		                Role.SCISSION_ENTREPRISE);
 	}
 

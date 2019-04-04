@@ -57,7 +57,7 @@ public class CoupleController {
 	public String create(@RequestParam(value = "pp1", required = false) Long pp1Id, Model model) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final CoupleView view = new CoupleView();
@@ -82,7 +82,7 @@ public class CoupleController {
 	public String create(@Valid @ModelAttribute("command") final CoupleView view, BindingResult result) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		if (result.hasErrors()) {

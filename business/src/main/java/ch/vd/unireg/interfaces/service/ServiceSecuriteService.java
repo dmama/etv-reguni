@@ -44,7 +44,7 @@ public interface ServiceSecuriteService {
 
 		for (ProcedureSecurite p : procedures) {
 			final String code = p.getCode();
-			final Role r = Role.fromIfoSec(code);
+			final Role r = Role.fromCodeProcedure(code);
 			if (r == role) {
 				// c'est bon, la procédure est trouvée
 				return true;

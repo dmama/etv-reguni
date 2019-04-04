@@ -56,7 +56,7 @@ public class RequisitionRadiationRCController extends AbstractProcessusComplexeR
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de réquisition de radiation du RC d'une entreprise.",
+		checkAnyGranted("Vous ne possédez pas les droits d'accès au processus complexe de réquisition de radiation du RC d'une entreprise.",
 		                Role.REQUISITION_RADIATION_RC);
 	}
 

@@ -46,7 +46,7 @@ import ch.vd.unireg.utils.RegDateEditor;
 @SessionAttributes(AnnulationDecesController. ANNULATION_DECES_CRITERIA)
 public class AnnulationDecesController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec pour annuler un décès";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits pour annuler un décès";
 	public  static final String ANNULATION_DECES_CRITERIA = "AnnulationDecesCriteria";
 
 	private AnnulationDecesRecapManager manager;

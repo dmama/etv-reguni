@@ -71,7 +71,7 @@ public class TiersVisuController {
 	public String visu(@RequestParam(value = "id") long id, Model model, HttpServletRequest request) throws AdresseException, DonneesCivilesException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		// vérification des droits d'accès au dossier du contribuable

@@ -128,7 +128,7 @@ public class TiersListController implements MessageSourceAware {
 	                             @RequestParam(value = FOR_PRINCIPAL_ACTIF_PARAMETER_NAME, required = false, defaultValue = "false") boolean seulementForPrincipalActif) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_LIMITE)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		RegDate dateNaissance = null;

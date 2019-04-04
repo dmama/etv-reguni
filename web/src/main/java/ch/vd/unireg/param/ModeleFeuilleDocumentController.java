@@ -40,7 +40,7 @@ import ch.vd.unireg.type.ModeleFeuille;
 @RequestMapping(value = "/param/periode/feuille")
 public class ModeleFeuilleDocumentController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec sur l'écran de paramétrisation des périodes";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits sur l'écran de paramétrisation des périodes";
 
 	private MessageSource messageSource;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;

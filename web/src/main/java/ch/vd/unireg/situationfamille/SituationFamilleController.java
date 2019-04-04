@@ -49,7 +49,7 @@ public class SituationFamilleController {
 	public String add(@RequestParam(value = "tiersId") long tiersId, Model model) throws AdresseException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.SIT_FAM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des situations de famille dans Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des situations de famille dans Unireg");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
@@ -67,7 +67,7 @@ public class SituationFamilleController {
 		final long id = view.getNumeroCtb();
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.SIT_FAM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des situations de famille dans Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des situations de famille dans Unireg");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(id);
 
@@ -91,7 +91,7 @@ public class SituationFamilleController {
 	public String cancel(@RequestParam(value = "situationId") long situationId) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.SIT_FAM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des situations de famille dans Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des situations de famille dans Unireg");
 		}
 		final Contribuable ctb = situationFamilleManager.getContribuableForSituation(situationId);
 		if (ctb == null) {

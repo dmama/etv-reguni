@@ -68,7 +68,7 @@ public class EtiquetteTiersController {
 
 	private void checkAccess() {
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_ETIQUETTES)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la gestion des étiquettes d'un tiers.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour la gestion des étiquettes d'un tiers.");
 		}
 	}
 

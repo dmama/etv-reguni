@@ -158,7 +158,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	private void updateAdressesSuccessorales(AdresseView adresseView, MenageCommun tiers) throws AccessDeniedException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec pour modifier l'adresse d'un décédé.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour modifier l'adresse d'un décédé.");
 		}
 
 		// On vérifie la cohérence de l'état successoral entre le formulaire et la base

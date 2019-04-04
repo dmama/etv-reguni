@@ -30,7 +30,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChooseOIDProcessingFilter.class);
 
-	public static final String IFOSEC_OID_PARAM = "ifosec-oid";
+	public static final String OID_PARAM = "chosen-oid";
 
 	private ServiceSecuriteService serviceSecurite;
 
@@ -66,7 +66,7 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				oi = collectivites.get(0);
 			}
 			else {
-				final Integer oid = getIntegerParam(request, IFOSEC_OID_PARAM);
+				final Integer oid = getIntegerParam(request, OID_PARAM);
 				if (oid == null) {
 					// plusieurs OIDs => on redirige vers l'écran de choix
 					new SimpleUrlAuthenticationFailureHandler("/chooseOID.do").onAuthenticationFailure(request, response,

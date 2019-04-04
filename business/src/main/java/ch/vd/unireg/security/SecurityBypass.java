@@ -5,26 +5,26 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Informations de bypass des procédures IfoSec valable pour un utilisateur (user!=null), ou valable pour tous les utilisateurs
+ * Informations de bypass des procédures de sécurity valable pour un utilisateur (user!=null), ou valable pour tous les utilisateurs
  * (user==null).
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IfoSecBypass {
+public class SecurityBypass {
 
 	private final String user;
 	private final int oid;
 	private final String oidSigle;
 	private final Set<Role> procedures = EnumSet.noneOf(Role.class);
 
-	public IfoSecBypass(int oid, String oidSigle, String procedures) {
+	public SecurityBypass(int oid, String oidSigle, String procedures) {
 		this.user = null;
 		this.oid = oid;
 		this.oidSigle = oidSigle;
 		initProcedures(procedures);
 	}
 
-	public IfoSecBypass(String user, int oid, String oidSigle, String procedures) {
+	public SecurityBypass(String user, int oid, String oidSigle, String procedures) {
 		this.user = user;
 		this.oid = oid;
 		this.oidSigle = oidSigle;
@@ -39,7 +39,7 @@ public class IfoSecBypass {
 			final String[] array = procedures.split("[, ]+");
 			for (String s : array) {
 				final String code = s.replace("[", "").replace("]", "");
-				final Role r = Role.fromIfoSec(code);
+				final Role r = Role.fromCodeProcedure(code);
 				if (r != null) {
 					this.procedures.add(r);
 				}

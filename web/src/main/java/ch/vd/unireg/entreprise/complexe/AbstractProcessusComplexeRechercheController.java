@@ -18,7 +18,7 @@ public abstract class AbstractProcessusComplexeRechercheController extends Abstr
 	private SearchTiersComponent searchComponent;
 
 	/**
-	 * Vérifie les droits d'accès IFOSEC de l'utilisateur connecté et explose si quelque chose ne va pas
+	 * Vérifie les droits d'accès de l'utilisateur connecté et explose si quelque chose ne va pas
 	 * @throws AccessDeniedException en cas d'accès interdit
 	 */
 	protected abstract void checkDroitAcces() throws AccessDeniedException;

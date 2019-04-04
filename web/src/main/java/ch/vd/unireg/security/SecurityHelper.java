@@ -8,7 +8,7 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.Niveau;
 
 /**
- * Provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers) et l'expose avec une interface statique.
+ * Provider de sécurité qui regroupe la sécurité de RefSec (authentification) et celle d'Unireg (accès aux dossiers) et l'expose avec une interface statique.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

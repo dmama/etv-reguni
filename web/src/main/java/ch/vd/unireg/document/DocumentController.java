@@ -69,7 +69,7 @@ public class DocumentController {
 	public String delete(@RequestParam("id") long id) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final Document doc = docService.get(id);

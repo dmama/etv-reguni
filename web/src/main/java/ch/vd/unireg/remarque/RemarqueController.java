@@ -61,7 +61,7 @@ public class RemarqueController {
 	                          @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
@@ -96,7 +96,7 @@ public class RemarqueController {
 	public boolean add(@RequestParam(value = "tiersId", required = true) Long tiersId, @RequestParam(value = "text", required = true) String texte) throws Exception {
 
 		if (!canManageRemarque()) {
-			throw new AccessDeniedException("Vous ne possédez par les droits IfoSec pour ajouter une remarque");
+			throw new AccessDeniedException("Vous ne possédez par les droits pour ajouter une remarque");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
@@ -123,7 +123,7 @@ public class RemarqueController {
 	public String cancel(long remarqueId) throws Exception {
 
 		if (!canManageRemarque()) {
-			throw new AccessDeniedException("Vous ne possédez par les droits IfoSec pour annuler une remarque");
+			throw new AccessDeniedException("Vous ne possédez par les droits pour annuler une remarque");
 		}
 
 		final Remarque remarque = remarqueDAO.get(remarqueId);

@@ -60,7 +60,7 @@ public class DatabaseDumpController {
 	public String dump(HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
@@ -113,7 +113,7 @@ public class DatabaseDumpController {
 	public String dump2fs() throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
@@ -132,7 +132,7 @@ public class DatabaseDumpController {
 	public String fs2import(@RequestParam(value = "file") long fileId) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
@@ -159,7 +159,7 @@ public class DatabaseDumpController {
 	public String dumptiers(@RequestParam(value = "tiers") String tiersList) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final Map<String, Object> params = new HashMap<>();

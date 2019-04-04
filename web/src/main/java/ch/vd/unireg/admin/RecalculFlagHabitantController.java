@@ -46,7 +46,7 @@ public class RecalculFlagHabitantController {
 	public String forceRecalcul(@RequestParam(value = "id", required = true) long id) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'administration pour l'application Unireg");
 		}
 
 		final Tiers tiers = tiersService.getTiers(id);

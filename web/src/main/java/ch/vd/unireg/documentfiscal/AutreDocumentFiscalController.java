@@ -149,7 +149,7 @@ public class AutreDocumentFiscalController {
 	private void checkAnyRight() throws AccessDeniedException {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_LETTRE_TYPE_INFO_LIQUIDATION,
 		                                 Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les autres documents fiscaux.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour gérer les autres documents fiscaux.");
 		}
 	}
 
@@ -211,7 +211,7 @@ public class AutreDocumentFiscalController {
 		// gestion des droits
 		final Set<TypeAutreDocumentFiscalEmettableManuellement> allowed = getTypesAutreDocumentFiscalEmettablesManuellement();
 		if (!allowed.contains(view.getTypeDocument())) {
-			throw new AccessDeniedException("Vous ne possédez aucun des droits IfoSec permettant d'émettre ce type de document.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits permettant d'émettre ce type de document.");
 		}
 
 		// impression
@@ -245,7 +245,7 @@ public class AutreDocumentFiscalController {
 	@ResponseBody
 	public AutreDocumentFiscalView detailsAutreDocFiscal(@RequestParam("id") long id) throws AccessDeniedException {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final AutreDocumentFiscal autreDocumentFiscal = getDocumentFiscal(id);
@@ -266,7 +266,7 @@ public class AutreDocumentFiscalController {
 
 		/* Pour l'instant, la lettre de bienvenue est le seul document fiscal avec suivi qu'on est susceptible d'éditer. */
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des documents fiscaux.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'édition des documents fiscaux.");
 		}
 
 		final AutreDocumentFiscal doc = getDocumentFiscal(id);
@@ -345,7 +345,7 @@ public class AutreDocumentFiscalController {
 	public String ajouterDelai(@Valid @ModelAttribute("ajouterDelai") final AjouterDelaiDocumentFiscalView view, BindingResult result) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'un autre document fiscal");
 		}
 
 		final Long id = view.getIdDocumentFiscal();
@@ -382,7 +382,7 @@ public class AutreDocumentFiscalController {
 	public String annulerDelai(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'un autre document fiscal");
 		}
 
 		final DelaiDocumentFiscal delai = (DelaiDocumentFiscal) sessionFactory.getCurrentSession().get(DelaiDocumentFiscal.class, id);
@@ -406,7 +406,7 @@ public class AutreDocumentFiscalController {
 	public String ajouterQuittance(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des autres documents fiscaux.");
 		}
 
 		final AutreDocumentFiscal doc = getDocumentFiscal(id);
@@ -435,7 +435,7 @@ public class AutreDocumentFiscalController {
 	public String ajouterQuittance(@Valid @ModelAttribute("ajouterQuittance") final AjouterQuittanceDocumentFiscalView view, BindingResult result) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des autres documents fiscaux.");
 		}
 
 		if (result.hasErrors()) {
@@ -475,7 +475,7 @@ public class AutreDocumentFiscalController {
 	public String annulerQuittancement(@RequestParam("id") final long id) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des autres documents fiscaux.");
 		}
 
 		// Vérifie les paramètres
@@ -509,7 +509,7 @@ public class AutreDocumentFiscalController {
 	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final AutreDocumentFiscal doc = getDocumentFiscal(id);
@@ -538,7 +538,7 @@ public class AutreDocumentFiscalController {
 	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des autres documents fiscaux.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de désannulation des autres documents fiscaux.");
 		}
 
 		final AutreDocumentFiscal doc = getDocumentFiscal(id);
@@ -570,7 +570,7 @@ public class AutreDocumentFiscalController {
 	                                       HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de lettre de bienvenue.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour imprimer des duplicata de lettre de bienvenue.");
 		}
 
 		final AutreDocumentFiscal doc = getDocumentFiscal(id);

@@ -99,10 +99,10 @@ public class IdentificationController {
 		suspendu
 	}
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec pour la gestion de l'identification de contribuable";
-	private static final String ACCESS_DENIED_ACTION_MESSAGE = "Vous ne possédez aucun droit IfoSec procéder à cette action sur un message d'identification de contribuable";
-	private static final String ACCESS_DENIED_UNLOCK_MESSAGE = "Vous ne possédez aucun droit IfoSec pour déverouiller un message d'identification de contribuable";
-	private static final String ACCESS_DENIED_VISU_MESSAGE = "Vous ne possédez aucun droit IfoSec pour visualiser les messages d'identification de contribuable";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits pour la gestion de l'identification de contribuable";
+	private static final String ACCESS_DENIED_ACTION_MESSAGE = "Vous ne possédez pas les droits pour procéder à cette action sur un message d'identification de contribuable";
+	private static final String ACCESS_DENIED_UNLOCK_MESSAGE = "Vous ne possédez pas les droits pour déverouiller un message d'identification de contribuable";
+	private static final String ACCESS_DENIED_VISU_MESSAGE = "Vous ne possédez pas les droits pour visualiser les messages d'identification de contribuable";
 	private static final String TABLE_NAME = "message";
 	private static final int PAGE_SIZE = 25;
 	private static final String DEFAULT_FIELD = "id";
@@ -354,7 +354,7 @@ public class IdentificationController {
 			typeVisualisation = TiersCriteria.TypeVisualisation.LIMITEE;
 		}
 		else {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de consultation pour l'application Unireg.");
 		}
 		searchView.setTypeVisualisation(typeVisualisation);
 

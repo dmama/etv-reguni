@@ -70,7 +70,7 @@ public class TiersReactivationRecapManagerImpl implements TiersReactivationRecap
 
 		final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
 		if (!droitOk) {
-			throw new AccessDeniedException("Vous ne possédez pas les droit IfoSec de ré-activation des tiers de nature " + tiers.getNatureTiers());
+			throw new AccessDeniedException("Vous ne possédez par les droits de ré-activation des tiers de nature " + tiers.getNatureTiers());
 		}
 
 		activationService.reactiveTiers(tiers, tiersReactivationRecapView.getDateReactivation());

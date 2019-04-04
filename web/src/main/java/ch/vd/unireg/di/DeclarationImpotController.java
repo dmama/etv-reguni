@@ -317,10 +317,10 @@ public class DeclarationImpotController {
 				else {
 					throw new IllegalArgumentException("Cas non supporté...");
 				}
-				msg = String.format("Vous ne possédez pas le droit IfoSec %s des déclarations d'impôt des personnes %s.", droitSpecifique, qualificatifPersonnes);
+				msg = String.format("Vous ne possédez pas les droits %s des déclarations d'impôt des personnes %s.", droitSpecifique, qualificatifPersonnes);
 			}
 			else {
-				msg = String.format("Vous ne possédez pas les droits IfoSec nécessaires sur les déclarations d'impôt des personnes %s.", qualificatifPersonnes);
+				msg = String.format("Vous ne possédez pas les droits nécessaires sur les déclarations d'impôt des personnes %s.", qualificatifPersonnes);
 			}
 			throw new AccessDeniedException(msg);
 		}
@@ -336,7 +336,7 @@ public class DeclarationImpotController {
 	public String list(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, tiersId);
@@ -365,7 +365,7 @@ public class DeclarationImpotController {
 	public DeclarationImpotView detailsDI(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final DeclarationImpotOrdinaire decl = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
@@ -390,7 +390,7 @@ public class DeclarationImpotController {
 	public DeclarationView detailsLR(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final DeclarationImpotSource decl = hibernateTemplate.get(DeclarationImpotSource.class, id);
@@ -416,7 +416,7 @@ public class DeclarationImpotController {
 	public String annuler(@RequestParam("id") long id, @RequestParam(value = "tacheId", required = false) Long tacheId) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("vous ne possédez pas les droits de consultation pour l'application Unireg");
 		}
 
 		final Declaration decl = hibernateTemplate.get(Declaration.class, id);
@@ -456,7 +456,7 @@ public class DeclarationImpotController {
 	public String desannulerDeclarationImpotPP(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt PP.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de désannulation des déclarations d'impôt PP.");
 		}
 
 		return desannuler(id, DeclarationImpotOrdinairePP.class);
@@ -472,7 +472,7 @@ public class DeclarationImpotController {
 	public String desannulerDeclarationImpotPM(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt PM.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de désannulation des déclarations d'impôt PM.");
 		}
 
 		return desannuler(id, DeclarationImpotOrdinairePM.class);
@@ -518,7 +518,7 @@ public class DeclarationImpotController {
 	public String choisirDeclarationAEmettrePP(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
 
 		return choisirDeclarationAEmettre(tiersId, model, "imprimer-pp");
@@ -537,7 +537,7 @@ public class DeclarationImpotController {
 	public String choisirDeclarationAEmettrePM(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes morales.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'ajout des déclarations d'impôt sur les personnes morales.");
 		}
 
 		return choisirDeclarationAEmettre(tiersId, model, "imprimer-pm");
@@ -596,7 +596,7 @@ public class DeclarationImpotController {
 	                                    Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
@@ -670,7 +670,7 @@ public class DeclarationImpotController {
 	                                    Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes morales.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'ajout des déclarations d'impôt sur les personnes morales.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
@@ -760,7 +760,7 @@ public class DeclarationImpotController {
 
 		if ((view.getTypeContribuable() == ImprimerNouvelleDeclarationImpotView.TypeContribuable.PM && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM))
 				|| (view.getTypeContribuable() == ImprimerNouvelleDeclarationImpotView.TypeContribuable.PP && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP))) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'ajout des déclarations d'impôt.");
 		}
 		if (view.getTypeContribuable() == null) {
 			throw new IllegalArgumentException("Un type de contribuable doit être fourni...");
@@ -868,7 +868,7 @@ public class DeclarationImpotController {
 	public String suspendre(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_SUSPENDRE_PM)) {
-			throw new AccessDeniedException("Lous ne possédez pas le droit IfoSec de suspension des déclarations d'impôt.");
+			throw new AccessDeniedException("Lous ne possédez pas les droits de suspension des déclarations d'impôt.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -893,7 +893,7 @@ public class DeclarationImpotController {
 	public String quittancerDeclaration(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des déclarations d'impôt.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -930,7 +930,7 @@ public class DeclarationImpotController {
 	public String quittancerDeclaration(@Valid @ModelAttribute("command") final QuittancerDeclarationView view, BindingResult result, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des déclarations d'impôt.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(view.getId());
@@ -969,7 +969,7 @@ public class DeclarationImpotController {
 	public String annulerQuittancement(@RequestParam("id") final long id) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de quittancement des déclarations d'impôt.");
 		}
 
 		// Vérifie les paramètres
@@ -1002,7 +1002,7 @@ public class DeclarationImpotController {
 	public String annulerSuspension(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DESUSPENDRE_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'annulation de suspension des déclarations d'impôt.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'annulation de suspension des déclarations d'impôt.");
 		}
 
 		// Vérifie les paramètres
@@ -1031,7 +1031,7 @@ public class DeclarationImpotController {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM,
 		                                 Role.DI_LIBERER_PM, Role.DI_LIBERER_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt.");
+			throw new AccessDeniedException("vous ne possédez pas les droits d'édition des déclarations d'impôt.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -1105,7 +1105,7 @@ public class DeclarationImpotController {
 	public String sommerDeclarationImpotPersonnesPhysiques(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_SOM_PP, Role.DI_SOM_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt.");
+			throw new AccessDeniedException("vous ne possédez pas les droits de sommation des déclarations d'impôt.");
 		}
 
 		// Vérifie les paramètres
@@ -1134,7 +1134,7 @@ public class DeclarationImpotController {
 	public String choixDuplicataDeclarationPersonnesMorales(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -1161,7 +1161,7 @@ public class DeclarationImpotController {
 	                                                   BindingResult result, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
 		}
 
 		if (result.hasErrors()) {
@@ -1191,7 +1191,7 @@ public class DeclarationImpotController {
 	public String choixDuplicataDeclarationPersonnesPhysiques(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -1217,7 +1217,7 @@ public class DeclarationImpotController {
 	                                                     BindingResult result, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
 		}
 
 		if (result.hasErrors()) {
@@ -1339,7 +1339,7 @@ public class DeclarationImpotController {
 	public String editerEtatDelaiPP(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des demandes de délai sur les DI");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des demandes de délai sur les DI");
 		}
 
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, id);
@@ -1374,7 +1374,7 @@ public class DeclarationImpotController {
 	                                BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'une DI");
 		}
 
 		if (result.hasErrors()) {
@@ -1522,7 +1522,7 @@ public class DeclarationImpotController {
 	                               BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'une DI");
 		}
 
 		final Long id = view.getIdDeclaration();
@@ -1551,7 +1551,7 @@ public class DeclarationImpotController {
 	public String editerEtatDelaiPM(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des demandes de délai sur les DI");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des demandes de délai sur les DI");
 		}
 
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, id);
@@ -1586,7 +1586,7 @@ public class DeclarationImpotController {
 	                                BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
+			throw new AccessDeniedException("vous n'avez pas les droits de gestion des delais d'une DI");
 		}
 
 		if (result.hasErrors()) {
@@ -1685,7 +1685,7 @@ public class DeclarationImpotController {
 	public String libererDI(@RequestParam("id") long id, Model model) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit pour de libération des déclarations d'impôt");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de libération des déclarations d'impôt");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -1707,7 +1707,7 @@ public class DeclarationImpotController {
 	public String libererDeclaration(@RequestParam("idDocument") long idDeclaration, @RequestParam("motif") String motif) {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des déclarations d'impôt.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de libération des déclarations d'impôt.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);

@@ -128,7 +128,7 @@ public class CivilEntrepriseEditController {
 		if (tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'entreprises.");
 			}
 			checkEditionAutorisee((Entreprise) tiers);
 			final EntrepriseView view = entrepriseService.getEntreprise((Entreprise) tiers);
@@ -163,7 +163,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de raison sociale.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de raison sociale.");
 		}
 
 		return showAddRaisonSociale(model, new RaisonSocialeView.Add(entreprise.getNumero(), RegDate.get(), null, null));
@@ -191,7 +191,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de raison sociale.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de raison sociale.");
 		}
 
 		tiersService.addRaisonSocialeFiscale(entreprise, LiteralStringHelper.stripExtraSpacesAndBlanks(view.getRaisonSociale()), view.getDateDebut(), view.getDateFin());
@@ -210,7 +210,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(raisonSociale.getEntreprise());
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de raisons sociales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de raisons sociales.");
 		}
 
 		return showEditRaisonSociale(model, new RaisonSocialeView.Edit(raisonSociale));
@@ -240,7 +240,7 @@ public class CivilEntrepriseEditController {
 
 			final Autorisations auth = getAutorisations(entreprise);
 			if (!auth.isDonneesCiviles()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de raisons sociales.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de raisons sociales.");
 			}
 
 			final long ctbId = entreprise.getNumero();
@@ -264,7 +264,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de raisons sociales.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de suppression de raisons sociales.");
 		}
 
 		tiersService.annuleRaisonSocialeFiscale(raisonSociale);
@@ -285,7 +285,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de forme juridique.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de forme juridique.");
 		}
 
 		return showAddFormeJuridique(model, new FormeJuridiqueView.Add(entreprise.getNumero(), RegDate.get(), null, null));
@@ -314,7 +314,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de forme juridique.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de forme juridique.");
 		}
 
 		// on ajoute la forme juridique demandée
@@ -342,7 +342,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(formeJuridique.getEntreprise());
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de formes juridiques.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de formes juridiques.");
 		}
 
 		return showEditFormeJuridique(model, new FormeJuridiqueView.Edit(formeJuridique));
@@ -371,7 +371,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de formes juridiques.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de formes juridiques.");
 		}
 
 		if (formeJuridique.getFormeJuridique() != null && ! formeJuridique.getFormeJuridique().equals(view.getFormeJuridique())) {
@@ -395,7 +395,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de formes juridiques.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de suppression de formes juridiques.");
 		}
 
 		tiersService.annuleFormeJuridiqueFiscale(formeJuridique);
@@ -416,7 +416,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de capital.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de capital.");
 		}
 
 		return showAddCapital(model, new CapitalView.Add(entreprise.getNumero(), RegDate.get(), null, null, MontantMonetaire.CHF));
@@ -444,7 +444,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de capital.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de capital.");
 		}
 
 		tiersService.addCapitalFiscal(entreprise, view.getMontant(), StringUtils.upperCase(view.getMonnaie()), view.getDateDebut(), view.getDateFin());
@@ -463,7 +463,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(capital.getEntreprise());
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de capitaux.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de capitaux.");
 		}
 
 		return showEditCapital(model, new CapitalView.Edit(capital));
@@ -492,7 +492,7 @@ public class CivilEntrepriseEditController {
 		final Autorisations auth = getAutorisations(entreprise);
 
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de capitaux.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de capitaux.");
 		}
 
 		if (capital.getMontant() != null && ! (capital.getMontant().getMontant().equals(view.getMontant()) && capital.getMontant().getMonnaie().equals(view.getMonnaie()))) {
@@ -516,7 +516,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de capitaux.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de suppression de capitaux.");
 		}
 
 		tiersService.annuleCapitalFiscal(capital);
@@ -532,7 +532,7 @@ public class CivilEntrepriseEditController {
 		if (tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'entreprises.");
 			}
 			return showEditIdeEntreprise(model, new ContribuableInfosEntrepriseView((Entreprise) tiers), id);
 		}
@@ -567,7 +567,7 @@ public class CivilEntrepriseEditController {
 
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'entreprises.");
 			}
 		}
 		else {
@@ -598,7 +598,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de sieges.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de sieges.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -628,7 +628,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de sieges.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de création de sieges.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -649,7 +649,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(domicile.getEtablissement());
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de sieges.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de sieges.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
 		return showEditSiege(model, new SiegeView.Edit(domicile, entrepriseId, peutEditerDateFin));
@@ -678,7 +678,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de sieges.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition de sieges.");
 		}
 
 		if (!domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale()) || domicile.getDateFin() != view.getDateFin()) {
@@ -715,7 +715,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de sieges.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits de suppression de sieges.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(etablissement.getNumero());
@@ -738,7 +738,7 @@ public class CivilEntrepriseEditController {
 
 		final Autorisations auth = getAutorisations(tiers);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'entreprises.");
 		}
 
 		return showSecteurActivite(model, new EditSecteurActiviteEntrepriseView((Entreprise) tiers));
@@ -765,7 +765,7 @@ public class CivilEntrepriseEditController {
 		final Entreprise entreprise = (Entreprise) tiers;
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'édition d'entreprises.");
 		}
 
 		checkEditionAutorisee((Entreprise) tiers);

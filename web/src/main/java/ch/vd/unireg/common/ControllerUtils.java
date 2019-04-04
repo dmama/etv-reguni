@@ -15,7 +15,7 @@ public interface ControllerUtils {
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture sur le <b>dossier</b> du tiers spécifié.
 	 * <p/>
-	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.unireg.security.SecurityHelper#isGranted(ch.vd.unireg.security.Role)}
+	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits. Un ou plusieurs appels à la méthode {@link ch.vd.unireg.security.SecurityHelper#isGranted(ch.vd.unireg.security.Role)}
 	 * sont nécessaires en complément.
 	 *
 	 * @param tiersId le tiers dont on veut vérifier les droits d'accès au dossier.
@@ -28,7 +28,7 @@ public interface ControllerUtils {
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
 	 * <p/>
-	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.unireg.security.SecurityHelper#isGranted(ch.vd.unireg.security.Role)} sont nécessaires en
+	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits. Un ou plusieurs appels à la méthode {@link ch.vd.unireg.security.SecurityHelper#isGranted(ch.vd.unireg.security.Role)} sont nécessaires en
 	 * complément.
 	 *
 	 * @param tiersId le tiers dont on veut vérifier les droits d'accès au dossier.

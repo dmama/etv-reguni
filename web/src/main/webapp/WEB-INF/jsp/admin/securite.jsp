@@ -28,12 +28,12 @@
 							<li><c:out value="${p.code}"/> (<c:out value="${p.designation}"/>)</li>
 						</c:forEach>
 						</ul>
-						<%--@elvariable id="rolesIfoSecByPass" type="java.util.List<ch.vd.unireg.security.Role>"--%>
-						<c:if test="${not empty rolesIfoSecByPass}">
+						<%--@elvariable id="rolesSecuriteByPass" type="java.util.List<ch.vd.unireg.security.Role>"--%>
+						<c:if test="${not empty rolesSecuriteByPass}">
 							<span style="color: red;">(plus les procédures bypassées suivantes:
 								<ul>
-									<c:forEach items="${rolesIfoSecByPass}" var="r">
-										<li><c:out value="${r.ifosecCode}"/> (<c:out value="${r}"/>)</li>
+									<c:forEach items="${rolesSecuriteByPass}" var="r">
+										<li><c:out value="${r.codeProcedure}"/> (<c:out value="${r}"/>)</li>
 									</c:forEach>
 								</ul>
 							)</span>
@@ -43,8 +43,8 @@
 						<ul>
 						<c:forEach items="${roles}" var="r">
 							<authz:authorize access="hasAnyRole('${r}')">
-								<c:if test="${not empty r.ifosecCode}">
-									<li><c:out value="${r.ifosecCode}"/> (<c:out value="${r}"/>)</li>
+								<c:if test="${not empty r.codeProcedure}">
+									<li><c:out value="${r.codeProcedure}"/> (<c:out value="${r}"/>)</li>
 								</c:if>
 							</authz:authorize>
 						</c:forEach>

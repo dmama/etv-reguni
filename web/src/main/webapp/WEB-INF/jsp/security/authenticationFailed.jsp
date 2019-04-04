@@ -14,8 +14,8 @@
 			<p>Si le problème persiste, veuillez contacter votre administrateur.</p>
 		</c:if>
 		<c:if test="${exception != null}" >
-			<p>Le service de sécurité IfoSec peut être temporairement indisponible, ou un autre
-			problème empêche IfoSec de fonctionner correctement. Il est aussi
+			<p>Le service de sécurité peut être temporairement indisponible, ou un autre
+			problème empêche la sécurité de fonctionner correctement. Il est aussi
 			possible que vous ne possédez aucun droit d'accès à cette application.</p>
 			<h3>Veuillez patientez un instant et réessayer.</h3>
 			<p>Si le problème persiste, veuillez contacter votre administrateur.</p>
