@@ -116,6 +116,7 @@ public class TiersView {
 	private EtablissementView etablissement;
 	private String exceptionDonneesCiviles;
 
+	private RegDate dateDebutPremierExerciceCommercial;
 	private List<RegimeFiscalView> regimesFiscauxVD;
 	private List<RegimeFiscalView> regimesFiscauxCH;
 	private List<AllegementFiscalView> allegementsFiscaux;
@@ -153,8 +154,6 @@ public class TiersView {
 	private boolean civilSousControleACI;
 
 	private boolean bouclementsRenseignes;
-
-	private boolean dateDebutPremierExerciceRenseignee;
 
 	public boolean isPmOuEtablissement() {
 		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
@@ -356,6 +355,14 @@ public class TiersView {
 		this.etablissement = etablissement;
 	}
 
+	public RegDate getDateDebutPremierExerciceCommercial() {
+		return dateDebutPremierExerciceCommercial;
+	}
+
+	public void setDateDebutPremierExerciceCommercial(RegDate dateDebutPremierExerciceCommercial) {
+		this.dateDebutPremierExerciceCommercial = dateDebutPremierExerciceCommercial;
+	}
+
 	public List<RegimeFiscalView> getRegimesFiscauxVD() {
 		return regimesFiscauxVD;
 	}
@@ -392,17 +399,6 @@ public class TiersView {
 		return DateRangeHelper.rangeAt(exercicesCommerciaux, RegDate.get());
 	}
 
-	public RegDate getDateDebutPremierExerciceCommercial() {
-		if (!dateDebutPremierExerciceRenseignee) {
-			return null;
-		}
-		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
-			return exercicesCommerciaux.get(0).getDateDebut();
-		}
-		else {
-			return null;
-		}
-	}
 
 	public List<FlagEntrepriseView> getFlags() {
 		return flags;
@@ -778,8 +774,6 @@ public class TiersView {
 		this.communesImmeubles = communesImmeubles;
 	}
 
-
-
 	public void setBouclementsRenseignes(boolean bouclementsRenseignes) {
 		this.bouclementsRenseignes = bouclementsRenseignes;
 	}
@@ -787,17 +781,4 @@ public class TiersView {
 	public boolean isBouclementsRenseignes() {
 		return bouclementsRenseignes;
 	}
-
-	public boolean isDateDebutPremierExerciceRenseignee() {
-		return dateDebutPremierExerciceRenseignee;
-	}
-
-	public void setDateDebutPremierExerciceRenseignee(boolean dateDebutPremierExerciceRenseignee) {
-		this.dateDebutPremierExerciceRenseignee = dateDebutPremierExerciceRenseignee;
-	}
-
-	public boolean isSansInformationsDeBouclements(){
-		return !bouclementsRenseignes && !dateDebutPremierExerciceRenseignee;
-	}
-
 }

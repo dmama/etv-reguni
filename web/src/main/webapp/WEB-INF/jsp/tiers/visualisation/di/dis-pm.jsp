@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersView"--%>
 <c:set var="entreprise" value="${command.entreprise}"/>
 <unireg:setAuth var="autorisations" tiersId="${entreprise.id}"/>
 
@@ -17,14 +18,13 @@
 	</c:if>
 	<fieldset>
 		<legend><span><fmt:message key="label.bouclements"/></span></legend>
-		<%--<!-- <c:if test="${not empty command.exercicesCommerciaux}"> -->--%>
 			<table>
 				<unireg:nextRowClass reset="1"/>
 				<tr class="<unireg:nextRowClass/>">
 					<td width="25%"><fmt:message key="label.date.debut.premier.exercice.commercial"/>&nbsp;:</td>
                     <td>
                     <c:choose>
-                        <c:when test="${!command.dateDebutPremierExerciceRenseignee}">
+                        <c:when test="${command.dateDebutPremierExerciceCommercial == null}">
                             <span style="font-style: italic;"><fmt:message key="label.bouclements.non.renseigne"/></span>
                         </c:when>
                         <c:otherwise>

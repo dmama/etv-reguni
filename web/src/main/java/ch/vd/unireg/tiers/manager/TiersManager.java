@@ -660,7 +660,7 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setExercicesCommerciaux(exercices);
 		//Informations de bouclement et de d'exercice commercial renseigné
 		tiersView.setBouclementsRenseignes(entreprise.hasBouclements());
-		tiersView.setDateDebutPremierExerciceRenseignee(entreprise.hasDateDebutPremierExercice());
+		tiersView.setDateDebutPremierExerciceCommercial(entreprise.getDateDebutPremierExerciceCommercial());
 
 		// les flags d'entreprise
 		final Set<FlagEntreprise> flags = entreprise.getFlags();
