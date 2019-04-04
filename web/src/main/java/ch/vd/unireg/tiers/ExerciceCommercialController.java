@@ -324,49 +324,49 @@ public class ExerciceCommercialController {
 			return "tiers/edition/pm/bouclements/list";
 		}
 
+		final RegDate ancienneDate = view.getAncienneDate();
+		final RegDate nouvelleDate = view.getNouvelleDate();
+
 		// pas de changement -> pas de changement
-		if (view.getAncienneDate() == view.getNouvelleDate()) {
+		if (ancienneDate == nouvelleDate) {
 			Flash.message("Aucun changement apporté.", 4000);
 			return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
 		}
 
 		// premier contrôle : s'il y a une DI non-annulée qui intersecte la période entre les deux dates, on refuse la modification
 		final List<DeclarationImpotOrdinairePM> dis = getDeclarationsNonAnnuleesTriees(entreprise);
-		final DateRange deplacement = new DateRangeHelper.Range(RegDateHelper.minimum(view.getAncienneDate(), view.getNouvelleDate(), NullDateBehavior.LATEST),
-		                                                        RegDateHelper.maximum(view.getAncienneDate(), view.getNouvelleDate(), NullDateBehavior.EARLIEST));
+		final DateRange deplacement = new DateRangeHelper.Range(RegDateHelper.minimum(ancienneDate, nouvelleDate, NullDateBehavior.LATEST),
+		                                                        RegDateHelper.maximum(ancienneDate, nouvelleDate, NullDateBehavior.EARLIEST));
 		if (DateRangeHelper.intersect(deplacement, dis)) {
 			throw new ActionException(String.format("Le déplacement de la date de bouclement du %s au %s est impossible car au moins une déclaration d'impôt est impactée.",
-			                                        RegDateHelper.dateToDisplayString(view.getAncienneDate()),
-			                                        RegDateHelper.dateToDisplayString(view.getNouvelleDate())));
+			                                        RegDateHelper.dateToDisplayString(ancienneDate),
+			                                        RegDateHelper.dateToDisplayString(nouvelleDate)));
 		}
 
 		// on fait la modification demandée
-		// 1. récupération des anciennes dates de bouclement
-		final Set<Bouclement> bouclements = entreprise.getBouclements();
-
-		// 2. remplacement de l'ancienne date par la nouvelle et impact jusqu'à la prochaine période fixée
+		// 1. on détermine les nouvelles dates de bouclement (remplacement de l'ancienne date par la nouvelle et impact jusqu'à la prochaine période fixée)
 		final List<ExerciceCommercial> anciensExercicesCommerciaux = tiersService.getExercicesCommerciaux(entreprise);
-		final RegDate prochainBouclementFixeApresNouvelleDate = getPremierBouclementFixeApres(view.getNouvelleDate(), dis);
+		final RegDate prochainBouclementFixeApresNouvelleDate = getPremierBouclementFixeApres(nouvelleDate, dis);
 		final SortedSet<RegDate> nouvellesDatesBouclement = new TreeSet<>();
 		for (ExerciceCommercial exercice : anciensExercicesCommerciaux) {
-			if (!deplacement.isValidAt(exercice.getDateFin()) && !RegDateHelper.isBetween(exercice.getDateFin(), view.getNouvelleDate(), prochainBouclementFixeApresNouvelleDate, NullDateBehavior.LATEST)) {
+			if (!deplacement.isValidAt(exercice.getDateFin()) && !RegDateHelper.isBetween(exercice.getDateFin(), nouvelleDate, prochainBouclementFixeApresNouvelleDate, NullDateBehavior.LATEST)) {
 				nouvellesDatesBouclement.add(exercice.getDateFin());
 			}
 		}
-		nouvellesDatesBouclement.add(view.getNouvelleDate());
+		nouvellesDatesBouclement.add(nouvelleDate);
 		if (prochainBouclementFixeApresNouvelleDate != null) {
-			for (RegDate date = view.getNouvelleDate().addYears(1); date.compareTo(prochainBouclementFixeApresNouvelleDate) < 0; date = date.addYears(1)) {
+			for (RegDate date = nouvelleDate.addYears(1); date.compareTo(prochainBouclementFixeApresNouvelleDate) < 0; date = date.addYears(1)) {
 				nouvellesDatesBouclement.add(date);
 			}
 		}
 
-		// 3. re-calcul des cycles
+		// 2. re-calcul des cycles
 		final List<Bouclement> nouveauxBouclements = bouclementService.extractBouclementsDepuisDates(nouvellesDatesBouclement, 12);
 
-		// 4. comparaison avant/après et application des différences
+		// 3. comparaison avant/après et application des différences
 		BouclementHelper.resetBouclements(entreprise, nouveauxBouclements);
 
-		// 5. contrôle final des dates de bouclements
+		// 4. contrôle final des dates de bouclements
 		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement, entreprise);
 
 
@@ -374,7 +374,7 @@ public class ExerciceCommercialController {
 		hibernateTemplate.flush();
 
 		// si on est ici, c'est que la validation s'est bien passée
-		Flash.message(String.format("Bouclement du %s déplacé au %s.", RegDateHelper.dateToDisplayString(view.getAncienneDate()), RegDateHelper.dateToDisplayString(view.getNouvelleDate())), 4000);
+		Flash.message(String.format("Bouclement du %s déplacé au %s.", RegDateHelper.dateToDisplayString(ancienneDate), RegDateHelper.dateToDisplayString(nouvelleDate)), 4000);
 		return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
 	}
 
