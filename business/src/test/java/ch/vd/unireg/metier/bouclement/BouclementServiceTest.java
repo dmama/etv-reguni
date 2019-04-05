@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
@@ -17,9 +16,11 @@ import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.type.DayMonth;
 
-/**
- * TODO pour le moment, on n'a pas besoin de spring et de tout ça, mais cela pourrait changer...
- */
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 public class BouclementServiceTest extends WithoutSpringTest {
 
 	private BouclementService service;
@@ -40,18 +41,18 @@ public class BouclementServiceTest extends WithoutSpringTest {
 
 	@Test
 	public void testDateProchainBouclementSansBouclement() throws Exception {
-		Assert.assertNull(service.getDateProchainBouclement(null, RegDate.get(), true));
-		Assert.assertNull(service.getDateProchainBouclement(null, RegDate.get(), false));
-		Assert.assertNull(service.getDateProchainBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), true));
-		Assert.assertNull(service.getDateProchainBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), false));
+		assertNull(service.getDateProchainBouclement(null, RegDate.get(), true));
+		assertNull(service.getDateProchainBouclement(null, RegDate.get(), false));
+		assertNull(service.getDateProchainBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), true));
+		assertNull(service.getDateProchainBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), false));
 	}
 
 	@Test
 	public void testDateDernierBouclementSansBouclement() throws Exception {
-		Assert.assertNull(service.getDateDernierBouclement(null, RegDate.get(), true));
-		Assert.assertNull(service.getDateDernierBouclement(null, RegDate.get(), false));
-		Assert.assertNull(service.getDateDernierBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), true));
-		Assert.assertNull(service.getDateDernierBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), false));
+		assertNull(service.getDateDernierBouclement(null, RegDate.get(), true));
+		assertNull(service.getDateDernierBouclement(null, RegDate.get(), false));
+		assertNull(service.getDateDernierBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), true));
+		assertNull(service.getDateDernierBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), false));
 	}
 
 	@Test
@@ -59,10 +60,10 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
 		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 12, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 12, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), true));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 12, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 12, 31), false));
 	}
 
 	@Test
@@ -70,10 +71,10 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
 		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2014, 1, 1), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2014, 1, 1), false));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2014, 12, 31), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2014, 12, 31), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2014, 1, 1), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2014, 1, 1), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2014, 12, 31), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2014, 12, 31), false));
 	}
 
 	@Test
@@ -81,14 +82,14 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
 		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertEquals(date(2016, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2016, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2016, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2017, 3, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2017, 3, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
+		assertEquals(date(2016, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2016, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2016, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2017, 3, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2017, 3, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
 	}
 
 	@Test
@@ -96,14 +97,14 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
 		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2016, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2016, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2016, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2016, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
 	}
 
 	/**
@@ -115,16 +116,16 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),
 		                                                   buildTransientBouclement(date(2015, 4, 1), DayMonth.get(12, 31), 12));
 
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), true));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), true));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
 	}
 
 	/**
@@ -136,18 +137,18 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),
 		                                                   buildTransientBouclement(date(2015, 4, 1), DayMonth.get(12, 31), 12));
 
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), true));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), true));
+		assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
 	}
 
 	@Test
@@ -155,16 +156,16 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// dates des bouclements attendues 31.03.2013, 31.03.2014...
 		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2013, 3, 31), DayMonth.get(3, 31), 12));
 
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 12), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 12), false));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 30), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 30), false));
-		Assert.assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 3, 31), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 31), false));
-		Assert.assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 5, 12), true));
-		Assert.assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 5, 12), false));
-		Assert.assertEquals(date(2014, 3, 31), service.getDateDernierBouclement(bouclements, date(2014, 5, 12), true));
-		Assert.assertEquals(date(2014, 3, 31), service.getDateDernierBouclement(bouclements, date(2014, 5, 12), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 12), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 12), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 30), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 30), false));
+		assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 3, 31), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 31), false));
+		assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 5, 12), true));
+		assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 5, 12), false));
+		assertEquals(date(2014, 3, 31), service.getDateDernierBouclement(bouclements, date(2014, 5, 12), true));
+		assertEquals(date(2014, 3, 31), service.getDateDernierBouclement(bouclements, date(2014, 5, 12), false));
 	}
 
 	/**
@@ -176,16 +177,16 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),
 		                                                   buildTransientBouclement(date(2015, 12, 1), DayMonth.get(12, 31), 12));
 
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), true));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), true));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2016, 12, 31), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
 	}
 
 	/**
@@ -197,18 +198,18 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),
 		                                                   buildTransientBouclement(date(2015, 12, 1), DayMonth.get(12, 31), 12));
 
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), true));
-		Assert.assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2015, 12, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), true));
+		assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
 	}
 
 	/**
@@ -221,18 +222,18 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		                                                   buildTransientBouclement(date(2015, 12, 1), DayMonth.get(6, 30), 12),
 		                                                   buildTransientBouclement(date(2016, 5, 1), DayMonth.get(9, 30), 12));
 
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), true));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), false));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 9, 30), true));
-		Assert.assertEquals(date(2017, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 9, 30), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), true));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), true));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 5, 31), false));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2016, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 9, 30), true));
+		assertEquals(date(2017, 9, 30), service.getDateProchainBouclement(bouclements, date(2016, 9, 30), false));
 	}
 
 	/**
@@ -245,58 +246,58 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		                                                   buildTransientBouclement(date(2015, 12, 1), DayMonth.get(6, 30), 12),
 		                                                   buildTransientBouclement(date(2016, 5, 1), DayMonth.get(9, 30), 12));
 
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
-		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2016, 9, 30), true));
-		Assert.assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 9, 30), false));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), true));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
-		Assert.assertEquals(date(2017, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 9, 30), true));
-		Assert.assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 9, 30), false));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 3, 31), true));
+		assertNull(service.getDateDernierBouclement(bouclements, date(2015, 3, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 5, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2015, 12, 31), false));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 6, 30), false));
+		assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2016, 9, 30), true));
+		assertEquals(date(2015, 3, 31), service.getDateDernierBouclement(bouclements, date(2016, 9, 30), false));
+		assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), true));
+		assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
+		assertEquals(date(2017, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 9, 30), true));
+		assertEquals(date(2016, 9, 30), service.getDateDernierBouclement(bouclements, date(2017, 9, 30), false));
 	}
 
 	@Test
 	public void testDateProchainBouclementFinFevrier() throws Exception {
 		// dates de bouclements attendues : 28.02.2014, 28.02.2015, 29.02.2016, 28.02.2017...
 		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2014, 2, 28), DayMonth.get(2, 28), 12));
-		Assert.assertEquals(date(2014, 2, 28), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), false));
-		Assert.assertEquals(date(2015, 2, 28), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
-		Assert.assertEquals(date(2016, 2, 29), service.getDateProchainBouclement(bouclements, date(2016, 1, 1), false));
-		Assert.assertEquals(date(2017, 2, 28), service.getDateProchainBouclement(bouclements, date(2017, 1, 1), false));
+		assertEquals(date(2014, 2, 28), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), false));
+		assertEquals(date(2015, 2, 28), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
+		assertEquals(date(2016, 2, 29), service.getDateProchainBouclement(bouclements, date(2016, 1, 1), false));
+		assertEquals(date(2017, 2, 28), service.getDateProchainBouclement(bouclements, date(2017, 1, 1), false));
 	}
 
 	@Test
 	public void testExtractionExercicesCommerciauxSansRognageEnAbsenceDeBouclement() throws Exception {
 		final DateRange range = new DateRangeHelper.Range(date(2003, 6, 12), date(2006, 2, 14));
 		final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(null, range, true);
-		Assert.assertNotNull(exs);
-		Assert.assertEquals(1, exs.size());
+		assertNotNull(exs);
+		assertEquals(1, exs.size());
 
 		final ExerciceCommercial ex = exs.get(0);
-		Assert.assertNotNull(ex);
-		Assert.assertEquals(range.getDateDebut(), ex.getDateDebut());
-		Assert.assertEquals(range.getDateFin(), ex.getDateFin());
+		assertNotNull(ex);
+		assertEquals(range.getDateDebut(), ex.getDateDebut());
+		assertEquals(range.getDateFin(), ex.getDateFin());
 	}
 
 	@Test
 	public void testExtractionExercicesCommerciauxAvecRognageEnAbsenceDeBouclement() throws Exception {
 		final DateRange range = new DateRangeHelper.Range(date(2003, 6, 12), date(2006, 2, 14));
 		final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(null, range, false);
-		Assert.assertNotNull(exs);
-		Assert.assertEquals(1, exs.size());
+		assertNotNull(exs);
+		assertEquals(1, exs.size());
 
 		final ExerciceCommercial ex = exs.get(0);
-		Assert.assertNotNull(ex);
-		Assert.assertEquals(range.getDateDebut(), ex.getDateDebut());
-		Assert.assertEquals(range.getDateFin(), ex.getDateFin());
+		assertNotNull(ex);
+		assertEquals(range.getDateDebut(), ex.getDateDebut());
+		assertEquals(range.getDateFin(), ex.getDateFin());
 	}
 
 	@Test
@@ -310,31 +311,31 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2017, 12, 31));
 			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, true);
-			Assert.assertNotNull(exs);
-			Assert.assertEquals(4, exs.size());
+			assertNotNull(exs);
+			assertEquals(4, exs.size());
 			{
 				final ExerciceCommercial ex = exs.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2014, 1, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2014, 1, 1), ex.getDateDebut());
+				assertEquals(date(2015, 3, 31), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(1);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2016, 9, 30), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2015, 4, 1), ex.getDateDebut());
+				assertEquals(date(2016, 9, 30), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(2);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2016, 10, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2017, 9, 30), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2016, 10, 1), ex.getDateDebut());
+				assertEquals(date(2017, 9, 30), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(3);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2017, 10, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2018, 9, 30), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2017, 10, 1), ex.getDateDebut());
+				assertEquals(date(2018, 9, 30), ex.getDateFin());
 			}
 		}
 
@@ -342,13 +343,13 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
 			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, true);
-			Assert.assertNotNull(exs);
-			Assert.assertEquals(1, exs.size());
+			assertNotNull(exs);
+			assertEquals(1, exs.size());
 			{
 				final ExerciceCommercial ex = exs.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2014, 1, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2014, 1, 1), ex.getDateDebut());
+				assertEquals(date(2015, 3, 31), ex.getDateFin());
 			}
 		}
 
@@ -356,19 +357,19 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2015, 1, 1), date(2015, 12, 31));
 			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, true);
-			Assert.assertNotNull(exs);
-			Assert.assertEquals(2, exs.size());
+			assertNotNull(exs);
+			assertEquals(2, exs.size());
 			{
 				final ExerciceCommercial ex = exs.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2015, 1, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2015, 1, 1), ex.getDateDebut());
+				assertEquals(date(2015, 3, 31), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(1);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2016, 9, 30), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2015, 4, 1), ex.getDateDebut());
+				assertEquals(date(2016, 9, 30), ex.getDateFin());
 			}
 		}
 	}
@@ -384,31 +385,31 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2017, 12, 31));
 			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, false);
-			Assert.assertNotNull(exs);
-			Assert.assertEquals(4, exs.size());
+			assertNotNull(exs);
+			assertEquals(4, exs.size());
 			{
 				final ExerciceCommercial ex = exs.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2014, 1, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2014, 1, 1), ex.getDateDebut());
+				assertEquals(date(2015, 3, 31), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(1);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2016, 9, 30), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2015, 4, 1), ex.getDateDebut());
+				assertEquals(date(2016, 9, 30), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(2);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2016, 10, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2017, 9, 30), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2016, 10, 1), ex.getDateDebut());
+				assertEquals(date(2017, 9, 30), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(3);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2017, 10, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2017, 12, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2017, 10, 1), ex.getDateDebut());
+				assertEquals(date(2017, 12, 31), ex.getDateFin());
 			}
 		}
 
@@ -416,13 +417,13 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
 			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, false);
-			Assert.assertNotNull(exs);
-			Assert.assertEquals(1, exs.size());
+			assertNotNull(exs);
+			assertEquals(1, exs.size());
 			{
 				final ExerciceCommercial ex = exs.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2014, 1, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2014, 12, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2014, 1, 1), ex.getDateDebut());
+				assertEquals(date(2014, 12, 31), ex.getDateFin());
 			}
 		}
 
@@ -430,34 +431,34 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2015, 1, 1), date(2015, 12, 31));
 			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, false);
-			Assert.assertNotNull(exs);
-			Assert.assertEquals(2, exs.size());
+			assertNotNull(exs);
+			assertEquals(2, exs.size());
 			{
 				final ExerciceCommercial ex = exs.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2015, 1, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2015, 1, 1), ex.getDateDebut());
+				assertEquals(date(2015, 3, 31), ex.getDateFin());
 			}
 			{
 				final ExerciceCommercial ex = exs.get(1);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
-				Assert.assertEquals(date(2015, 12, 31), ex.getDateFin());
+				assertNotNull(ex);
+				assertEquals(date(2015, 4, 1), ex.getDateDebut());
+				assertEquals(date(2015, 12, 31), ex.getDateFin());
 			}
 		}
 	}
 
 	@Test
 	public void testExtractionBouclementsDepuisDatesVides() throws Exception {
-		Assert.assertEquals(0, service.extractBouclementsDepuisDates(null, 12).size());
-		Assert.assertEquals(0, service.extractBouclementsDepuisDates(Collections.<RegDate>emptyList(), 12).size());
-		Assert.assertEquals(0, service.extractBouclementsDepuisDates(Collections.<RegDate>singletonList(null), 12).size());
+		assertEquals(0, service.extractBouclementsDepuisDates(null, 12).size());
+		assertEquals(0, service.extractBouclementsDepuisDates(Collections.<RegDate>emptyList(), 12).size());
+		assertEquals(0, service.extractBouclementsDepuisDates(Collections.<RegDate>singletonList(null), 12).size());
 	}
 
 	/**
-	 * Vérification que toutes les dates générées par le bouclement entre la date minimale et la date maximale (comprises) de la liste fournie
-	 * sont justement celles de la liste fournie...
-	 * @param origin dates d'origine
+	 * Vérification que toutes les dates générées par le bouclement entre la date minimale et la date maximale (comprises) de la liste fournie sont justement celles de la liste fournie...
+	 *
+	 * @param origin            dates d'origine
 	 * @param bouclementsMigres bouclements générés à partir de ces dates
 	 */
 	private void checkDatesFinBouclementRegenerees(Collection<RegDate> origin, List<Bouclement> bouclementsMigres, RegDate dateProchainBouclement) {
@@ -474,10 +475,10 @@ public class BouclementServiceTest extends WithoutSpringTest {
 				break;
 			}
 		}
-		Assert.assertEquals(originSet, recomputedSet);
+		assertEquals(originSet, recomputedSet);
 
 		final RegDate prochainBouclementCalcule = service.getDateProchainBouclement(bouclementsMigres, originSet.last(), false);
-		Assert.assertEquals(dateProchainBouclement, prochainBouclementCalcule);
+		assertEquals(dateProchainBouclement, prochainBouclementCalcule);
 	}
 
 	@Test
@@ -486,38 +487,38 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		{
 			final List<RegDate> dates = Collections.singletonList(date(2015, 12, 31));
 			final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-			Assert.assertNotNull(bouclements);
+			assertNotNull(bouclements);
 			checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 12, 31));
 
-			Assert.assertEquals(1, bouclements.size());
+			assertEquals(1, bouclements.size());
 			{
 				final Bouclement b = bouclements.get(0);
-				Assert.assertNotNull(b);
-				Assert.assertFalse(b.isAnnule());
-				Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-				Assert.assertEquals(date(2015, 12, 1), b.getDateDebut());
-				Assert.assertEquals(12, b.getPeriodeMois());
-				Assert.assertNull(b.getId());
-				Assert.assertNull(b.getEntreprise());
+				assertNotNull(b);
+				assertFalse(b.isAnnule());
+				assertEquals(DayMonth.get(12, 31), b.getAncrage());
+				assertEquals(date(2015, 12, 1), b.getDateDebut());
+				assertEquals(12, b.getPeriodeMois());
+				assertNull(b.getId());
+				assertNull(b.getEntreprise());
 			}
 		}
 		// trimestriel
 		{
 			final List<RegDate> dates = Collections.singletonList(date(2015, 12, 31));
 			final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 3);
-			Assert.assertNotNull(bouclements);
+			assertNotNull(bouclements);
 			checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 3, 31));
 
-			Assert.assertEquals(1, bouclements.size());
+			assertEquals(1, bouclements.size());
 			{
 				final Bouclement b = bouclements.get(0);
-				Assert.assertNotNull(b);
-				Assert.assertFalse(b.isAnnule());
-				Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-				Assert.assertEquals(date(2015, 12, 1), b.getDateDebut());
-				Assert.assertEquals(3, b.getPeriodeMois());
-				Assert.assertNull(b.getId());
-				Assert.assertNull(b.getEntreprise());
+				assertNotNull(b);
+				assertFalse(b.isAnnule());
+				assertEquals(DayMonth.get(12, 31), b.getAncrage());
+				assertEquals(date(2015, 12, 1), b.getDateDebut());
+				assertEquals(3, b.getPeriodeMois());
+				assertNull(b.getId());
+				assertNull(b.getEntreprise());
 			}
 		}
 	}
@@ -526,19 +527,19 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsDepuisDatesAnnuellesMilieuDeMois() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2014, 1, 12), date(2015, 1, 12), date(2016, 1, 12));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2017, 1, 12));
 
-		Assert.assertEquals(1, bouclements.size());
+		assertEquals(1, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(1, 12), b.getAncrage());
-			Assert.assertEquals(date(2014, 1, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(1, 12), b.getAncrage());
+			assertEquals(date(2014, 1, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -546,29 +547,29 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsDepuisDatesAnnuellesMilieuDeMoisAvecPeriodiciteFinaleDifferenteDemandee() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2014, 1, 12), date(2015, 1, 12), date(2016, 1, 12));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 5);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 6, 12));
 
-		Assert.assertEquals(2, bouclements.size());
+		assertEquals(2, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(1, 12), b.getAncrage());
-			Assert.assertEquals(date(2014, 1, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(1, 12), b.getAncrage());
+			assertEquals(date(2014, 1, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(1, 12), b.getAncrage());
-			Assert.assertEquals(date(2016, 1, 1), b.getDateDebut());
-			Assert.assertEquals(5, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(1, 12), b.getAncrage());
+			assertEquals(date(2016, 1, 1), b.getDateDebut());
+			assertEquals(5, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -576,19 +577,19 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsDepuisDatesAnnuellesFinDeMois() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2014, 1, 31), date(2015, 1, 31), date(2016, 1, 31));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2017, 1, 31));
 
-		Assert.assertEquals(1, bouclements.size());
+		assertEquals(1, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(1, 31), b.getAncrage());
-			Assert.assertEquals(date(2014, 1, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(1, 31), b.getAncrage());
+			assertEquals(date(2014, 1, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -596,19 +597,19 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsDepuisDatesMensuellesFinDeMois() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2016, 1, 31), date(2016, 2, 29), date(2016, 3, 31), date(2016, 4, 30));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 1);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 5, 31));
 
-		Assert.assertEquals(1, bouclements.size());
+		assertEquals(1, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(1, 31), b.getAncrage());
-			Assert.assertEquals(date(2016, 1, 1), b.getDateDebut());
-			Assert.assertEquals(1, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(1, 31), b.getAncrage());
+			assertEquals(date(2016, 1, 1), b.getDateDebut());
+			assertEquals(1, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -616,19 +617,19 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsDepuisDatesAnnuellesFinDeMoisFevrier() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2014, 2, 28), date(2015, 2, 28), date(2016, 2, 29));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2017, 2, 28));
 
-		Assert.assertEquals(1, bouclements.size());
+		assertEquals(1, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(2, 28), b.getAncrage());
-			Assert.assertEquals(date(2014, 2, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(2, 28), b.getAncrage());
+			assertEquals(date(2014, 2, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -636,29 +637,29 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsChangementAncrageSansChangerPeriodeTransitionPlusPetite() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2012, 3, 31), date(2013, 3, 31), date(2013, 12, 31), date(2014, 12, 31));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2015, 12, 31));
 
-		Assert.assertEquals(2, bouclements.size());
+		assertEquals(2, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(3, 31), b.getAncrage());
-			Assert.assertEquals(date(2012, 3, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(3, 31), b.getAncrage());
+			assertEquals(date(2012, 3, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2013, 12, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2013, 12, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -666,29 +667,29 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsChangementAncrageSansChangerPeriodeTransitionPlusGrande() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2012, 3, 31), date(2013, 3, 31), date(2014, 6, 30), date(2015, 6, 30));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 6, 30));
 
-		Assert.assertEquals(2, bouclements.size());
+		assertEquals(2, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(3, 31), b.getAncrage());
-			Assert.assertEquals(date(2012, 3, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(3, 31), b.getAncrage());
+			assertEquals(date(2012, 3, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(6, 30), b.getAncrage());
-			Assert.assertEquals(date(2014, 3, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(6, 30), b.getAncrage());
+			assertEquals(date(2014, 3, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -696,49 +697,49 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsChangementsArbitrairesGlobalementAnnuels() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2012, 3, 31), date(2013, 3, 15), date(2014, 6, 30), date(2015, 6, 15));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 6, 15));
 
-		Assert.assertEquals(4, bouclements.size());
+		assertEquals(4, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(3, 31), b.getAncrage());
-			Assert.assertEquals(date(2012, 3, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(3, 31), b.getAncrage());
+			assertEquals(date(2012, 3, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(3, 15), b.getAncrage());
-			Assert.assertEquals(date(2013, 3, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(3, 15), b.getAncrage());
+			assertEquals(date(2013, 3, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(2);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(6, 30), b.getAncrage());
-			Assert.assertEquals(date(2014, 3, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(6, 30), b.getAncrage());
+			assertEquals(date(2014, 3, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(3);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(6, 15), b.getAncrage());
-			Assert.assertEquals(date(2015, 6, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(6, 15), b.getAncrage());
+			assertEquals(date(2015, 6, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -746,49 +747,49 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsChangementsArbitraires() throws Exception {
 		final List<RegDate> dates = Arrays.asList(date(2012, 3, 31), date(2013, 4, 15), date(2014, 2, 28), date(2015, 10, 15));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 10, 15));
 
-		Assert.assertEquals(4, bouclements.size());
+		assertEquals(4, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(3, 31), b.getAncrage());
-			Assert.assertEquals(date(2012, 3, 1), b.getDateDebut());
-			Assert.assertEquals(13, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(3, 31), b.getAncrage());
+			assertEquals(date(2012, 3, 1), b.getDateDebut());
+			assertEquals(13, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(4, 15), b.getAncrage());
-			Assert.assertEquals(date(2013, 4, 1), b.getDateDebut());
-			Assert.assertEquals(11, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(4, 15), b.getAncrage());
+			assertEquals(date(2013, 4, 1), b.getDateDebut());
+			assertEquals(11, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(2);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(2, 28), b.getAncrage());
-			Assert.assertEquals(date(2014, 2, 1), b.getDateDebut());
-			Assert.assertEquals(20, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(2, 28), b.getAncrage());
+			assertEquals(date(2014, 2, 1), b.getDateDebut());
+			assertEquals(20, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(3);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(10, 15), b.getAncrage());
-			Assert.assertEquals(date(2015, 10, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(10, 15), b.getAncrage());
+			assertEquals(date(2015, 10, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -800,39 +801,39 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// il manque 31.12.2013 dans la liste
 		final List<RegDate> dates = Arrays.asList(date(2011, 12, 31), date(2012, 12, 31), date(2014, 12, 31));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2015, 12, 31));
 
-		Assert.assertEquals(3, bouclements.size());
+		assertEquals(3, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2011, 12, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2011, 12, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2012, 12, 1), b.getDateDebut());
-			Assert.assertEquals(24, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2012, 12, 1), b.getDateDebut());
+			assertEquals(24, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(2);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2014, 12, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2014, 12, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 
@@ -844,39 +845,39 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// il manque 31.12.2013 dans la liste
 		final List<RegDate> dates = Arrays.asList(date(2011, 12, 31), date(2012, 12, 31), date(2014, 12, 31), date(2015, 12, 31));
 		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
-		Assert.assertNotNull(bouclements);
+		assertNotNull(bouclements);
 		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 12, 31));
 
-		Assert.assertEquals(3, bouclements.size());
+		assertEquals(3, bouclements.size());
 		{
 			final Bouclement b = bouclements.get(0);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2011, 12, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2011, 12, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(1);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2012, 12, 1), b.getDateDebut());
-			Assert.assertEquals(24, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2012, 12, 1), b.getDateDebut());
+			assertEquals(24, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 		{
 			final Bouclement b = bouclements.get(2);
-			Assert.assertNotNull(b);
-			Assert.assertFalse(b.isAnnule());
-			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
-			Assert.assertEquals(date(2015, 12, 1), b.getDateDebut());
-			Assert.assertEquals(12, b.getPeriodeMois());
-			Assert.assertNull(b.getId());
-			Assert.assertNull(b.getEntreprise());
+			assertNotNull(b);
+			assertFalse(b.isAnnule());
+			assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			assertEquals(date(2015, 12, 1), b.getDateDebut());
+			assertEquals(12, b.getPeriodeMois());
+			assertNull(b.getId());
+			assertNull(b.getEntreprise());
 		}
 	}
 }
