@@ -828,11 +828,13 @@ public class MockTiersService implements TiersService {
 		return null;
 	}
 
+	@NotNull
 	@Override
 	public List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise) {
 		return null;
 	}
 
+	@Nullable
 	@Override
 	public ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date) {
 		return null;

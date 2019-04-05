@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -14,6 +15,24 @@ import ch.vd.unireg.tiers.Entreprise;
  * Service de fourniture d'information autour des bouclements / exercices commerciaux + mise-à-jour des données relatives sur les entreprises.
  */
 public interface BouclementService {
+
+	/**
+	 * Ceci est la méthode officielle de calcul des exercices commerciaux d'une entreprise (notamment en ce qui concerne la toute première date et la toute dernière)
+	 *
+	 * @param entreprise une entreprise
+	 * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice courant ou, s'il n'y en a plus, le dernier exercice connu)
+	 */
+	@NotNull
+	List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise);
+
+	/**
+	 * @param entreprise une entreprise
+	 * @param date       date de référence
+	 * @return L'exercice commercial de cette entreprise valide à la date donnée (si cette date est future et que l'exercice courant ne la contient pas, alors l'exercice commercial retourné pourra ne pas être présent dans la liste fournie par {@link
+	 * #getExercicesCommerciaux(Entreprise)})
+	 */
+	@Nullable
+	ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date);
 
 	/**
 	 * @param bouclements liste des entités {@link ch.vd.unireg.tiers.Bouclement} d'une entreprise
@@ -37,6 +56,7 @@ public interface BouclementService {
 	 * @param intersecting <code>true</code> si les exercices renvoyés sont ceux qui intersectent le range donné, sans rognage, <code>false</code> s'il faut rogner
 	 * @return la liste ordonnée des exercices commerciaux <b>bornés</b> avec le range donné
 	 */
+	@NotNull
 	List<ExerciceCommercial> getExercicesCommerciaux(Collection<Bouclement> bouclements, @NotNull DateRange range, boolean intersecting);
 
 	/**

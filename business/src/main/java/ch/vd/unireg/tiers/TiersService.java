@@ -1492,20 +1492,23 @@ public interface TiersService {
 	 */
 	Assujettissement getAssujettissement(Contribuable contribuable, @Nullable RegDate date);
 
-    /**
-     * Ceci est la méthode officielle de calcul des exercices commerciaux d'une entreprise (notamment en ce qui concerne la toute première date et la toute dernière)
-     * @param entreprise une entreprise
-     * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice courant ou, s'il n'y en a plus, le dernier exercice connu)
-     */
-    List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise);
+	/**
+	 * Ceci est la méthode officielle de calcul des exercices commerciaux d'une entreprise (notamment en ce qui concerne la toute première date et la toute dernière)
+	 *
+	 * @param entreprise une entreprise
+	 * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice courant ou, s'il n'y en a plus, le dernier exercice connu)
+	 */
+	@NotNull
+	List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise);
 
-    /**
-     * @param entreprise une entreprise
-     * @param date date de référence
-     * @return L'exercice commercial de cette entreprise valide à la date donnée (si cette date est future et que l'exercice courant ne la contient pas,
-     * alors l'exercice commercial retourné pourra ne pas être présent dans la liste fournie par {@link #getExercicesCommerciaux(Entreprise)})
-     */
-    ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date);
+	/**
+	 * @param entreprise une entreprise
+	 * @param date       date de référence
+	 * @return L'exercice commercial de cette entreprise valide à la date donnée (si cette date est future et que l'exercice courant ne la contient pas, alors l'exercice commercial retourné pourra ne pas être présent dans la liste fournie par {@link
+	 * #getExercicesCommerciaux(Entreprise)})
+	 */
+	@Nullable
+	ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date);
 
     /**
      * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.

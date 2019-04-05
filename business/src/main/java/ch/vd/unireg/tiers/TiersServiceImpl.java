@@ -4893,95 +4893,17 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	/**
-	 * @param entreprise entreprise dont on veut les exercices commerciaux
-	 * @param dateLimite date de référence (a priori aujourd'hui ou dans le futur) pour la détermination du dernier exercice à renvoyer (si l'entreprise est encore active)
-	 * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice de la date de référence, ou, s'il n'y en a plus, le dernier exercice connu)
-	 */
-	private List<ExerciceCommercial> getExercicesCommerciauxJusqua(Entreprise entreprise, @NotNull RegDate dateLimite) {
-		final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
-		final List<Bouclement> bouclements = AnnulableHelper.sansElementsAnnules(entreprise.getBouclements());
-		final boolean noFors = forsPrincipaux.isEmpty();
-		final boolean noBouclements = bouclements.isEmpty();
 
-		if (noFors && noBouclements) {
-			// rien de rien...
-			return Collections.emptyList();
-		}
-
-		final RegDate dateDebutPremierExercice;
-		if (entreprise.getDateDebutPremierExerciceCommercial() != null) {
-			dateDebutPremierExercice = entreprise.getDateDebutPremierExerciceCommercial();
-		}
-		else if (noFors) {
-			// on va supposer une date de début au lendemain du premier bouclement connu
-			dateDebutPremierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDateHelper.getEarlyDate(), false).getOneDayAfter();
-		}
-		else {
-			// création à l'ouverture du premier for principal ? -> c'est la date de début du premier exercice
-			final ForFiscalPrincipalPM premierForPrincipal = forsPrincipaux.get(0);
-			final MotifFor premierMotif = premierForPrincipal.getMotifOuverture();
-			if (premierMotif == MotifFor.DEBUT_EXPLOITATION || noBouclements) {
-				// il s'agit donc de la création de la société, ou sinon, on n'a pas vraiment d'autre donnée de toute façon
-				dateDebutPremierExercice = premierForPrincipal.getDateDebut();
-			}
-			else {
-				// il s'agit donc d'un déménagement (ou de la création d'un établissement ou l'achat d'un immeuble...) par exemple, la PM existait
-				// déjà avant avec des données connues de bouclements
-				final RegDate dateBouclementConnueAvantDebutFor = bouclementService.getDateDernierBouclement(bouclements, premierForPrincipal.getDateDebut(), false);
-				if (dateBouclementConnueAvantDebutFor == null) {
-					// pas de bouclement connu avant le démarrage du for, on prend la date du for
-					// TODO [SIPM] date de début du for ou une année avant le premier bouclement connu après le début du for ?
-					dateDebutPremierExercice = premierForPrincipal.getDateDebut();
-				}
-				else {
-					dateDebutPremierExercice = dateBouclementConnueAvantDebutFor.getOneDayAfter();
-				}
-			}
-		}
-
-		final RegDate dateFinDernierExercice;
-		if (noFors) {
-			// la seule limite de fin sera celle de l'exercice courant
-			dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, dateLimite, true);
-		}
-		else {
-			// ici, nous avons des fors principaux
-
-			final ForFiscalPrincipalPM dernierForPrincipal = forsPrincipaux.get(forsPrincipaux.size() - 1);
-			if (dernierForPrincipal.getDateFin() != null) {
-				// [SIFISC-17850] si le dernier for principal est fermé, on s'arrête là, sauf si le motif de fermeture est "FAILLITE"
-				// (s'il n'y a pas de cycle de bouclements connu, on s'arrête quand-même à la fin du for)
-				if (dernierForPrincipal.getMotifFermeture() == MotifFor.FAILLITE && !noBouclements) {
-					// en cas de faillite, on continue jusqu'à la fin du cycle en cours
-					dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, dernierForPrincipal.getDateFin(), true);
-				}
-				else {
-					dateFinDernierExercice = dernierForPrincipal.getDateFin();
-				}
-			}
-			else if (noBouclements) {
-				// arbitrairement, fin de l'exercice à la fin de cette année
-				dateFinDernierExercice = RegDate.get(dateLimite.year(), 12, 31);
-			}
-			else {
-				// for encore ouvert -> la seule limite de fin sera celle de l'exercice courant
-				dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, dateLimite, true);
-			}
-		}
-
-		return bouclementService.getExercicesCommerciaux(bouclements, new DateRangeHelper.Range(dateDebutPremierExercice, dateFinDernierExercice), false);
-	}
-
+	@NotNull
 	@Override
 	public List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise) {
-		return getExercicesCommerciauxJusqua(entreprise, RegDate.get());
+		return bouclementService.getExercicesCommerciaux(entreprise);
 	}
 
+	@Nullable
 	@Override
 	public ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date) {
-		final RegDate dateLimite = RegDateHelper.maximum(date, RegDate.get(), NullDateBehavior.EARLIEST);
-		return DateRangeHelper.rangeAt(getExercicesCommerciauxJusqua(entreprise, dateLimite), date);
+		return bouclementService.getExerciceCommercialAt(entreprise, date);
 	}
 
 	/**

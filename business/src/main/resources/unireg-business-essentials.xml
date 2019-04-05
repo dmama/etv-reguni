@@ -313,7 +313,6 @@
 	<bean id="validableEntityNamingService" class="ch.vd.unireg.validation.ValidableEntityNamingServiceImpl"/>
 
 	<bean id="bouclementService" class="ch.vd.unireg.metier.bouclement.BouclementServiceImpl">
-		<property name="tiersService" ref="tiersService"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
