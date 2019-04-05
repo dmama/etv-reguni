@@ -8,9 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.tiers.Entreprise;
 
 /**
- * Service de fourniture d'information autour des bouclements / exercices commerciaux...
+ * Service de fourniture d'information autour des bouclements / exercices commerciaux + mise-à-jour des données relatives sur les entreprises.
  */
 public interface BouclementService {
 
@@ -46,4 +47,36 @@ public interface BouclementService {
 	 * @return liste d'entités (encore transientes, non-liées à une entreprise) de {@link Bouclement} qui permettrait de regénérer les dates founies en entrée
 	 */
 	List<Bouclement> extractBouclementsDepuisDates(Collection<RegDate> datesBouclements, int periodeMoisFinale);
+
+	/**
+	 * Cette méthode permet de renseigner (si elle ne l'était pas) ou de corriger la date de début du premier exercice commercial.
+	 * <p/>
+	 * <b>Note:</b> dans le cas de la correction de la date de début, la valeur choisie ne doit pas définir un premier exercice commercial qui
+	 * durerait plus qu'une année.
+	 *
+	 * @param entreprise   une entreprise
+	 * @param nouvelleDate la date de début du premier exercice commercial à renseigner.
+	 * @throws BouclementException si le date de début provoque un premier exercice commercial plus grand qu'une année
+	 */
+	void setDateDebutPremierExerciceCommercial(@NotNull Entreprise entreprise, @NotNull RegDate nouvelleDate) throws BouclementException;
+
+	/**
+	 * Cette méthode permet de corriger la date de début du premier exercice commercial. Contrairement à la méthode {@link #setDateDebutPremierExerciceCommercial(Entreprise, RegDate)}, la date de début du premier exercice commercial peut être
+	 * déplacée de plusieurs années. La nouvelle date proposée doit cependant être antérieur à la date de début du premier exercice commercial actuel. Si nécessaire, des nouveaux ancrages de bouclements seront ajoutés.
+	 *
+	 * @param entreprise   une entreprise
+	 * @param nouvelleDate la date de début du premier exercice commercial à renseigner.
+	 * @throws BouclementException si la nouvelle date proposée provoque un changement incompatible avec les exercices commerciaux actuels.
+	 */
+	void corrigeDateDebutPremierExerciceCommercial(@NotNull Entreprise entreprise, @NotNull RegDate nouvelleDate) throws BouclementException;
+
+	/**
+	 * Change la date de fin d'un bouclement.
+	 *
+	 * @param entreprise   une entreprise
+	 * @param ancienneDate l'ancienne date de fin de bouclement
+	 * @param nouvelleDate la nouvelle date de fin de bouclement
+	 * @throws BouclementException si le déplacement de la date de fin est impossible (par exemple parce qu'il existe une DI dans la période)
+	 */
+	void changeDateFinBouclement(@NotNull Entreprise entreprise, @NotNull RegDate ancienneDate, @NotNull RegDate nouvelleDate) throws BouclementException;
 }

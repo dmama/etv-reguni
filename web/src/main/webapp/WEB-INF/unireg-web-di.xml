@@ -58,7 +58,6 @@
 
 	<bean id="exerciceCommercialController" class="ch.vd.unireg.tiers.ExerciceCommercialController">
 		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="tiersService" ref="tiersService"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="parametreAppService" ref="parametreAppService"/>

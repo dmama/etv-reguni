@@ -312,7 +312,10 @@
 	<bean id="validationService" class="ch.vd.shared.validation.ValidationServiceImpl" />
 	<bean id="validableEntityNamingService" class="ch.vd.unireg.validation.ValidableEntityNamingServiceImpl"/>
 
-	<bean id="bouclementService" class="ch.vd.unireg.metier.bouclement.BouclementServiceImpl"/>
+	<bean id="bouclementService" class="ch.vd.unireg.metier.bouclement.BouclementServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+	</bean>
 
 	<bean id="coordonneesFinancieresService" class="ch.vd.unireg.coordfin.CoordonneesFinancieresServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
