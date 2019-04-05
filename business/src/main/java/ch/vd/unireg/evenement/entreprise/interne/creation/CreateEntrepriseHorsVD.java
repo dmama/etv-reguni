@@ -136,9 +136,8 @@ public class CreateEntrepriseHorsVD extends EvenementEntrepriseInterneDeTraiteme
 			// Réglages exercice commercial
 			createAddBouclement(dateDeCreation, isCreation, suivis);
 
-			if (!isCreation) {
-				regleDateDebutPremierExerciceCommercial(getEntreprise(), dateDeCreation, suivis);
-			}
+			// On renseigne la date de début du premier exercice commercial (SIFISC-30696 : pour tous les types d'entreprises)
+			regleDateDebutPremierExerciceCommercial(getEntreprise(), dateDeCreation, suivis);
 		}
 
 		// Ajoute les for secondaires

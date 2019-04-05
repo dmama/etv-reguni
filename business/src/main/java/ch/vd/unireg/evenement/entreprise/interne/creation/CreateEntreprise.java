@@ -32,7 +32,10 @@ public abstract class CreateEntreprise extends EvenementEntrepriseInterneDeTrait
 
 	final private RegDate dateDeCreation;
 	final private RegDate dateOuvertureFiscale;
-	final private boolean isCreation;
+	/**
+	 * <i>vrai</i> si l'entreprise vient d'être créée au RC ou à l'IDE; <i>faux</i> si elle existant déjà avant le traitement de cet événement.
+	 */
+	final protected boolean isCreation;
 	final private EtablissementCivil etablissementPrincipal;
 	final private Domicile autoriteFiscalePrincipale;
 
@@ -69,10 +72,6 @@ public abstract class CreateEntreprise extends EvenementEntrepriseInterneDeTrait
 		return dateOuvertureFiscale;
 	}
 
-	public boolean isCreation() {
-		return isCreation;
-	}
-
 	@NotNull
 	public EtablissementCivil getEtablissementPrincipal() {
 		return etablissementPrincipal;
@@ -86,7 +85,7 @@ public abstract class CreateEntreprise extends EvenementEntrepriseInterneDeTrait
 	@Override
 	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		// SIFISC-19700: Contrôle que la date d'inscription au RC rapportée par RCEnt correspond à celle de l'entrée de journal au RC. (il y a eu des erreurs de transcription au RC!)
-		if (isCreation() && getEntrepriseCivile().isInscriteAuRC(getDateEvt())) {
+		if (isCreation && getEntrepriseCivile().isInscriteAuRC(getDateEvt())) {
 			final List<EntreeJournalRC> entreesJournalPourDatePublication = etablissementPrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 			/*
 			 On part du principe que lors d'une inscription d'une nouvelle entreprise au RC, on a une et une seule publication FOSC portant sur une entrée de journal.
@@ -138,9 +137,9 @@ public abstract class CreateEntreprise extends EvenementEntrepriseInterneDeTrait
 				appliqueDonneesCivilesSurPeriode(etablissementSecondaire, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 			}
 		}
-		if (!isCreation()) {
-			regleDateDebutPremierExerciceCommercial(getEntreprise(), dateDeCreation, suivis);
-		}
+
+		// On renseigne la date de début du premier exercice commercial (SIFISC-30696 : pour tous les types d'entreprises)
+		regleDateDebutPremierExerciceCommercial(getEntreprise(), dateDeCreation, suivis);
 	}
 
 	@Override

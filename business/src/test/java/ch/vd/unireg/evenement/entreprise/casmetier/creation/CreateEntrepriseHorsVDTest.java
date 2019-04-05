@@ -122,6 +122,9 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementEntrepriseCivil
 			assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
 			assertNull(forFiscalPrincipal.getMotifOuverture());
 
+			// [SIFISC-30696] la date du premier exercice commercial doit être renseignée automatiquement
+			assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
+
 			final Bouclement bouclement = entreprise.getBouclements().iterator().next();
 			assertEquals(RegDate.get(2015, 6, 24), bouclement.getDateDebut());
 			assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());

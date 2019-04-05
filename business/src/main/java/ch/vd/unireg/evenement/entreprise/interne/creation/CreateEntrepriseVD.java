@@ -47,7 +47,7 @@ public class CreateEntrepriseVD extends CreateEntreprise {
 		openForFiscalPrincipal(getDateOuvertureFiscale(),
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
-		                       determineMotifOuvertureFor(isCreation()),
+		                       determineMotifOuvertureFor(isCreation),
 		                       isSocieteDePersonnes ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL,
 		                       warnings, suivis);
 
@@ -56,7 +56,7 @@ public class CreateEntrepriseVD extends CreateEntreprise {
 		}
 		else {
 			// Réglages exercice commercial
-			createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
+			createAddBouclement(getDateOuvertureFiscale(), isCreation, suivis);
 		}
 
 		// Ajoute les for secondaires

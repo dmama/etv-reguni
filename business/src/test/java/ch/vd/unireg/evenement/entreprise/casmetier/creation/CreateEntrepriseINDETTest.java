@@ -125,6 +125,9 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivile
 			assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
 			assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 
+			// [SIFISC-30696] la date du premier exercice commercial doit être renseignée automatiquement
+			assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
+
 			{
 				final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 				assertEquals(1, etbsPrns.size());
@@ -200,6 +203,9 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivile
 			assertNull(forFiscalPrincipal.getDateFin());
 			assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
 			assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+
+			// [SIFISC-30696] la date du premier exercice commercial doit être renseignée automatiquement
+			assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
 
 			{
 				final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
@@ -283,6 +289,9 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivile
 			assertNull(forFiscalPrincipal.getDateFin());
 			assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
 			assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+
+			// [SIFISC-30696] la date du premier exercice commercial doit être renseignée automatiquement
+			assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
 
 			{
 				final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);

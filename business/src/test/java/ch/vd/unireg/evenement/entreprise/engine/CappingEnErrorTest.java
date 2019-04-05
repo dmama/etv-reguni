@@ -121,7 +121,7 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 			assertNotNull(evt);
 			assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-			assertEquals(10, evt.getErreurs().size());
+			assertEquals(11, evt.getErreurs().size());
 
 			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(0);
@@ -150,11 +150,6 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
 				assertEquals("Réglage de l'état: Inscrite au RC.", erreur.getMessage());
 			}
-			{
-				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(6);
-				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-				assertEquals("Régimes fiscaux par défaut [01 - Ordinaire] VD et CH ouverts pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noEntrepriseCivile + ")", erreur.getMessage());
-			}
 
 			final long idEtablissementPrincipal;
 			{
@@ -173,19 +168,29 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 				assertEquals("Application de la surcharge civile entre le 24.06.2015 et le 26.06.2015 avec les valeurs du 27.06.2015", erreur.getMessage());
 			}
 			{
+				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(6);
+				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
+				assertEquals("Réglage de la date de début du premier exercice commercial au 01.01.2015", erreur.getMessage());
+			}
+			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(7);
+				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
+				assertEquals("Régimes fiscaux par défaut [01 - Ordinaire] VD et CH ouverts pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noEntrepriseCivile + ")", erreur.getMessage());
+			}
+			{
+				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(8);
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
 				assertEquals(
 						"Ouverture d'un for fiscal principal à Lausanne (VD) à partir du 25.06.2015, motif ouverture Début d'activité, rattachement DOMICILE, pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " +
 								noEntrepriseCivile + ").", erreur.getMessage());
 			}
 			{
-				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(8);
+				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(9);
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
 				assertEquals("Bouclement créé avec une périodicité de 12 mois à partir du 31.12.2015", erreur.getMessage());
 			}
 			{
-				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(9);
+				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(10);
 				assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
 				assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.", erreur.getMessage());
 				assertNull(erreur.getCallstack());
