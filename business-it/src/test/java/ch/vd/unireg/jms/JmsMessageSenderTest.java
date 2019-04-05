@@ -57,7 +57,7 @@ public class JmsMessageSenderTest {
 		}
 
 		ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL("tcp://esb-dev.etat-de-vaud.ch:50900");
+		jmsConnectionManager.setBrokerURL("tcp://esb-dev.etat-de-vaud.ch:61900");
 		jmsConnectionManager.setUserName("smx");
 		jmsConnectionManager.setPassword("smx");
 
@@ -83,7 +83,7 @@ public class JmsMessageSenderTest {
 	public void sendCorrectionOrigineMessages() throws Exception {
 
 		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL("tcp://esb-dev.etat-de-vaud.ch:50900");
+		jmsConnectionManager.setBrokerURL("tcp://esb-dev.etat-de-vaud.ch:61900");
 		jmsConnectionManager.setUserName("smx");
 		jmsConnectionManager.setPassword("smx");
 
