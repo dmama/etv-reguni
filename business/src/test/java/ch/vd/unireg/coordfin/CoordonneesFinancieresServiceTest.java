@@ -15,6 +15,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.coordfin.CoordonneesFinancieresService.UpdateResult;
 import ch.vd.unireg.hibernate.MockHibernateTemplate;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.CompteBancaire;
@@ -268,7 +269,8 @@ public class CoordonneesFinancieresServiceTest {
 		});
 
 		// on renseigne la date fin
-		service.updateCoordonneesFinancieres(id, RegDate.get(2004, 5, 15), "titulaire", null, null);
+		final UpdateResult result = service.updateCoordonneesFinancieres(id, RegDate.get(2004, 5, 15), "titulaire", null, null);
+		assertEquals(UpdateResult.CLOSED, result);
 
 		// il ne doit y avoir toujours qu'une seule coordonnée et la date de fin doit maintenant être renseignée
 		final Set<CoordonneesFinancieres> coordonnees = pp.getCoordonneesFinancieres();
@@ -283,7 +285,6 @@ public class CoordonneesFinancieresServiceTest {
 		final CompteBancaire compteBancaire = coord0.getCompteBancaire();
 		assertNull(compteBancaire);
 	}
-
 
 	/**
 	 * Teste la méthode 'updateCoordonneesFinancieres'  dans le cas où autre chose qu'une date de fin est renseignée.
@@ -316,7 +317,8 @@ public class CoordonneesFinancieresServiceTest {
 		});
 
 		// on modifie le titulaire
-		service.updateCoordonneesFinancieres(2L, null, "nouveau titulaire", null, null);
+		final UpdateResult result = service.updateCoordonneesFinancieres(2L, null, "nouveau titulaire", null, null);
+		assertEquals(UpdateResult.UPDATED, result);
 
 		// l'ancienne coordonnée doit être annulée et une nouvelle avec le nouveau titulaire créée
 		final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
@@ -350,6 +352,63 @@ public class CoordonneesFinancieresServiceTest {
 		assertNull(c2.getDateFin());
 		assertEquals("titulaire2", c2.getTitulaire());
 		assertNull(c2.getCompteBancaire());
+	}
+
+	/**
+	 * [SIFISC-30072] Teste la méthode 'updateCoordonneesFinancieres'  dans le cas où aucune modification n'est proposée.
+	 */
+	@Test
+	public void testUpdateCoordonneesFinancieresAucuneModification() {
+
+		final PersonnePhysique pp = new PersonnePhysique();
+
+		final CoordonneesFinancieres coord1 = new CoordonneesFinancieres();
+		coord1.setId(1L);
+		coord1.setDateDebut(RegDate.get(2000, 1, 1));
+		coord1.setDateFin(RegDate.get(2004, 12, 31));
+		coord1.setTitulaire("titulaire1");
+		pp.addCoordonneesFinancieres(coord1);
+
+		final CoordonneesFinancieres coord2 = new CoordonneesFinancieres();
+		coord2.setId(2L);
+		coord2.setDateDebut(RegDate.get(2005, 1, 1));
+		coord2.setDateFin(null);
+		coord2.setTitulaire("titulaire2");
+		pp.addCoordonneesFinancieres(coord2);
+
+		// petit hack pour éviter d'utiliser un vrai hibernate template
+		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
+			@Override
+			public <T> T get(Class<T> clazz, Serializable id) {
+				return (T) coord2;
+			}
+		});
+
+		// on ne modifie rien
+		final UpdateResult result = service.updateCoordonneesFinancieres(2L, null, "titulaire2", null, null);
+		assertEquals(UpdateResult.NOOP, result);
+
+		// il ne doit y avoir aucun changement
+		final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
+		assertNotNull(coordonnees);
+		coordonnees.sort(new AnnulableHelper.AnnulableDateRangeComparator<>(false));
+		assertEquals(2, coordonnees.size());
+
+		final CoordonneesFinancieres c0 = coordonnees.get(0);
+		assertNotNull(c0);
+		assertFalse(c0.isAnnule());
+		assertEquals(RegDate.get(2000, 1, 1), c0.getDateDebut());
+		assertEquals(RegDate.get(2004, 12, 31), c0.getDateFin());
+		assertEquals("titulaire1", c0.getTitulaire());
+		assertNull(c0.getCompteBancaire());
+
+		final CoordonneesFinancieres c1 = coordonnees.get(1);
+		assertNotNull(c1);
+		assertFalse(c1.isAnnule());
+		assertEquals(RegDate.get(2005, 1, 1), c1.getDateDebut());
+		assertNull(c1.getDateFin());
+		assertEquals("titulaire2", c1.getTitulaire());
+		assertNull(c1.getCompteBancaire());
 	}
 
 	@Test

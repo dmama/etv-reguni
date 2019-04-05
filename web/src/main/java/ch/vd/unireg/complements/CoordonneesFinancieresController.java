@@ -23,10 +23,12 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
+import ch.vd.unireg.coordfin.CoordonneesFinancieresService.UpdateResult;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
@@ -237,11 +239,25 @@ public class CoordonneesFinancieresController {
 		}
 
 		// on met-à-jour les données.
-		coordonneesFinancieresService.updateCoordonneesFinancieres(id,
-		                                                           view.getDateFin(),
-		                                                           view.getTitulaireCompteBancaire(),
-		                                                           view.getIban(),
-		                                                           view.getAdresseBicSwift());
+		final UpdateResult updateResult = coordonneesFinancieresService.updateCoordonneesFinancieres(id,
+		                                                                                             view.getDateFin(),
+		                                                                                             view.getTitulaireCompteBancaire(),
+		                                                                                             view.getIban(),
+		                                                                                             view.getAdresseBicSwift());
+
+		switch (updateResult) {
+		case CLOSED:
+			Flash.message("Les coordonnées financières ont bien été fermées.", 4000);
+			break;
+		case UPDATED:
+			Flash.message("Les coordonnées financières ont bien été mises-à-jour.", 4000);
+			break;
+		case NOOP:
+			Flash.warning("Aucun changement détecté : les coordonnées financières n'ont pas été modifiées.");
+			break;
+		default:
+			throw new IllegalArgumentException("Type de résultat inconnu = [" + updateResult + "]");
+		}
 
 		return "redirect:/complements/coordfinancieres/list.do?tiersId=" + tiersId;
 	}

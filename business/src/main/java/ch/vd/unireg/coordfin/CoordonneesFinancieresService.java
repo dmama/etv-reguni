@@ -20,16 +20,33 @@ public interface CoordonneesFinancieresService {
 	 */
 	void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
 
+	enum UpdateResult {
+		/**
+		 * Les coordonnées financières ont été fermées.
+		 */
+		CLOSED,
+		/**
+		 * Les coordonnées financières ont été mise-à-jour.
+		 */
+		UPDATED,
+		/**
+		 * Aucune action n'a été faite car les coordonnées étaient déjà à jour.
+		 */
+		NOOP
+	}
+
 	/**
-	 * Met-à-jour des coordonnées financières existantes. Si le seul changement est l'ajoute d'une date de fin, les coordonnées existantes sont simplement mises-à-jour ;
-	 * dans les autres cas, les coordonnées existantes sont annulées et de nouvelles coordonnées existantes sont ajoutées.
-	 *  @param id        l'id des coordonnées existantes à mettre-à-jour
+	 * Met-à-jour des coordonnées financières existantes. Si le seul changement est l'ajoute d'une date de fin, les coordonnées existantes sont simplement mises-à-jour ; dans les autres cas, les coordonnées existantes sont annulées et de nouvelles
+	 * coordonnées existantes sont ajoutées.
+	 *
+	 * @param id        l'id des coordonnées existantes à mettre-à-jour
 	 * @param dateFin   la date de fin
 	 * @param titulaire le nouveau titulaire à inscrire (optionel)
 	 * @param iban      le nouvel iban à inscrire (optionel)
 	 * @param bicSwift  le code bic swift (optionel)
 	 */
-	void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
+	@NotNull
+	UpdateResult updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
 
 	/**
 	 * Annule les coordonnées financières spécifiées.

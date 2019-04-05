@@ -71,8 +71,9 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 				&& dateDebut.isAfter(c.getDateDebut());
 	}
 
+	@NotNull
 	@Override
-	public void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
+	public UpdateResult updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
 
 		// normalisation des données
 		titulaire = StringUtils.trimToNull(titulaire);
@@ -94,9 +95,16 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 
 		final Tiers tiers = coordonnees.getTiers();
 
-		if (isFermetureSeulement(dateFin, titulaire, iban, bicSwift, coordonnees)) {
+		final UpdateResult result;
+
+		if (isEquals(dateFin, titulaire, iban, bicSwift, coordonnees)) {
+			// rien à faire
+			result = UpdateResult.NOOP;
+		}
+		else if (isFermetureSeulement(dateFin, titulaire, iban, bicSwift, coordonnees)) {
 			// on ferme les coordonnées
 			coordonnees.setDateFin(dateFin);
+			result = UpdateResult.CLOSED;
 		}
 		else {
 			// on annule les coordonnées courantes
@@ -109,7 +117,21 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 			nouvelles.setTitulaire(titulaire);
 			nouvelles.setCompteBancaire(new CompteBancaire(iban, bicSwift));
 			tiers.addCoordonneesFinancieres(nouvelles);
+			result = UpdateResult.UPDATED;
 		}
+
+		return result;
+	}
+
+	/**
+	 * @return <i>vrai</i> si la valeurs spécifiées sont égales aux coordonnées financières spécifiées.
+	 */
+	private static boolean isEquals(@Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift, @NotNull CoordonneesFinancieres coordonnees) {
+		final CompteBancaire compteBancaire = coordonnees.getCompteBancaire();
+		return dateFin == coordonnees.getDateFin() &&
+				Objects.equals(titulaire, coordonnees.getTitulaire()) &&
+				Objects.equals(iban, compteBancaire == null ? null : compteBancaire.getIban()) &&
+				Objects.equals(bicSwift, compteBancaire == null ? null : compteBancaire.getBicSwift());
 	}
 
 	/**
