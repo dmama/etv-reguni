@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -56,17 +54,21 @@ import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 import static ch.vd.unireg.type.EtatEvenementEntreprise.FORCE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Raphaël Marmier, 2015-11-xx
  */
 public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
+	private EvenementFiscalDAO evtFiscalDAO;
+
 	public CreateEntrepriseIgnoreIDETest() {
 		setWantIndexationTiers(true);
 	}
-
-	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -82,7 +84,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 	public void testCreationPMInscriptionIDE() throws Exception {
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
@@ -110,28 +112,24 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -141,7 +139,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			Ne pas ignorer l'événement IDE reçu après la FOSC pour le même jour.
 		 */
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
@@ -171,30 +169,26 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("Mutation : Création d'une entreprise vaudoise",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("Mutation : Création d'une entreprise vaudoise",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt2.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt2.getEtat());
 
-				                             Assert.assertEquals("L'entreprise civile n°101202100 est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du registre fiscal et du registre civil, notamment les établissements secondaires.",
-				                                                 evt2.getErreurs().get(1).getMessage());
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			assertEquals("L'entreprise civile n°101202100 est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du registre fiscal et du registre civil, notamment les établissements secondaires.",
+			             evt2.getErreurs().get(1).getMessage());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -205,7 +199,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
@@ -233,28 +227,24 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("Mutation : Création d'une entreprise vaudoise",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("Mutation : Création d'une entreprise vaudoise",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -266,7 +256,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
@@ -294,28 +284,24 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("Mutation : Création d'une entreprise vaudoise",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("Mutation : Création d'une entreprise vaudoise",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt2.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt2.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -326,7 +312,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
@@ -356,28 +342,24 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("Mutation : Création d'une entreprise vaudoise",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("Mutation : Création d'une entreprise vaudoise",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt2.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt2.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -425,165 +407,161 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
-				                             final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
-				                             Assert.assertEquals(4, regimesFiscaux.size());
-				                             regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
-				                             assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(0));
-				                             assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(1));
-				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(2));
-				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(3));
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
+			final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+			assertEquals(4, regimesFiscaux.size());
+			regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+			assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(0));
+			assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(1));
+			assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(2));
+			assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(3));
 
-				                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getForsFiscauxPrincipauxActifsSorted().get(0);
-				                             Assert.assertEquals(RegDate.get(2015, 6, 26), forFiscalPrincipal.getDateDebut());
-				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
-				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
-				                             Assert.assertEquals(MockCommune.Zurich.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
-				                             Assert.assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
-				                             Assert.assertNull(forFiscalPrincipal.getMotifOuverture());
+			ForFiscalPrincipal forFiscalPrincipal = entreprise.getForsFiscauxPrincipauxActifsSorted().get(0);
+			assertEquals(RegDate.get(2015, 6, 26), forFiscalPrincipal.getDateDebut());
+			assertNull(forFiscalPrincipal.getDateFin());
+			assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+			assertEquals(MockCommune.Zurich.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
+			assertNull(forFiscalPrincipal.getMotifOuverture());
 
-				                             final List<ForFiscal> forsFiscauxSorted = entreprise.getForsFiscauxSorted();
-				                             for (ForFiscal forFiscal : forsFiscauxSorted) {
-					                             if (forFiscal instanceof ForFiscalSecondaire) {
-						                             ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-						                             Assert.assertEquals(RegDate.get(2015, 6, 26), forFiscalSecondaire.getDateDebut());
-						                             Assert.assertNull(forFiscalSecondaire.getDateFin());
-						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
-						                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
-						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
-						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
-						                             break;
-					                             }
-				                             }
+			final List<ForFiscal> forsFiscauxSorted = entreprise.getForsFiscauxSorted();
+			for (ForFiscal forFiscal : forsFiscauxSorted) {
+				if (forFiscal instanceof ForFiscalSecondaire) {
+					ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
+					assertEquals(RegDate.get(2015, 6, 26), forFiscalSecondaire.getDateDebut());
+					assertNull(forFiscalSecondaire.getDateFin());
+					assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+					assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+					assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+					assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+					break;
+				}
+			}
 
-				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
-				                             Assert.assertEquals(RegDate.get(2015, 12, 1), bouclement.getDateDebut());
-				                             Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-				                             Assert.assertEquals(12, bouclement.getPeriodeMois());
+			final Bouclement bouclement = entreprise.getBouclements().iterator().next();
+			assertEquals(RegDate.get(2015, 12, 1), bouclement.getDateDebut());
+			assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+			assertEquals(12, bouclement.getPeriodeMois());
 
-				                             {
-					                             final List<DateRanged<Etablissement>> etsbPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
-					                             Assert.assertEquals(1, etsbPrns.size());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 26), etsbPrns.get(0).getDateDebut());
-				                             }
-				                             {
-					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-					                             Assert.assertEquals(1, etbsSecs.size());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 26), etbsSecs.get(0).getDateDebut());
-				                             }
+			{
+				final List<DateRanged<Etablissement>> etsbPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+				assertEquals(1, etsbPrns.size());
+				assertEquals(RegDate.get(2015, 6, 26), etsbPrns.get(0).getDateDebut());
+			}
+			{
+				final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
+				assertEquals(1, etbsSecs.size());
+				assertEquals(RegDate.get(2015, 6, 26), etbsSecs.get(0).getDateDebut());
+			}
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(8, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			assertNotNull(evtsFiscaux);
+			assertEquals(8, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
 
-				                             // on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
-				                             // puis les fors... donc les IDs sont dans cet ordre
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             evtsFiscauxTries.sort(Comparator.comparingLong(EvenementFiscal::getId));
+			// on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
+			// puis les fors... donc les IDs sont dans cet ordre
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			evtsFiscauxTries.sort(Comparator.comparingLong(EvenementFiscal::getId));
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2015, 6, 26), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2017, 12, 31), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(1);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2017, 12, 31), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(2);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2015, 6, 26), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(3);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2017, 12, 31), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(3);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2017, 12, 31), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(4);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2018, 1, 1), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(4);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2018, 1, 1), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.SBI.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(5);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2018, 1, 1), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.SBI.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(5);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2018, 1, 1), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.SBI.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(6);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.SBI.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(6);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalFor.class, ef.getClass());
+				assertEquals(date(2015, 6, 26), ef.getDateValeur());
 
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertTrue(((EvenementFiscalFor) ef).getForFiscal() instanceof ForFiscalPrincipalPM);
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 26), eff.getForFiscal().getDateDebut());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(7);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				assertTrue(((EvenementFiscalFor) ef).getForFiscal() instanceof ForFiscalPrincipalPM);
+				assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				assertEquals(date(2015, 6, 26), eff.getForFiscal().getDateDebut());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(7);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalFor.class, ef.getClass());
+				assertEquals(date(2015, 6, 26), ef.getDateValeur());
 
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertTrue(((EvenementFiscalFor) ef).getForFiscal() instanceof ForFiscalSecondaire);
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 26), eff.getForFiscal().getDateDebut());
-				                             }
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				assertTrue(((EvenementFiscalFor) ef).getForFiscal() instanceof ForFiscalSecondaire);
+				assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				assertEquals(date(2015, 6, 26), eff.getForFiscal().getDateDebut());
+			}
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -595,7 +573,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
@@ -621,55 +599,45 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+		doInNewTransactionAndSession(transactionStatus -> {
 
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addEtatEntreprise(entreprise, date(2013, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				return entreprise;
-			}
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addEtatEntreprise(entreprise, date(2013, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			return entreprise;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.IDE_RADIATION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.IDE_RADIATION, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(0, evtsFiscaux.size());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			assertNotNull(evtsFiscaux);
+			assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("L'entreprise a été radiée du registre du commerce.",
-				                                                 evt.getErreurs().get(3).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			assertEquals("L'entreprise a été radiée du registre du commerce.",
+			             evt.getErreurs().get(3).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -716,28 +684,24 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 
@@ -750,7 +714,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		final MockEntrepriseCivile ent = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
@@ -785,28 +749,24 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNotNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNotNull(entreprise);
 
-				                             final EvenementEntreprise evt2 = getUniqueEvent(2222L);
-				                             Assert.assertNotNull(evt2);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt2 = getUniqueEvent(2222L);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 
 	@Test(timeout = 1000000L)
@@ -817,7 +777,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		final MockEntrepriseCivile ent = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
@@ -852,22 +812,19 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(1111L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(1111L);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertNull(entreprise);
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertNull(entreprise);
 
-				                             Assert.assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			assertEquals("L'événement pour l'entreprise civile n°" + noEntrepriseCivile + " précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
+			             evt.getErreurs().get(1).getMessage());
 
-				                             return null;
-			                             }
+			return null;
 		});
 	}
 
@@ -880,7 +837,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		 */
 
 		// Mise en place service mock
-		final Long noEntrepriseCivile = 101202100L;
+		final long noEntrepriseCivile = 101202100L;
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
@@ -895,116 +852,109 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
-				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
+			assertEquals(2, entreprise.getRegimesFiscaux().size());
 
-				                             final RaisonSocialeFiscaleEntreprise surchargeRaisonSocialeFiscale = entreprise.getRaisonsSocialesNonAnnuleesTriees().get(0);
-				                             Assert.assertEquals(date(2015, 6, 24), surchargeRaisonSocialeFiscale.getDateDebut());
-				                             Assert.assertEquals(date(2015, 7, 4), surchargeRaisonSocialeFiscale.getDateFin());
-				                             Assert.assertEquals("Synergy SA", surchargeRaisonSocialeFiscale.getRaisonSociale());
+			final RaisonSocialeFiscaleEntreprise surchargeRaisonSocialeFiscale = entreprise.getRaisonsSocialesNonAnnuleesTriees().get(0);
+			assertEquals(date(2015, 6, 24), surchargeRaisonSocialeFiscale.getDateDebut());
+			assertEquals(date(2015, 7, 4), surchargeRaisonSocialeFiscale.getDateFin());
+			assertEquals("Synergy SA", surchargeRaisonSocialeFiscale.getRaisonSociale());
 
-				                             final FormeJuridiqueFiscaleEntreprise surchargeFormeJuridiqueFiscale = entreprise.getFormesJuridiquesNonAnnuleesTriees().get(0);
-				                             Assert.assertEquals(date(2015, 6, 24), surchargeFormeJuridiqueFiscale.getDateDebut());
-				                             Assert.assertEquals(date(2015, 7, 4), surchargeFormeJuridiqueFiscale.getDateFin());
-				                             Assert.assertEquals(FormeJuridiqueEntreprise.SA, surchargeFormeJuridiqueFiscale.getFormeJuridique());
+			final FormeJuridiqueFiscaleEntreprise surchargeFormeJuridiqueFiscale = entreprise.getFormesJuridiquesNonAnnuleesTriees().get(0);
+			assertEquals(date(2015, 6, 24), surchargeFormeJuridiqueFiscale.getDateDebut());
+			assertEquals(date(2015, 7, 4), surchargeFormeJuridiqueFiscale.getDateFin());
+			assertEquals(FormeJuridiqueEntreprise.SA, surchargeFormeJuridiqueFiscale.getFormeJuridique());
 
-				                             Assert.assertTrue(entreprise.getCapitauxNonAnnulesTries().isEmpty());
+			assertTrue(entreprise.getCapitauxNonAnnulesTries().isEmpty());
 
-				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
-				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
-				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
-				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
-				                             Assert.assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
-				                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipal.getMotifOuverture());
+			ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
+			assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
+			assertNull(forFiscalPrincipal.getDateFin());
+			assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
+			assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipal.getMotifOuverture());
 
-				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), bouclement.getDateDebut());
-				                             Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-				                             Assert.assertEquals(12, bouclement.getPeriodeMois());
+			final Bouclement bouclement = entreprise.getBouclements().iterator().next();
+			assertEquals(RegDate.get(2015, 6, 25), bouclement.getDateDebut());
+			assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+			assertEquals(12, bouclement.getPeriodeMois());
 
-				                             {
-					                             final List<DateRanged<Etablissement>> etsbPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
-					                             Assert.assertEquals(1, etsbPrns.size());
-					                             final DateRanged<Etablissement> etablissementPrincipalRange = etsbPrns.get(0);
-					                             Assert.assertEquals(RegDate.get(2015, 6, 24), etablissementPrincipalRange.getDateDebut());
-					                             final DomicileEtablissement surchargeDomicileEtablissement = etablissementPrincipalRange.getPayload().getSortedDomiciles(false).get(0);
-					                             Assert.assertEquals(date(2015, 6, 24), surchargeDomicileEtablissement.getDateDebut());
-					                             Assert.assertEquals(date(2015, 7, 4), surchargeDomicileEtablissement.getDateFin());
-					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), surchargeDomicileEtablissement.getNumeroOfsAutoriteFiscale().intValue());
-				                             }
-				                             {
-					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-					                             Assert.assertEquals(0, etbsSecs.size());
-				                             }
+			{
+				final List<DateRanged<Etablissement>> etsbPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+				assertEquals(1, etsbPrns.size());
+				final DateRanged<Etablissement> etablissementPrincipalRange = etsbPrns.get(0);
+				assertEquals(RegDate.get(2015, 6, 24), etablissementPrincipalRange.getDateDebut());
+				final DomicileEtablissement surchargeDomicileEtablissement = etablissementPrincipalRange.getPayload().getSortedDomiciles(false).get(0);
+				assertEquals(date(2015, 6, 24), surchargeDomicileEtablissement.getDateDebut());
+				assertEquals(date(2015, 7, 4), surchargeDomicileEtablissement.getDateFin());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), surchargeDomicileEtablissement.getNumeroOfsAutoriteFiscale().intValue());
+			}
+			{
+				final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
+				assertEquals(0, etbsSecs.size());
+			}
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(3, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			assertNotNull(evtsFiscaux);
+			assertEquals(3, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
 
-				                             // on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
-				                             // puis les fors... donc les IDs sont dans cet ordre
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             evtsFiscauxTries.sort(Comparator.comparingLong(EvenementFiscal::getId));
+			// on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
+			// puis les fors... donc les IDs sont dans cet ordre
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			evtsFiscauxTries.sort(Comparator.comparingLong(EvenementFiscal::getId));
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2015, 6, 25), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(1);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+				assertEquals(date(2015, 6, 25), ef.getDateValeur());
 
-					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
-					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
-					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+				final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+				assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+				assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+				assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(2);
+				assertNotNull(ef);
+				assertEquals(EvenementFiscalFor.class, ef.getClass());
+				assertEquals(date(2015, 6, 25), ef.getDateValeur());
 
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 25), eff.getForFiscal().getDateDebut());
-				                             }
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				assertEquals(date(2015, 6, 25), eff.getForFiscal().getDateDebut());
+			}
 
-				                             return null;
-			                             }
-		                             }
-		);
+			return null;
+		});
 	}
 }
