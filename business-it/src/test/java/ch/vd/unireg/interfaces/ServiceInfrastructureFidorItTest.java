@@ -1,9 +1,9 @@
 package ch.vd.unireg.interfaces;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -22,6 +22,7 @@ import ch.vd.unireg.wsclient.WebClientPool;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ServiceInfrastructureFidorItTest extends BusinessItTest {
 
@@ -79,24 +80,23 @@ public class ServiceInfrastructureFidorItTest extends BusinessItTest {
 	@Test
 	public void testGetOfficesImpot() {
 
-		final List<OfficeImpot> list = new ArrayList<>(fidorService.getOfficesImpot());
-		assertNotNull(list);
-		assertEquals(13, list.size());
+		final Map<Integer, OfficeImpot> map = fidorService.getOfficesImpot().stream()
+				.collect(Collectors.toMap(CollectiviteAdministrative::getNoColAdm, o -> o));
+		assertNotNull(map);
+		assertTrue(map.size() >= 12);   // on se prémunit contre la création d'OID de tests en intégration
 
-		list.sort(Comparator.comparing(CollectiviteAdministrative::getNoColAdm));
-		assertEquals("OID AIGLE", list.get(0).getNomCourt());
-		assertEquals("OID ECHALLENS", list.get(1).getNomCourt());
-		assertEquals("OID LAUSANNE", list.get(2).getNomCourt());
-		assertEquals("OID LA VALLEE", list.get(3).getNomCourt());
-		assertEquals("OID NYON", list.get(4).getNomCourt());
-		assertEquals("OID PAYS-D'ENHAUT", list.get(5).getNomCourt());
-		assertEquals("OID VEVEY", list.get(6).getNomCourt());
-		assertEquals("OID YVERDON", list.get(7).getNomCourt());
-		assertEquals("OI PERSONNES MORALES", list.get(8).getNomCourt());
-		assertEquals("ACI - SECTION TAXATION", list.get(9).getNomCourt());
-		assertEquals("CEDI", list.get(10).getNomCourt());
-		assertEquals("Test nom court", list.get(11).getNomCourt());
-		assertEquals("test new OID", list.get(12).getNomCourt());
+		assertEquals("OID AIGLE", map.get(1).getNomCourt());
+		assertEquals("OID ECHALLENS", map.get(5).getNomCourt());
+		assertEquals("OID LAUSANNE", map.get(7).getNomCourt());
+		assertEquals("OID LA VALLEE", map.get(8).getNomCourt());
+		assertEquals("OID NYON", map.get(12).getNomCourt());
+		assertEquals("OID PAYS-D'ENHAUT", map.get(16).getNomCourt());
+		assertEquals("OID VEVEY", map.get(18).getNomCourt());
+		assertEquals("OID YVERDON", map.get(19).getNomCourt());
+		assertEquals("OI PERSONNES MORALES", map.get(21).getNomCourt());
+		assertEquals("ACI - SECTION TAXATION", map.get(25).getNomCourt());
+		assertEquals("CEDI", map.get(1012).getNomCourt());
+		assertEquals("CAT", map.get(1341).getNomCourt());
 	}
 
 	/**
