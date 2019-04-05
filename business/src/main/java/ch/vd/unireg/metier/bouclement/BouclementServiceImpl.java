@@ -466,14 +466,22 @@ public class BouclementServiceImpl implements BouclementService {
 		final RegDate ancienneDate = entreprise.getDateDebutPremierExerciceCommercial();
 
 		// la date de début du premier exercice commercial ne doit pas s'écarter trop de la date de fin de l'exercice
-		// (comme c'est le premier, on accorde un peu plus...) N'est valable que si une date de début de premièpre exercice est
-		//renseignée
-		final List<ExerciceCommercial> anciensExercicesCommerciaux = getExercicesCommerciaux(entreprise);
-		final int anneePremierBouclement = anciensExercicesCommerciaux.get(0).getDateFin().year();
-		if (entreprise.hasDateDebutPremierExercice() &&  anneePremierBouclement - nouvelleDate.year() > 1) {
-			throw new BouclementException(String.format("Impossible de modifier ou d'ajouter la date de début du premier exercice commercial du %s au %s car celui-ci s'étendrait alors sur plus de deux années civiles.",
-			                                            RegDateHelper.dateToDisplayString(ancienneDate),
-			                                            RegDateHelper.dateToDisplayString(nouvelleDate)));
+		// (comme c'est le premier, on accorde un peu plus...)
+		// [SIFISC-30422] On ne fait cette vérification que si la date de début du premier exercice est renseignée
+		// [SIFISC-30796] On ne fait cette vérification que si une date de fin d'exercice est renseignée (= on ignore les dates de fin d'exercices commerciaux générées à la volée par le tiers service)
+		if (entreprise.hasDateDebutPremierExercice() && entreprise.hasBouclements()) {
+
+			final Integer anneeFinPremierBouclement = getExercicesCommerciaux(entreprise).stream()
+					.findFirst()
+					.map(ExerciceCommercial::getDateFin)
+					.map(RegDate::year)
+					.orElse(null);
+
+			if (anneeFinPremierBouclement != null && anneeFinPremierBouclement - nouvelleDate.year() > 1) {
+				throw new BouclementException(String.format("Impossible de modifier ou d'ajouter la date de début du premier exercice commercial du %s au %s car celui-ci s'étendrait alors sur plus de deux années civiles.",
+				                                            RegDateHelper.dateToDisplayString(ancienneDate),
+				                                            RegDateHelper.dateToDisplayString(nouvelleDate)));
+			}
 		}
 
 		// les autres problèmes seront détectés à la validation de l'entreprise...

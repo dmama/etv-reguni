@@ -14,7 +14,12 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,16 +48,16 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testDateProchainBouclementSansBouclement() throws Exception {
 		assertNull(service.getDateProchainBouclement(null, RegDate.get(), true));
 		assertNull(service.getDateProchainBouclement(null, RegDate.get(), false));
-		assertNull(service.getDateProchainBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), true));
-		assertNull(service.getDateProchainBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), false));
+		assertNull(service.getDateProchainBouclement(Collections.emptyList(), RegDate.get(), true));
+		assertNull(service.getDateProchainBouclement(Collections.emptyList(), RegDate.get(), false));
 	}
 
 	@Test
 	public void testDateDernierBouclementSansBouclement() throws Exception {
 		assertNull(service.getDateDernierBouclement(null, RegDate.get(), true));
 		assertNull(service.getDateDernierBouclement(null, RegDate.get(), false));
-		assertNull(service.getDateDernierBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), true));
-		assertNull(service.getDateDernierBouclement(Collections.<Bouclement>emptyList(), RegDate.get(), false));
+		assertNull(service.getDateDernierBouclement(Collections.emptyList(), RegDate.get(), true));
+		assertNull(service.getDateDernierBouclement(Collections.emptyList(), RegDate.get(), false));
 	}
 
 	@Test
@@ -451,8 +456,8 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	@Test
 	public void testExtractionBouclementsDepuisDatesVides() throws Exception {
 		assertEquals(0, service.extractBouclementsDepuisDates(null, 12).size());
-		assertEquals(0, service.extractBouclementsDepuisDates(Collections.<RegDate>emptyList(), 12).size());
-		assertEquals(0, service.extractBouclementsDepuisDates(Collections.<RegDate>singletonList(null), 12).size());
+		assertEquals(0, service.extractBouclementsDepuisDates(Collections.emptyList(), 12).size());
+		assertEquals(0, service.extractBouclementsDepuisDates(Collections.singletonList(null), 12).size());
 	}
 
 	/**
@@ -879,5 +884,31 @@ public class BouclementServiceTest extends WithoutSpringTest {
 			assertNull(b.getId());
 			assertNull(b.getEntreprise());
 		}
+	}
+
+	/**
+	 * [SIFISC-30796] Ce test vérifie qu'il est possible de modifier librement la date de début d'une entreprise qui ne possède pas de date de fin renseignée.
+	 * Par "librement", il faut comprendre : sans limitation par rapport à l'exercice commercial calculé automatiquement.
+	 */
+	@Test
+	public void testSetDateDebutPremierExerciceCommercialSurEntrepriseSansDateDeFin() {
+
+		// Une entreprise créé le 1er janvier 2016 à Lausanne et avec une date de début d'exercice commercial renseignée.
+		final Entreprise entreprise = new Entreprise();
+		entreprise.setDateDebutPremierExerciceCommercial(RegDate.get(2016, 1, 1));
+
+		final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+		ffp.setDateDebut(RegDate.get(2016, 1, 1));
+		ffp.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ffp.setNumeroOfsAutoriteFiscale(5586);
+		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+		entreprise.addForFiscal(ffp);
+
+		// on demande le changement de la date de début du premier exercice
+		service.setDateDebutPremierExerciceCommercial(entreprise, RegDate.get(2015, 12, 31));
+
+		// on vérifie que la date a bien changé
+		assertEquals(RegDate.get(2015, 12, 31), entreprise.getDateDebutPremierExerciceCommercial());
 	}
 }
