@@ -35,9 +35,9 @@ import static org.junit.Assert.assertNull;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreateEntrepriseAPMAuRCTest extends AbstractEvenementEntrepriseCivileProcessorTest {
+public class CreateEntrepriseAPMTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
-	public CreateEntrepriseAPMAuRCTest() {
+	public CreateEntrepriseAPMTest() {
 		setWantIndexationTiers(true);
 	}
 
