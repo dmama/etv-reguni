@@ -51,6 +51,7 @@ import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeMandat;
@@ -75,7 +76,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
 
 	public static final String VERSION_XSD_PM = "16.14";
-	public static final String VERSION_XSD_PP = "1.0";
+	public static final String VERSION_XSD_PP = "1.1";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
@@ -437,6 +438,11 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 			if (NumeroIDEHelper.isValid(ideBrut)) {
 				destinataire.getNumIDE().add(FormatNumeroHelper.formatNumIDE(ideBrut));
 			}
+		}
+
+		final FormulePolitesse formule = adresseService.getFormulePolitesse(tiers, null);
+		if (formule != null) {
+			destinataire.setCiviliteContribuable(formule.getFormuleAppel());
 		}
 		return destinataire;
 	}

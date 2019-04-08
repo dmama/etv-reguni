@@ -20,6 +20,7 @@ import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.xml.editique.pp.CTypeAffranchissement;
 import ch.vd.unireg.xml.editique.pp.CTypeInfoArchivage;
@@ -33,6 +34,7 @@ public class ImpressionLettreDecisionDelaiPPHelperImpl extends EditiqueAbstractH
 	// msi (14.01.2018) : la lettre d'obtention de délai est encore générée à travers les anciens XSD éditique (voir projet xml-beans)
 //	private static final String CODE_DOCUMENT_ACCORD = TypeDocumentEditique.ACCORD_DELAI_PP.getCodeDocumentEditique().substring(0, 4);
 	private static final String CODE_DOCUMENT_REFUS = TypeDocumentEditique.REFUS_DELAI_PP.getCodeDocumentEditique().substring(0, 4);
+	private  MessageHelper messageHelper;
 
 	public TypeDocumentEditique getTypeDocumentEditique(ImpressionLettreDecisionDelaiPPHelperParams params) {
 		switch (params.getTypeLettre()) {
@@ -94,7 +96,7 @@ public class ImpressionLettreDecisionDelaiPPHelperImpl extends EditiqueAbstractH
 			final TypeDocumentEditique typeDocument = getTypeDocumentEditique(params);
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers, typeDocument, getCodeDocument(params));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePP(typeDocument, cleArchivage, tiers.getNumero(), params.getDateTraitement());
-			final String titre = "IMPÔT CANTONAL ET COMMUNAL/IMPÔT FÉDÉRAL DIRECT";
+			final String titre = messageHelper.getMessage("lettre.demande.delai.di.editique.title");
 
 			// [SIFISC-20149] l'expéditeur de la confirmation de délai de DI PP doit être la nouvelle entité si applicable, sinon, le CAT
 			final int noCaExpeditrice = Optional
@@ -165,6 +167,10 @@ public class ImpressionLettreDecisionDelaiPPHelperImpl extends EditiqueAbstractH
 		final DeclarationImpotOrdinairePP di = params.getDi();
 		return new FichierImpression.Document.RefusDelai(XmlUtils.regdate2xmlcal(RegDate.get(di.getPeriode().getAnnee())),
 		                                                 String.valueOf(params.getDateDemande().index()));
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 
 //	@Nullable
