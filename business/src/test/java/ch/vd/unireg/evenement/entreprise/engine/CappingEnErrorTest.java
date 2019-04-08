@@ -170,19 +170,19 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(6);
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-				assertEquals("Réglage de la date de début du premier exercice commercial au 01.01.2015", erreur.getMessage());
+				assertEquals("Régimes fiscaux par défaut [01 - Ordinaire] VD et CH ouverts pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noEntrepriseCivile + ")", erreur.getMessage());
 			}
 			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(7);
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-				assertEquals("Régimes fiscaux par défaut [01 - Ordinaire] VD et CH ouverts pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noEntrepriseCivile + ")", erreur.getMessage());
+				assertEquals(
+						"Ouverture d'un for fiscal principal à Lausanne (VD) à partir du 25.06.2015, motif ouverture Début d'activité, rattachement DOMICILE, pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " +
+								noEntrepriseCivile + ").", erreur.getMessage());
 			}
 			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(8);
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-				assertEquals(
-						"Ouverture d'un for fiscal principal à Lausanne (VD) à partir du 25.06.2015, motif ouverture Début d'activité, rattachement DOMICILE, pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " +
-								noEntrepriseCivile + ").", erreur.getMessage());
+				assertEquals("Réglage de la date de début du premier exercice commercial au 01.01.2015", erreur.getMessage());
 			}
 			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(9);

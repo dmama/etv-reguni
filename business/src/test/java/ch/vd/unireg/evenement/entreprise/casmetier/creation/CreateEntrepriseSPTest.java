@@ -111,8 +111,8 @@ public class CreateEntrepriseSPTest extends AbstractEvenementEntrepriseCivilePro
 			assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
 			assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipal.getMotifOuverture());
 
-			// [SIFISC-30696] la date du premier exercice commercial doit être renseignée automatiquement
-			assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
+			// [SIFISC-30696] la date du premier exercice commercial ne doit pas être renseignée automatiquement sur les sociétés de personnes
+			assertNull(entreprise.getDateDebutPremierExerciceCommercial());
 
 			{
 				final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
@@ -218,8 +218,8 @@ public class CreateEntrepriseSPTest extends AbstractEvenementEntrepriseCivilePro
 			assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
 			assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipal.getMotifOuverture());
 
-			// [SIFISC-30696] la date du premier exercice commercial doit être renseignée automatiquement
-			assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
+			// [SIFISC-30696] la date du premier exercice commercial ne doit pas être renseignée automatiquement sur les sociétés de personnes
+			assertNull(entreprise.getDateDebutPremierExerciceCommercial());
 
 			{
 				final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);

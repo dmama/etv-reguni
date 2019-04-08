@@ -55,6 +55,9 @@ public class CreateEntrepriseVD extends CreateEntreprise {
 			warnings.addWarning(String.format("Nouvelle société de personnes, date de début à contrôler%s.", getEntrepriseCivile().isInscriteAuRC(getDateEvt()) ? " (Publication FOSC)" : ""));
 		}
 		else {
+			// On renseigne la date de début du premier exercice commercial (SIFISC-30696 : pour tous les types d'entreprises, sauf les SP)
+			regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateOuvertureFiscale(), suivis);
+
 			// Réglages exercice commercial
 			createAddBouclement(getDateOuvertureFiscale(), isCreation, suivis);
 		}
