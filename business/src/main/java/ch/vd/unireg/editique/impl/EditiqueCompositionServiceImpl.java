@@ -646,7 +646,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			final Operateur operateur = serviceSecurite.getOperateur(visa);
 			if (operateur != null) {
 				traitePar[0] = String.format("%s %s", operateur.getPrenom() == null ? "" : operateur.getPrenom(), operateur.getNom() == null ? "" : operateur.getNom());
-				traitePar[1] = operateur.getEmail();
+				traitePar[1] = null;
 			}
 			else {
 				LOGGER.warn(String.format("Impossible de récupérer l'opérateur [%s]", visa));
