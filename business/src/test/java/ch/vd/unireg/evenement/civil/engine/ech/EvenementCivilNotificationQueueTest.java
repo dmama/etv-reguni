@@ -43,8 +43,8 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			final EvenementCivilNotificationQueueImpl queue = new EvenementCivilNotificationQueueImpl(delayedBy);
 			queue.setTransactionManager(transactionManager);
 			queue.setEvtCivilService(serviceCivil);
-			queue.afterPropertiesSet();
 			try {
+				queue.afterPropertiesSet();
 				cb.execute(queue);
 			}
 			finally {
@@ -565,43 +565,54 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
+	/**
+	 * Ce test vérifie que les threads de traitement s'arrêtent gracieusement lorsqu'ils sont interrompus de l'extérieur.
+	 */
 	@Test(timeout = 2000L)
 	public void testQueueInterruptability() throws Exception {
-		Thread queueThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
-						@Override
-						public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-							Thread.sleep(3000); // fait échouer le test en timeout si va au bout du sleep
-						}
-					});
-				}
-				catch (InterruptedException ignored) {
-					// On ignore c'est dans le deroulement normal du test
-				} catch (Exception e){
-					throw new RuntimeException(e);
-				}
+
+		// un thread qui va demander un traitement très long
+		Thread queueThread = new Thread(() -> {
+			try {
+				queueTemplate.doWithNewQueueDelayedBy(0, queue -> {
+					Thread.sleep(3000); // fait échouer le test en timeout si va au bout du sleep
+				});
+			}
+			catch (InterruptedException ignored) {
+				// On ignore c'est dans le deroulement normal du test
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 		queueThread.start();
-		Thread.sleep(500); // Temporisation pour être sure que les threads de ServingHatch soient démarré
-		final List<Thread> threads = new ArrayList<>();
-		for (Thread t : Thread.getAllStackTraces().keySet()) {
-			if (t.getName().startsWith("EvtCivilEchMixer-")) {
-				threads.add(t);
+
+		try {
+			Thread.sleep(500); // Temporisation pour être sure que les threads de traitement soient démarré
+
+			// on récupère les threads de traitement
+			final List<Thread> threads = new ArrayList<>();
+			for (Thread t : Thread.getAllStackTraces().keySet()) {
+				if (t.getName().startsWith("EvtCivilEchMixer-")) {
+					threads.add(t);
+				}
+			}
+
+			// on les interrompt
+			for (Thread t : threads) {
+				t.interrupt();
+			}
+
+			// on attend qu'ils se terminent gracieusement. S'ils ne le font pas, le timeout général du test se déclenchera et le test sera en erreur.
+			for (Thread t : threads) {
+				t.join();
 			}
 		}
-		for (Thread t : threads) {
-			t.interrupt();
+		finally {
+			// on interrompt le traitement très long avant que le timeout général du test ne se déclenche
+			queueThread.interrupt();
+			queueThread.join();
 		}
-		for (Thread t : threads) {
-			t.join();
-		}
-		queueThread.interrupt();
-		queueThread.join();
 	}
 
 	@Test(timeout = 2000L)

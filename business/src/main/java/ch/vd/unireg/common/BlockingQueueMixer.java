@@ -52,13 +52,13 @@ public class BlockingQueueMixer<T> {
 		for (DispatchingThread th : this.workers) {
 			th.stopIt();
 		}
-		try {
-			for (DispatchingThread th : this.workers) {
+		for (DispatchingThread th : this.workers) {
+			try {
 				th.join();
 			}
-		}
-		catch (InterruptedException e) {
-			LOGGER.warn("Stopping of mixer threads interrupted", e);
+			catch (InterruptedException e) {
+				LOGGER.warn("Interrupted when joining thread [" + th.getName() + "]", e);
+			}
 		}
 
 		// cleanup for potential restart...

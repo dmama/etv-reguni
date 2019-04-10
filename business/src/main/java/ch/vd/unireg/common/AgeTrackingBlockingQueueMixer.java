@@ -75,12 +75,16 @@ public class AgeTrackingBlockingQueueMixer<T extends Aged> extends BlockingQueue
 
 	@Override
 	public void stop() {
-		if (tickingTimer != null) {
-			tickingTimer.cancel();
-			tickingTimer = null;
+		try {
+			if (tickingTimer != null) {
+				tickingTimer.cancel();
+				tickingTimer = null;
+			}
+			reset();
 		}
-		reset();
-		super.stop();
+		finally {
+			super.stop();
+		}
 	}
 
 	/**
