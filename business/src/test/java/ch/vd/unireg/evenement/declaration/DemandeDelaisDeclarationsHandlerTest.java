@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -432,6 +433,73 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * [FISCPROJ-1209] Teste le cas passant d'ajout d'un délai refusé sur une pf avec 2 déclarations.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiRefuseSurDeuxDeclarations() throws Exception {
+
+		// mise en place
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 3, 30), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			final DeclarationImpotOrdinairePP diBis = addDeclarationImpot(pp, periode2016, date(2016, 8, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2016, 5, 15));
+			addEtatDeclarationEmise(diBis, date(2017, 1, 15));
+			addDelaiDeclaration(di, date(2017, 1, 15), date(2017, 3, 15),
+					EtatDelaiDocumentFiscal.ACCORDE);
+			addDelaiDeclaration(diBis, date(2017, 1, 15), date(2017, 4, 15),
+					EtatDelaiDocumentFiscal.ACCORDE);
+
+			return pp.getNumero();
+
+		});
+
+		final RegDate nouveauDelai = RegDate.get().addMonths(1);
+		final RegDate dateObtention = RegDate.get();
+
+		// ajout du délai
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, 1, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
+		});
+
+		// vérification que le délai refusé a bien été ajouté
+		doInNewTransaction(status -> {
+			final Tiers tiers = tiersDAO.get(ctbId);
+			assertNotNull(tiers);
+
+			final List<DeclarationImpotOrdinairePP> declarations = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+			assertEquals(2, declarations.size());
+
+			final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+			assertNotNull(declaration2016);
+
+			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+			assertEquals(2, delais.size());
+			assertDelai(date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
+			assertDelai(dateObtention, null, EtatDelaiDocumentFiscal.REFUSE, delais.get(1));
+
+			final DeclarationImpotOrdinairePP declaration2016Bis = declarations.get(1);
+			assertNotNull(declaration2016Bis);
+
+			final List<DelaiDocumentFiscal> delaisBis = declaration2016Bis.getDelaisSorted();
+			assertEquals(2, delaisBis.size());
+			assertDelai(date(2017, 1, 15), date(2017, 4, 15), EtatDelaiDocumentFiscal.ACCORDE, delaisBis.get(0));
+			assertDelai(dateObtention, null, EtatDelaiDocumentFiscal.REFUSE, delaisBis.get(1));
+			return null;
+		});
+	}
 	/**
 	 * Teste un des cas d'erreur de l'appel de la méthode declarationImpotService.ajouterDelaiDI()
 	 */
@@ -1052,6 +1120,52 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			catch (EsbBusinessException e) {
 				throw new RuntimeException(e);
 			}
+
+
+			// deux déclaration émises (sans numéro de séquence) Pour un délai refusé
+			try {
+				final List<DeclarationImpotOrdinaire> declarations = handler.getDeclarations(ids.pp5, 2016, null, EtatDelaiDocumentFiscal.REFUSE);
+				Assert.notEmpty(declarations,"La liste des déclarations ne devrait pas être vide");
+				assertEquals(2,declarations.size());
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+
+			// deux déclaration émises (avec numéro de séquence)
+			try {
+				final  List<DeclarationImpotOrdinaire> declarations = handler.getDeclarations(ids.pp5, 2016, 1,EtatDelaiDocumentFiscal.REFUSE);
+				Assert.notEmpty(declarations,"La liste des déclarations ne devrait pas être vide");
+				DeclarationImpotOrdinaire declaration = declarations.get(0);
+				assertEquals(date(2016, 1, 1), declaration.getDateDebut());
+				assertEquals(date(2016, 3, 27), declaration.getDateFin());
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+
+			// deux déclarations émises (sans numéro de séquence) Pour un délai ACCORDE
+			try {
+				final List<DeclarationImpotOrdinaire> declarations = handler.getDeclarations(ids.pp5, 2016, null, EtatDelaiDocumentFiscal.ACCORDE);
+				fail();
+			}
+			catch (EsbBusinessException e) {
+				assertEquals("Le contribuable n°" + ids.pp5 + " possède plusieurs déclarations d'impôt valides en 2016", e.getMessage());
+				assertEquals(EsbBusinessCode.PLUSIEURS_DECLARATIONS, e.getCode());
+			}
+
+			// deux déclarations émises (avec numéro de séquence) pour un délai ACCORDE
+			try {
+				final  List<DeclarationImpotOrdinaire> declarations = handler.getDeclarations(ids.pp5, 2016, 1,EtatDelaiDocumentFiscal.ACCORDE);
+				Assert.notEmpty(declarations,"La liste des déclarations ne devrait pas être vide");
+				DeclarationImpotOrdinaire declaration = declarations.get(0);
+				assertEquals(date(2016, 1, 1), declaration.getDateDebut());
+				assertEquals(date(2016, 3, 27), declaration.getDateFin());
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+
 
 			return null;
 		});

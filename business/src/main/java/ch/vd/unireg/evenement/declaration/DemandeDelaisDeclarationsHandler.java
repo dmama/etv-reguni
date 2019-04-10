@@ -9,6 +9,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -167,6 +168,32 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		}
 	}
 
+	/**FISCPROJ-1209
+	 * Methode permettant d'invoquer la bonne stratégie de recherche des déclaration en fonction de l'etat de délai à renseigner, pour le moment utilisé dans le traitement des demandes unitaires
+	 * @param ctbId numéro de contribuable
+	 * @param periodeFiscale période fiscale à considérer
+	 * @param numeroSequence numéro de séquence de la DI
+	 * @param etatDelai etat du délai que l'on doit enregistrer
+	 * @return la liste des déclarations
+	 * @throws EsbBusinessException
+	 */
+	List<DeclarationImpotOrdinaire> getDeclarations(long ctbId, int periodeFiscale, @Nullable Integer numeroSequence, EtatDelaiDocumentFiscal etatDelai) throws EsbBusinessException {
+		final List<DeclarationImpotOrdinaire> declarations = new ArrayList<DeclarationImpotOrdinaire>();
+		switch (etatDelai){
+
+		case ACCORDE:
+		case DEMANDE:
+			//Traitement standard
+			declarations.add(findDeclaration(ctbId,periodeFiscale,numeroSequence));
+			break;
+		case REFUSE:
+			//On récupère toutes les DI sur la PF qui auront le délai refusé
+			declarations.addAll(findDeclarations(ctbId,periodeFiscale,numeroSequence));
+			break;
+		}
+		return declarations;
+	}
+
 	/**
 	 * Traite une demande de délai unitaire, c'est-à-dire une demande faite par le contribuable lui-même. Le délai lui-même peut être refusée ou acceptée, mais dans les deux cas on l'enregistre.
 	 *
@@ -182,30 +209,34 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		final long numeroContribuable = demandeDelai.getNumeroContribuable();
 		final EtatDelaiDocumentFiscal etatDelai = demandeDelai.getCodeRefus() == null ? EtatDelaiDocumentFiscal.ACCORDE : EtatDelaiDocumentFiscal.REFUSE;
 
-		// on récupère la déclaration
-		final DeclarationImpotOrdinaire declaration = findDeclaration(numeroContribuable, periodeFiscale, numeroSequence);
+		// on récupère la ou les déclarations
+		final List<DeclarationImpotOrdinaire> declarations = getDeclarations(numeroContribuable, periodeFiscale, numeroSequence, etatDelai);
 
-		// on ajoute le délai
-		try {
-			declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, null);
-		}
-		catch (AjoutDelaiDeclarationException e) {
-			if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
-				// [FISCPROJ-816] on vérifie que le délai existant n'est pas lié à une demande mandataire (auquel cas il ne peut pas être mis-à-jour selon les règles)
-				final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
-				validateDelaiImplicite(dernierDelaiAccorde);
+		for (DeclarationImpotOrdinaire declaration : declarations) {
 
-				// [FISCPROJ-999] on annule le délai implicite existant et on ajoute un nouveau délai explicite
-				dernierDelaiAccorde.setAnnule(true);
-				try {
-					declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, null);
-				}
-				catch (AjoutDelaiDeclarationException ee) {
-					throw new EsbBusinessException(getEsbBusinessCode(ee.getRaison()), ee.getMessage(), ee);
-				}
+
+			// on ajoute le délai
+			try {
+				declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, null);
 			}
-			else {
-				throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
+			catch (AjoutDelaiDeclarationException e) {
+				if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
+					// [FISCPROJ-816] on vérifie que le délai existant n'est pas lié à une demande mandataire (auquel cas il ne peut pas être mis-à-jour selon les règles)
+					final DelaiDeclaration dernierDelaiAccorde = (DelaiDeclaration) declaration.getDernierDelaiAccorde();
+					validateDelaiImplicite(dernierDelaiAccorde);
+
+					// [FISCPROJ-999] on annule le délai implicite existant et on ajoute un nouveau délai explicite
+					dernierDelaiAccorde.setAnnule(true);
+					try {
+						declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, null);
+					}
+					catch (AjoutDelaiDeclarationException ee) {
+						throw new EsbBusinessException(getEsbBusinessCode(ee.getRaison()), ee.getMessage(), ee);
+					}
+				}
+				else {
+					throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
+				}
 			}
 		}
 	}
@@ -296,20 +327,7 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 	@NotNull
 	DeclarationImpotOrdinaire findDeclaration(long ctbId, int periodeFiscale, @Nullable Integer numeroSequence) throws EsbBusinessException {
 
-		final Tiers tiers = tiersDAO.get(ctbId);
-		if (tiers == null) {
-			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, "Le tiers n°" + ctbId + " n'existe pas.", null);
-		}
-
-		if (!(tiers instanceof Contribuable)) {
-			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, "Le tiers n°" + ctbId + " n'est pas un contribuable.", null);
-		}
-		final Contribuable ctb = (Contribuable) tiers;
-
-		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeFiscale, false);
-		if (declarations.isEmpty()) {
-			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration d'impôt valide en " + periodeFiscale, null);
-		}
+		final List<DeclarationImpotOrdinaire> declarations = getAllDeclarations(ctbId, periodeFiscale);
 
 		final DeclarationImpotOrdinaire declaration;
 		if (numeroSequence == null) {
@@ -328,6 +346,58 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		}
 
 		return declaration;
+	}
+
+
+	/**Méthode qui permet de retourner la liste des déclarations. Principalement à utiliser dans le cas des demandes unitaires
+	 *
+ 	 * @param ctbId le numéro de contribuable
+	 * @param periodeFiscale la période fiscale considérée
+	 * @param numeroSequence le numéro de séquence dans la période
+	 * @return la liste des déclarations d'impots du contribuable.
+	 * @throws EsbBusinessException
+	 */
+List<DeclarationImpotOrdinaire> findDeclarations(long ctbId, int periodeFiscale, @Nullable Integer numeroSequence) throws EsbBusinessException {
+
+		final List<DeclarationImpotOrdinaire> declarations = getAllDeclarations(ctbId, periodeFiscale);
+
+		if (numeroSequence != null) {
+			final DeclarationImpotOrdinaire declaration = declarations.stream()
+					.filter(d -> Objects.equals(d.getNumero(), numeroSequence))
+					.findFirst()
+					.orElseThrow(() -> new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId +
+							" ne possède pas de déclaration d'impôt valide en " + periodeFiscale +
+							" avec le numéro de séquence " + numeroSequence, null));
+		}
+
+		return declarations;
+	}
+
+	/**
+	 * Cette méthode retourne la liste des déclarations d'impot du contribuable en s'assurrant
+	 * qu'il existe bien,a le bon type et possède une ou plusieurs déclarations
+	 * @param ctbId le numéro du contribuable
+	 * @param periodeFiscale période fiscale considérée
+	 * @return la liste des déclarations d'impots
+	 * @throws EsbBusinessException
+	 */
+	@NotNull
+	private List<DeclarationImpotOrdinaire> getAllDeclarations(long ctbId, int periodeFiscale) throws EsbBusinessException {
+		final Tiers tiers = tiersDAO.get(ctbId);
+		if (tiers == null) {
+			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, "Le tiers n°" + ctbId + " n'existe pas.", null);
+		}
+
+		if (!(tiers instanceof Contribuable)) {
+			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, "Le tiers n°" + ctbId + " n'est pas un contribuable.", null);
+		}
+		final Contribuable ctb = (Contribuable) tiers;
+
+		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeFiscale, false);
+		if (declarations.isEmpty()) {
+			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration d'impôt valide en " + periodeFiscale, null);
+		}
+		return declarations;
 	}
 
 	@NotNull
