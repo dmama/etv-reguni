@@ -45,7 +45,8 @@ import static org.junit.Assert.fail;
 @TestExecutionListeners( {
 		DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
-		TransactionalTestExecutionListener.class})
+		TransactionalTestExecutionListener.class,
+		ConnectionPoolLoggerExecutionListener.class})   // TODO (msi) à supprimer quand les problèmes sur les slaves Jenkins sont résolus
 public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 	protected PlatformTransactionManager transactionManager;
