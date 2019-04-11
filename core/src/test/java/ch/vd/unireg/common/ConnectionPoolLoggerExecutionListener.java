@@ -39,7 +39,9 @@ public class ConnectionPoolLoggerExecutionListener extends AbstractTestExecution
 		final BeanFactory bf = testContext.getApplicationContext().getAutowireCapableBeanFactory();
 		final AbstractConnectionManager connectionManager = BeanFactoryAnnotationUtils.qualifiedBeanOfType(bf, AbstractConnectionManager.class, "jdbcConnectionManager");
 		if (connectionManager != null) {
-			LOGGER.warn(prefix + " connection pool(" + connectionManager.hashCode() + ") = " + connectionManager.getConnectionCount() + "/" + connectionManager.getPartitionMaxSize());
+			final int usedCount = connectionManager.getConnectionCount() - connectionManager.getIdleConnectionCount();
+			final int totalCount = connectionManager.getPartitionMaxSize();
+			LOGGER.warn(prefix + " connection pool(" + connectionManager.hashCode() + ") = " + usedCount + "/" + totalCount);
 		}
 	}
 }
