@@ -349,25 +349,23 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 	}
 
 
-	/**Méthode qui permet de retourner la liste des déclarations. Principalement à utiliser dans le cas des demandes unitaires
+
+	/**
+	 * Méthode qui permet de retourner la liste des déclarations. Principalement à utiliser dans le cas des demandes unitaires
 	 *
- 	 * @param ctbId le numéro de contribuable
+	 * @param ctbId          le numéro de contribuable
 	 * @param periodeFiscale la période fiscale considérée
 	 * @param numeroSequence le numéro de séquence dans la période
 	 * @return la liste des déclarations d'impots du contribuable.
-	 * @throws EsbBusinessException
 	 */
-List<DeclarationImpotOrdinaire> findDeclarations(long ctbId, int periodeFiscale, @Nullable Integer numeroSequence) throws EsbBusinessException {
+	List<DeclarationImpotOrdinaire> findDeclarations(long ctbId, int periodeFiscale, @Nullable Integer numeroSequence) throws EsbBusinessException {
 
 		final List<DeclarationImpotOrdinaire> declarations = getAllDeclarations(ctbId, periodeFiscale);
 
-		if (numeroSequence != null) {
-			final DeclarationImpotOrdinaire declaration = declarations.stream()
-					.filter(d -> Objects.equals(d.getNumero(), numeroSequence))
-					.findFirst()
-					.orElseThrow(() -> new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId +
-							" ne possède pas de déclaration d'impôt valide en " + periodeFiscale +
-							" avec le numéro de séquence " + numeroSequence, null));
+		if (numeroSequence != null && declarations.stream().noneMatch(d -> Objects.equals(d.getNumero(), numeroSequence))) {
+			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId +
+					" ne possède pas de déclaration d'impôt valide en " + periodeFiscale +
+					" avec le numéro de séquence " + numeroSequence, null);
 		}
 
 		return declarations;
