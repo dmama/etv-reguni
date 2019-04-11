@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.fidor.xml.colladm.v1.DecoupageNom;
+import ch.vd.fidor.xml.colladm.v1.NomComplet;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -91,10 +91,10 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 		this.noColAdm = right.getId();
 		this.noFax = null;
 		this.noTelephone = right.getNoTelephone();
-		final DecoupageNom nomDecoupe = right.getNomDecoupe();
-		this.nomComplet1 = nomDecoupe.getLigne1();
-		this.nomComplet2 = nomDecoupe.getLigne2();
-		this.nomComplet3 = nomDecoupe.getLigne3();
+		final NomComplet nomComplet = right.getNomComplet();
+		this.nomComplet1 = nomComplet.getLigne1();
+		this.nomComplet2 = nomComplet.getLigne2();
+		this.nomComplet3 = nomComplet.getLigne3();
 		this.nomCourt = right.getNomCourt();
 		this.sigle = right.getSigle();
 		this.sigleCanton = right.getCanton();
