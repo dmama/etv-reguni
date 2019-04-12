@@ -40,7 +40,7 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			final RegDate dateEnvoi = duplicata ? dateTraitement : lettre.getDateEnvoi();
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final FichierImpression.Document.LettreBienvenue lb = new FichierImpression.Document.LettreBienvenue(mapType(lettre.getType()));
 
 			final FichierImpression.Document document = new FichierImpression.Document();

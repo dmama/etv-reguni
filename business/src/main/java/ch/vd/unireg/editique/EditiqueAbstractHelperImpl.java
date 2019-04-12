@@ -81,8 +81,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
 
-	public static final String TRAITE_PAR = "CAT";
-	public static final String NOM_SERVICE_EXPEDITEUR = "Centre d'appels téléphoniques";
+	public static final String CAT_TRAITE_PAR = "CAT";
+	public static final String CAT_NOM_SERVICE_EXPEDITEUR = "Centre d'appels téléphoniques";
 
 	protected AdresseService adresseService;
 	protected TiersService tiersService;

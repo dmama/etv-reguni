@@ -41,7 +41,7 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 		final String codeBarre = calculCodeBarre(fourre);
 		try {
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateTraitement, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACI(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateTraitement, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACI(), infraService.getCAT());
 			final FichierImpression.Document.FourreNeutre fourreNeutre = new FichierImpression.Document.FourreNeutre(XmlUtils.regdate2xmlcal(RegDate.get(fourre.getPeriodeFiscale())), codeBarre);
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);

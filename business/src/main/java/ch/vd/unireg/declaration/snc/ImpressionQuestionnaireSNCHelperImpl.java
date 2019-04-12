@@ -56,7 +56,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			final Entreprise pm = (Entreprise) questionnaire.getTiers();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(pm), pm);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(TypeDocumentEditique.QSNC, construitCleArchivageDocument(questionnaire), pm.getNumero(), RegDate.get());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(pm, RegDate.get(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(pm, RegDate.get(), CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final CTypeQuestSNC qsnc = buildDocumentQuestionnaire(questionnaire);
 
 			final FichierImpression.Document document = new FichierImpression.Document();

@@ -96,7 +96,7 @@ public class ImpressionLettreDecisionDelaiPPHelperImpl extends EditiqueAbstractH
 			final TypeDocumentEditique typeDocument = getTypeDocumentEditique(params);
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers, typeDocument, getCodeDocument(params));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePP(typeDocument, cleArchivage, tiers.getNumero(), params.getDateTraitement());
-			final String titre = messageHelper.getMessage("lettre.demande.delai.di.editique.title");
+			final String titre = messageHelper.getMessage("lettre.demande.delai.di.editique.title", params.getDi().getPeriode().getAnnee());
 
 			// [SIFISC-20149] l'expéditeur de la confirmation de délai de DI PP doit être la nouvelle entité si applicable, sinon, le CAT
 			final int noCaExpeditrice = Optional
@@ -106,8 +106,8 @@ public class ImpressionLettreDecisionDelaiPPHelperImpl extends EditiqueAbstractH
 
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPP(tiers,
 			                                                                             dateExpedition,
-			                                                                             TRAITE_PAR,
-			                                                                             NOM_SERVICE_EXPEDITEUR,
+			                                                                             CAT_TRAITE_PAR,
+			                                                                             CAT_NOM_SERVICE_EXPEDITEUR,
 			                                                                             caExpeditrice,
 			                                                                             infraService.getCAT(),
 			                                                                             titre);

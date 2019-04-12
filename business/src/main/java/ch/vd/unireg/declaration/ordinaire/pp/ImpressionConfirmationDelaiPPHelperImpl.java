@@ -33,7 +33,7 @@ import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiPPHelper {
@@ -41,9 +41,13 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 	private static final String VERSION_XSD = "1.0";
 
 	private ServiceInfrastructureService infraService;
+	private MessageHelper messageHelper;
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 
 	@Override
@@ -90,10 +94,10 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 		final Entete entete = periode.addNewEntete();
 		final Tit tit = entete.addNewTit();
 		tit.setPrefixe(EditiquePrefixeHelper.buildPrefixeTitreEntete(typeDocumentEditique));
-		tit.setLibTit("Impôt cantonal et communal / Impôt fédéral direct");
+		tit.setLibTit(messageHelper.getMessage("lettre.demande.delai.di.editique.title", params.getDi().getPeriode().getAnnee()));
 		final ImpCcn impCcn = entete.addNewImpCcn();
 		impCcn.setPrefixe(EditiquePrefixeHelper.buildPrefixeImpCcnEntete(typeDocumentEditique));
-		impCcn.setLibImpCcn(String.format("Délai pour le dépôt de la déclaration d'impôt %d", params.getDi().getPeriode().getAnnee()));
+		impCcn.setLibImpCcn(messageHelper.getMessage("lettre.demande.delai.di.editique.sous.title"));
 		final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers(), null).getFormuleAppel();
 		confirmationDelai.setCivil(formuleAppel);
 		confirmationDelai.setOFS(legacyEditiqueHelper.getCommune(params.getDi()));
@@ -109,11 +113,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 			final TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-			// [SIFISC-20149] l'expéditeur de la confirmation de délai de DI PP doit être la nouvelle entité si applicable, sinon, le CAT
-			final int noCaExpeditrice = Optional.ofNullable(getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(params.getDi().getTiers(), RegDate.get())).orElse(ServiceInfrastructureService.noCAT);
-			final CollectiviteAdministrative caExpeditrice = tiersService.getCollectiviteAdministrative(noCaExpeditrice);
-
-			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteur(caExpeditrice, infoEnteteDocument);
+			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurCAT( infoEnteteDocument);
 			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
 

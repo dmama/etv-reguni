@@ -74,6 +74,8 @@ import ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.fourreNeutre.FourreNeutre;
 import ch.vd.unireg.fourreNeutre.ImpressionFourreNeutreHelper;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.mouvement.BordereauMouvementDossier;
@@ -90,6 +92,9 @@ import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.xml.editique.pm.CTypeImmeuble;
 import ch.vd.unireg.xml.editique.pm.CTypeInfoArchivage;
 import ch.vd.unireg.xml.editique.pm.FichierImpression;
+
+import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_NOM_SERVICE_EXPEDITEUR;
+import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_TRAITE_PAR;
 
 public class EditiqueCompositionServiceImpl implements EditiqueCompositionService {
 
@@ -123,7 +128,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private EvenementDocumentSortantService evenementDocumentSortantService;
 	private ImpressionFourreNeutreHelper impressionFourreNeutreHelper;
 	private ImpressionDelaiQuestionnaireSNCHelper impressionDelaiQSNCHelper;
+	protected ServiceInfrastructureService infraService;
 
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
 	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
@@ -695,10 +704,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		case ACCORDE:
 		{
 			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
-			final String[] infoOperateur = getInfoOperateur();
+			final CollectiviteAdministrative cat = infraService.getCAT();
 			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
-			                                                                                                   infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
+			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), CAT_NOM_SERVICE_EXPEDITEUR,
 			                                                                                                   delai.getId(), delai.getLogCreationDate());
+
 			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
 			final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
@@ -833,9 +843,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		case ACCORDE:
 		{
 			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
-			final String[] infoOperateur = getInfoOperateur();
+			final CollectiviteAdministrative cat = infraService.getCAT();
 			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
-			                                                                                                   infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
+			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), CAT_NOM_SERVICE_EXPEDITEUR,
 			                                                                                                   delai.getId(), delai.getLogCreationDate());
 			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);

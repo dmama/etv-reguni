@@ -44,7 +44,7 @@ public class ImpressionAutorisationRadiationRCHelperImpl extends EditiqueAbstrac
 			final AdresseEnvoiDetaillee adresseRC = getAdresseEnvoi(rc);
 			final CTypeInfoDocument infoDocument = buildInfoDocument(adresseRC, entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, lettre.getDateEnvoi(), CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 
 			// ce document est un peu particulier dans le sens où, par exemple, le numéro IDE doit venir de l'entreprise, mais
 			// l'adresse de destination doit correspondre au RC...

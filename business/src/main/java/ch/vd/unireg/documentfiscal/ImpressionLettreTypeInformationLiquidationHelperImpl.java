@@ -37,7 +37,7 @@ public class ImpressionLettreTypeInformationLiquidationHelperImpl extends Editiq
 			final Entreprise entreprise = lettre.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, lettre.getDateEnvoi(), CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 
 			final FichierImpression.Document.LettreLiquidation ll = new FichierImpression.Document.LettreLiquidation(STypeLettreLiquidation.LETTRE_LIQUIDATION);
 

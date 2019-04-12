@@ -307,6 +307,7 @@
 
     <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.unireg.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl">
 	    <property name="infraService" ref="serviceInfrastructureService"/>
+	    <property name="messageHelper" ref="messageHelper"/>
     </bean>
 
 	<bean id="impressionLettreDecisionDelaiPMHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperImpl"/>

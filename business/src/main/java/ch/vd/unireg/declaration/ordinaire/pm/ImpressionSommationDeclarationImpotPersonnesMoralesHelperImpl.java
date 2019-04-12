@@ -49,7 +49,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateDebutExerciceCommercial()),
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateFinExerciceCommercial()));
 
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateOfficielleEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateOfficielleEnvoi, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final FichierImpression.Document.Sommation sommation = buildInfoSommation(declaration, dateSommation, batch);
 
 			final FichierImpression.Document document = new FichierImpression.Document();

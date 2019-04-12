@@ -49,7 +49,7 @@ public class ImpressionRappelDemandeDegrevementICIHelperImpl extends EditiqueAbs
 			final String titre = String.format("%s %d", IMPOT_COMPLEMENTAIRE_IMMEUBLES, demande.getPeriodeFiscale());
 			// [SIFISC-29013] La date inscrite sur le rappel doit prendre en compte un délai de 3j ouvrables.
 			final RegDate dateEnvoi = determineDateEnvoi(demande);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final FichierImpression.Document.LettreDegrevementImmRappel rappel = new FichierImpression.Document.LettreDegrevementImmRappel(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale(), 1, 1)),
 			                                                                                                                               demandeHelper.getSiegeEntreprise(entreprise, dateTraitement),
 			                                                                                                                               demandeHelper.buildCodeBarres(demande),

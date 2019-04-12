@@ -38,7 +38,7 @@ public class ImpressionRappelHelperImpl extends EditiqueAbstractHelperImpl imple
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			// [SIFISC-29013] La date inscrite sur le rappel doit prendre en compte un délai de 3j ouvrables.
 			RegDate dateEnvoi = lettre.getEtatRappele() == null ? lettre.getDateRappel() : lettre.getEtatRappele().getDateEnvoiCourrier();
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(entreprise, dateEnvoi, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final FichierImpression.Document.LettreRappel rappel = new FichierImpression.Document.LettreRappel(ImpressionLettreBienvenueHelperImpl.mapType(lettre.getType()));
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);

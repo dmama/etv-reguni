@@ -40,7 +40,8 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
-import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.NOM_SERVICE_EXPEDITEUR;
+import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_NOM_SERVICE_EXPEDITEUR;
+import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_TRAITE_PAR;
 import static noNamespace.InfoDocumentDocument1.InfoDocument;
 import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 
@@ -210,7 +211,8 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative cat = infraService.getCAT();
 		final Expediteur expediteur = remplitExpediteur(cat, infoEnteteDocument);
-		expediteur.setTraitePar(NOM_SERVICE_EXPEDITEUR);
+		expediteur.setTraitePar(CAT_TRAITE_PAR);
+		expediteur.setSrvExp(CAT_NOM_SERVICE_EXPEDITEUR);
 		return expediteur;
 	}
 

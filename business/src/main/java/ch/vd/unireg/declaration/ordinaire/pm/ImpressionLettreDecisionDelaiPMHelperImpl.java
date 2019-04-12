@@ -103,7 +103,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateDebutExerciceCommercial()),
 			                                   RegDateHelper.dateToDisplayString(declaration.getDateFinExerciceCommercial()));
 
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(tiers, dateExpedition, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 
 			final FichierImpression.Document.RefusDelai refusDelai = buildRefusDelai(params);
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);

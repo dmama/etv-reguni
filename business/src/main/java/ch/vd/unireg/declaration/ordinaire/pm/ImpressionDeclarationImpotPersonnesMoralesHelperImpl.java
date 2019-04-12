@@ -153,7 +153,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			}
 			final ContribuableImpositionPersonnesMorales pm = declaration.getTiers();
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(pm)));
-			document.setInfoEnteteDocument(buildInfoEnteteDocumentPM(pm, declaration.getDateExpedition(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
+			document.setInfoEnteteDocument(buildInfoEnteteDocumentPM(pm, declaration.getDateExpedition(), CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
 			if (hasFeuilletPrincipal) {
 				document.setInfoArchivage(buildInfoArchivagePM(typeDocumentEditique, construitCleArchivageDocument(declaration), pm.getNumero(), RegDate.get()));
 			}

@@ -57,7 +57,7 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 			                                                              cleArchivageDocument, snc.getNumero(), RegDate.get());
 			final String titre = String.format("QUESTIONNAIRE SNC/SC %d ",
 			                                   questionnaire.getPeriode().getAnnee());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(snc, dateExpedition, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(snc, dateExpedition, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);

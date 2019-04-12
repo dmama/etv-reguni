@@ -26,4 +26,18 @@
 		<property name="elements" value=", . ' - ;"/>
 	</bean>
 
+	<!-- Message source: Le .properties utilisé pour les messages dans les JSP et servlet -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:UniregLabelResources</value>
+				<value>classpath:UniregOptionResources</value>
+				<value>classpath:UniregButtonResources</value>
+				<value>classpath:UniregErrorResources</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+
 </beans>

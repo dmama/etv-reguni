@@ -51,7 +51,7 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivagePM(TypeDocumentEditique.RAPPEL_SQNC, construitCleArchivageDocument(questionnaire), pm.getNumero(), dateRappel);
 
 			final String titre = messageHelper.getMessage("editique.titre.lettre.rappel.qsnc", questionnaire.getPeriode().getAnnee());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(pm, dateEnvoiCourrier, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocumentPM(pm, dateEnvoiCourrier, CAT_TRAITE_PAR, CAT_NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final CTypeQuestSNCRappel rappel = buildDocumentRappel(questionnaire);
 
 			final FichierImpression.Document document = new FichierImpression.Document();
