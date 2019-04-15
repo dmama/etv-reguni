@@ -176,7 +176,7 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 	 * SIFISC-9875 : il n'est plus possible d'envoyer une DI en mode batch...
 	 */
 	@Test
-	public void testImprimeDelaiForBatch() throws Exception {
+	public void testImprimeDelaiOnline() throws Exception {
 
 		final long noIndividu = 7423895678L;
 		final RegDate dateNaissance = date(1984, 4, 12);

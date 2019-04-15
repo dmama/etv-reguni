@@ -211,8 +211,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative cat = infraService.getCAT();
 		final Expediteur expediteur = remplitExpediteur(cat, infoEnteteDocument);
-		expediteur.setTraitePar(CAT_TRAITE_PAR);
-		expediteur.setSrvExp(CAT_NOM_SERVICE_EXPEDITEUR);
+		expediteur.setTraitePar(CAT_NOM_SERVICE_EXPEDITEUR);
 		return expediteur;
 	}
 

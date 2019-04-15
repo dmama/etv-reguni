@@ -706,8 +706,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
 			final CollectiviteAdministrative cat = infraService.getCAT();
 			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
-			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), CAT_NOM_SERVICE_EXPEDITEUR,
-			                                                                                                   delai.getId(), delai.getLogCreationDate());
+			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), null,
+			                                                                                                   delai.getId(), delai.getLogCreationDate(), CAT_NOM_SERVICE_EXPEDITEUR);
 
 			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
@@ -845,8 +845,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
 			final CollectiviteAdministrative cat = infraService.getCAT();
 			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
-			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), CAT_NOM_SERVICE_EXPEDITEUR,
-			                                                                                                   delai.getId(), delai.getLogCreationDate());
+			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(),null ,
+			                                                                                                   delai.getId(), delai.getLogCreationDate(), CAT_NOM_SERVICE_EXPEDITEUR);
 			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
 			final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
@@ -880,7 +880,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			final String nomDocument = impressionLettreDecisionDelaiPPHelper.construitIdDocument(params);
 			editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, original.getInfoArchivage() != null);
 			return cleArchivage;
-			
+
 		}
 		default:
 			throw new IllegalArgumentException("Type d'état de délai non-supporté = [" + delai.getEtat() + "]");

@@ -34,6 +34,7 @@ import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.message.MessageHelper;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiPPHelper {
@@ -113,9 +114,15 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 			final TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurCAT( infoEnteteDocument);
+			// [SIFISC-20149] l'expéditeur de la confirmation de délai de DI PP doit être la nouvelle entité si applicable, sinon, le CAT
+			final int noCaExpeditrice = Optional.ofNullable(getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(params.getDi().getTiers(), RegDate.get())).orElse(ServiceInfrastructureService.noCAT);
+			final CollectiviteAdministrative caExpeditrice = tiersService.getCollectiviteAdministrative(noCaExpeditrice);
+
+			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteur(caExpeditrice, infoEnteteDocument);
 			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
+			if(params.getServiceTraiterPar()!=null){
+			expediteur.setSrvExp(params.getServiceTraiterPar());}
 
 			// ici c'est un peu tordu : on veut afficher le numéro de téléphone du CAT dans l'entête mais
 			// le numéro de téléphone du collaborateur dans le cadre (affaire traitée par), là où est
