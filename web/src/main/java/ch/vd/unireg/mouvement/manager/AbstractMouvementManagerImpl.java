@@ -147,13 +147,10 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 				liste.add(getView(mvt, isExtraction));
 			}
 			if (sortByNoDossier && liste.size() > 1) {
-				liste.sort(new Comparator<MouvementDetailView>() {
-					@Override
-					public int compare(MouvementDetailView o1, MouvementDetailView o2) {
-						final long no1 = o1.getContribuable().getNumero();
-						final long no2 = o2.getContribuable().getNumero();
-						return Long.compare(no1, no2);
-					}
+				liste.sort((o1, o2) -> {
+					final long no1 = o1.getContribuable().getNumero();
+					final long no2 = o2.getContribuable().getNumero();
+					return Long.compare(no1, no2);
 				});
 			}
 			return liste;

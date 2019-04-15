@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.service.refsec;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
 import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.wsclient.refsec.RefSecClient;
@@ -107,6 +109,7 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 			final Set<Integer> codeCollectivites = refSecClient.getCollectivitesOperateur(visa);
 			final List<CollectiviteAdministrative> collectivitesAdministratives = serviceInfrastructureService.findCollectivitesAdministratives(new ArrayList<>(codeCollectivites), false);
 			return filtreCollectiviteAdministrativeParTypeCommunicationACI(collectivitesAdministratives)
+					.sorted(Comparator.comparing(CollectiviteAdministrative::getNomCourt))
 					.collect(Collectors.toList());
 		}
 		catch (RefSecClientException e) {
