@@ -126,6 +126,7 @@ public class MockRue implements Rue {
 	public static class Echallens {
 		public static final MockRue GrandRue = new MockRue(MockLocalite.Echallens, "Grand'Rue", 1132343);
 		public static final MockRue RouteDeMoudon = new MockRue(MockLocalite.Echallens, "Route de Moudon", 1132358);
+		public static final MockRue PlaceEmileGardaz = new MockRue(MockLocalite.Echallens, "Place Emile Gardaz", 1132347);
 	}
 
 	public static class Lonay {

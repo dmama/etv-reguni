@@ -83,7 +83,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.numeroPostal = localite.map(Localite::getNPA).map(String::valueOf).orElse(null);
 		this.numeroPostalComplementaire = localite.map(Localite::getComplementNPA).filter(compl -> compl > 0).map(String::valueOf).orElse(null);
 		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse;  // les collectivités administratives étrangères ne sont pas stockées
-		this.rue = rue.map(Rue::getDesignationCourrier).orElse(null);
+		this.rue = rue.map(Rue::getDesignationCourrier).orElse(right.getNomRue());
 		this.titre = null;
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
 		this.noOfsCommuneAdresse = null;

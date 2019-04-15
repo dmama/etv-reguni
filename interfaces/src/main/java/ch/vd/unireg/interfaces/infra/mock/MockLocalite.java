@@ -10,6 +10,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Lausanne1003 = new MockLocalite(150, 1003, null, "Lausanne", MockCommune.Lausanne);
 	public static final MockLocalite Lausanne1005 = new MockLocalite(152, 1005, null, "Lausanne", MockCommune.Lausanne);
 	public static final MockLocalite Lausanne1006 = new MockLocalite(153, 1006, null, "Lausanne", MockCommune.Lausanne);
+	public static final MockLocalite Lausanne1014 = new MockLocalite(162, 1014, null, "Lausanne Adm cant VD", MockCommune.Lausanne);
 	public static final MockLocalite CossonayVille = new MockLocalite(528, 1304, null, "Cossonay-Ville", MockCommune.Cossonay);
 	public static final MockLocalite Romainmotier = new MockLocalite(564, 1323, null, "Romainmôtier", MockCommune.RomainmotierEnvy);
 	public static final MockLocalite Morges = new MockLocalite(254, 1110, null, "Morges", MockCommune.Morges);
