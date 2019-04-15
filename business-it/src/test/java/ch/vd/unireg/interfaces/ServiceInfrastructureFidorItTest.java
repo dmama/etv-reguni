@@ -70,10 +70,10 @@ public class ServiceInfrastructureFidorItTest extends BusinessItTest {
 		assertNull(adresse.getDateFin());
 		assertEquals("Route de Berne", adresse.getRue());
 		assertEquals("46", adresse.getNumero());
-		assertEquals("Lausanne", adresse.getLocalite());
-		assertEquals("1000", adresse.getNumeroPostal());
+		assertEquals("Lausanne Adm cant", adresse.getLocalite());
+		assertEquals("1014", adresse.getNumeroPostal());
 		assertNull(adresse.getNumeroPostalComplementaire());
-		assertEquals(Integer.valueOf(104), adresse.getNumeroOrdrePostal());
+		assertEquals(Integer.valueOf(162), adresse.getNumeroOrdrePostal());
 		assertEquals(Integer.valueOf(8100), adresse.getNoOfsPays());
 	}
 

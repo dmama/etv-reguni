@@ -211,8 +211,8 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
 		assertEquals(1, debtProsecutionAddresses.size());
-		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Justice de Paix des districts du Jura -",
-				"Nord vaudois et du Gros-de-Vaud", "Rue des Moulins 10", "Case Postale 693", "1401 Yverdon-les-Bains");
+		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Justice de Paix des districts du",
+				"Jura - Nord vaudois et du Gros-de-Vaud", "Rue des Moulins 10", "Case Postale 693", "1401 Yverdon-les-Bains");
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
