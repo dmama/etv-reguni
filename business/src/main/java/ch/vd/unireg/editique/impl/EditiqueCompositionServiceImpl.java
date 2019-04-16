@@ -707,7 +707,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			final CollectiviteAdministrative cat = infraService.getCAT();
 			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
 			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), null,
-			                                                                                                   delai.getId(), delai.getLogCreationDate(), CAT_NOM_SERVICE_EXPEDITEUR);
+			                                                                                                   delai.getId(), delai.getLogCreationDate(), CAT_NOM_SERVICE_EXPEDITEUR, null);
 
 			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
@@ -845,8 +845,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
 			final CollectiviteAdministrative cat = infraService.getCAT();
 			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
-			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(),null ,
-			                                                                                                   delai.getId(), delai.getLogCreationDate(), CAT_NOM_SERVICE_EXPEDITEUR);
+			                                                                                                   CAT_TRAITE_PAR, cat.getNoTelephone(), null ,
+			                                                                                                   delai.getId(), delai.getLogCreationDate(), CAT_NOM_SERVICE_EXPEDITEUR, dateExpedition);
 			final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 			final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
 			final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);

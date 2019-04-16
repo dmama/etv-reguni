@@ -1,15 +1,23 @@
 package ch.vd.unireg.di.manager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import noNamespace.impl.FichierImpressionDocumentImpl;
+import org.apache.xmlbeans.XmlObject;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.WebTest;
@@ -17,6 +25,8 @@ import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.DelaiDeclarationDAO;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocument;
@@ -24,22 +34,47 @@ import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelper;
+import ch.vd.unireg.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelper;
+import ch.vd.unireg.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelper;
+import ch.vd.unireg.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelper;
+import ch.vd.unireg.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
+import ch.vd.unireg.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
+import ch.vd.unireg.declaration.source.ImpressionListeRecapHelper;
+import ch.vd.unireg.declaration.source.ImpressionSommationLRHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.impl.EditiqueCompositionServiceImpl;
+import ch.vd.unireg.editique.mock.MockEditiqueService;
+import ch.vd.unireg.efacture.ImpressionDocumentEfactureHelperImpl;
+import ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.mouvement.ImpressionBordereauMouvementDossierHelper;
+import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TacheDAO;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseRetour;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
@@ -66,6 +101,10 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 	protected DeclarationImpotOrdinaireDAO diDAO;
 	protected DeclarationImpotEditManagerImpl manager;
+	private EditiqueCompositionServiceImpl editiqueService;
+
+	private ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper;
+	private final String nomDocument = "12321123221L";
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -84,6 +123,29 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setTacheDAO(getBean(TacheDAO.class, "tacheDAO"));
 		manager.setPeriodeImpositionService(getBean(PeriodeImpositionService.class, "periodeImpositionService"));
 		manager.setDiService(getBean(DeclarationImpotService.class, "diService"));
+		manager.setDelaiDocumentFiscalDAO(getBean(DelaiDeclarationDAO.class, "delaiDeclarationDAO"));
+		manager.setDelaisService(getBean(DelaisService.class, "delaisService"));
+		//
+		editiqueService = new EditiqueCompositionServiceImpl();
+		editiqueService.setEditiqueService(new MockEditiqueService());
+		editiqueService.setImpressionDIPPHelper(getBean(ImpressionDeclarationImpotPersonnesPhysiquesHelper.class, "impressionDIPPHelper"));
+		editiqueService.setImpressionDIPMHelper(getBean(ImpressionDeclarationImpotPersonnesMoralesHelper.class, "impressionDIPMHelper"));
+		editiqueService.setImpressionLRHelper(getBean(ImpressionListeRecapHelper.class, "impressionLRHelper"));
+		editiqueService.setImpressionSommationDIPPHelper(getBean(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper.class, "impressionSommationDIPPHelper"));
+		editiqueService.setImpressionSommationDIPMHelper(getBean(ImpressionSommationDeclarationImpotPersonnesMoralesHelper.class, "impressionSommationDIPMHelper"));
+		editiqueService.setImpressionSommationLRHelper(getBean(ImpressionSommationLRHelper.class, "impressionSommationLRHelper"));
+		editiqueService.setImpressionNouveauxDossiersHelper(getBean(ImpressionNouveauxDossiersHelper.class, "impressionNouveauxDossiersHelper"));
+		editiqueService.setImpressionLettreDecisionDelaiPMHelper(getBean(ImpressionLettreDecisionDelaiPMHelper.class, "impressionLettreDecisionDelaiPMHelper"));
+		editiqueService.setImpressionBordereauMouvementDossierHelper(getBean(ImpressionBordereauMouvementDossierHelper.class, "impressionBordereauMouvementDossierHelper"));
+		editiqueService.setServiceSecurite(getBean(ServiceSecuriteService.class, "serviceSecuriteService"));
+		editiqueService.setImpressionEfactureHelper(getBean(ImpressionDocumentEfactureHelperImpl.class, "impressionEfactureHelper"));
+		editiqueService.setEvenementDocumentSortantService(getBean(EvenementDocumentSortantService.class, "evenementDocumentSortantService"));
+		editiqueService.setInfraService(getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"));
+
+		//pour pouvoir stocker les fichiers xml générer pour Editique
+		impressionConfirmationDelaiPPHelper = Mockito.spy(getBean(ImpressionConfirmationDelaiPPHelper.class, "impressionConfirmationDelaiPPHelper"));
+		editiqueService.setImpressionConfirmationDelaiPPHelper(impressionConfirmationDelaiPPHelper);
+		manager.setEditiqueCompositionService(editiqueService);
 		manager.afterPropertiesSet();
 	}
 
@@ -239,7 +301,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		addForPrincipal(paul, date(1995, 3, 15), MotifFor.MAJORITE, date(2008, 2, 10), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2008, 2, 11), MotifFor.DEPART_HS, MockPays.France);
 		addForSecondaire(paul, date(1998, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
-				MotifRattachement.IMMEUBLE_PRIVE);
+		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		// assujetti sur toute l'année 2007
 		assertValidRangeDi(paul, fullYear(2007));
@@ -294,7 +356,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		addForPrincipal(paul, date(2007, 3, 15), MotifFor.ARRIVEE_HC, date(2008, 2, 10), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2008, 2, 11), MotifFor.DEPART_HS, MockPays.France);
 		addForSecondaire(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
-				MotifRattachement.IMMEUBLE_PRIVE);
+		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(paul);
 		assertNotNull(ranges);
@@ -315,8 +377,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	/**
-	 * [UNIREG-2051] Cas du contribuable hors-Canton qui vend son immeuble dans l'année : la dernière déclaration est remplacée par une note à l'administration fiscale de
-	 * l'autre canton et il ne doit pas être possible d'envoyer une déclaration d'impôt.
+	 * [UNIREG-2051] Cas du contribuable hors-Canton qui vend son immeuble dans l'année : la dernière déclaration est remplacée par une note à l'administration fiscale de l'autre canton et il ne doit pas être possible d'envoyer une déclaration
+	 * d'impôt.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -354,8 +416,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	/**
-	 * Vérifie que la liste spécifiée contient tous les ranges complets (= année complète) pour la période <i>startYear..endYear</i>, <b>et
-	 * uniquement ceux-ci</b>.
+	 * Vérifie que la liste spécifiée contient tous les ranges complets (= année complète) pour la période <i>startYear..endYear</i>, <b>et uniquement ceux-ci</b>.
 	 */
 	public static void assertFullYearRanges(int startYear, int endYear, boolean optionnel, List<PeriodeImposition> ranges) {
 		assertTrue(startYear <= endYear);
@@ -400,7 +461,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		// assujetti sur toute l'année 2004
 		assertFullYearRangesSince(2004, false, manager.calculateRangesProchainesDIs(paul));
 		DeclarationImpotOrdinaire declaration = addDeclarationImpot(paul, periode2004, date(2004, 1, 1), date(2004, 12, 31),
-				TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
+		                                                            TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
 
 		// prochaine déclaration est celle de 2005
 		assertFullYearRangesSince(2005, false, manager.calculateRangesProchainesDIs(paul));
@@ -426,7 +487,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		// assujetti sur toute l'année courante
 		assertFullYearRangesSince(anneeCourante, false, manager.calculateRangesProchainesDIs(paul));
 		addDeclarationImpot(paul, periode, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				modele);
+		                    modele);
 
 		// impossible d'ajouter une DI dans le future
 		assertEmpty(manager.calculateRangesProchainesDIs(paul));
@@ -643,8 +704,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	/**
 	 * [SIFISC-4923] Ce test vérifie qu'il est possible d'émettre une déclaration d'impôt sur un contribuable hors-canton qui a vendu son dernier immeuble dans l'année.
 	 * <p/>
-	 * La difficulté tient au fait que les assujettissements économiques s'étendent toujours sur toute l'année et qu'on s'intéresse donc au for de gestion au 31 décembre. Comme à cette date-là, le
-	 * contribuable ne possède plus de for fiscal actif dans le canton, il n'y a plus de for de gestion actif. La solution est donc de rechercher le dernier for de gestion connu.
+	 * La difficulté tient au fait que les assujettissements économiques s'étendent toujours sur toute l'année et qu'on s'intéresse donc au for de gestion au 31 décembre. Comme à cette date-là, le contribuable ne possède plus de for fiscal actif dans
+	 * le canton, il n'y a plus de for de gestion actif. La solution est donc de rechercher le dernier for de gestion connu.
 	 *
 	 * @throws Exception
 	 */
@@ -735,5 +796,79 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 *  SIFISC-30615: Impression d'un accord de délai d'un PP en mode CADEV, la règle du +3j n'est pas prise en compte pour la date du courrier
+	 * @throws Exception
+	 */
+	@Test
+	public void testDateExpeditionRespecteDelaiCadevPourLettreAccordDelaiDI() throws Exception {
+
+		final long noIndividu = 7423895678L;
+		final RegDate dateNaissance = date(1984, 4, 12);
+		final RegDate dateOuvertureFor = dateNaissance.addYears(18);
+		final int annee = 2012;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+
+			}
+		});
+
+		final Map<String, XmlObject> documentEditique = new HashMap<>();
+		editiqueService.setEditiqueService(new MockEditiqueService() {
+			@Override
+			public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException {
+				documentEditique.putIfAbsent(nomDocument, document);
+			}
+
+		});
+
+		// mise en place fiscale et impression de la DI
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
+				addEtatDeclarationEmise(di, RegDate.get());
+				addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<String>() {
+			@Override
+			public String execute(TransactionStatus status) throws Exception {
+				Mockito.doReturn(nomDocument).when(impressionConfirmationDelaiPPHelper).construitIdDocument(Mockito.any(DelaiDeclaration.class));
+				final Tiers pp = tiersDAO.get(ppId);
+				assertNotNull(pp);
+				final List<DeclarationImpotOrdinairePP> list = pp.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
+				final DeclarationImpotOrdinairePP di = list.get(0);
+				assertNotNull(di);
+				final DelaiDeclaration delaiDeclaration = (DelaiDeclaration) di.getDelais().iterator().next();
+				manager.envoieImpressionBatchLettreDecisionDelaiPP(delaiDeclaration.getId());
+				return null;
+			}
+		});
+		Assert.assertEquals(1, documentEditique.size());
+		final XmlObject document = documentEditique.get(nomDocument);
+		assertNotNull(document);
+		final String dateExpeditionString = ((FichierImpressionDocumentImpl) document).getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getDateExpedition();
+		final RegDate dateExpeditionEditique = RegDateHelper.indexStringToDate(dateExpeditionString);
+		assertTrue("La date d'expédition du document est supérieur de 3jrs à la date du jour.", RegDateHelper.isAfterOrEqual(dateExpeditionEditique, RegDate.get(), NullDateBehavior.EARLIEST));
+		documentEditique.clear();
+
 	}
 }

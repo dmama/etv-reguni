@@ -15,10 +15,11 @@ public class ImpressionConfirmationDelaiHelperParams {
 	private final Long idDelai;
 	private final Date logCreationDateDelai;
 	private String serviceTraiterPar;
+	private RegDate dateExpedition;
 
 
 	public ImpressionConfirmationDelaiHelperParams(
-			DeclarationImpotOrdinaire di, RegDate dateAccord, String traitePar, String tel, String adrMsg, Long idDelai, Date logCreationDateDelai, String serviceTraiterPar) {
+			DeclarationImpotOrdinaire di, RegDate dateAccord, String traitePar, String tel, String adrMsg, Long idDelai, Date logCreationDateDelai, String serviceTraiterPar, RegDate dateExpedition) {
 		super();
 		this.di = di;
 		this.dateAccord = dateAccord;
@@ -28,6 +29,7 @@ public class ImpressionConfirmationDelaiHelperParams {
 		this.idDelai = idDelai;
 		this.logCreationDateDelai = logCreationDateDelai;
 		this.serviceTraiterPar = serviceTraiterPar;
+		this.dateExpedition = dateExpedition;
 	}
 
 	public ImpressionConfirmationDelaiHelperParams(RegDate dateAccord, Long idDelai, Date logCreationDateDelai) {
@@ -74,4 +76,7 @@ public class ImpressionConfirmationDelaiHelperParams {
 		return serviceTraiterPar;
 	}
 
+	public RegDate getDateExpedition() {
+		return dateExpedition;
+	}
 }

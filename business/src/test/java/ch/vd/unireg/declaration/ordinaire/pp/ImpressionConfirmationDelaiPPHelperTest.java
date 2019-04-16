@@ -63,7 +63,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 		GregorianCalendar cal = new GregorianCalendar(2011, 0, 1, 12, 30, 20);
 		delai.setLogCreationDate(cal.getTime());
 		ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(declaration, delai.getDelaiAccordeAu(),
-		                                                                                             "userTest", "", "", delai.getId(), delai.getLogCreationDate(), null);
+		                                                                                             "userTest", "", "", delai.getId(), delai.getLogCreationDate(), null, null);
 
 		Assert.assertEquals(idArchivageAttendu, impressionConfirmationDelaiHelper.construitIdArchivageDocument(params));
 
@@ -99,7 +99,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null);
+				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null, null);
 				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
 				Assert.assertNotNull(doc);
 
@@ -143,7 +143,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null);
+				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null, null);
 				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
 				Assert.assertNotNull(doc);
 

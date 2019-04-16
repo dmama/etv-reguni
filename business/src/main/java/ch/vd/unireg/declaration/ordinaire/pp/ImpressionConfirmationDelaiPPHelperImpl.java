@@ -119,7 +119,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 			final CollectiviteAdministrative caExpeditrice = tiersService.getCollectiviteAdministrative(noCaExpeditrice);
 
 			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteur(caExpeditrice, infoEnteteDocument);
-			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
+			expediteur.setDateExpedition(params.getDateExpedition() != null ? RegDateHelper.toIndexString(params.getDateExpedition()) : RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
 			if(params.getServiceTraiterPar()!=null){
 			expediteur.setSrvExp(params.getServiceTraiterPar());}
