@@ -173,10 +173,10 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-9875 : il n'est plus possible d'envoyer une DI en mode batch...
+	 * SIFISC-31119 :Lettre de refus/accord de délai, expéditeur CAT.
 	 */
 	@Test
-	public void testImprimeDelaiOnline() throws Exception {
+	public void testLettreAccordDelaiExpediteurCAT() throws Exception {
 
 		final long noIndividu = 7423895678L;
 		final RegDate dateNaissance = date(1984, 4, 12);
