@@ -76,9 +76,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
     Integer getNoOfsPays();
 
     /**
-     * Retourne la rue de l'adresse.
-     *
-     * @return la rue de l'adresse.
+     * @return la désignation de la rue et le numéro de maison.
      */
     String getRue();
 
