@@ -11,6 +11,9 @@ public class MockLienCommuneBatiment implements DateRange {
 	private final RegDate dateFin;
 
 	MockLienCommuneBatiment(MockCommune commune, MockBatiment batiment, RegDate dateDebut, RegDate dateFin) {
+		if (commune == null) {
+			throw new IllegalArgumentException();
+		}
 		this.commune = commune;
 		this.batiment = batiment;
 		this.dateDebut = dateDebut;

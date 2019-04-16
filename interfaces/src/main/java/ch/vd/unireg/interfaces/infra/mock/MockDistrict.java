@@ -5,8 +5,6 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 
 public class MockDistrict extends MockEntiteFiscale implements District {
 
-	private final Region region;
-
 	public static final MockDistrict Aigle = new MockDistrict(1, "Aigle", MockRegion.Vevey);
 	public static final MockDistrict Echallens = new MockDistrict(2, "Echallens", MockRegion.Yverdon);
 	public static final MockDistrict Grandson = new MockDistrict(3, "Grandson", MockRegion.Yverdon);
@@ -23,17 +21,18 @@ public class MockDistrict extends MockEntiteFiscale implements District {
 	public static final MockDistrict Vevey = new MockDistrict(14, "Vevey", MockRegion.Vevey);
 	public static final MockDistrict Yverdon = new MockDistrict(15, "Yverdon", MockRegion.Yverdon);
 
-	@Override
-	public Integer getCodeRegion() {
-		return region.getCode();
-	}
-
-	public MockDistrict(Region region) {
-		this.region = region;
-	}
+	private final Region region;
 
 	public MockDistrict(Integer code, String designation, Region region) {
 		super(code, designation);
+		if (region == null) {
+			throw new IllegalArgumentException();
+		}
 		this.region = region;
+	}
+
+	@Override
+	public Integer getCodeRegion() {
+		return region.getCode();
 	}
 }

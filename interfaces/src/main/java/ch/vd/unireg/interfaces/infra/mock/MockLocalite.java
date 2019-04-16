@@ -81,24 +81,24 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Geneve = new MockLocalite(368, 1202, null, "Genève", MockCommune.Geneve);
 
 
-	private Integer chiffreComplementaire;
-	private Integer complementNPA;
-	private Integer noCommune;
-	private String nomAbrege;
-	private String nomComplet;
-	private Integer noOrdre;
-	private Integer nPA;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private Commune communeLocalite;
-
-	public MockLocalite() {
-		DefaultMockServiceInfrastructureService.addLocalite(this);
-	}
+	private final Integer chiffreComplementaire;
+	private final Integer complementNPA;
+	private final Integer noCommune;
+	private final String nomAbrege;
+	private final String nomComplet;
+	private final Integer noOrdre;
+	private final Integer nPA;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
+	private final Commune communeLocalite;
 
 	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nom, MockCommune commune) {
+		if (commune == null) {
+			throw new IllegalArgumentException();
+		}
 		this.noOrdre = noOrdre;
 		this.nPA = nPA;
+		this.chiffreComplementaire = null;
 		this.complementNPA = complementNPA;
 		this.noCommune = commune.getNoOFS();
 		this.nomComplet = nom;
@@ -113,6 +113,7 @@ public class MockLocalite implements Localite {
 	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nomAbrege, String nomComplet, MockCommune commune) {
 		this.noOrdre = noOrdre;
 		this.nPA = nPA;
+		this.chiffreComplementaire = null;
 		this.complementNPA = complementNPA;
 		this.noCommune = commune.getNoOFS();
 		this.nomComplet = nomComplet;
@@ -129,17 +130,9 @@ public class MockLocalite implements Localite {
 		return chiffreComplementaire;
 	}
 
-	public void setChiffreComplementaire(Integer chiffreComplementaire) {
-		this.chiffreComplementaire = chiffreComplementaire;
-	}
-
 	@Override
 	public Integer getComplementNPA() {
 		return complementNPA;
-	}
-
-	public void setComplementNPA(Integer complementNPA) {
-		this.complementNPA = complementNPA;
 	}
 
 	@Override
@@ -147,17 +140,9 @@ public class MockLocalite implements Localite {
 		return noCommune;
 	}
 
-	public void setNoCommune(Integer noCommune) {
-		this.noCommune = noCommune;
-	}
-
 	@Override
 	public String getNomAbrege() {
 		return nomAbrege;
-	}
-
-	public void setNomAbrege(String nomAbrege) {
-		this.nomAbrege = nomAbrege;
 	}
 
 	@Override
@@ -165,17 +150,9 @@ public class MockLocalite implements Localite {
 		return nomComplet;
 	}
 
-	public void setNomComplet(String nomComplet) {
-		this.nomComplet = nomComplet;
-	}
-
 	@Override
 	public Integer getNoOrdre() {
 		return noOrdre;
-	}
-
-	public void setNoOrdre(Integer noOrdre) {
-		this.noOrdre = noOrdre;
 	}
 
 	@Override
@@ -183,17 +160,9 @@ public class MockLocalite implements Localite {
 		return nPA;
 	}
 
-	public void setNPA(Integer npa) {
-		nPA = npa;
-	}
-
 	@Override
 	public Commune getCommuneLocalite() {
 		return communeLocalite;
-	}
-
-	public void setCommuneLocalite(Commune c) {
-		communeLocalite = c;
 	}
 
 	@Override

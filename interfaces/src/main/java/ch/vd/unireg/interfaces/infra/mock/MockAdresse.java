@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -39,19 +40,19 @@ public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
 	public MockAdresse() {
 	}
 
-	public MockAdresse(TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
+	public MockAdresse(TypeAdresseCivil type, @NotNull MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
 		this(type, casePostale, null, rue.getLocalite(), debutValidite, finValidite);
 		this.rue = rue.getDesignationCourrier();
 		this.numeroRue = rue.getNoRue();
 	}
 
-	public MockAdresse(TypeAdresseCivil type, MockBatiment batiment, @Nullable Integer ewid, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+	public MockAdresse(TypeAdresseCivil type, @NotNull MockBatiment batiment, @Nullable Integer ewid, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
 		this(type, batiment.getRue(), casePostale, debutValidite, finValidite);
 		this.egid = batiment.getEgid();
 		this.ewid = ewid;
 	}
 
-	public MockAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
+	public MockAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, @NotNull MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
 		if (pays.getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse) {
 			throw new IllegalArgumentException("Pour la Suisse, il faut utiliser une autre méthode newAdresse");
 		}
@@ -64,7 +65,7 @@ public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
 		this.dateFinValidite = finValidite;
 	}
 
-	public MockAdresse(TypeAdresseCivil type, CasePostale casePostale, String rue, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+	public MockAdresse(TypeAdresseCivil type, CasePostale casePostale, String rue, @NotNull MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
 		this.typeAdresse = type;
 
 		// localité

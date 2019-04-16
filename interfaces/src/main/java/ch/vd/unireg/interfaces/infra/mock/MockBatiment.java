@@ -67,6 +67,9 @@ public class MockBatiment {
 	}
 	
 	public MockBatiment(int egid, MockRue rue) {
+		if (rue == null) {
+			throw new IllegalArgumentException();
+		}
 		this.egid = egid;
 		this.rue = rue;
 	}
