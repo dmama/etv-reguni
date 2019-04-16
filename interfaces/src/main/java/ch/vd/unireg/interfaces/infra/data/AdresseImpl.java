@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -85,9 +83,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.numeroPostal = localite.map(Localite::getNPA).map(String::valueOf).orElse(null);
 		this.numeroPostalComplementaire = localite.map(Localite::getComplementNPA).filter(compl -> compl > 0).map(String::valueOf).orElse(null);
 		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse;  // les collectivités administratives étrangères ne sont pas stockées
-		this.rue = Stream.of(rue.map(Rue::getDesignationCourrier).orElse(right.getNomRue()), right.getNumeroMaison())   // [FISCPROJ-1213] le numéro de maison doit faire partie de la rue
-				.filter(StringUtils::isNotBlank)
-				.collect(Collectors.joining(" "));
+		this.rue = rue.map(Rue::getDesignationCourrier).orElse(right.getNomRue());
 		this.titre = null;
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
 		this.noOfsCommuneAdresse = null;

@@ -45,7 +45,7 @@ public class AdresseTest {
 		assertEquals("1040", adresse.getNumeroPostal());
 		assertNull(adresse.getNumeroPostalComplementaire());
 		assertEquals(Integer.valueOf(8100), adresse.getNoOfsPays());
-		assertEquals("Place Emile Gardaz 5", adresse.getRue());
+		assertEquals("Place Emile Gardaz", adresse.getRue());
 		assertNull(adresse.getTitre());
 		assertEquals(TypeAdresseCivil.COURRIER, adresse.getTypeAdresse());
 		assertNull(adresse.getNoOfsCommuneAdresse());
@@ -79,29 +79,11 @@ public class AdresseTest {
 		assertEquals("1014", adresse.getNumeroPostal());
 		assertNull(adresse.getNumeroPostalComplementaire());
 		assertEquals(Integer.valueOf(8100), adresse.getNoOfsPays());
-		assertEquals("Route de Berne 46", adresse.getRue());
+		assertEquals("Route de Berne", adresse.getRue());
 		assertNull(adresse.getTitre());
 		assertEquals(TypeAdresseCivil.COURRIER, adresse.getTypeAdresse());
 		assertNull(adresse.getNoOfsCommuneAdresse());
 		assertNull(adresse.getEgid());
 		assertNull(adresse.getEwid());
-	}
-
-	/**
-	 * [FISCPROJ-1213] Vérifie que le numéro de maison fait bien partie de la rue quand il est renseigné.
-	 */
-	@Test
-	public void testAdresseCollAdminFidorRueAvecNumero() {
-
-		final ServiceInfrastructureRaw service = Mockito.mock(ServiceInfrastructureRaw.class);
-		Mockito.when(service.getLocaliteByONRP(162, null)).thenReturn(MockLocalite.Lausanne1014);
-
-		final Adresse adresseFidor = new Adresse();
-		adresseFidor.setNomRue("Route de Berne");
-		adresseFidor.setNumeroMaison("46");
-		adresseFidor.setNoOrdrePoste(162); // 1014 Lausanne Adm cant VD
-
-		final AdresseImpl adresse = new AdresseImpl(adresseFidor, service);
-		assertEquals("Route de Berne 46", adresse.getRue());
 	}
 }
