@@ -21,6 +21,7 @@ import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.RueEtNumero;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.editique.ConstantesEditique;
@@ -41,7 +42,6 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_NOM_SERVICE_EXPEDITEUR;
-import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_TRAITE_PAR;
 import static noNamespace.InfoDocumentDocument1.InfoDocument;
 import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 
@@ -184,8 +184,8 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		adresseEnvoi.addLine(ca.getNomComplet1());
 		adresseEnvoi.addLine(ca.getNomComplet2());
 		adresseEnvoi.addLine(ca.getNomComplet3());
-		adresseEnvoi.addLine(adresse != null ? adresse.getRue() : null);
-		adresseEnvoi.addLine(adresse != null ? adresse.getNumeroPostal() + ' ' + adresse.getLocalite() : null);
+		adresseEnvoi.addLine(RueEtNumero.format(adresse.getRue(), adresse.getNumero()));
+		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 		remplitAdresse(adresseEnvoi, adresseExpediteur);
 		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
 		expNilValues.setAdrMes(ca.getAdresseEmail());
@@ -272,7 +272,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		adresseExpACI.addLine(aciImpotSource.getNomComplet1());
 		adresseExpACI.addLine(aciImpotSource.getNomComplet2());
 		adresseExpACI.addLine(aciImpotSource.getNomComplet3());
-		adresseExpACI.addLine(adresseAciImpotSource.getRue());
+		adresseExpACI.addLine(RueEtNumero.format(adresseAciImpotSource.getRue(), adresseAciImpotSource.getNumero()));
 		adresseExpACI.addLine(adresseAciImpotSource.getNumeroPostal() + ' ' + adresseAciImpotSource.getLocalite());
 		remplitAdresse(adresseExpACI, adresseExpediteur);
 		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
@@ -318,7 +318,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		adresseEnvoiExp.addLine(aci.getNomComplet1());
 		adresseEnvoiExp.addLine(IMPOT_A_LA_SOURCE_MIN);
 		adresseEnvoiExp.addLine(aci.getNomComplet3());
-		adresseEnvoiExp.addLine(aciAdresse.getRue());
+		adresseEnvoiExp.addLine(RueEtNumero.format(aciAdresse.getRue(), aciAdresse.getNumero()));
 		adresseEnvoiExp.addLine(aciAdresse.getNumeroPostal() + ' ' + aciAdresse.getLocalite());
 		remplitAdresse(adresseEnvoiExp, adresseExpediteur);
 		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();

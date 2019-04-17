@@ -26,19 +26,16 @@ import ch.vd.unireg.type.PeriodiciteDecompte;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@SuppressWarnings({"JavaDoc"})
 public class ImpressionListeRecapHelperTest extends BusinessTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionListeRecapHelperTest.class);
 
-
 	private ImpressionListeRecapHelperImpl impressionLRHelper;
-	private LegacyEditiqueHelper editiqueHelper;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		editiqueHelper =  getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
+		final LegacyEditiqueHelper editiqueHelper = getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		impressionLRHelper = new ImpressionListeRecapHelperImpl();
 		impressionLRHelper.setLegacyEditiqueHelper(editiqueHelper);
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
@@ -59,7 +56,7 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 		Adresse adresseExpediteur = expediteur.getAdresse();
 		assertEquals("Administration cantonale des impôts", adresseExpediteur.getAdresseCourrierLigne1());
 		assertEquals("Impôt à la source", adresseExpediteur.getAdresseCourrierLigne2());
-		assertEquals(null, adresseExpediteur.getAdresseCourrierLigne3());
+		assertNull(adresseExpediteur.getAdresseCourrierLigne3());
 		assertEquals("Route de Berne 46", adresseExpediteur.getAdresseCourrierLigne4());
 		assertEquals("1014 Lausanne Adm cant", adresseExpediteur.getAdresseCourrierLigne5());
 		assertNull( adresseExpediteur.getAdresseCourrierLigne6());
@@ -70,10 +67,5 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 		Date date = DateHelper.getCurrentDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 		assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
-
 	}
-
-
-
-
 }

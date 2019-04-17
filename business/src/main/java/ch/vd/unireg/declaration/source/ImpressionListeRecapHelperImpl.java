@@ -1,7 +1,6 @@
 package ch.vd.unireg.declaration.source;
 
 import java.math.BigInteger;
-import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
@@ -37,7 +36,6 @@ import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.declaration.Declaration;
@@ -231,13 +229,6 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper
 
 	/**
 	 * Alimente l'entête du document
-	 *
-	 * @return
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
-	 * @throws RemoteException
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
 	 */
 	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration, String traitePar) throws AdresseException, ServiceInfrastructureException {
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();

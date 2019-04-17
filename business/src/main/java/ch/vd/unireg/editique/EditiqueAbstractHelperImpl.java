@@ -32,6 +32,7 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.common.RueEtNumero;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.unireg.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -460,7 +461,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet1());
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet2());
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet3());
-		adresseEnvoi.addLine(adresse.getRue());
+		adresseEnvoi.addLine(RueEtNumero.format(adresse.getRue(), adresse.getNumero()));
 		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 
 		expediteur.setAdresse(buildAdressePM(adresseEnvoi));
@@ -489,7 +490,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet1());
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet2());
 		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet3());
-		adresseEnvoi.addLine(adresse.getRue());
+		adresseEnvoi.addLine(RueEtNumero.format(adresse.getRue(), adresse.getNumero()));
 		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 
 		expediteur.setAdresse(buildAdressePP(adresseEnvoi));

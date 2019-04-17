@@ -40,9 +40,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
     String getLocalite();
 
     /**
-     * Retourne le numéro de l'adresse.
-     *
-     * @return le numéro de l'adresse.
+     * @return le numéro de la maison (aussi appelé numéro de police).
      */
     String getNumero();
 
@@ -76,9 +74,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
     Integer getNoOfsPays();
 
     /**
-     * Retourne la rue de l'adresse.
-     *
-     * @return la rue de l'adresse.
+     * @return la désignation de la rue (éventuellement avec le numéro de maison, mais dans ce cas le {@link #getNumero()} est nul).
      */
     String getRue();
 

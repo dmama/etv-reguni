@@ -1,6 +1,8 @@
 package ch.vd.unireg.common;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Container pour les informations dissociées de rue et de numéro sur une adresse
@@ -29,12 +31,17 @@ public class RueEtNumero {
 	 * @return la concaténation de la rue et du numéro (dans cet ordre) avec un espace de séparation
 	 */
 	public String getRueEtNumero() {
+		return format(rue, numero);
+	}
+
+	@NotNull
+	public static String format(@Nullable String rue, @Nullable String numero) {
 		final String resultat;
-		if (rue != null && numero != null) {
-			resultat = String.format("%s %s", rue, numero);
+		if (StringUtils.isNotBlank(rue) && StringUtils.isNotBlank(numero)) {
+			resultat = String.format("%s %s", rue.trim(), numero.trim());
 		}
-		else if (rue != null) {
-			resultat = rue;
+		else if (StringUtils.isNotBlank(rue)) {
+			resultat = rue.trim();
 		}
 		else {
 			resultat = "";
