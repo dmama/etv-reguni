@@ -1142,6 +1142,7 @@ public class TiersManager implements MessageSourceAware {
 			callback.setAdressesView(adresses);
 		}
 		catch (Exception exception) {
+			LOGGER.warn(exception.getMessage(), exception);
 
 			List<AdresseView> adresses = new ArrayList<>();
 
