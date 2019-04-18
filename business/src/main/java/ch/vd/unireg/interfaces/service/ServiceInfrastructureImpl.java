@@ -528,6 +528,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		}
 		else {
 			final Rue rue = getRueByNumero(numero);
+			if (rue == null) {
+				throw new ServiceInfrastructureException("La rue avec l'estrid=[" + numero + "] n'existe pas dans le service d'infrastructure.");
+			}
 			return estDansLeCanton(rue);
 		}
 	}
@@ -547,6 +550,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		}
 		else {
 			final Rue rue = getRueByNumero(numero);
+			if (rue == null) {
+				throw new ServiceInfrastructureException("La rue avec l'estrid=[" + numero + "] n'existe pas dans le service d'infrastructure.");
+			}
 			return estDansLeCanton(rue);
 		}
 	}

@@ -468,6 +468,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		if (numeroRue != null) {
 			final Rue rue;
 			rue = getServiceInfrastructureService().getRueByNumero(numeroRue);
+			if (rue == null) {
+				throw new ServiceInfrastructureException("La rue avec l'estrid=[" + numeroRue + "] n'existe pas dans le service d'infrastructure.");
+			}
 			noLocalite = rue.getNoLocalite();
 		}
 		else {
