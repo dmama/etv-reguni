@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -172,8 +174,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	 */
 	@NotNull
 	protected static Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> getInformationsAffranchissementPP(AdresseEnvoiDetaillee adresseEnvoi,
-	                                                                                           boolean idEnvoiSiEtranger,
-	                                                                                           int valeurIdEnvoi) {
+	                                                                                                                        boolean idEnvoiSiEtranger,
+	                                                                                                                        int valeurIdEnvoi) {
 
 		// adresse incomplète, sans type d'affranchissement ou à destination de l'étranger quand on ne veut justement rien y envoyer
 		final TypeAffranchissement typeAffranchissement = adresseEnvoi.getTypeAffranchissement();
@@ -260,7 +262,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissementPM(AdresseEnvoiDetaillee, boolean, int)}
 	 * @return la valeur de la zone d'affranchissement à utiliser (= toujours NA si l'IdEnvoi est rempli...)
 	 */
-	protected static ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement assigneIdEnvoiPP(ch.vd.unireg.xml.editique.pp.CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesPhysiques contribuable, Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> infoAffranchissement) {
+	protected static ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement assigneIdEnvoiPP(ch.vd.unireg.xml.editique.pp.CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesPhysiques contribuable,
+	                                                                                         Pair<ch.vd.unireg.xml.editique.pp.STypeZoneAffranchissement, String> infoAffranchissement) {
 		final String idEnvoi;
 		if (StringUtils.isNotBlank(infoAffranchissement.getRight())) {
 			idEnvoi = infoAffranchissement.getRight();
@@ -405,9 +408,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	protected ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument buildInfoEnteteDocumentPP(Tiers destinataire, RegDate dateExpedition,
-	                                                            String traitePar, String nomServiceExpediteur,
-	                                                            CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                                            String libelleTitre) throws ServiceInfrastructureException, AdresseException {
+	                                                                                         String traitePar, String nomServiceExpediteur,
+	                                                                                         CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
+	                                                                                         String libelleTitre) throws ServiceInfrastructureException, AdresseException {
 		final ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument entete = new ch.vd.unireg.xml.editique.pp.CTypeInfoEnteteDocument();
 		entete.setDestinataire(buildDestinatairePP(destinataire));
 		entete.setExpediteur(buildExpediteurPP(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
@@ -478,7 +481,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	private ch.vd.unireg.xml.editique.pp.CTypeExpediteur buildExpediteurPP(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
-	                                          RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
+	                                                                       RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
 		final ch.vd.unireg.xml.editique.pp.CTypeExpediteur expediteur = new ch.vd.unireg.xml.editique.pp.CTypeExpediteur();
 
 		final Adresse adresse = expediteurPourAdresse.getAdresse();
@@ -496,7 +499,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		expediteur.setAdresse(buildAdressePP(adresseEnvoi));
 		expediteur.setAdrMes(expediteurPourTelFaxMail.getAdresseEmail());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
-		expediteur.setLocaliteExpedition(adresse.getLocalite());
+		expediteur.setLocaliteExpedition(extractLocaliteFromAdresse(adresse));
 		expediteur.setNumCCP(StringUtils.trimToNull(expediteurPourAdresse.getNoCCP()));
 		expediteur.setNumFax(StringUtils.trimToNull(expediteurPourTelFaxMail.getNoFax()));
 		expediteur.setNumIBAN(null);
@@ -504,6 +507,13 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		expediteur.setTraitePar(traitePar);
 		expediteur.setSrvExp(nomServiceExpediteur);
 		return expediteur;
+	}
+
+	private String extractLocaliteFromAdresse(Adresse adresse) {
+		final String sLocalite = adresse.getLocalite();
+		final Pattern pattern = Pattern.compile("(\\w*)(\\w*\\sAdm)(\\scant\\s?\\w*)$", Pattern.CASE_INSENSITIVE);
+		final Matcher matcher = pattern.matcher(sLocalite);
+		return matcher.matches() ? matcher.group(1) : sLocalite;
 	}
 
 	@Override
