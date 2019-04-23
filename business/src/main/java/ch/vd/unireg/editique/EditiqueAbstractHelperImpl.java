@@ -87,6 +87,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String CAT_TRAITE_PAR = "CAT";
 	public static final String CAT_NOM_SERVICE_EXPEDITEUR = "Centre d'appels téléphoniques";
 
+	private static final Pattern LOCALITE_PATTERN = Pattern.compile("(\\w*)(\\w*\\sAdm)(\\scant\\s?\\w*)$", Pattern.CASE_INSENSITIVE); //pattern d'extraction de la localité
+
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
 	protected ServiceInfrastructureService infraService;
@@ -509,10 +511,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return expediteur;
 	}
 
-	private String extractLocaliteFromAdresse(Adresse adresse) {
+	private static String extractLocaliteFromAdresse(Adresse adresse) {
 		final String sLocalite = adresse.getLocalite();
-		final Pattern pattern = Pattern.compile("(\\w*)(\\w*\\sAdm)(\\scant\\s?\\w*)$", Pattern.CASE_INSENSITIVE);
-		final Matcher matcher = pattern.matcher(sLocalite);
+		final Matcher matcher = LOCALITE_PATTERN.matcher(sLocalite);
 		return matcher.matches() ? matcher.group(1) : sLocalite;
 	}
 
