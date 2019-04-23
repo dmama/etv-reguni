@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.webservices.party3.EnumTest;
 import ch.vd.unireg.webservices.party3.impl.EnumHelper;
+import ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

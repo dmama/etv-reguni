@@ -2,13 +2,20 @@ package ch.vd.unireg.webservices.party3.impl;
 
 import java.util.Set;
 
+import ch.vd.unireg.avatar.TypeAvatar;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
+import ch.vd.unireg.interfaces.model.CompteBancaire;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypePermis;
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
-import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod;
-import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.unireg.xml.party.debtortype.v1.CommunicationMode;
+import ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod;
+import ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
@@ -24,13 +31,6 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.unireg.avatar.TypeAvatar;
-import ch.vd.unireg.interfaces.model.CompteBancaire;
-import ch.vd.unireg.registrefoncier.GenrePropriete;
-import ch.vd.unireg.tiers.TiersCriteria;
-import ch.vd.unireg.type.CategorieImpotSource;
-import ch.vd.unireg.type.TypeEtatDocumentFiscal;
-import ch.vd.unireg.type.TypePermis;
 
 public abstract class EnumHelper {
 

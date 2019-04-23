@@ -326,7 +326,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.DebtorCategory coreToXMLv1(CategorieImpotSource categorieImpotSource) {
+	public static ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory coreToXMLv1(CategorieImpotSource categorieImpotSource) {
 		if (categorieImpotSource == null) {
 			return null;
 		}
@@ -335,23 +335,23 @@ public abstract class EnumHelper {
 
 		switch (categorieImpotSource) {
 		case ADMINISTRATEURS:
-			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.ADMINISTRATORS;
+			return ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory.ADMINISTRATORS;
 		case CONFERENCIERS_ARTISTES_SPORTIFS:
-			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.SPEAKERS_ARTISTS_SPORTSMEN;
+			return ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory.SPEAKERS_ARTISTS_SPORTSMEN;
 		case CREANCIERS_HYPOTHECAIRES:
-			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.MORTGAGE_CREDITORS;
+			return ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory.MORTGAGE_CREDITORS;
 		case LOI_TRAVAIL_AU_NOIR:
-			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.LAW_ON_UNDECLARED_WORK;
+			return ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory.LAW_ON_UNDECLARED_WORK;
 		case PRESTATIONS_PREVOYANCE:
-			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.PENSION_FUND;
+			return ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory.PENSION_FUND;
 		case REGULIERS:
-			return ch.vd.unireg.xml.party.debtor.v1.DebtorCategory.REGULAR;
+			return ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory.REGULAR;
 		default:
 			throw new IllegalArgumentException("Type de catégorie impôt source inconnu = [" + categorieImpotSource + ']');
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.DebtorCategory coreToXMLv2(CategorieImpotSource categorieImpotSource) {
+	public static ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory coreToXMLv2(CategorieImpotSource categorieImpotSource) {
 		if (categorieImpotSource == null) {
 			return null;
 		}
@@ -360,21 +360,21 @@ public abstract class EnumHelper {
 
 		switch (categorieImpotSource) {
 		case ADMINISTRATEURS:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.ADMINISTRATORS;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.ADMINISTRATORS;
 		case CONFERENCIERS_ARTISTES_SPORTIFS:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.SPEAKERS_ARTISTS_SPORTSMEN;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.SPEAKERS_ARTISTS_SPORTSMEN;
 		case CREANCIERS_HYPOTHECAIRES:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.MORTGAGE_CREDITORS;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.MORTGAGE_CREDITORS;
 		case LOI_TRAVAIL_AU_NOIR:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.LAW_ON_UNDECLARED_WORK;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.LAW_ON_UNDECLARED_WORK;
 		case PRESTATIONS_PREVOYANCE:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.PENSION_FUND;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.PENSION_FUND;
 		case REGULIERS:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.REGULAR;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.REGULAR;
 		case PARTICIPATIONS_HORS_SUISSE:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.PROFIT_SHARING_FOREIGN_COUNTRY_TAXPAYERS;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.PROFIT_SHARING_FOREIGN_COUNTRY_TAXPAYERS;
 		case EFFEUILLEUSES:
-			return ch.vd.unireg.xml.party.debtor.v2.DebtorCategory.SEASONAL_WORKERS;
+			return ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory.SEASONAL_WORKERS;
 		default:
 			throw new IllegalArgumentException("Type de catégorie impôt source inconnu = [" + categorieImpotSource + ']');
 		}
@@ -966,35 +966,35 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.CommunicationMode coreToXMLv1(ModeCommunication mode) {
+	public static ch.vd.unireg.xml.party.debtortype.v1.CommunicationMode coreToXMLv1(ModeCommunication mode) {
 		if (mode == null) {
 			return null;
 		}
 
 		switch (mode) {
 		case ELECTRONIQUE:
-			return ch.vd.unireg.xml.party.debtor.v1.CommunicationMode.UPLOAD;
+			return ch.vd.unireg.xml.party.debtortype.v1.CommunicationMode.UPLOAD;
 		case PAPIER:
-			return ch.vd.unireg.xml.party.debtor.v1.CommunicationMode.PAPER;
+			return ch.vd.unireg.xml.party.debtortype.v1.CommunicationMode.PAPER;
 		case SITE_WEB:
-			return ch.vd.unireg.xml.party.debtor.v1.CommunicationMode.WEB_SITE;
+			return ch.vd.unireg.xml.party.debtortype.v1.CommunicationMode.WEB_SITE;
 		default:
 			throw new IllegalArgumentException("Mode de communication inconnu = [" + mode + ']');
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.CommunicationMode coreToXMLv2(ModeCommunication mode) {
+	public static ch.vd.unireg.xml.party.debtortype.v2.CommunicationMode coreToXMLv2(ModeCommunication mode) {
 		if (mode == null) {
 			return null;
 		}
 
 		switch (mode) {
 		case ELECTRONIQUE:
-			return ch.vd.unireg.xml.party.debtor.v2.CommunicationMode.UPLOAD;
+			return ch.vd.unireg.xml.party.debtortype.v2.CommunicationMode.UPLOAD;
 		case PAPIER:
-			return ch.vd.unireg.xml.party.debtor.v2.CommunicationMode.PAPER;
+			return ch.vd.unireg.xml.party.debtortype.v2.CommunicationMode.PAPER;
 		case SITE_WEB:
-			return ch.vd.unireg.xml.party.debtor.v2.CommunicationMode.WEB_SITE;
+			return ch.vd.unireg.xml.party.debtortype.v2.CommunicationMode.WEB_SITE;
 		default:
 			throw new IllegalArgumentException("Mode de communication inconnu = [" + mode + ']');
 		}
@@ -1034,99 +1034,99 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod coreToXMLv1(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
+	public static ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod coreToXMLv1(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
 		if (periodeDecompte == null) {
 			return null;
 		}
 
 		switch (periodeDecompte) {
 		case M01:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_01;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_01;
 		case M02:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_02;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_02;
 		case M03:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_03;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_03;
 		case M04:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_04;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_04;
 		case M05:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_05;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_05;
 		case M06:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_06;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_06;
 		case M07:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_07;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_07;
 		case M08:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_08;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_08;
 		case M09:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_09;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_09;
 		case M10:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_10;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_10;
 		case M11:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_11;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_11;
 		case M12:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.M_12;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.M_12;
 		case T1:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.Q_1;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.Q_1;
 		case T2:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.Q_2;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.Q_2;
 		case T3:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.Q_3;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.Q_3;
 		case T4:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.Q_4;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.Q_4;
 		case S1:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.H_1;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.H_1;
 		case S2:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.H_2;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.H_2;
 		case A:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod.Y;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod.Y;
 		default:
 			throw new IllegalArgumentException("Type de période de décompte inconnu = [" + periodeDecompte + ']');
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod coreToXMLv2(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
+	public static ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod coreToXMLv2(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
 		if (periodeDecompte == null) {
 			return null;
 		}
 
 		switch (periodeDecompte) {
 		case M01:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_01;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_01;
 		case M02:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_02;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_02;
 		case M03:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_03;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_03;
 		case M04:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_04;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_04;
 		case M05:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_05;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_05;
 		case M06:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_06;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_06;
 		case M07:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_07;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_07;
 		case M08:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_08;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_08;
 		case M09:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_09;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_09;
 		case M10:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_10;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_10;
 		case M11:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_11;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_11;
 		case M12:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.M_12;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.M_12;
 		case T1:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.Q_1;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.Q_1;
 		case T2:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.Q_2;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.Q_2;
 		case T3:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.Q_3;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.Q_3;
 		case T4:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.Q_4;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.Q_4;
 		case S1:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.H_1;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.H_1;
 		case S2:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.H_2;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.H_2;
 		case A:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod.Y;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriod.Y;
 		default:
 			throw new IllegalArgumentException("Type de période de décompte inconnu = [" + periodeDecompte + ']');
 		}
@@ -1181,43 +1181,43 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity coreToXMLv1(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
+	public static ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity coreToXMLv1(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
 		if (periodiciteDecompte == null) {
 			return null;
 		}
 
 		switch (periodiciteDecompte) {
 		case ANNUEL:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity.YEARLY;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity.YEARLY;
 		case MENSUEL:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity.MONTHLY;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity.MONTHLY;
 		case SEMESTRIEL:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity.HALF_YEARLY;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity.HALF_YEARLY;
 		case TRIMESTRIEL:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity.QUARTERLY;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity.QUARTERLY;
 		case UNIQUE:
-			return ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity.ONCE;
+			return ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriodicity.ONCE;
 		default:
 			throw new IllegalArgumentException("Type de périodicité décompte inconnu = [" + periodiciteDecompte + ']');
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity coreToXMLv2(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
+	public static ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriodicity coreToXMLv2(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
 		if (periodiciteDecompte == null) {
 			return null;
 		}
 
 		switch (periodiciteDecompte) {
 		case ANNUEL:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity.YEARLY;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriodicity.YEARLY;
 		case MENSUEL:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity.MONTHLY;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriodicity.MONTHLY;
 		case SEMESTRIEL:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity.HALF_YEARLY;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriodicity.HALF_YEARLY;
 		case TRIMESTRIEL:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity.QUARTERLY;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriodicity.QUARTERLY;
 		case UNIQUE:
-			return ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity.ONCE;
+			return ch.vd.unireg.xml.party.debtortype.v2.WithholdingTaxDeclarationPeriodicity.ONCE;
 		default:
 			throw new IllegalArgumentException("Type de périodicité décompte inconnu = [" + periodiciteDecompte + ']');
 		}
@@ -2685,7 +2685,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static CategorieImpotSource xmlToCore(ch.vd.unireg.xml.party.debtor.v1.DebtorCategory category) {
+	public static CategorieImpotSource xmlToCore(ch.vd.unireg.xml.party.debtortype.v1.DebtorCategory category) {
 		if (category == null) {
 			return null;
 		}
@@ -2760,7 +2760,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static CategorieImpotSource xmlToCore(ch.vd.unireg.xml.party.debtor.v2.DebtorCategory category) {
+	public static CategorieImpotSource xmlToCore(ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory category) {
 		if (category == null) {
 			return null;
 		}

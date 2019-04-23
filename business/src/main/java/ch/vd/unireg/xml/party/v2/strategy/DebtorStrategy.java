@@ -4,9 +4,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.debtor.v2.CommunicationMode;
-import ch.vd.unireg.xml.party.debtor.v2.Debtor;
-import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.BusinessHelper;
@@ -14,7 +11,10 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.debtor.v2.Debtor;
+import ch.vd.unireg.xml.party.debtortype.v2.CommunicationMode;
 import ch.vd.unireg.xml.party.v2.DebtorPeriodicityBuilder;
+import ch.vd.unireg.xml.party.v2.PartyPart;
 
 public class DebtorStrategy extends PartyStrategy<Debtor> {
 

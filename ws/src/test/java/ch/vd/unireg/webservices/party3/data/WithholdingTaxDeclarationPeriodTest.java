@@ -2,9 +2,9 @@ package ch.vd.unireg.webservices.party3.data;
 
 import org.junit.Test;
 
-import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.webservices.party3.EnumTest;
 import ch.vd.unireg.webservices.party3.impl.EnumHelper;
+import ch.vd.unireg.xml.party.debtortype.v1.WithholdingTaxDeclarationPeriod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

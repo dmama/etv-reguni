@@ -42,7 +42,7 @@ import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v2.Debtor;
-import ch.vd.unireg.xml.party.debtor.v2.DebtorCategory;
+import ch.vd.unireg.xml.party.debtortype.v2.DebtorCategory;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyPart;
 
