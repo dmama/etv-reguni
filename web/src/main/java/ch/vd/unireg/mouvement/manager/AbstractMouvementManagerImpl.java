@@ -2,7 +2,6 @@ package ch.vd.unireg.mouvement.manager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -301,11 +300,11 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			nomUtilisateur = nomPrenomOperateur.getNomPrenom();
 			visaOperateur = operateur.getCode();
 			final List<CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
-			if (collectivites != null && collectivites.size() > 0) {
+			if (collectivites.size() > 0) {
 				final CollectiviteAdministrative collectivite = collectivites.get(0);
 				final ProfileOperateur profileUtilisateur = serviceSecuriteService.getProfileUtilisateur(visaOperateur, collectivite.getNoColAdm());
 				if (profileUtilisateur != null && !StringUtils.isBlank(profileUtilisateur.getNoTelephone())) {
-					noTelephone = String.format("%s (%s)", profileUtilisateur.getNoTelephone().trim(), collectivite.getNomCourt());
+					noTelephone = profileUtilisateur.getNoTelephone();
 				}
 				else {
 					noTelephone = null;
