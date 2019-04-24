@@ -61,6 +61,12 @@ public class RefSecClientItTest extends BusinessItTest {
 	}
 
 	@Test(timeout = TIMEOUT)
+	public void testGetUserInconnu() throws Exception {
+		final User user = refSecClient.getUser("zaifpt");
+		assertNull(user);
+	}
+
+	@Test(timeout = TIMEOUT)
 	public void testGetCollectiviteUtilisateur() throws Exception {
 		final Set<Integer> ids = refSecClient.getCollectivitesOperateur("zaidra");
 		assertNotNull(ids);
