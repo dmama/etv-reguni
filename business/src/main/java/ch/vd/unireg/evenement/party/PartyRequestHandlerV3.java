@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.unireg.adresse.AdresseService;
@@ -209,17 +209,47 @@ public class PartyRequestHandlerV3 implements RequestHandlerV1<PartyRequest> {
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/party-request-3.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("eCH-0007-4-0.xsd",
+		                     "eCH-0010-5-0.xsd",
+		                     "eCH-0044-3-0.xsd",
+		                     "unireg-common-1.xsd",
+		                     "unireg-common-2.xsd",
+		                     "party/unireg-party-address-2.xsd",
+		                     "party/unireg-party-relation-2.xsd",
+		                     "party/unireg-party-withholding-1.xsd",
+		                     "party/unireg-party-taxdeclaration-3.xsd",
+		                     "party/unireg-party-taxresidence-2.xsd",
+		                     "party/unireg-party-ebilling-1.xsd",
+		                     "party/unireg-party-3.xsd",
+		                     "event/party/request-1.xsd",
+		                     "event/party/party-request-3.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/party-response-3.xsd"),
-				new ClassPathResource("party/unireg-party-administrativeauthority-3.xsd"),
-				new ClassPathResource("party/unireg-party-corporation-3.xsd"),
-				new ClassPathResource("party/unireg-party-othercommunity-1.xsd"),
-				new ClassPathResource("party/unireg-party-debtor-3.xsd"),
-				new ClassPathResource("party/unireg-party-person-3.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("eCH-0007-4-0.xsd",
+		                     "eCH-0010-5-0.xsd",
+		                     "eCH-0044-3-0.xsd",
+		                     "unireg-common-2.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "party/unireg-party-address-2.xsd",
+		                     "party/unireg-party-relation-2.xsd",
+		                     "party/unireg-party-withholding-1.xsd",
+		                     "party/unireg-party-taxdeclaration-3.xsd",
+		                     "party/unireg-party-taxresidence-2.xsd",
+		                     "party/unireg-party-immovableproperty-2.xsd",
+		                     "party/unireg-party-ebilling-1.xsd",
+		                     "party/unireg-party-3.xsd",
+		                     "party/unireg-party-taxpayer-3.xsd",
+		                     "party/unireg-party-administrativeauthority-3.xsd",
+		                     "party/unireg-party-corporation-3.xsd",
+		                     "party/unireg-party-debtor-3.xsd",
+		                     "party/unireg-party-othercommunity-1.xsd",
+		                     "party/unireg-party-person-3.xsd",
+		                     "event/party/response-1.xsd",
+		                     "event/party/party-response-3.xsd");
 	}
 }

@@ -4,21 +4,20 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.xml.event.taxation.v2.DeclarationImpot;
-import ch.vd.unireg.xml.event.taxation.v2.DossierElectronique;
 import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
 import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.event.taxation.v2.DeclarationImpot;
+import ch.vd.unireg.xml.event.taxation.v2.DossierElectronique;
 
 public class V2Handler extends AbstractDossierElectroniqueHandler implements RetourDiHandler<DossierElectronique> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(V2Handler.class);
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DossierElectronique-2-0.xsd");
+	public String getRequestXSD() {
+		return "event/taxation/DossierElectronique-2-0.xsd";
 	}
 
 	@Override

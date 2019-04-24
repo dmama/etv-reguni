@@ -1,24 +1,24 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.security.MockSecurityProvider;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.tiers.PersonnePhysique;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,6 +34,12 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 
 	private CreateNonresidentRequestHandlerV1 handler;
 
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "createNonresidentRequestHandlerV1";
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -44,16 +50,6 @@ public class PartyCreateNonresidentRequestV1EsbHandlerItTest extends PartyReques
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/create-nonresident-request-1.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/create-nonresident-response-1.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

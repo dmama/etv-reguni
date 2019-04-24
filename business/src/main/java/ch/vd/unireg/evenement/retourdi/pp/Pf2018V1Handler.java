@@ -4,21 +4,20 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.xml.event.taxation.pf2018.v1.DeclarationImpot;
-import ch.vd.unireg.xml.event.taxation.pf2018.v1.DossierElectronique;
 import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
 import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.event.taxation.pf2018.v1.DeclarationImpot;
+import ch.vd.unireg.xml.event.taxation.pf2018.v1.DossierElectronique;
 
 public class Pf2018V1Handler extends AbstractDossierElectroniqueHandler implements RetourDiHandler<DossierElectronique> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Pf2018V1Handler.class);
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DossierElectronique-2018-1.xsd");
+	public String getRequestXSD() {
+		return "event/taxation/DossierElectronique-2018-1.xsd";
 	}
 
 	@Override

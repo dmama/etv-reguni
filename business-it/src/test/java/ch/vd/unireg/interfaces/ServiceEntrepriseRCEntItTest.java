@@ -51,7 +51,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.type.TypeAdresseCivil;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 import static ch.vd.unireg.interfaces.civil.data.IndividuRCPersTest.assertAdresse;
 import static org.junit.Assert.assertEquals;
@@ -311,7 +310,6 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 		if (validate) {
 			// This will make the unmarshaller validate the input.
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final Source[] source = RCEntSchemaHelper.getRCEntClasspathSources();
 			Schema schema = sf.newSchema(source);
 			unmarshaller.setSchema(schema);

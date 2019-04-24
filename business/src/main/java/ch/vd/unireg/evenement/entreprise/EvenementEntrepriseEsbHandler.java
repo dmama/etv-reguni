@@ -46,7 +46,6 @@ import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Listener des événements entreprise envoyés par RCEnt au travers de l'ESB
@@ -408,7 +407,6 @@ public class EvenementEntrepriseEsbHandler implements EsbMessageHandler, Initial
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final Source[] source = RCEntSchemaHelper.getRCEntClasspathSources();
 			schemaCache = sf.newSchema(source);
 		}

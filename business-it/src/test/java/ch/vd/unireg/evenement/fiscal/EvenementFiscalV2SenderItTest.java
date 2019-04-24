@@ -13,11 +13,9 @@ import org.springframework.core.io.Resource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.xml.event.fiscal.v2.TypeEvenementFiscalDeclaration;
-import ch.vd.unireg.xml.event.fiscal.v2.TypeInformationComplementaire;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -26,6 +24,8 @@ import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.xml.event.fiscal.v2.TypeEvenementFiscalDeclaration;
+import ch.vd.unireg.xml.event.fiscal.v2.TypeInformationComplementaire;
 
 public class EvenementFiscalV2SenderItTest extends EvenementTest {
 
@@ -55,7 +55,22 @@ public class EvenementFiscalV2SenderItTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		buildEsbMessageValidator(new Resource[]{new ClassPathResource("event/fiscal/evt-fiscal-2.xsd")});
+		buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("eCH-0010-5-0.xsd"),
+				new ClassPathResource("eCH-0044-3-0.xsd"),
+				new ClassPathResource("unireg-common-2.xsd"),
+				new ClassPathResource("party/unireg-party-address-2.xsd"),
+				new ClassPathResource("party/unireg-party-relation-3.xsd"),
+				new ClassPathResource("party/unireg-party-withholding-1.xsd"),
+				new ClassPathResource("party/unireg-party-taxdeclaration-4.xsd"),
+				new ClassPathResource("party/unireg-party-taxresidence-3.xsd"),
+				new ClassPathResource("party/unireg-party-immovableproperty-2.xsd"),
+				new ClassPathResource("party/unireg-party-ebilling-1.xsd"),
+				new ClassPathResource("party/unireg-party-4.xsd"),
+				new ClassPathResource("party/unireg-party-taxpayer-4.xsd"),
+				new ClassPathResource("party/unireg-party-corporation-4.xsd"),
+				new ClassPathResource("event/fiscal/evt-fiscal-2.xsd")
+		});
 
 		sender = new EvenementFiscalV2SenderImpl();
 		sender.setServiceDestination("test");

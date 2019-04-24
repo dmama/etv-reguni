@@ -1,8 +1,6 @@
 package ch.vd.unireg.evenement.infra;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -22,14 +20,10 @@ import static org.junit.Assert.assertNotNull;
 
 public class TaxOfficesRequestEsbHandlerV1ItTest extends InfraRequestEsbHandlerItTest {
 
+	@NotNull
 	@Override
-	protected String getRequestXSD() {
-		return "event/infra/taxoffices-request-1.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/infra/taxoffices-response-1.xsd");
+	protected String getRequestHandlerName() {
+		return "taxOfficesRequestHandlerV1";
 	}
 
 	@Test

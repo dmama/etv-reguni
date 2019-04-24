@@ -1,16 +1,27 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementHelper;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
@@ -24,17 +35,6 @@ import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.evenement.EvenementHelper;
-import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.security.MockSecurityProvider;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.type.TypeAdresseCivil;
-import ch.vd.unireg.type.TypeAdresseTiers;
-import ch.vd.unireg.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,6 +51,12 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 	private AddressRequestHandler handler;
 	protected ProxyServiceCivil serviceCivil;
 
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "addressRequestHandler";
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		handler = getBean(AddressRequestHandler.class, "addressRequestHandler");
@@ -64,15 +70,6 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		super.onTearDown();
 	}
 
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/address-response-1.xsd");
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/address-request-1.xsd";
-	}
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testAddressRequestUserWithoutAccessRight() throws Exception {
 

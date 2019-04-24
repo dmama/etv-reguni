@@ -1,12 +1,11 @@
 package ch.vd.unireg.evenement.rapport.travail;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -617,13 +616,18 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/rt/rapport-travail-request-1.xsd");
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "event/rt/rapport-travail-common-1.xsd",
+		                     "event/rt/rapport-travail-request-1.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/rt/rapport-travail-response-1.xsd"));
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "event/rt/rapport-travail-common-1.xsd",
+		                     "event/rt/rapport-travail-response-1.xsd");
 	}
 
 	private void validateDebiteur(DebiteurPrestationImposable dpi, DateRange periodeDeclaration) throws ServiceException {

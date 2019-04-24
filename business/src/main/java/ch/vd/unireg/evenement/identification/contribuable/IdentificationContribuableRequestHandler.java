@@ -3,8 +3,6 @@ package ch.vd.unireg.evenement.identification.contribuable;
 import javax.xml.bind.JAXBElement;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
-
 import ch.vd.unireg.jms.EsbBusinessException;
 
 public interface IdentificationContribuableRequestHandler<REQ, RESP> {
@@ -12,12 +10,12 @@ public interface IdentificationContribuableRequestHandler<REQ, RESP> {
 	/**
 	 * @return le chemin vers la XSD de la requête
 	 */
-	ClassPathResource getRequestXSD();
+	List<String> getRequestXSDs();
 
 	/**
 	 * @return le ou les chemins vers la ou les XSD des réponses possibles
 	 */
-	List<ClassPathResource> getResponseXSD();
+	List<String> getResponseXSDs();
 
 	/**
 	 * Traite la requête de demande d'identification

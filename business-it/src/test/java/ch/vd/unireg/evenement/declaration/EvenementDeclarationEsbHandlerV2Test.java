@@ -17,14 +17,13 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
-import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
-import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
+import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -66,8 +65,9 @@ public class EvenementDeclarationEsbHandlerV2Test extends EvenementTest {
 		handler.setHibernateTemplate(hibernateTemplate);
 
 		buildEsbMessageValidator(new Resource[]{
-				new ClassPathResource("/event/declaration/declaration-event-2.xsd"),
-				new ClassPathResource("/event/declaration/declaration-ack-2.xsd")
+				new ClassPathResource("unireg-common-2.xsd"),
+				new ClassPathResource("event/declaration/declaration-event-2.xsd"),
+				new ClassPathResource("event/declaration/declaration-ack-2.xsd")
 		});
 
 		initListenerContainer(INPUT_QUEUE, handler);
@@ -79,15 +79,10 @@ public class EvenementDeclarationEsbHandlerV2Test extends EvenementTest {
 		final List<DeclarationEvent> events = new ArrayList<>();
 
 		// quittancement handler
-		final EvenementDeclarationHandler<DeclarationAck> ackHandler = new EvenementDeclarationHandler<DeclarationAck>() {
+		final EvenementDeclarationHandler<DeclarationAck> ackHandler = new QuittancementDeclaration() {
 			@Override
-			public void handle(DeclarationAck event, Map<String, String> headers) throws EsbBusinessException {
+			public void handle(DeclarationAck event, Map<String, String> headers) {
 				events.add(event);
-			}
-
-			@Override
-			public ClassPathResource getXSD() {
-				return new ClassPathResource("/event/declaration/declaration-ack-2.xsd");
 			}
 		};
 		//noinspection unchecked

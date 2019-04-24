@@ -17,8 +17,6 @@ import ch.ech.ech0011.v5.PlaceOfOrigin;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -30,6 +28,7 @@ import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementHelper;
 import ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesProcessor;
+import ch.vd.unireg.evenement.reqdes.reception.ReqDesEventHandler;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -70,7 +69,6 @@ import ch.vd.unireg.xml.event.reqdes.v1.SwissResidence;
 import ch.vd.unireg.xml.event.reqdes.v1.Swissness;
 import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
 
-@SuppressWarnings({"JavaDoc"})
 public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
@@ -100,9 +98,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 		processor = getBean(MockEvenementReqDesProcessor.class, "reqdesEventProcessor");
-
-		esbValidator = buildEsbMessageValidator(new Resource[]{new ClassPathResource("event/reqdes/creation-modification-contribuables-1.xsd")});
-
+		esbValidator = buildEsbMessageValidator(XmlUtils.toResourcesArray(ReqDesEventHandler.getRequestXSDs()));
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.reqdes");
 
 		EvenementHelper.clearQueue(esbTemplate, inputQueue, transactionManager);

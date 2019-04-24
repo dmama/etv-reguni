@@ -14,19 +14,15 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -42,6 +38,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EsbMessageValidationHelper;
 import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.jms.EsbMessageValidator;
@@ -52,7 +49,6 @@ import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 //Listener qui écoute les demandes sur les rapports de travail pour le moment on a que des demandes de mise à jour
 public class RapportTravailRequestEsbHandler implements EsbMessageHandler, InitializingBean {
@@ -173,11 +169,9 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		final List<Resource> resources = new ArrayList<>(1);
-		final List<ClassPathResource> resource = rapportTravailRequestHandler.getResponseXSD();
-		resources.addAll(resource);
+		final List<String> pathes = rapportTravailRequestHandler.getResponseXSDs();
 
-		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[0]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, null, XmlUtils.toResourcesArray(pathes));
 
 		outputJaxbContext = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory.class.getPackage().getName());
 		inputJaxbContext = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory.class.getPackage().getName());
@@ -200,10 +194,8 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final ClassPathResource resource = rapportTravailRequestHandler.getRequestXSD();
-			final Source source = new StreamSource(resource.getURL().toExternalForm());
-			schemaCache = sf.newSchema(source);
+			final List<String> pathes = rapportTravailRequestHandler.getRequestXSDs();
+			schemaCache = sf.newSchema(XmlUtils.toSourcesArray(pathes));
 		}
 	}
 

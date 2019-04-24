@@ -5,31 +5,30 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
-import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
+import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
 
 public class EvenementDeclarationEsbHandlerV1 implements EsbMessageHandler, InitializingBean {
 
@@ -139,10 +138,12 @@ public class EvenementDeclarationEsbHandlerV1 implements EsbMessageHandler, Init
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final ClassPathResource resource = handler.getRequestXSD();
-			Source source = new StreamSource(resource.getURL().toExternalForm());
-			schemaCache = sf.newSchema(source);
+			final Source[] sources = XmlUtils.toSourcesArray(getRequestXSDs());
+			schemaCache = sf.newSchema(sources);
 		}
+	}
+
+	public List<String> getRequestXSDs() {
+		return handler.getRequestXSDs();
 	}
 }

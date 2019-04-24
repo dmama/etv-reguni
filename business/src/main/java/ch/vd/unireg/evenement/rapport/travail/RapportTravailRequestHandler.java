@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.rapport.travail;
 
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
-
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
@@ -19,7 +17,7 @@ public interface RapportTravailRequestHandler {
 	 */
 	MiseAJourRapportTravailResponse handle(MiseAjourRapportTravail request) throws ServiceException, ValidationException;
 
-	ClassPathResource getRequestXSD();
+	List<String> getRequestXSDs();
 
-	List<ClassPathResource> getResponseXSD();
+	List<String> getResponseXSDs();
 }

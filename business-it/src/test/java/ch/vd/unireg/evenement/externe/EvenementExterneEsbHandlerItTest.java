@@ -3,19 +3,19 @@ package ch.vd.unireg.evenement.externe;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
@@ -56,12 +56,12 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 		initListenerContainer(INPUT_QUEUE, handler);
 
-		final List<ClassPathResource> cprs = new ArrayList<>(connectors.size());
+		final LinkedHashSet<String> pathes = new LinkedHashSet<>();
 		for (EvenementExterneConnector connector : connectors) {
-			cprs.add(connector.getRequestXSD());
+			pathes.add(connector.getRequestXSD());
 		}
 
-		buildEsbMessageValidator(cprs.toArray(new Resource[cprs.size()]));
+		buildEsbMessageValidator(XmlUtils.toResourcesArray(pathes));
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

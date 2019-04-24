@@ -31,7 +31,6 @@ import org.springframework.web.client.RestTemplate;
 
 import ch.vd.unireg.common.JaxbElementHttpMessageConverter;
 import ch.vd.unireg.common.WebitTest;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 public abstract class AbstractWebServiceItTest extends WebitTest {
 
@@ -138,7 +137,6 @@ public abstract class AbstractWebServiceItTest extends WebitTest {
 		if (jaxbContext != null) {
 			final JaxbElementHttpMessageConverter jaxbContextConverter = new JaxbElementHttpMessageConverter();
 			jaxbContextConverter.setJaxbContext(jaxbContext);
-			jaxbContextConverter.setEntityResolver(new ClasspathCatalogResolver());
 			template = buildTemplate(jaxbContextConverter);
 		}
 		else {

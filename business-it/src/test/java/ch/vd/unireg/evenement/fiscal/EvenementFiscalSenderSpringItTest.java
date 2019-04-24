@@ -15,9 +15,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
@@ -26,7 +26,6 @@ import ch.vd.unireg.type.Sexe;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@SuppressWarnings({"JavaDoc"})
 public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalSenderSpringItTest.class);

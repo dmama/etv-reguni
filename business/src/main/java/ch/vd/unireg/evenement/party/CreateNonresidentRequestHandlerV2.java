@@ -1,11 +1,11 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.XmlUtils;
@@ -75,12 +75,31 @@ public class CreateNonresidentRequestHandlerV2 implements RequestHandlerV1<Creat
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/create-nonresident-request-2.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("eCH-0010-4-0.xsd",
+		                     "eCH-0044-2-0.xsd",
+		                     "unireg-common-1.xsd",
+		                     "party/unireg-party-address-1.xsd",
+		                     "party/unireg-party-immovableproperty-1.xsd",
+		                     "party/unireg-party-debtor-type-2.xsd",
+		                     "party/unireg-party-taxdeclaration-2.xsd",
+		                     "party/unireg-party-taxresidence-1.xsd",
+		                     "party/unireg-party-relation-1.xsd",
+		                     "party/unireg-party-2.xsd",
+		                     "party/unireg-party-taxpayer-2.xsd",
+		                     "party/unireg-party-debtor-2.xsd",
+		                     "party/unireg-party-person-2.xsd",
+		                     "event/party/request-1.xsd",
+		                     "event/party/create-nonresident-request-2.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/party/create-nonresident-response-2.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "event/party/response-1.xsd",
+		                     "event/party/create-nonresident-response-2.xsd");
 	}
 }

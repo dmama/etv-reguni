@@ -4,10 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -16,13 +15,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
-import ch.vd.unireg.xml.event.party.v2.Response;
-import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.Entreprise;
@@ -30,6 +25,10 @@ import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
+import ch.vd.unireg.xml.event.party.v2.Response;
 
 /**
  * Classe de test du listener de requêtes de collecte de la population PM des acomptes. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
@@ -37,6 +36,12 @@ import ch.vd.unireg.xml.DataHelper;
 public class AdvancePaymentCorporationsRequestEsbHandlerItTest extends PartyRequestEsbHandlerV2ItTest {
 
 	private AdvancePaymentCorporationsRequestHandler handler;
+
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "advancePaymentCorporationsRequestHandler";
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -48,16 +53,6 @@ public class AdvancePaymentCorporationsRequestEsbHandlerItTest extends PartyRequ
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/advance-payment-corporations-response-1.xsd");
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/advance-payment-corporations-request-1.xsd";
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

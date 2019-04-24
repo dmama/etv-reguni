@@ -1,25 +1,31 @@
 package ch.vd.unireg.evenement.party;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest;
-import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.unireg.evenement.party.control.ControlRuleException;
 import ch.vd.unireg.evenement.party.control.TaxLiabilityControlResult;
 import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest;
+import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 
 public class PeriodicTaxLiabilityRequestHandlerV3 extends TaxLiabilityRequestHandlerV3<PeriodicTaxLiabilityRequest> {
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/periodic-taxliab-request-3.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "unireg-common-2.xsd",
+		                     "party/unireg-party-taxresidence-2.xsd",
+		                     "event/party/request-1.xsd",
+		                     "event/party/taxliab-request-2.xsd",
+		                     "event/party/periodic-taxliab-request-3.xsd");
 	}
 
 	@Override

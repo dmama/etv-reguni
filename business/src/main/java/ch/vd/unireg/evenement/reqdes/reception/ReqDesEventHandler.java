@@ -5,11 +5,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -33,34 +33,19 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.IdentityKey;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesProcessor;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.xml.event.reqdes.v1.Actor;
-import ch.vd.unireg.xml.event.reqdes.v1.CreationModification;
-import ch.vd.unireg.xml.event.reqdes.v1.FullName;
-import ch.vd.unireg.xml.event.reqdes.v1.Identity;
-import ch.vd.unireg.xml.event.reqdes.v1.MaritalStatus;
-import ch.vd.unireg.xml.event.reqdes.v1.Nationality;
-import ch.vd.unireg.xml.event.reqdes.v1.NotarialDeed;
-import ch.vd.unireg.xml.event.reqdes.v1.NotarialInformation;
-import ch.vd.unireg.xml.event.reqdes.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.reqdes.v1.Partner;
-import ch.vd.unireg.xml.event.reqdes.v1.Residence;
-import ch.vd.unireg.xml.event.reqdes.v1.Stakeholder;
-import ch.vd.unireg.xml.event.reqdes.v1.StakeholderReferenceWithRole;
-import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.EtatCivilHelper;
-import ch.vd.unireg.common.IdentityKey;
-import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesProcessor;
-import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -77,6 +62,20 @@ import ch.vd.unireg.tiers.OriginePersonnePhysique;
 import ch.vd.unireg.type.CategorieEtranger;
 import ch.vd.unireg.type.TypePermis;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.reqdes.v1.Actor;
+import ch.vd.unireg.xml.event.reqdes.v1.CreationModification;
+import ch.vd.unireg.xml.event.reqdes.v1.FullName;
+import ch.vd.unireg.xml.event.reqdes.v1.Identity;
+import ch.vd.unireg.xml.event.reqdes.v1.MaritalStatus;
+import ch.vd.unireg.xml.event.reqdes.v1.Nationality;
+import ch.vd.unireg.xml.event.reqdes.v1.NotarialDeed;
+import ch.vd.unireg.xml.event.reqdes.v1.NotarialInformation;
+import ch.vd.unireg.xml.event.reqdes.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.reqdes.v1.Partner;
+import ch.vd.unireg.xml.event.reqdes.v1.Residence;
+import ch.vd.unireg.xml.event.reqdes.v1.Stakeholder;
+import ch.vd.unireg.xml.event.reqdes.v1.StakeholderReferenceWithRole;
+import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
 
 public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 
@@ -392,19 +391,21 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("event/reqdes/creation-modification-contribuables-1.xsd");
-			schemaCache = sf.newSchema(source);
+			schemaCache = sf.newSchema(XmlUtils.toSourcesArray(getRequestXSDs()));
 		}
 	}
 
-	private static Source[] getClasspathSources(String... pathes) throws IOException {
-		final Source[] sources = new Source[pathes.length];
-		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
-			final String path = pathes[i];
-			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
-		}
-		return sources;
+	@NotNull
+	public static List<String> getRequestXSDs() {
+		return Arrays.asList("eCH-0006-2-0.xsd",
+		                     "eCH-0007-4-0.xsd",
+		                     "eCH-0008-2-0.xsd",
+		                     "eCH-0044-2-0.xsd",
+		                     "eCH-0044-3-0.xsd",
+		                     "eCH-0010-4-0.xsd",
+		                     "eCH-0011-5-0.xsd",
+		                     "unireg-common-2.xsd",
+		                     "event/reqdes/creation-modification-contribuables-1.xsd");
 	}
 
 	protected static List<ReqDesTransactionImmobiliere> extractTransactionsImmobilieres(List<Transaction> transactions) throws EsbBusinessException {

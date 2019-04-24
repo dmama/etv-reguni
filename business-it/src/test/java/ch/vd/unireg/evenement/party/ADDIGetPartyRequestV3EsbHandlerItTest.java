@@ -1,8 +1,6 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Arrays;
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -40,6 +38,12 @@ public class ADDIGetPartyRequestV3EsbHandlerItTest extends PartyRequestEsbHandle
 	private PartyRequestHandlerV3 handler;
 	private ProxyServiceCivil serviceCivil;
 
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "partyRequestHandlerV3";
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -51,21 +55,6 @@ public class ADDIGetPartyRequestV3EsbHandlerItTest extends PartyRequestEsbHandle
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/party-request-3.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Arrays.asList("event/party/party-response-3.xsd",
-		                     "party/unireg-party-administrativeauthority-3.xsd",
-		                     "party/unireg-party-corporation-3.xsd",
-		                     "party/unireg-party-othercommunity-1.xsd",
-		                     "party/unireg-party-debtor-3.xsd",
-		                     "party/unireg-party-person-3.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

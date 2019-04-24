@@ -1,19 +1,14 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
-import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
@@ -21,6 +16,9 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
+import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +27,12 @@ import static org.junit.Assert.assertTrue;
 public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private PeriodicFiscalActivityRequestHandlerV1 handler;
+
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "periodicFiscalActivityRequestHandlerV1";
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -40,16 +44,6 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/periodic-fiscact-request-1.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/fiscact-response-1.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

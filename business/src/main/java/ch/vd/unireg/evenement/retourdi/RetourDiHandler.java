@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.retourdi;
 
 import java.util.Map;
 
-import org.springframework.core.io.ClassPathResource;
-
 import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
@@ -15,7 +13,7 @@ public interface RetourDiHandler<T> {
 	/**
 	 * @return la XSD reconnue par ce handler
 	 */
-	ClassPathResource getRequestXSD();
+	String getRequestXSD();
 
 	/**
 	 * @return la classe (correspondant à la XSD renvoyée par {@link #getRequestXSD()}) traitée par ce handler

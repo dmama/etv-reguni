@@ -1,22 +1,16 @@
 package ch.vd.unireg.evenement.party;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
-import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.security.Role;
@@ -26,6 +20,12 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
+import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 
 public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandlerV1<PeriodicFiscalActivityRequest> {
 
@@ -96,12 +96,20 @@ public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandlerV1<
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/periodic-fiscact-request-1.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "event/party/request-1.xsd",
+		                     "event/party/fiscact-request-1.xsd",
+		                     "event/party/periodic-fiscact-request-1.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/party/fiscact-response-1.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "event/party/response-1.xsd",
+		                     "event/party/fiscact-response-1.xsd");
 	}
 }

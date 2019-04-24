@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<registrationRequestValidationRequest xmlns="http://evd.vd.ch/xmlns/eVD-0025/1">
+	<registrationRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="registrationRequestWithHistoryType">
+		<id>1234</id>
+		<billerId>ACI</billerId>
+		<provider>
+			<id>SIX-Paynet</id>
+		</provider>
+		<payerBusinessId>10000010</payerBusinessId>
+		<eBillAccountId>41100000000000000</eBillAccountId>
+		<lastName>Contribuable</lastName>
+		<firstName>Un</firstName>
+		<email>un.contribuable@example.com</email>
+		<registrationDate>2019-04-18T00:00:00.000+02:00</registrationDate>
+		<registrationMode>STANDARD</registrationMode>
+		<registrationStatus>VALIDATION_EN_COURS</registrationStatus>
+		<additionalData>
+			<entry key="CONTRI" value="10000010" />
+			<entry key="AVS13" value="7560000000000" />
+		</additionalData>
+	</registrationRequest>
+</registrationRequestValidationRequest>

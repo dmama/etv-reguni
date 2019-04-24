@@ -1,14 +1,14 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
@@ -149,12 +149,19 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/create-nonresident-byvn-request-1.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/party/request-2.xsd",
+		                     "event/party/create-nonresident-byvn-request-1.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/party/create-nonresident-byvn-response-1.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "event/party/response-2.xsd",
+		                     "event/party/create-nonresident-byvn-response-1.xsd");
 	}
 }

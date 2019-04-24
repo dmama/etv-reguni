@@ -49,7 +49,6 @@ import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.DonneesMetier;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Mandataire;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.ObjectFactory;
 import ch.vd.unireg.xml.event.di.cyber.demandedelai.v2.Supervision;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Ce handler s'occupe de traiter les demandes des délais groupées sur les déclarations.
@@ -140,7 +139,6 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final ClassPathResource resource = new ClassPathResource("event/di/documentDematDemandeDelai-2.xsd");
 			Source source = new StreamSource(resource.getURL().toExternalForm());
 			schemaCache = sf.newSchema(source);

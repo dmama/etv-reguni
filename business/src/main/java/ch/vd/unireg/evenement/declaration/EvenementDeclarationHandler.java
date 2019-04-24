@@ -1,11 +1,10 @@
 package ch.vd.unireg.evenement.declaration;
 
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.core.io.ClassPathResource;
-
-import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
 import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
 
 /**
  * Interface de base des handlers d'événements de déclaration entrant
@@ -24,5 +23,5 @@ public interface EvenementDeclarationHandler<T extends DeclarationEvent> {
 	/**
 	 * @return la XSD de l'événement entrant
 	 */
-	ClassPathResource getXSD();
+	List<String> getXSDs();
 }

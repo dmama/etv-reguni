@@ -1,21 +1,21 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.common.v2.UserLogin;
-import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNRequest;
-import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNResponse;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.xml.common.v2.UserLogin;
+import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNRequest;
+import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,6 +28,12 @@ public class PartyCreateNonresidentByVNRequestV1EsbHandlerItTest extends PartyRe
 
 	private CreateNonresidentByVNRequestHandlerV1 handler;
 
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "createNonresidentByVNRequestHandlerV1";
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -38,16 +44,6 @@ public class PartyCreateNonresidentByVNRequestV1EsbHandlerItTest extends PartyRe
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/create-nonresident-byvn-request-1.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/create-nonresident-byvn-response-1.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
@@ -28,10 +28,6 @@ import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.CsvHelper;
@@ -57,6 +53,10 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 
 /**
  * Handler qui publie la population des personnes morales soumises aux acomptes
@@ -617,12 +617,19 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/advance-payment-corporations-request-1.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/party/request-2.xsd",
+		                     "event/party/advance-payment-corporations-request-1.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/party/advance-payment-corporations-response-1.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "event/party/response-2.xsd",
+		                     "event/party/advance-payment-corporations-response-1.xsd");
 	}
 }

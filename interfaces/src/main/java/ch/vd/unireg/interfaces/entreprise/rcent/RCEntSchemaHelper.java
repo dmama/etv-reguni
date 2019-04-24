@@ -1,11 +1,12 @@
 package ch.vd.unireg.interfaces.entreprise.rcent;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import ch.vd.unireg.common.XmlUtils;
 
 /**
  * Classe utilitaire aidant au chargement du schema xml du service entreprise RCEnt.
@@ -16,6 +17,13 @@ public class RCEntSchemaHelper {
 		Configuration des schémas applicables pour le décodage des données RCEnt
     */
 	public static final String[] RCENT_SCHEMA = new String[]{
+			"eCH-0010-6-0.xsd",
+			"eCH-0007-6-0.xsd",
+			"eCH-0008-3-0.xsd",
+			"eCH-0044-4-1.xsd",
+			"eCH-0046-3-0.xsd",
+			"eCH-0097-2-0.xsd",
+			"eCH-0098-3-0.xsd",
 			"eVD-0004-3-0.xsd",
 			"eVD-0022-3-5.xsd",
 			"eVD-0023-3-5.xsd",
@@ -31,12 +39,7 @@ public class RCEntSchemaHelper {
 	}
 
 	public static Source[] getRCEntClasspathSources() throws IOException {
-		final Source[] sources = new Source[RCENT_SCHEMA.length];
-		for (int i = 0, pathLength = RCENT_SCHEMA.length; i < pathLength; i++) {
-			final String path = RCENT_SCHEMA[i];
-			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
-		}
-		return sources;
+		return XmlUtils.toSourcesArray(RCENT_SCHEMA);
 	}
 
 }

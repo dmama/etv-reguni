@@ -1,25 +1,23 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest;
-import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
-import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest;
+import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
+import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -33,6 +31,12 @@ public class PartyPeriodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyReq
 
 	private PeriodicTaxLiabilityRequestHandlerV3 handlerV3;
 
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "periodicTaxLiabilityRequestHandlerV3";
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		handlerV3 = getBean(PeriodicTaxLiabilityRequestHandlerV3.class, "periodicTaxLiabilityRequestHandlerV3");
@@ -44,17 +48,6 @@ public class PartyPeriodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyReq
 		handlerV3.setSecurityProvider(null);
 		super.onTearDown();
 	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/periodic-taxliab-request-3.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/taxliab-response-3.xsd");
-	}
-
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testRequestKOPeriodeDansLeFutur() throws Exception {

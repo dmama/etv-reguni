@@ -10,9 +10,9 @@ import org.springframework.core.io.Resource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -50,7 +50,27 @@ public class EvenementFiscalV3SenderItTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		buildEsbMessageValidator(new Resource[]{new ClassPathResource("event/fiscal/evt-fiscal-3.xsd")});
+		buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("eCH-0007-4-0.xsd"),
+				new ClassPathResource("eCH-0010-5-0.xsd"),
+				new ClassPathResource("eCH-0044-3-0.xsd"),
+				new ClassPathResource("unireg-common-2.xsd"),
+				new ClassPathResource("unireg-exception-1.xsd"),
+				new ClassPathResource("party/unireg-party-address-3.xsd"),
+				new ClassPathResource("party/unireg-party-agent-1.xsd"),
+				new ClassPathResource("party/unireg-party-relation-4.xsd"),
+				new ClassPathResource("party/unireg-party-withholding-1.xsd"),
+				new ClassPathResource("party/unireg-party-taxdeclaration-5.xsd"),
+				new ClassPathResource("party/unireg-party-taxresidence-4.xsd"),
+				new ClassPathResource("party/unireg-party-immovableproperty-2.xsd"),
+				new ClassPathResource("party/unireg-party-ebilling-1.xsd"),
+				new ClassPathResource("party/unireg-party-landregistry-1.xsd"),
+				new ClassPathResource("party/unireg-party-landtaxlightening-1.xsd"),
+				new ClassPathResource("party/unireg-party-5.xsd"),
+				new ClassPathResource("party/unireg-party-taxpayer-5.xsd"),
+				new ClassPathResource("party/unireg-party-corporation-5.xsd"),
+				new ClassPathResource("event/fiscal/evt-fiscal-3.xsd")
+		});
 
 		sender = new EvenementFiscalV3SenderImpl();
 		sender.setServiceDestination("test");

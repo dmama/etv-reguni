@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.externe;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface des connecteurs qui permettent de transformer un message XML entrant en un "événement externe"
@@ -23,5 +23,6 @@ public interface EvenementExterneConnector<T> {
 	/**
 	 * @return la XSD retenue par ce connecteur
 	 */
-	ClassPathResource getRequestXSD();
+	@NotNull
+	String getRequestXSD();
 }

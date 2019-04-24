@@ -1,6 +1,8 @@
 package ch.vd.unireg.efacture;
 
-import org.springframework.core.io.ClassPathResource;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 
@@ -18,6 +20,6 @@ public interface EFactureEventHandler {
 	/**
 	 * @return Les resources utiles au parsing du fichier XML reçu
 	 */
-	ClassPathResource getRequestXSD();
-
+	@NotNull
+	List<String> getRequestXSDs();
 }

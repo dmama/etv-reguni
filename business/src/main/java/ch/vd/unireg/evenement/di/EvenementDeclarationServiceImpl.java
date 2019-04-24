@@ -1,13 +1,14 @@
 package ch.vd.unireg.evenement.di;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -119,8 +120,11 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		this.bamMessageSender = bamMessageSender;
 	}
 
+	@NotNull
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/di/evenementDeclarationImpot-input-1.xsd");
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "event/di/evenementDeclarationImpot-common-1.xsd",
+		                     "event/di/evenementDeclarationImpot-input-1.xsd");
 	}
 }

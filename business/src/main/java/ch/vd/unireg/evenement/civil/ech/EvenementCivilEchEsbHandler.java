@@ -4,7 +4,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0001.v5.EventIdentification;
@@ -27,11 +25,11 @@ import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
@@ -287,19 +285,20 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("eVD-0009-1-0.xsd", "eVD-0004-3-0.xsd", "eVD-0001-5-0.xsd");
+			final Source[] source = XmlUtils.toSourcesArray("eCH-0006-2-0.xsd",
+			                                                "eCH-0007-4-0.xsd",
+			                                                "eCH-0008-2-0.xsd",
+			                                                "eCH-0010-4-0.xsd",
+			                                                "eCH-0044-2-0.xsd",
+			                                                "eCH-0011-5-0.xsd",
+			                                                "eCH-0021-4-0.xsd",
+			                                                "eCH-0058-2-0.xsd",
+			                                                "eCH-0090-1-0.xsd",
+			                                                "eVD-0009-1-0.xsd",
+			                                                "eVD-0004-3-0.xsd",
+			                                                "eVD-0001-5-0.xsd");
 			schemaCache = sf.newSchema(source);
 		}
-	}
-
-	private static Source[] getClasspathSources(String... pathes) throws IOException {
-		final Source[] sources = new Source[pathes.length];
-		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
-			final String path = pathes[i];
-			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
-		}
-		return sources;
 	}
 
 	@Override

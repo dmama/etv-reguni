@@ -1,16 +1,18 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.evenement.infra.RequestHandler;
 import ch.vd.unireg.jms.EsbBusinessErrorCollector;
 import ch.vd.unireg.jms.EsbMessageValidator;
 
@@ -28,6 +30,7 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	private String outputQueue;
 	private EsbMessageValidator esbValidator;
 	private EsbBusinessErrorCollector errorCollector;
+	protected LinkedHashSet<String> xsdPathes;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -37,12 +40,28 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		errorCollector = getBean(EsbBusinessErrorCollector.class, "partyRequestErrorCollector");
 		errorCollector.clear();
 
-		final List<Resource> sources = new ArrayList<>();
-		sources.add(new ClassPathResource(getRequestXSD()));
-		for (String xsd : getResponseXSD()) {
-			sources.add(new ClassPathResource(xsd));
+		xsdPathes = new LinkedHashSet<>();
+		final Object handler = getBean(Object.class, getRequestHandlerName());
+		if (handler instanceof RequestHandler) {
+			final RequestHandler<?> handlerV1 = (RequestHandler<?>) handler;
+			xsdPathes.addAll(handlerV1.getRequestXSDs());
+			xsdPathes.addAll(handlerV1.getResponseXSDs());
 		}
-		esbValidator = buildEsbMessageValidator(sources.toArray(new Resource[sources.size()]));
+		else if (handler instanceof RequestHandlerV1) {
+			final RequestHandlerV1<?> handlerV1 = (RequestHandlerV1<?>) handler;
+			xsdPathes.addAll(handlerV1.getRequestXSDs());
+			xsdPathes.addAll(handlerV1.getResponseXSDs());
+		}
+		else if (handler instanceof RequestHandlerV2) {
+			final RequestHandlerV2<?> handlerV2 = (RequestHandlerV2<?>) handler;
+			xsdPathes.addAll(handlerV2.getRequestXSDs());
+			xsdPathes.addAll(handlerV2.getResponseXSDs());
+		}
+		else {
+			throw new ProgrammingException("Type de handler inconnu = [" + handler.getClass() + "]");
+		}
+
+		esbValidator = buildEsbMessageValidator(XmlUtils.toResourcesArray(xsdPathes));
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.party.service");
 		outputQueue = inputQueue + ".response";
@@ -51,9 +70,11 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		EvenementHelper.clearQueue(esbTemplate, outputQueue, transactionManager);
 	}
 
-	protected abstract List<String> getResponseXSD();
-
-	protected abstract String getRequestXSD();
+	/**
+	 * @return le nom de bean Spring du handler qui est testé.
+	 */
+	@NotNull
+	protected abstract String getRequestHandlerName();
 
 	protected void deactivateEsbValidator() {
 		esbValidator = null;

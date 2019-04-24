@@ -4,7 +4,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -24,8 +22,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.StringSource;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -139,17 +137,9 @@ public class EvenementIntegrationMetierEsbHandlerV5 implements EsbMessageHandler
 	private synchronized void buildRequestSchemaEnveloppe() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("/event/dperm/typeSimpleDPerm-1.xsd", "/event/dperm/elementsIntegrationMetier-5.xsd");
+			final Source[] source = XmlUtils.toSourcesArray("/event/dperm/typeSimpleDPerm-1.xsd", "/event/dperm/elementsIntegrationMetier-5.xsd");
 			schemaCache = sf.newSchema(source);
 		}
 	}
 
-	private static Source[] getClasspathSources(String... paths) throws IOException {
-		final Source[] sources = new Source[paths.length];
-		for (int i = 0 ; i < paths.length ; ++ i) {
-			sources[i] = new StreamSource(new ClassPathResource(paths[i]).getURL().toExternalForm());
-		}
-		return sources;
-	}
 }

@@ -15,7 +15,6 @@ import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.jms.EsbMessageValidatorImpl;
 import ch.vd.unireg.utils.UniregProperties;
 import ch.vd.unireg.utils.UniregPropertiesImpl;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 @ContextConfiguration(locations = {
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
@@ -113,7 +112,6 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 
 	public static EsbMessageValidator buildEsbMessageValidator(Resource[] sources) throws Exception {
 		final EsbMessageValidatorImpl validator = new EsbMessageValidatorImpl();
-		validator.setResourceResolver(new ClasspathCatalogResolver());
 		validator.setSources(sources);
 		return validator;
 	}

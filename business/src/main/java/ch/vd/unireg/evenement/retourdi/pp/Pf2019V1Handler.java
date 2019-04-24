@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
@@ -17,8 +16,8 @@ public class Pf2019V1Handler extends AbstractDossierElectroniqueHandler implemen
 	private static final Logger LOGGER = LoggerFactory.getLogger(Pf2019V1Handler.class);
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DossierElectronique-2019-1.xsd");
+	public String getRequestXSD() {
+		return "event/taxation/DossierElectronique-2019-1.xsd";
 	}
 
 	@Override

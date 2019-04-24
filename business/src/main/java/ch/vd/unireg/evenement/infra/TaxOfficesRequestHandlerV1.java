@@ -1,9 +1,9 @@
 package ch.vd.unireg.evenement.infra;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.unireg.adresse.AdresseService;
@@ -147,12 +147,20 @@ public class TaxOfficesRequestHandlerV1 implements RequestHandler<TaxOfficesRequ
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/infra/taxoffices-request-1.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/infra/request-1.xsd",
+		                     "event/infra/taxoffices-request-1.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/infra/taxoffices-response-1.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "infra/unireg-taxoffices-1.xsd",
+		                     "event/infra/response-1.xsd",
+		                     "event/infra/taxoffices-response-1.xsd");
 	}
 }

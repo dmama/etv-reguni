@@ -45,7 +45,6 @@ import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Bean qui traite les messages JMS de modification de la database pour propager l'information au database service
@@ -361,7 +360,6 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final ClassPathResource resource = new ClassPathResource("event/data/dataEvent-1.xsd");
 			Source source = new StreamSource(resource.getURL().toExternalForm());
 			schemaCache = sf.newSchema(source);

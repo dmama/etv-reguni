@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -61,8 +60,8 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DeclarationIBC-2.xsd");
+	public String getRequestXSD() {
+		return "event/taxation/DeclarationIBC-2.xsd";
 	}
 
 	@Override

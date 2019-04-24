@@ -24,6 +24,13 @@
 		<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>
 		<property name="schemasLocations">
 			<list>
+				<value>eCH-0010-6-0.xsd</value>
+				<value>eCH-0007-6-0.xsd</value>
+				<value>eCH-0008-3-0.xsd</value>
+				<value>eCH-0044-4-1.xsd</value>
+				<value>eCH-0046-3-0.xsd</value>
+				<value>eCH-0097-2-0.xsd</value>
+				<value>eCH-0098-3-0.xsd</value>
 				<value>eVD-0004-3-0.xsd</value>
 				<value>eVD-0022-3-5.xsd</value>
 				<value>eVD-0023-3-5.xsd</value>

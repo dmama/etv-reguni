@@ -1,21 +1,15 @@
 package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
-import ch.vd.unireg.xml.event.identification.request.v2.NPA;
-import ch.vd.unireg.xml.event.identification.response.v2.Erreur;
-import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
-import ch.vd.unireg.xml.event.identification.response.v2.ObjectFactory;
 import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.NumeroCtbStringRenderer;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.identification.contribuable.TooManyIdentificationPossibilitiesException;
@@ -24,6 +18,11 @@ import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
+import ch.vd.unireg.xml.event.identification.request.v2.NPA;
+import ch.vd.unireg.xml.event.identification.response.v2.Erreur;
+import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
+import ch.vd.unireg.xml.event.identification.response.v2.ObjectFactory;
 
 public class IdentificationContribuableRequestHandlerV2 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
@@ -170,11 +169,13 @@ public class IdentificationContribuableRequestHandlerV2 implements Identificatio
 		return criteresPersonne;
 	}
 
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/identification/identification-contribuable-request-2.xsd");
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "event/identification/identification-contribuable-request-2.xsd");
 	}
 
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/identification/identification-contribuable-response-2.xsd"));
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "event/identification/identification-contribuable-response-2.xsd");
 	}
 }

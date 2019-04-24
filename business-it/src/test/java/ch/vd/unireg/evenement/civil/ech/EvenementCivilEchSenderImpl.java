@@ -34,17 +34,14 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 	private String outputQueue;
 	private String serviceDestination;
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEsbTemplate(AbstractEsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setOutputQueue(String outputQueue) {
 		this.outputQueue = outputQueue;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceDestination(String serviceDestination) {
 		this.serviceDestination = serviceDestination;
 	}
@@ -52,6 +49,15 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		esbValidator = BusinessItTest.buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("eCH-0006-2-0.xsd"),
+				new ClassPathResource("eCH-0007-4-0.xsd"),
+				new ClassPathResource("eCH-0008-2-0.xsd"),
+				new ClassPathResource("eCH-0010-4-0.xsd"),
+				new ClassPathResource("eCH-0044-2-0.xsd"),
+				new ClassPathResource("eCH-0011-5-0.xsd"),
+				new ClassPathResource("eCH-0021-4-0.xsd"),
+				new ClassPathResource("eCH-0058-2-0.xsd"),
+				new ClassPathResource("eCH-0090-1-0.xsd"),
 				new ClassPathResource("eVD-0009-1-0.xsd"),
 				new ClassPathResource("eVD-0004-3-0.xsd"),
 				new ClassPathResource("eVD-0001-5-0.xsd")

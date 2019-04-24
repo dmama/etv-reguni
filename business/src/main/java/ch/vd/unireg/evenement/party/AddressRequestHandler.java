@@ -1,17 +1,10 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
-import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
@@ -23,6 +16,13 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.address.AddressBuilder;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
+import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.party.address.v1.AddressType;
 
 public class AddressRequestHandler implements RequestHandlerV1<AddressRequest> {
 
@@ -79,12 +79,23 @@ public class AddressRequestHandler implements RequestHandlerV1<AddressRequest> {
 	}
 
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/party/address-request-1.xsd");
+	@NotNull
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("eCH-0010-4-0.xsd",
+		                     "unireg-common-1.xsd",
+		                     "party/unireg-party-address-1.xsd",
+		                     "event/party/request-1.xsd",
+		                     "event/party/address-request-1.xsd");
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/party/address-response-1.xsd"));
+	@NotNull
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("eCH-0010-4-0.xsd",
+		                     "unireg-common-1.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "party/unireg-party-address-1.xsd",
+		                     "event/party/response-1.xsd",
+		                     "event/party/address-response-1.xsd");
 	}
 }

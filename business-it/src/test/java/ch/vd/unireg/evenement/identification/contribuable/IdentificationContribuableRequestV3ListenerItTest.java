@@ -5,8 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
@@ -14,30 +12,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.identification.request.v3.IdentificationContribuableRequest;
 import ch.vd.unireg.xml.event.identification.request.v3.IdentificationData;
 import ch.vd.unireg.xml.event.identification.request.v3.ObjectFactory;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationContribuableResponse;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationResult;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings({"JavaDoc"})
 public class IdentificationContribuableRequestV3ListenerItTest extends IdentificationContribuableRequestListenerItTest {
 
 	private static String requestToString(IdentificationContribuableRequest request) throws JAXBException {
@@ -49,13 +46,9 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 	}
 
 	@Override
-	protected String getRequestXSD() {
-		return "event/identification/identification-contribuable-request-3.xsd";
-	}
-
-	@Override
-	protected String getResponseXSD() {
-		return "event/identification/identification-contribuable-response-3.xsd";
+	@NotNull
+	protected String getHandlerName() {
+		return "identificationContribuableRequestHandlerV3";
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -310,10 +303,7 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.identification.response.v3.ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		sf.setResourceResolver(new ClasspathCatalogResolver());
-		Schema schema = sf.newSchema(
-				new Source[]{new StreamSource(new ClassPathResource(getRequestXSD()).getURL().toExternalForm()),
-						new StreamSource(new ClassPathResource(getResponseXSD()).getURL().toExternalForm())});
+		final Schema schema = sf.newSchema(XmlUtils.toSourcesArray(xsdPathes));
 		u.setSchema(schema);
 
 		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());

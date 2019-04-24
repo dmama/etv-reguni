@@ -1,13 +1,15 @@
 package ch.vd.unireg.evenement.identification.contribuable;
 
+import java.util.LinkedHashSet;
+
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.SmartLifecycle;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 
@@ -21,18 +23,25 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 	private String outputQueue;
 	private EsbMessageValidator esbValidator;
 	private SmartLifecycle endpointManager;
+	protected LinkedHashSet<String> xsdPathes;
 
 	public IdentificationContribuableRequestListenerItTest() {
 		setWantIndexationTiers(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 
-		esbValidator = buildEsbMessageValidator(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
+		final IdentificationContribuableRequestHandler handler = getBean(IdentificationContribuableRequestHandler.class, getHandlerName());
+
+		xsdPathes = new LinkedHashSet<>();
+		xsdPathes.addAll(handler.getRequestXSDs());
+		xsdPathes.addAll(handler.getResponseXSDs());
+		esbValidator = buildEsbMessageValidator(XmlUtils.toResourcesArray(xsdPathes));
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.input");
 		outputQueue = inputQueue + ".response";
@@ -50,8 +59,8 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 		super.onTearDown();
 	}
 
-	protected abstract String getRequestXSD();
-	protected abstract String getResponseXSD();
+	@NotNull
+	protected abstract String getHandlerName();
 
 	protected EsbJmsTemplate getEsbTemplate() {
 		return esbTemplate;

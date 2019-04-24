@@ -5,8 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
@@ -15,14 +13,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.MontantMonetaire;
@@ -39,7 +38,6 @@ import ch.vd.unireg.xml.event.identification.response.v4.IdentificationContribua
 import ch.vd.unireg.xml.event.identification.response.v4.IdentificationResult;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +45,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings({"JavaDoc"})
 public class IdentificationContribuableRequestV4ListenerItTest extends IdentificationContribuableRequestListenerItTest {
 
 	private static String requestToString(IdentificationContribuableRequest request) throws JAXBException {
@@ -59,13 +56,9 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 	}
 
 	@Override
-	protected String getRequestXSD() {
-		return "event/identification/identification-contribuable-request-4.xsd";
-	}
-
-	@Override
-	protected String getResponseXSD() {
-		return "event/identification/identification-contribuable-response-4.xsd";
+	@NotNull
+	protected String getHandlerName() {
+		return "identificationContribuableRequestHandlerV4";
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -387,10 +380,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.identification.response.v4.ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		sf.setResourceResolver(new ClasspathCatalogResolver());
-		final Schema schema = sf.newSchema(new Source[]{
-				new StreamSource(new ClassPathResource(getRequestXSD()).getURL().toExternalForm()),
-				new StreamSource(new ClassPathResource(getResponseXSD()).getURL().toExternalForm())});
+		final Schema schema = sf.newSchema(XmlUtils.toSourcesArray(xsdPathes));
 		u.setSchema(schema);
 
 		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());

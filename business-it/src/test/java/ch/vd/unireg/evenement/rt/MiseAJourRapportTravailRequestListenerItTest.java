@@ -1,24 +1,27 @@
 package ch.vd.unireg.evenement.rt;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.evenement.rapport.travail.MiseAJourRapportTravailRequestHandler;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.rt.common.v1.IdentifiantRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.CreationProlongationRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FermetureRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.MotifFor;
-import ch.vd.unireg.type.PeriodiciteDecompte;
-import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,14 +33,22 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravailRequestListenerItTest {
 
+	private MiseAJourRapportTravailRequestHandler handler;
+
 	@Override
-	String getRequestXSD() {
-		return "event/rt/rapport-travail-request-1.xsd";
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		handler = getBean(MiseAJourRapportTravailRequestHandler.class, "rapportTravailRequestHandler");
 	}
 
 	@Override
-	String getResponseXSD() {
-		return "event/rt/rapport-travail-response-1.xsd";
+	List<String> getRequestXSD() {
+		return handler.getRequestXSDs();
+	}
+
+	@Override
+	List<String> getResponseXSD() {
+		return handler.getResponseXSDs();
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

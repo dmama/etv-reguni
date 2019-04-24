@@ -6,7 +6,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -20,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0004.v3.Error;
@@ -37,6 +35,8 @@ import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.historizer.OrganisationHistorizer;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.Organisation;
 import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.OrganisationEvent;
@@ -46,7 +46,6 @@ import ch.vd.unireg.interfaces.entreprise.rcent.adapter.model.RCRegistrationData
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -58,16 +57,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 public class RCEntAdapterTest {
-
-	/*
-		Configuration des schémas applicables pour le décodage des annonces RCEnt
-    */
-	public static final String[] RCENT_SCHEMA = new String[]{
-			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-5.xsd",
-			"eVD-0023-3-5.xsd",
-			"eVD-0024-3-5.xsd"
-	};
 
 	@Mock
 	private RcEntClient client;
@@ -97,18 +86,8 @@ public class RCEntAdapterTest {
 
 	private synchronized Schema buildRequestSchema() throws SAXException, IOException {
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		sf.setResourceResolver(new ClasspathCatalogResolver());
-		final Source[] source = getClasspathSources(RCENT_SCHEMA);
+		final Source[] source = XmlUtils.toSourcesArray(RCEntSchemaHelper.RCENT_SCHEMA);
 		return sf.newSchema(source);
-	}
-
-	private static Source[] getClasspathSources(String... pathes) throws IOException {
-		final Source[] sources = new Source[pathes.length];
-		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
-			final String path = pathes[i];
-			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
-		}
-		return sources;
 	}
 
 	@Test

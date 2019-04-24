@@ -1,31 +1,19 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.party.v3.PartyRequest;
-import ch.vd.unireg.xml.event.party.party.v3.PartyResponse;
-import ch.vd.unireg.xml.event.party.v1.Response;
-import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
-import ch.vd.unireg.xml.party.person.v3.Sex;
-import ch.vd.unireg.xml.party.taxpayer.v3.FamilyStatus;
-import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
-import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
-import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType;
-import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.security.MockSecurityProvider;
@@ -38,6 +26,18 @@ import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.party.v3.PartyRequest;
+import ch.vd.unireg.xml.event.party.party.v3.PartyResponse;
+import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v3.Sex;
+import ch.vd.unireg.xml.party.taxpayer.v3.FamilyStatus;
+import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
+import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
+import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
+import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType;
+import ch.vd.unireg.xml.party.v3.PartyPart;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +47,12 @@ public class GetPartyRequestV3EsbHandlerItTest extends PartyRequestEsbHandlerV1I
 
 	private PartyRequestHandlerV3 handler;
 	private ProxyServiceCivil serviceCivil;
+
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "partyRequestHandlerV3";
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -59,21 +65,6 @@ public class GetPartyRequestV3EsbHandlerItTest extends PartyRequestEsbHandlerV1I
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/party-request-3.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Arrays.asList("event/party/party-response-3.xsd",
-		                     "party/unireg-party-administrativeauthority-3.xsd",
-		                     "party/unireg-party-corporation-3.xsd",
-		                     "party/unireg-party-othercommunity-1.xsd",
-		                     "party/unireg-party-debtor-3.xsd",
-		                     "party/unireg-party-person-3.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

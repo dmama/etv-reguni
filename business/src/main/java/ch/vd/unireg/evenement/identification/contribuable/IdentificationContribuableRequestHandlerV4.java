@@ -2,14 +2,13 @@ package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.NomPrenom;
@@ -282,11 +281,13 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 		return criteres;
 	}
 
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/identification/identification-contribuable-request-4.xsd");
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/identification/identification-contribuable-request-4.xsd");
 	}
 
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/identification/identification-contribuable-response-4.xsd"));
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/identification/identification-contribuable-response-4.xsd");
 	}
 }

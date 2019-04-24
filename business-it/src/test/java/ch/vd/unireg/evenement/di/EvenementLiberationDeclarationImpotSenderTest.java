@@ -37,6 +37,7 @@ public class EvenementLiberationDeclarationImpotSenderTest extends EvenementTest
 		clearQueue(OUTPUT_QUEUE);
 
 		buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("unireg-common-2.xsd"),
 				new ClassPathResource("event/di/evtLiberationDeclarationImpot-1.xsd")
 		});
 

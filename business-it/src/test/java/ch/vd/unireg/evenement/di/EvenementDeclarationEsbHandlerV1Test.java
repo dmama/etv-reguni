@@ -8,13 +8,12 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
@@ -50,11 +49,7 @@ public class EvenementDeclarationEsbHandlerV1Test extends EvenementTest {
 
 		initListenerContainer(INPUT_QUEUE, handler);
 
-		buildEsbMessageValidator(new Resource[]{
-				new ClassPathResource("unireg-common-1.xsd"),
-				new ClassPathResource("/event/di/evenementDeclarationImpot-input-1.xsd"),
-				new ClassPathResource("/event/di/evenementDeclarationImpot-common-1.xsd")
-		});
+		buildEsbMessageValidator(XmlUtils.toResourcesArray(new EvenementDeclarationServiceImpl().getRequestXSDs()));
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -62,15 +57,10 @@ public class EvenementDeclarationEsbHandlerV1Test extends EvenementTest {
 
 		final List<EvenementDeclaration> events = new ArrayList<>();
 
-		handler.setHandler(new EvenementDeclarationHandler() {
+		handler.setHandler(new EvenementDeclarationServiceImpl() {
 			@Override
 			public void onEvent(EvenementDeclaration event, Map<String, String> incomingHeaders) {
 				events.add(event);
-			}
-
-			@Override
-			public ClassPathResource getRequestXSD() {
-				return new ClassPathResource("/event/di/evenementDeclarationImpot-input-1.xsd");
 			}
 		});
 

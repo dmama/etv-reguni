@@ -14,20 +14,17 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -37,6 +34,7 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EsbMessageValidationHelper;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.jms.EsbBusinessCode;
@@ -53,7 +51,6 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Listener qui écoute les requêtes de données de tiers et qui répond en conséquence.
@@ -164,13 +161,12 @@ public class PartyRequestEsbHandlerV1 implements EsbMessageHandler, Initializing
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final List<Source> sources = new ArrayList<>(handlers.size());
+			final LinkedHashSet<String> pathes = new LinkedHashSet<>();
 			for (RequestHandlerV1 handler : handlers.values()) {
-				final ClassPathResource resource = handler.getRequestXSD();
-				sources.add(new StreamSource(resource.getURL().toExternalForm()));
+				//noinspection unchecked
+				pathes.addAll(handler.getRequestXSDs());
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
+			schemaCache = sf.newSchema(XmlUtils.toSourcesArray(pathes));
 		}
 	}
 
@@ -234,13 +230,13 @@ public class PartyRequestEsbHandlerV1 implements EsbMessageHandler, Initializing
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		final List<Resource> resources = new ArrayList<>(handlers.size());
+		final LinkedHashSet<String> pathes = new LinkedHashSet<>();
 		for (RequestHandlerV1<?> handler : handlers.values()) {
-			final List<ClassPathResource> resource = handler.getResponseXSD();
-			resources.addAll(resource);
+			final List<String> resource = handler.getResponseXSDs();
+			pathes.addAll(resource);
 		}
 
-		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[0]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, null, XmlUtils.toResourcesArray(pathes));
 		inputJaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[0]));
 		outputJaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}

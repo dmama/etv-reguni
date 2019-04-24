@@ -5,13 +5,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -22,11 +21,11 @@ import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Listener qui reçoit les messages JMS concernant les événements externes, les valide, les transforme et les transmet au handler approprié.
@@ -158,13 +157,12 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler, Initializi
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 
-			final List<Source> sources = new ArrayList<>(connectorMap.size());
+			final LinkedHashSet<String> pathes = new LinkedHashSet<>();
 			for (EvenementExterneConnector connector : connectorMap.values()) {
-				sources.add(new StreamSource(connector.getRequestXSD().getURL().toExternalForm()));
+				pathes.add(connector.getRequestXSD());
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
+			schemaCache = sf.newSchema(XmlUtils.toSourcesArray(pathes));
 		}
 	}
 }

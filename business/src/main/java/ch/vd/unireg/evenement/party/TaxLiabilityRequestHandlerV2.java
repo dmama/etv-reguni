@@ -1,21 +1,11 @@
 package ch.vd.unireg.evenement.party;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.taxliab.v2.CommonHouseholdInfo;
-import ch.vd.unireg.xml.event.party.taxliab.v2.Failure;
-import ch.vd.unireg.xml.event.party.taxliab.v2.MinorInfo;
-import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityRequest;
-import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.evenement.party.control.ControlRuleException;
 import ch.vd.unireg.evenement.party.control.TaxLiabilityControlEchec;
@@ -26,6 +16,15 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.taxliab.v2.CommonHouseholdInfo;
+import ch.vd.unireg.xml.event.party.taxliab.v2.Failure;
+import ch.vd.unireg.xml.event.party.taxliab.v2.MinorInfo;
+import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityRequest;
+import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 
 public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest> implements RequestHandlerV1<T> {
 
@@ -156,7 +155,10 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 	}
 
 	@Override
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/party/taxliab-response-2.xsd"));
+	public @NotNull List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-1.xsd",
+		                     "unireg-exception-1.xsd",
+		                     "event/party/response-1.xsd",
+		                     "event/party/taxliab-response-2.xsd");
 	}
 }

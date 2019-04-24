@@ -34,7 +34,6 @@ import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * @author Raphaël Marmier, 2016-08-22, <raphael.marmier@vd.ch>
@@ -193,7 +192,6 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final Source[] source = RCEntSchemaHelper.getRCEntClasspathSources();
 			schemaCache = sf.newSchema(source);
 		}

@@ -7,13 +7,20 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -108,5 +115,50 @@ public abstract class XmlUtils {
 			}
 		}
 		return datatypeFactory;
+	}
+
+	/**
+	 * Converti les ressources classpath spécifiées en un tableau de source ({@link Source}).
+	 *
+	 * @param pathes une liste de ressources
+	 * @return un tableau des sources correspondantes.
+	 */
+	@NotNull
+	public static Resource[] toResourcesArray(@NotNull Collection<String> pathes) {
+		final Resource[] sources = new Resource[pathes.size()];
+		int i = 0;
+		for (String path : pathes) {
+			sources[i] = new ClassPathResource(path);
+			i++;
+		}
+		return sources;
+	}
+
+	/**
+	 * Converti les ressources classpath spécifiées en un tableau de source ({@link Source}).
+	 *
+	 * @param pathes une liste de ressources
+	 * @return un tableau des sources correspondantes.
+	 */
+	@NotNull
+	public static Source[] toSourcesArray(@NotNull Collection<String> pathes) throws IOException {
+		final Source[] sources = new Source[pathes.size()];
+		int i = 0;
+		for (String path : pathes) {
+			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
+			i++;
+		}
+		return sources;
+	}
+
+	/**
+	 * Converti les ressources classpath spécifiées en un tableau de source ({@link Source}).
+	 *
+	 * @param pathes une liste de ressources
+	 * @return un tableau des sources correspondantes.
+	 */
+	@NotNull
+	public static Source[] toSourcesArray(@NotNull String... pathes) throws IOException {
+		return toSourcesArray(Arrays.asList(pathes));
 	}
 }

@@ -3,27 +3,25 @@ package ch.vd.unireg.efacture;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0025.v1.ObjectFactory;
 import ch.vd.evd0025.v1.RegistrationRequestValidationRequest;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.efacture.data.Demande;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
@@ -102,10 +100,8 @@ public class EFactureMessageHandler implements EsbMessageHandler, InitializingBe
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final ClassPathResource resource = handler.getRequestXSD();
-			Source source = new StreamSource(resource.getURL().toExternalForm());
-			schemaCache = sf.newSchema(source);
+			final List<String> resources = handler.getRequestXSDs();
+			schemaCache = sf.newSchema(XmlUtils.toSourcesArray(resources));
 		}
 	}
 }

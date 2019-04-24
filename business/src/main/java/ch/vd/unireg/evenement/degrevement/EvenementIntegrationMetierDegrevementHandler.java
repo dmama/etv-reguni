@@ -21,14 +21,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
-import ch.vd.unireg.xml.event.degrevement.v1.Message;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.dperm.EvenementIntegrationMetierHandler;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
+import ch.vd.unireg.xml.event.degrevement.v1.Message;
 
 /**
  * Handler spécifique pour les événements d'intégration métier du DPerm concernant les données de dégrèvement ICI
@@ -116,7 +115,6 @@ public class EvenementIntegrationMetierDegrevementHandler implements EvenementIn
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final Source source = new StreamSource(new ClassPathResource("/event/degrevement/documentDematDegrevement-1.xsd").getURL().toExternalForm());
 			schemaCache = sf.newSchema(source);
 		}

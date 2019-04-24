@@ -6,29 +6,27 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.jms.EsbMessageHelper;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, InitializingBean {
 
@@ -124,13 +122,11 @@ public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, In
 	private synchronized void buildRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final List<Source> sources = new ArrayList<>(handlers.size());
-			for (RetourDiHandler<?> handler : handlers.values()) {
-				final ClassPathResource resource = handler.getRequestXSD();
-				sources.add(new StreamSource(resource.getURL().toExternalForm()));
+			final LinkedHashSet<String> pathes = new LinkedHashSet<>();
+			for (RetourDiHandler handler : handlers.values()) {
+				pathes.add(handler.getRequestXSD());
 			}
-			schemaCache = sf.newSchema(sources.toArray(new Source[0]));
+			schemaCache = sf.newSchema(XmlUtils.toSourcesArray(pathes));
 		}
 	}
 

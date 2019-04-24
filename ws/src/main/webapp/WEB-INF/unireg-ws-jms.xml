@@ -46,21 +46,80 @@
 	</bean>
 
 	<bean id="esbMessageValidatorRaw" class="ch.vd.unireg.jms.EsbMessageValidatorImpl">
-		<property name="resourceResolver" ref="catalogResolver"/>
 		<property name="sources">
 			<list>
-				<value>classpath*:party/*.xsd</value>
-				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
-				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
-				<value>classpath:event/fiscal/evt-fiscal-3.xsd</value>
-				<value>classpath:event/fiscal/evt-fiscal-4.xsd</value>
-				<value>classpath:event/fiscal/evt-fiscal-5.xsd</value>
+				<value>classpath:eCH-0007-4-0.xsd</value>
+				<value>classpath:eCH-0044-2-0.xsd</value>
+				<value>classpath:eCH-0044-3-0.xsd</value>
+				<value>classpath:eCH-0010-4-0.xsd</value>
+				<value>classpath:eCH-0010-5-0.xsd</value>
+				<value>classpath:eCH-0010-6-0.xsd</value>
+				<value>classpath:eCH-0007-6-0.xsd</value>
+				<value>classpath:eCH-0008-3-0.xsd</value>
+				<value>classpath:eCH-0044-4-1.xsd</value>
+				<value>classpath:eCH-0046-2-1.xsd</value>
+				<value>classpath:eCH-0046-3-0.xsd</value>
+				<value>classpath:eCH-0097-2-0.xsd</value>
+				<value>classpath:eCH-0098-3-0.xsd</value>
+				<value>classpath:eVD-0004-3-0.xsd</value>
+				<value>classpath:eVD-0022-3-5.xsd</value>
+				<value>classpath:eVD-0023-3-5.xsd</value>
+				<value>classpath:eVD-0024-3-5.xsd</value>
+				<value>classpath:eVD-0025-1-2.xsd</value>
 				<value>classpath:unireg-common-1.xsd</value>
+				<value>classpath:unireg-common-2.xsd</value>
+				<value>classpath:party/unireg-party-address-2.xsd</value>
+				<value>classpath:party/unireg-party-address-3.xsd</value>
+				<value>classpath:party/unireg-party-agent-1.xsd</value>
+				<value>classpath:party/unireg-party-ebilling-1.xsd</value>
+				<value>classpath:party/unireg-party-immovableproperty-2.xsd</value>
+				<value>classpath:party/unireg-party-landregistry-1.xsd</value>
+				<value>classpath:party/unireg-party-landtaxlightening-1.xsd</value>
+				<value>classpath:party/unireg-party-relation-3.xsd</value>
+				<value>classpath:party/unireg-party-relation-4.xsd</value>
+				<value>classpath:party/unireg-party-withholding-1.xsd</value>
+				<value>classpath:party/unireg-party-taxdeclaration-4.xsd</value>
+				<value>classpath:party/unireg-party-taxdeclaration-5.xsd</value>
+				<value>classpath:party/unireg-party-taxresidence-3.xsd</value>
+				<value>classpath:party/unireg-party-taxresidence-4.xsd</value>
+				<value>classpath:party/unireg-party-4.xsd</value>
+				<value>classpath:party/unireg-party-5.xsd</value>
+				<value>classpath:party/unireg-party-taxpayer-4.xsd</value>
+				<value>classpath:party/unireg-party-taxpayer-5.xsd</value>
+				<value>classpath:party/unireg-party-administrativeauthority-4.xsd</value>
+				<value>classpath:party/unireg-party-corporation-4.xsd</value>
+				<value>classpath:party/unireg-party-corporation-5.xsd</value>
+				<value>classpath:party/unireg-party-othercommunity-2.xsd</value>
+				<value>classpath:party/unireg-party-debtor-4.xsd</value>
+				<value>classpath:party/unireg-party-establishment-1.xsd</value>
+				<value>classpath:party/unireg-party-person-4.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
 				<value>classpath:event/di/evtPublicationCodeControleCyber-2.xsd</value>
 				<value>classpath:event/di/evtPublicationContextePrestationCyber-1.xsd</value>
-			</list>
+				<value>classpath:event/di/evtLiberationDeclarationImpot-1.xsd</value>
+				<value>classpath:event/lr/evtQuittanceListe-v1.xsd</value>
+				<value>classpath:event/data/dataEvent-1.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-3.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-4.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-5.xsd</value>
+				<value>classpath:event/rt/rapport-travail-common-1.xsd</value>
+				<value>classpath:event/rt/rapport-travail-request-1.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-1-0.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-3-2.xsd</value>
+				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
+				<value>classpath:editique/UniregPP_FichierImpression.xsd</value>
+				<value>classpath:event/dperm/typeSimpleDPerm-1.xsd</value>
+				<value>classpath:event/docsortant/documentSortantRepElec-1.xsd</value>
+				<value>classpath:event/docsortant/quittanceRepElec-3.xsd</value>
+				<value>classpath:event/degrevement/documentDematDegrevement-1.xsd</value>
+				<value>classpath:event/dperm/elementsIntegrationMetier-5.xsd</value>
+				<value>classpath:event/degrevement/quittanceIntegrationMetierImmDetails-1.xsd</value>
+				<value>classpath:xsd/civil/**/*.xsd</value>
+				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
+				<value>classpath:xsd/identification/**/*.xsd</value>			</list>
 		</property>
 	</bean>
 

@@ -2,12 +2,12 @@ package ch.vd.unireg.evenement.externe;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
-import ch.vd.unireg.common.XmlUtils;
 
 public class EvtQuittanceListeV1Connector implements EvenementExterneConnector<EvtQuittanceListe> {
 
@@ -36,9 +36,10 @@ public class EvtQuittanceListeV1Connector implements EvenementExterneConnector<E
 		return EvtQuittanceListe.class;
 	}
 
+	@NotNull
 	@Override
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd");
+	public String getRequestXSD() {
+		return "event/lr/evtQuittanceListe-v1.xsd";
 	}
 
 	private static boolean isEvenementLR(EvtQuittanceListe event) {

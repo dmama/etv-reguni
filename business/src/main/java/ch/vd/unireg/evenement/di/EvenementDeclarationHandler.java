@@ -1,9 +1,10 @@
 package ch.vd.unireg.evenement.di;
 
 
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 
@@ -23,5 +24,6 @@ public interface EvenementDeclarationHandler {
 	 */
 	void onEvent(EvenementDeclaration event, Map<String, String> incomingHeaders) throws EvenementDeclarationException;
 
-	ClassPathResource getRequestXSD();
+	@NotNull
+	List<String> getRequestXSDs();
 }

@@ -2,23 +2,15 @@ package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.xml.event.identification.request.v3.IdentificationContribuableRequest;
-import ch.vd.unireg.xml.event.identification.request.v3.IdentificationData;
-import ch.vd.unireg.xml.event.identification.request.v3.NPA;
-import ch.vd.unireg.xml.event.identification.response.v3.Erreur;
-import ch.vd.unireg.xml.event.identification.response.v3.IdentificationContribuableResponse;
-import ch.vd.unireg.xml.event.identification.response.v3.IdentificationResult;
-import ch.vd.unireg.xml.event.identification.response.v3.ObjectFactory;
 import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.NumeroCtbStringRenderer;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.identification.contribuable.TooManyIdentificationPossibilitiesException;
@@ -27,6 +19,13 @@ import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.identification.request.v3.IdentificationContribuableRequest;
+import ch.vd.unireg.xml.event.identification.request.v3.IdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v3.NPA;
+import ch.vd.unireg.xml.event.identification.response.v3.Erreur;
+import ch.vd.unireg.xml.event.identification.response.v3.IdentificationContribuableResponse;
+import ch.vd.unireg.xml.event.identification.response.v3.IdentificationResult;
+import ch.vd.unireg.xml.event.identification.response.v3.ObjectFactory;
 
 public class IdentificationContribuableRequestHandlerV3 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
@@ -184,11 +183,13 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 		return criteresPersonne;
 	}
 
-	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/identification/identification-contribuable-request-3.xsd");
+	public List<String> getRequestXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/identification/identification-contribuable-request-3.xsd");
 	}
 
-	public List<ClassPathResource> getResponseXSD() {
-		return Collections.singletonList(new ClassPathResource("event/identification/identification-contribuable-response-3.xsd"));
+	public List<String> getResponseXSDs() {
+		return Arrays.asList("unireg-common-2.xsd",
+		                     "event/identification/identification-contribuable-response-3.xsd");
 	}
 }

@@ -1,24 +1,22 @@
 package ch.vd.unireg.evenement.party;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.xml.common.v1.Date;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest;
-import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.common.v1.Date;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest;
+import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,6 +31,12 @@ public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRe
 
 	private AperiodicTaxLiabilityRequestHandlerV2 handler;
 
+	@NotNull
+	@Override
+	protected String getRequestHandlerName() {
+		return "aperiodicTaxLiabilityRequestHandlerV2";
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		handler = getBean(AperiodicTaxLiabilityRequestHandlerV2.class, "aperiodicTaxLiabilityRequestHandlerV2");
@@ -43,16 +47,6 @@ public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRe
 	public void onTearDown() throws Exception {
 		handler.setSecurityProvider(null);
 		super.onTearDown();
-	}
-
-	@Override
-	protected String getRequestXSD() {
-		return "event/party/aperiodic-taxliab-request-2.xsd";
-	}
-
-	@Override
-	protected List<String> getResponseXSD() {
-		return Collections.singletonList("event/party/taxliab-response-2.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

@@ -2,6 +2,7 @@ package ch.vd.unireg.evenement.retourdi;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -10,7 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.ResourceUtils;
 
@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.evenement.retourdi.pm.AdresseRaisonSociale;
 import ch.vd.unireg.evenement.retourdi.pm.Localisation;
@@ -81,16 +82,16 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.setHibernateTemplate(hibernateTemplate);
 
 		final Consumer<Object> noop = data -> {};
-		final List<Resource> resources = new ArrayList<>();
+		final LinkedHashSet<String> pathes = new LinkedHashSet<>();
 		for (XmlVersionPP pp : XmlVersionPP.values()) {
 			final RetourDiHandler<?> handler = pp.buildHandler(noop);
-			resources.add(handler.getRequestXSD());
+			pathes.add(handler.getRequestXSD());
 		}
 		for (XmlVersionPM pm : XmlVersionPM.values()) {
 			final RetourDiHandler<?> handler = pm.buildHandler(noop);
-			resources.add(handler.getRequestXSD());
+			pathes.add(handler.getRequestXSD());
 		}
-		buildEsbMessageValidator(resources.toArray(new Resource[resources.size()]));
+		buildEsbMessageValidator(XmlUtils.toResourcesArray(pathes));
 
 		initListenerContainer(INPUT_QUEUE, esbHandler);
 	}

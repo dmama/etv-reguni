@@ -22,14 +22,13 @@ import org.w3c.dom.Document;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.util.StringSource;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
 import ch.vd.unireg.xml.event.lr.quittance.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Origine;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Quittance;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.common.XmlUtils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +43,6 @@ public class EvenementImpotSourceTest extends WithoutSpringTest {
 		super.onSetUp();
 
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		sf.setResourceResolver(new ClasspathCatalogResolver());
 		final ClassPathResource resource = new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd");
 		Source source = new StreamSource(resource.getURL().toExternalForm());
 		schemaCache = sf.newSchema(source);

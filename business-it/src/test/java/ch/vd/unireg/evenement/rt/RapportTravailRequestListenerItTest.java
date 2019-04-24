@@ -5,32 +5,28 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.evenement.EvenementHelper;
-import ch.vd.unireg.jms.EsbMessageValidator;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Factorise le code commun pour les autres classes concrètes du package
  */
-@SuppressWarnings({"JavaDoc"})
 abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
@@ -49,11 +45,8 @@ abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
-
-		esbValidator = buildEsbMessageValidator(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
-
+		esbValidator = getBean(EsbMessageValidator.class, "esbMessageValidator");
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.rapportTravail.service");
 		OutputQueue = inputQueue + ".response";
 
@@ -61,9 +54,9 @@ abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 		EvenementHelper.clearQueue(esbTemplate, OutputQueue, transactionManager);
 	}
 
-	abstract String getResponseXSD();
+	abstract List<String> getResponseXSD();
 
-	abstract String getRequestXSD();
+	abstract List<String> getRequestXSD();
 
 
 	EsbJmsTemplate getEsbTemplate() {
@@ -106,10 +99,10 @@ abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		sf.setResourceResolver(new ClasspathCatalogResolver());
-		Schema schema = sf.newSchema(
-				new Source[]{new StreamSource(new ClassPathResource(getRequestXSD()).getURL().toExternalForm()),
-				new StreamSource(new ClassPathResource(getResponseXSD()).getURL().toExternalForm())});
+		final LinkedHashSet<String> pathes = new LinkedHashSet<>();
+		pathes.addAll(getRequestXSD());
+		pathes.addAll(getResponseXSD());
+		Schema schema = sf.newSchema(XmlUtils.toSourcesArray(pathes));
 		u.setSchema(schema);
 
 		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());

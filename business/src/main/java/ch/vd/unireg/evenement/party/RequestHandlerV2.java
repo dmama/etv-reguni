@@ -2,13 +2,13 @@ package ch.vd.unireg.evenement.party;
 
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.xml.event.party.v2.Request;
-import ch.vd.unireg.xml.event.party.v2.Response;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.party.v2.Request;
+import ch.vd.unireg.xml.event.party.v2.Response;
 
 /**
  * Handler de requêtes sur les données de tiers.
@@ -23,7 +23,9 @@ public interface RequestHandlerV2<T extends Request> {
 	 */
 	RequestHandlerResult<? extends Response> handle(T request) throws ServiceException, EsbBusinessException;
 
-	ClassPathResource getRequestXSD();
+	@NotNull
+	List<String> getRequestXSDs();
 
-	List<ClassPathResource> getResponseXSD();
+	@NotNull
+	List<String> getResponseXSDs();
 }
