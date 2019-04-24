@@ -24,7 +24,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 
 	private static boolean alreadySetUp = false;
 
-	private static final UserLogin zaiptf = new UserLogin("zaiptf", 22); // Francis Perroset
+	private static final UserLogin zaidra = new UserLogin("zaidra", 22); // David Radelfinger
 	private static final UserLogin zaizzt = new UserLogin("zaizzt", 22); // Utilisateur technique taxation
 	private static final UserLogin zciddo = new UserLogin("zciddo", 0);  // Daniel Di Lallo
 	private static final UserLogin zaipmx = new UserLogin("zaipmx", 19); // Pascal Mutrux
@@ -80,7 +80,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 
 	@Test
 	public void testTiersInconnu() throws Exception {
-		final Pair<String, Map<String, ?>> params = buildUriAndParams(zaiptf, 0L);
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(zaidra, 0L);
 		{
 			final ResponseEntity<SecurityResponse> response = get(SecurityResponse.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
 			Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -92,43 +92,43 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
-	 * Teste que Francis Perroset possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
+	 * Teste que David Radelfinger possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
 	 */
 	@Test
-	public void testGetSecurityFrancisPerroset() throws Exception {
+	public void testGetSecurityDavidRadelfinger() throws Exception {
 
 		// Christine Schmid
-		doTest(zaiptf, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaiptf, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaidra, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaidra, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Laurent Schmid
-		doTest(zaiptf, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaiptf, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaidra, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaidra, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Christine & Laurent Schmid
-		doTest(zaiptf, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaiptf, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaidra, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaidra, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Jean-Eric Cuendet
-		doTest(zaiptf, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaiptf, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaidra, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaidra, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Jean-Philippe Maillefer
-		doTest(zaiptf, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaiptf, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaidra, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaidra, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Pascal Broulis
-		doTest(zaiptf, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaiptf, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaidra, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaidra, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 	}
 
 	/**
-	 * Teste que Francis Perroset possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
+	 * Teste que David Radelfinger possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
 	 */
 	@Test
-	public void testGetBatchSecurityFrancisPerroset() throws Exception {
-		doTestBatch(zaiptf, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
-		doTestBatch(zaiptf, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+	public void testGetBatchSecurityDavidRadelfinger() throws Exception {
+		doTestBatch(zaidra, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+		doTestBatch(zaidra, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 
 	/**
 	 * Teste que Daniel Di Lallo ne possède aucun droit sur Laurent Schmid et son couple (interdiction) ni sur Pascal Broulis
-	 * (autorisation exclusive pour Francis Perroset).
+	 * (autorisation exclusive pour David Radelfinger).
 	 */
 	@Test
 	public void testGetSecurityDanielDiLallo() throws Exception {
@@ -205,7 +205,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 
 	/**
 	 * Teste que Daniel Di Lallo ne possède aucun droit sur Laurent Schmid et son couple (interdiction) ni sur Pascal Broulis
-	 * (autorisation exclusive pour Francis Perroset).
+	 * (autorisation exclusive pour David Radelfinger).
 	 */
 	@Test
 	public void testGetBatchSecurityDanielDiLallo() throws Exception {
@@ -216,7 +216,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
-	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour David Radelfinger).
 	 */
 	@Test
 	public void testGetSecurityRoselyneFavre() throws Exception {
@@ -247,7 +247,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
-	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour David Radelfinger).
 	 */
 	@Test
 	public void testGetBatchSecurityRoselyneFavre() throws Exception {

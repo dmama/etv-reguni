@@ -33,7 +33,7 @@ public class WebServiceSearchPartyItTest extends AbstractWebServiceItTest {
 	}
 
 	private static Pair<String, Map<String, ?>> buildUriAndParams(Integer partyNo, String nom, Set<PartyType> types) {
-		final StringBuilder b = new StringBuilder("/searchParty?user=zaiptf/22");
+		final StringBuilder b = new StringBuilder("/searchParty?user=zaidra/22");
 		final Map<String, Object> map = new HashMap<>();
 		if (partyNo != null) {
 			map.put("partyNo", partyNo);

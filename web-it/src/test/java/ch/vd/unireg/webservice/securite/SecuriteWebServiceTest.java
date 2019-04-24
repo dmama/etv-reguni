@@ -44,7 +44,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 	protected static SecuritePort service;
 	private static boolean alreadySetUp = false;
 
-	private UserLogin zaiptf; // Francis Perroset
+	private UserLogin zaidra; // David Radelfinger
 	private UserLogin zaizzt; // Utilisateur technique taxation
 	private UserLogin zciddo; // Daniel Di Lallo
 	private UserLogin zaipmx; // Pascal Mutrux
@@ -77,9 +77,9 @@ public class SecuriteWebServiceTest extends WebitTest {
 			alreadySetUp = true;
 		}
 
-		zaiptf = new UserLogin();
-		zaiptf.setUserId("zaiptf");
-		zaiptf.setOid(22); // ACI
+		zaidra = new UserLogin();
+		zaidra.setUserId("zaidra");
+		zaidra.setOid(22); // ACI
 
 		zaizzt = new UserLogin();
 		zaizzt.setUserId("zaizzt");
@@ -98,7 +98,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 	public void testTiersInconnu() {
 		try {
 			GetAutorisationSurDossier params = new GetAutorisationSurDossier();
-			params.setLogin(zaiptf);
+			params.setLogin(zaidra);
 			params.setNumeroTiers(0L); // tiers inconnu
 			service.getAutorisationSurDossier(params);
 			fail();
@@ -109,13 +109,13 @@ public class SecuriteWebServiceTest extends WebitTest {
 	}
 
 	/**
-	 * Teste que Francis Perroset possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
+	 * Teste que David Radelfinger possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
 	 */
 	@Test
-	public void testAutorisationsFrancisPerroset() throws Exception {
+	public void testAutorisationsDavidRadelfinger() throws Exception {
 
 		GetAutorisationSurDossier params = new GetAutorisationSurDossier();
-		params.setLogin(zaiptf);
+		params.setLogin(zaidra);
 
 		params.setNumeroTiers(12300001L); // Christine Schmid
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
@@ -166,7 +166,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 
 	/**
 	 * Teste que Daniel Di Lallo ne possède aucun droit sur Laurent Schmid et son couple (interdiction) ni sur Pascal Broulis
-	 * (autorisation exclusive pour Francis Perroset).
+	 * (autorisation exclusive pour David Radelfinger).
 	 */
 	@Test
 	public void testAutorisationsDanielDiLallo() throws Exception {
@@ -190,11 +190,11 @@ public class SecuriteWebServiceTest extends WebitTest {
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
 
 		params.setNumeroTiers(10149508L); // Pascal Broulis
-		assertNull(service.getAutorisationSurDossier(params)); // ok -> autorisation pour Francis Perroset uniquement
+		assertNull(service.getAutorisationSurDossier(params)); // ok -> autorisation pour David Radelfinger uniquement
 	}
 
 	/**
-	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour David Radelfinger).
 	 */
 	@Test
 	public void testAutorisationsPascalMutrux() throws Exception {
@@ -218,7 +218,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
 
 		params.setNumeroTiers(10149508L); // Pascal Broulis
-		assertNull(service.getAutorisationSurDossier(params)); // ok -> autorisation pour Francis Perroset uniquement
+		assertNull(service.getAutorisationSurDossier(params)); // ok -> autorisation pour David Radelfinger uniquement
 	}
 
 	@Test

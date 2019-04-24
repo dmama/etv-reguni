@@ -92,7 +92,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 	private static final int PREMIERE_ANNEE_FISCALE = 2003;
 
 	private UserLogin login;
-	private UserLogin zairfa; // Roselyne Favre
+	private UserLogin zaipmx; // Pascal Mutrux
 
 	private static boolean alreadySetUp = false;
 
@@ -113,9 +113,9 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		login.setUserId("[UT] PartyWebServiceTest");
 		login.setOid(22);
 
-		zairfa = new UserLogin();
-		zairfa.setUserId("zairfa");
-		zairfa.setOid(22);
+		zaipmx = new UserLogin();
+		zaipmx.setUserId("zaipmx");
+		zaipmx.setOid(22);
 	}
 
 	@Test
@@ -1174,7 +1174,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 	public void testGetBatchTiersHistoSurTiersNonAutorise() throws Exception {
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
-		params.setLogin(zairfa); // Roselyne Favre
+		params.setLogin(zaipmx); // Pascal Mutrux
 		params.getPartyNumbers().add(10149508); // Pascal Broulis
 
 		final BatchParty batch = service.getBatchParty(params);
@@ -1183,11 +1183,11 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final BatchPartyEntry entry = batch.getEntries().get(0);
 		assertNotNull(entry);
-		assertNull(entry.getParty()); // autorisation exclusive pour Francis Perroset
+		assertNull(entry.getParty()); // autorisation exclusive pour David Radelfinger
 
 		final ServiceExceptionInfo exceptionInfo = entry.getExceptionInfo();
 		assertTrue(exceptionInfo instanceof AccessDeniedExceptionInfo);
-		assertEquals("L'utilisateur spécifié (zairfa/22) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", exceptionInfo.getMessage());
+		assertEquals("L'utilisateur spécifié (zaipmx/22) n'a pas les droits d'accès en lecture sur le tiers n° 10149508", exceptionInfo.getMessage());
 	}
 
 	/**
