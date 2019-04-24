@@ -66,22 +66,24 @@ public class DelaisOnlinePPView {
 
 	public void calculeDatesFin() {
 
-		// on trie les périodes par date de début
-		this.periodes.sort(Comparator.comparing(DelaisAccordablesOnlinePPView::getDateDebut));
+		if (this.periodes != null) {
+			// on trie les périodes par date de début
+			this.periodes.sort(Comparator.comparing(DelaisAccordablesOnlinePPView::getDateDebut));
 
-		// on parcoure la liste et on applique les dates de fin qui vont bien
-		DelaisAccordablesOnlinePPView previous = null;
-		for (DelaisAccordablesOnlinePPView current : periodes) {
-			if (previous != null) {
-				previous.setDateFin(current.getDateDebut().getOneDayBefore());
+			// on parcoure la liste et on applique les dates de fin qui vont bien
+			DelaisAccordablesOnlinePPView previous = null;
+			for (DelaisAccordablesOnlinePPView current : periodes) {
+				if (previous != null) {
+					previous.setDateFin(current.getDateDebut().getOneDayBefore());
+				}
+				previous = current;
 			}
-			previous = current;
-		}
 
-		// la dernière se termine par défaut au 31.12 de l'année
-		if (!periodes.isEmpty()) {
-			final DelaisAccordablesOnlinePPView derniere = periodes.get(periodes.size() - 1);
-			derniere.setDateFin(RegDate.get(derniere.getDateDebut().year(), 12, 31));
+			// la dernière se termine par défaut au 31.12 de l'année
+			if (!periodes.isEmpty()) {
+				final DelaisAccordablesOnlinePPView derniere = periodes.get(periodes.size() - 1);
+				derniere.setDateFin(RegDate.get(derniere.getDateDebut().year(), 12, 31));
+			}
 		}
 	}
 
@@ -90,29 +92,35 @@ public class DelaisOnlinePPView {
 	 */
 	public void copyTo(@NotNull ParametreDemandeDelaisOnline paramsDelais) {
 
-		// on détermine quels sont les périodes à ajouter, supprimer et mettre-à-jour
-		final List<DelaisAccordablesOnlineDIPP> toAddList = this.periodes.stream()
-				.map(DelaisAccordablesOnlinePPView::toEntity)
-				.collect(Collectors.toCollection(LinkedList::new));
-		final List<DelaisAccordablesOnlineDIPP> toRemoveList = paramsDelais.getPeriodesDelais().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.map(DelaisAccordablesOnlineDIPP.class::cast)
-				.sorted(DateRangeComparator::compareRanges)
-				.collect(Collectors.toCollection(LinkedList::new));
-		final List<Pair<DelaisAccordablesOnlineDIPP, DelaisAccordablesOnlineDIPP>> toUpdate = CollectionsUtils.extractCommonElements(toAddList, toRemoveList, DelaisOnlinePPView::idsAreEquals);
+		if (this.periodes == null) {
+			// on annule toutes les périodes
+			paramsDelais.getPeriodesDelais().forEach(p -> p.setAnnule(true));
+		}
+		else {
+			// on détermine quels sont les périodes à ajouter, supprimer et mettre-à-jour
+			final List<DelaisAccordablesOnlineDIPP> toAddList = this.periodes.stream()
+					.map(DelaisAccordablesOnlinePPView::toEntity)
+					.collect(Collectors.toCollection(LinkedList::new));
+			final List<DelaisAccordablesOnlineDIPP> toRemoveList = paramsDelais.getPeriodesDelais().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.map(DelaisAccordablesOnlineDIPP.class::cast)
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toCollection(LinkedList::new));
+			final List<Pair<DelaisAccordablesOnlineDIPP, DelaisAccordablesOnlineDIPP>> toUpdate = CollectionsUtils.extractCommonElements(toAddList, toRemoveList, DelaisOnlinePPView::idsAreEquals);
 
-		// on annule les périodes qui doivent l'être
-		toRemoveList.forEach(p -> p.setAnnule(true));
+			// on annule les périodes qui doivent l'être
+			toRemoveList.forEach(p -> p.setAnnule(true));
 
-		// on ajoute les nouvelles périodes
-		toAddList.forEach(paramsDelais::addPeriodeDelais);
+			// on ajoute les nouvelles périodes
+			toAddList.forEach(paramsDelais::addPeriodeDelais);
 
-		// on met-à-jour les périodes existantes
-		toUpdate.forEach(pair -> {
-			final DelaisAccordablesOnlineDIPP edited = pair.getFirst();
-			final DelaisAccordablesOnlineDIPP persisted = pair.getSecond();
-			edited.copyTo(persisted);
-		});
+			// on met-à-jour les périodes existantes
+			toUpdate.forEach(pair -> {
+				final DelaisAccordablesOnlineDIPP edited = pair.getFirst();
+				final DelaisAccordablesOnlineDIPP persisted = pair.getSecond();
+				edited.copyTo(persisted);
+			});
+		}
 	}
 
 	protected static boolean idsAreEquals(DelaisAccordablesOnlineDIPP left, DelaisAccordablesOnlineDIPP right) {

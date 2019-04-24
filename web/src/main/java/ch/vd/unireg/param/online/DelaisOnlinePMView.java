@@ -67,29 +67,35 @@ public class DelaisOnlinePMView {
 	 */
 	public void copyTo(@NotNull ParametreDemandeDelaisOnline paramsDelais) {
 
-		// on détermine quels sont les périodes à ajouter, supprimer et mettre-à-jour
-		final List<DelaisAccordablesOnlineDIPM> toAddList = this.periodes.stream()
-				.map(DelaisAccordablesOnlinePMView::toEntity)
-				.collect(Collectors.toCollection(LinkedList::new));
-		final List<DelaisAccordablesOnlineDIPM> toRemoveList = paramsDelais.getPeriodesDelais().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.map(DelaisAccordablesOnlineDIPM.class::cast)
-				.sorted(Comparator.comparingInt(DelaisAccordablesOnlineDIPM::getIndex))
-				.collect(Collectors.toCollection(LinkedList::new));
-		final List<Pair<DelaisAccordablesOnlineDIPM, DelaisAccordablesOnlineDIPM>> toUpdate = CollectionsUtils.extractCommonElements(toAddList, toRemoveList, DelaisOnlinePMView::idsAreEquals);
+		if (this.periodes == null) {
+			// on annule toutes les périodes
+			paramsDelais.getPeriodesDelais().forEach(p -> p.setAnnule(true));
+		}
+		else {
+			// on détermine quels sont les périodes à ajouter, supprimer et mettre-à-jour
+			final List<DelaisAccordablesOnlineDIPM> toAddList = this.periodes.stream()
+					.map(DelaisAccordablesOnlinePMView::toEntity)
+					.collect(Collectors.toCollection(LinkedList::new));
+			final List<DelaisAccordablesOnlineDIPM> toRemoveList = paramsDelais.getPeriodesDelais().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.map(DelaisAccordablesOnlineDIPM.class::cast)
+					.sorted(Comparator.comparingInt(DelaisAccordablesOnlineDIPM::getIndex))
+					.collect(Collectors.toCollection(LinkedList::new));
+			final List<Pair<DelaisAccordablesOnlineDIPM, DelaisAccordablesOnlineDIPM>> toUpdate = CollectionsUtils.extractCommonElements(toAddList, toRemoveList, DelaisOnlinePMView::idsAreEquals);
 
-		// on annule les périodes qui doivent l'être
-		toRemoveList.forEach(p -> p.setAnnule(true));
+			// on annule les périodes qui doivent l'être
+			toRemoveList.forEach(p -> p.setAnnule(true));
 
-		// on ajoute les nouvelles périodes
-		toAddList.forEach(paramsDelais::addPeriodeDelais);
+			// on ajoute les nouvelles périodes
+			toAddList.forEach(paramsDelais::addPeriodeDelais);
 
-		// on met-à-jour les périodes existantes
-		toUpdate.forEach(pair -> {
-			final DelaisAccordablesOnlineDIPM edited = pair.getFirst();
-			final DelaisAccordablesOnlineDIPM persisted = pair.getSecond();
-			edited.copyTo(persisted);
-		});
+			// on met-à-jour les périodes existantes
+			toUpdate.forEach(pair -> {
+				final DelaisAccordablesOnlineDIPM edited = pair.getFirst();
+				final DelaisAccordablesOnlineDIPM persisted = pair.getSecond();
+				edited.copyTo(persisted);
+			});
+		}
 	}
 
 	protected static boolean idsAreEquals(DelaisAccordablesOnlineDIPM left, DelaisAccordablesOnlineDIPM right) {
