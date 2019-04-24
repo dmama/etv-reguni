@@ -22,7 +22,6 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
-import ch.vd.unireg.interfaces.service.host.ProcedureSecuriteImpl;
 import ch.vd.unireg.interfaces.service.host.ProfileOperateurImpl;
 import ch.vd.unireg.security.ProfileOperateur;
 import ch.vd.unireg.wsclient.refsec.RefSecClient;
@@ -74,7 +73,6 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 			throw new ServiceSecuriteException("impossible de récupérer le profil operateur  " + visa, e);
 		}
 	}
-
 
 	@NotNull
 	@Override
@@ -142,6 +140,10 @@ public class ServiceSecuriteRefSecImpl implements ServiceSecuriteService {
 				.anyMatch(echangeAciCom -> echangeAciCom.getTypeCommunication().equals(TypeCommunication.ACI) && echangeAciCom.isValidAt(RegDate.get()));
 	}
 
+	@Override
+	public void ping() throws ServiceSecuriteException {
+		refSecClient.ping();
+	}
 
 	public void setRefSecClient(RefSecClientTracing refSecClient) {
 		this.refSecClient = refSecClient;

@@ -60,4 +60,11 @@ public interface ServiceSecuriteService {
 	 */
 	@Nullable
 	Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException;
+
+	/**
+	 * Méthode qui permet de tester que le service de sécurité répond bien. Cette méthode est insensible aux caches.
+	 *
+	 * @throws ServiceSecuriteException en cas de non-fonctionnement du service de sécurité
+	 */
+	void ping() throws ServiceSecuriteException;
 }

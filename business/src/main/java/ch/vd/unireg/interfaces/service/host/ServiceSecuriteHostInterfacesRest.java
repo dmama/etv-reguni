@@ -168,4 +168,9 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur correspondant au visa " + visa, e);
 		}
 	}
+
+	@Override
+	public void ping() throws ServiceSecuriteException {
+		client.ping();
+	}
 }

@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
-import ch.vd.unireg.interfaces.service.host.Operateur;
 
 public class ServiceSecuriteChecker implements StatusChecker {
 
@@ -25,15 +25,9 @@ public class ServiceSecuriteChecker implements StatusChecker {
 	@Override
 	public void check() throws CheckerException {
 		try {
-			Operateur op = serviceSecuriteRaw.getOperateur("zaiptf");
-			if (op == null) {
-				throw new CheckerException("Impossible de trouver l'opérateur zaiptf");
-			}
-			if (!"zaiptf".equalsIgnoreCase(op.getCode())) {
-				throw new CheckerException("Données incohérentes retournées");
-			}
+			serviceSecuriteRaw.ping();
 		}
-		catch (CheckerException e) {
+		catch (ServiceSecuriteException e) {
 			throw e;
 		}
 		catch (Exception e) {

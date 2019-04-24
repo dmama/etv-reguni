@@ -76,4 +76,8 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		operatorsByVisa.put(visa, o);
 		profilesOperatorByIndividu.put(visa, new ProfileOperateurImpl(visa, procedures));
 	}
+
+	@Override
+	public void ping() throws ServiceSecuriteException {
+	}
 }

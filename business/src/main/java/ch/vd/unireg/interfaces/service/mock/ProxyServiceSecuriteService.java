@@ -53,4 +53,9 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	public Operateur getOperateur(@NotNull String visa) throws ServiceSecuriteException {
 		return target.getOperateur(visa);
 	}
+
+	@Override
+	public void ping() throws ServiceSecuriteException {
+		target.ping();
+	}
 }

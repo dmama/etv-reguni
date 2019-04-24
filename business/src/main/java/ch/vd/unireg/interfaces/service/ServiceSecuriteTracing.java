@@ -144,4 +144,10 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			statsService.unregisterService(SERVICE_NAME);
 		}
 	}
+
+	@Override
+	public void ping() throws ServiceSecuriteException {
+		// on ne trace pas les pings
+		target.ping();
+	}
 }

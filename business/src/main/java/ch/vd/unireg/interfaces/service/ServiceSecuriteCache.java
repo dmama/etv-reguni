@@ -397,6 +397,12 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		return resultat;
 	}
 
+	@Override
+	public void ping() throws ServiceSecuriteException {
+		// pas de cache sur le ping
+		target.ping();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
