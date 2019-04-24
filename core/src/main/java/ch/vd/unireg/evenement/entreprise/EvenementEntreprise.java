@@ -63,8 +63,7 @@ public class EvenementEntreprise extends HibernateEntity {
 	private ReferenceAnnonceIDE referenceAnnonceIDE;
 
 	/**
-	 * Flag signalant le fait que cet événement est valable à une date/heure précise antérieure à celle du dernier
-	 * événement reçu dans l'historique d'une entreprise.
+	 * Flag signalant le fait que cet événement est valable à une date/heure précise antérieure à celle du dernier événement reçu dans l'historique d'une entreprise.
 	 */
 	private boolean correctionDansLePasse;
 
@@ -84,7 +83,7 @@ public class EvenementEntreprise extends HibernateEntity {
 	private List<EvenementEntrepriseErreur> erreurs;
 
 	/**
-	  Réservé à Hibernate
+	 * Réservé à Hibernate
 	 */
 	public EvenementEntreprise() {
 	}
@@ -95,7 +94,7 @@ public class EvenementEntreprise extends HibernateEntity {
 			RegDate dateEvenement,
 			long noEntrepriseCivile,
 			EtatEvenementEntreprise etat
-			) {
+	) {
 		this.dateEvenement = dateEvenement;
 		this.etat = etat;
 		this.noEvenement = noEvenement;
@@ -186,7 +185,7 @@ public class EvenementEntreprise extends HibernateEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "NO_ANNONCE_IDE")
-	@ForeignKey(name="FK_EV_ORG_REFANNIDE_ID")
+	@ForeignKey(name = "FK_EV_ORG_REFANNIDE_ID")
 	public ReferenceAnnonceIDE getReferenceAnnonceIDE() {
 		return referenceAnnonceIDE;
 	}
@@ -255,5 +254,19 @@ public class EvenementEntreprise extends HibernateEntity {
 
 	public String rapportErreurs() {
 		return CollectionsUtils.toString(this.getErreurs(), EvenementEntrepriseErreur::getMessage, "\n");
+	}
+
+	@Transient
+	public String getCleLienPublicationFosc() {
+		if (type.getSource() != TypeEvenementEntreprise.Source.FOSC) {
+			return null;
+		}
+		return isAnnonceFosc2() ? "extprop.annonce.rcent.fosc2.url.consultation.publication" : "extprop.annonce.rcent.fosc1.url.consultation.publication";
+	}
+
+	@Transient
+	private boolean isAnnonceFosc2() {
+		//la date de référence du début des annonces FOSC 2 est le 03.09.2019
+		return type.getSource() == TypeEvenementEntreprise.Source.FOSC && dateEvenement.isAfterOrEqual(RegDate.get(2018, 9, 3));
 	}
 }

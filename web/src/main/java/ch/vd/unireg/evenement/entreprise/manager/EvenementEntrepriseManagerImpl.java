@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -42,6 +41,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.organisation.EntrepriseView;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.EntrepriseNotFoundException;
@@ -50,7 +50,7 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersException;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
-import ch.vd.unireg.utils.WebContextUtils;
+import ch.vd.unireg.utils.UniregProperties;
 
 public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManager {
 
@@ -62,7 +62,8 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 	private TiersService tiersService;
 	private ServiceEntreprise serviceEntreprise;
 	private ServiceInfrastructureService serviceInfrastructureService;
-	private MessageSource messageSource;
+	private MessageHelper messageHelper;
+	private UniregProperties properties;
 
 	private EvenementEntrepriseService evenementService;
 	private EvenementEntrepriseNotificationQueue evenementNotificationQueue;
@@ -99,8 +100,12 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
+	public void setMessageHelper(MessageHelper messageSource) {
+		this.messageHelper = messageSource;
+	}
+
+	public void setProperties(UniregProperties properties) {
+		this.properties = properties;
 	}
 
 	@Override
@@ -124,7 +129,6 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 	}
 
 	private EvenementEntrepriseDetailView buildDetailView(EvenementEntreprise evt) {
-		final String foscPublicationDirectLinkFormat = "https://www.fosc.ch/shabforms/servlet/Search/1925485.pdf?EID=7&DOCID=%s";
 
 		final EvenementEntrepriseDetailView evtView = new EvenementEntrepriseDetailView();
 
@@ -153,7 +157,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 			evtView.setFoscNumero(entrepriseEvent.getNumeroDocumentFOSC());
 			evtView.setFoscDate(entrepriseEvent.getDatePublicationFOSC());
 			if (entrepriseEvent.getNumeroDocumentFOSC() != null) {
-				evtView.setFoscLienDirect(String.format(foscPublicationDirectLinkFormat, entrepriseEvent.getNumeroDocumentFOSC()));
+				evtView.setFoscLienDirect(String.format(properties.getProperty(evt.getCleLienPublicationFosc()), entrepriseEvent.getNumeroDocumentFOSC()));
 			}
 
 			evtView.setOrganisation(new EntrepriseView(entrepriseEvent.getPseudoHistory(), evt.getDateEvenement()));
@@ -508,9 +512,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 	 */
 	private ObjectNotFoundException newObjectNotFoundException(Long id) {
 		return new ObjectNotFoundException (
-				messageSource.getMessage("error.id.evenement.inexistant", new Object[]{id.toString()},
-				                         WebContextUtils.getDefaultLocale()
-				));
+				messageHelper.getMessage("error.id.evenement.inexistant", id.toString()));
 	}
 	protected AdresseEnvoi retrieveAdresse(Long numeroEntrepriseCivile) throws AdresseException {
 		final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(numeroEntrepriseCivile);
@@ -521,7 +523,7 @@ public class EvenementEntrepriseManagerImpl implements EvenementEntrepriseManage
 	protected EntrepriseCivileEvent retrieveEntrepriseEvent(Long noEvenement, Long numeroEntrepriseCivile) {
 		final EntrepriseCivileEvent event = serviceEntreprise.getEntrepriseEvent(noEvenement).get(numeroEntrepriseCivile);
 		if (event == null) {
-			throw new ObjectNotFoundException(this.messageSource.getMessage("error.organisation.introuvable", new Object[] {Long.toString(numeroEntrepriseCivile)}, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.organisation.introuvable", Long.toString(numeroEntrepriseCivile)));
 		}
 		return event;
 	}

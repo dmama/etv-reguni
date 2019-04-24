@@ -54,7 +54,8 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-		<property name="messageSource" ref="messageSource" />
+		<property name="messageHelper" ref="messageHelper" />
+		<property name="properties" ref="uniregExternalProperties" />
 		<property name="evenementService" ref="evtEntrepriseService" />
 		<property name="evenementNotificationQueue" ref="evtEntrepriseNotificationQueue" />
 		<property name="evenementProcessor" ref="evtEntrepriseProcessor" />
