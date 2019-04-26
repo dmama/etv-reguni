@@ -27,12 +27,13 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DegrevementExonerationControllerTest extends WebTest {
 
@@ -94,7 +95,7 @@ public class DegrevementExonerationControllerTest extends WebTest {
 
 		// on demande de désannuler la demande de dégrèvemment annulée de 2017
 		final ResultActions res = m.perform(post("/degrevement-exoneration/desannuler.do").session(session).param("id", String.valueOf(demande2017annulee.getId())));
-		res.andExpect(status().isMovedTemporarily());
+		res.andExpect(status().isFound());
 
 		// une erreur doit être affichée (parce qu'il y a déjà une demande active pour 2017) et la demande ne doit pas être désannulée
 		final FlashMessage flash = (FlashMessage) session.getAttribute("flash");
@@ -106,8 +107,6 @@ public class DegrevementExonerationControllerTest extends WebTest {
 
 	/**
 	 * [SIFISC-29014] Il ne doit pas être possible d'ajouter un délai pour une lettre de bienvenue ou un dégrèvement avec rappel déjà envoyé
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testEditerDemandeDegrevementRappele() throws Exception {
@@ -146,14 +145,12 @@ public class DegrevementExonerationControllerTest extends WebTest {
 		assertNotNull(view);
 
 		final boolean isAjoutDelaiAutorise = (Boolean) model.get("isAjoutDelaiAutorise");
-		assertEquals(false, isAjoutDelaiAutorise);
+		assertFalse(isAjoutDelaiAutorise);
 	}
 
 	/**
 	 * [SIFISC-29014] Test pour ajout d'un délai, alors qu'un rappel a déjà été envoyé.
 	 * Post = action d'ajout
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testAjouterDelaiDegrevementRappelePost() throws Exception {
@@ -197,8 +194,6 @@ public class DegrevementExonerationControllerTest extends WebTest {
 	/**
 	 * [SIFISC-29014] Test pour ajout d'un délai, alors qu'un rappel a déjà été envoyé.
 	 * Post = action d'ajout
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testAjouterDelaiDegrevementRappeleGet() throws Exception {

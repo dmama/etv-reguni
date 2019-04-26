@@ -166,7 +166,7 @@ public class RapportControllerTest extends WebTest {
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique marcel = addNonHabitant("Marcel", "Ragnol", date(1932, 1, 1), Sexe.MASCULIN);
 				ids.marcel = marcel.getId();
 				final PersonnePhysique geraldine = addNonHabitant("Géraldine", "Massnacht", date(1982, 1, 1), Sexe.FEMININ);
@@ -188,12 +188,12 @@ public class RapportControllerTest extends WebTest {
 				                                    .param("numero", String.valueOf(ids.geraldine))
 				                                    .param("dateFin", "29.11.2010")
 				                                    .param("extensionExecutionForcee", "false"));
-		res.andExpect(status().isMovedTemporarily());
+		res.andExpect(status().isFound());
 
 		// On vérifie que le rapport a bien été fermé
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final RepresentationConventionnelle rapport = hibernateTemplate.get(RepresentationConventionnelle.class, ids.rapport);
 				assertNotNull(rapport);
 				assertEquals(date(2010, 11, 29), rapport.getDateFin());
@@ -205,7 +205,7 @@ public class RapportControllerTest extends WebTest {
 	@Test
 	public void testSortRapportsByAutoriteTutelaire() {
 		final ParamPagination pagination = new ParamPagination(0, 20, "autoriteTutelaire", true);
-		List<RapportEntreTiers> rapports = new ArrayList<RapportEntreTiers>();
+		List<RapportEntreTiers> rapports = new ArrayList<>();
 		// Curatelle
 		CollectiviteAdministrative autoriteTutelaireCuratelle = new CollectiviteAdministrative(1L, 1, 1, 1);
 		Curatelle curatelle= new Curatelle();

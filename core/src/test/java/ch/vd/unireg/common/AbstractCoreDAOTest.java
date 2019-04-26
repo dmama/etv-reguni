@@ -192,7 +192,6 @@ import static org.junit.Assert.assertNull;
  *
  * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */
-@SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
 		CoreTestingConstants.UNIREG_CORE_DAO,
 		CoreTestingConstants.UNIREG_CORE_SF,
