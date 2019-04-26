@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -35,6 +35,7 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 import static ch.vd.unireg.common.WithoutSpringTest.date;
+import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LienAssociesSNCServiceTest {
@@ -64,6 +65,7 @@ public class LienAssociesSNCServiceTest {
 		final DebiteurPrestationImposable sujet = getDebiteurIS();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
@@ -77,6 +79,7 @@ public class LienAssociesSNCServiceTest {
 		final CollectiviteAdministrative sujet = getCollectiviteAdministrative();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
@@ -90,6 +93,7 @@ public class LienAssociesSNCServiceTest {
 		final AutreCommunaute sujet = getAutreCommunaute();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
@@ -106,6 +110,7 @@ public class LienAssociesSNCServiceTest {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
@@ -127,6 +132,7 @@ public class LienAssociesSNCServiceTest {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC);
@@ -143,6 +149,7 @@ public class LienAssociesSNCServiceTest {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
@@ -159,6 +166,7 @@ public class LienAssociesSNCServiceTest {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
@@ -176,6 +184,7 @@ public class LienAssociesSNCServiceTest {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
@@ -192,6 +201,7 @@ public class LienAssociesSNCServiceTest {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
@@ -211,8 +221,9 @@ public class LienAssociesSNCServiceTest {
 		objet.addForFiscal(dernierForSnc);
 		final PersonnePhysique sujet = getPersonnePhysique();
 		try {
-			Mockito.when(tiersService.existRapportEntreTiers(Mockito.any(TypeRapportEntreTiers.class), Mockito.any(Contribuable.class), Mockito.any(Contribuable.class), Mockito.any(RegDate.class))).thenReturn(Boolean.TRUE);
+			Mockito.when(tiersService.existRapportEntreTiers(Mockito.any(TypeRapportEntreTiers.class), Mockito.any(Contribuable.class), Mockito.any(Contribuable.class), Mockito.any())).thenReturn(Boolean.TRUE);
 			service.isAllowed(sujet, objet, null);
+			fail();
 		}
 		catch (LienAssociesEtSNCException ex) {
 			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN);

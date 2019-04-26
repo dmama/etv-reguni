@@ -57,7 +57,7 @@ public class ImpressionDocumentEfactureHelperTest {
 	public void testRemplitEnteteDocumentEFacture() throws EditiqueException, AdresseException {
 
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(null, null, null, null, null, new RueEtNumero("Route de Berne", "46"), new NpaEtLocalite("1014", "Lausanne Adm cant"), null, null, null, AdresseGenerique.SourceType.INFRA, null);
-		Mockito.when(adresseService.getAdresseEnvoi(Mockito.any(Tiers.class), Mockito.any(RegDate.class), Mockito.any(TypeAdresseFiscale.class), Mockito.anyBoolean())).thenReturn(adresseEnvoi);
+		Mockito.when(adresseService.getAdresseEnvoi(Mockito.any(Tiers.class), Mockito.any(), Mockito.any(TypeAdresseFiscale.class), Mockito.anyBoolean())).thenReturn(adresseEnvoi);
 
 		final Adresse adresse = new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant");
 		final OfficeImpotImpl cat = Mockito.mock(OfficeImpotImpl.class);

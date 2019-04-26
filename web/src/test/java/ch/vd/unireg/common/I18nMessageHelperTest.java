@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.message.MessageHelper;
@@ -260,9 +259,9 @@ public class I18nMessageHelperTest extends WebTest {
 		Mockito.when(tiersObjetMock.getNumero()).thenReturn(objetId);
 
 		//preparation du mocks addresseService
-		Mockito.when(adresseServiceMock.getNomCourrier(Mockito.any(Tiers.class), Mockito.any(RegDate.class), Mockito.any(Boolean.class))).thenAnswer((Answer<List<String>>) invocation ->
+		Mockito.when(adresseServiceMock.getNomCourrier(Mockito.any(Tiers.class), Mockito.any(), Mockito.any(Boolean.class))).thenAnswer((Answer<List<String>>) invocation ->
 		{
-			final Tiers tiers = invocation.getArgumentAt(0, Tiers.class);
+			final Tiers tiers = invocation.getArgument(0, Tiers.class);
 			return tiers.getNumero().equals(sujetId) ? Collections.singletonList(nomSujet) : Collections.singletonList(nomObjet);
 		});
 
