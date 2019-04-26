@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.EnvoiDIsPMRapport;
@@ -146,7 +145,7 @@ public class EnvoiDIsPMJob extends JobDefinition {
 		builder.append(" à la date du ");
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
 		builder.append(" est terminé.");
-		Audit.success(builder.toString(), rapport);
+		audit.success(builder.toString(), rapport);
 
 	}
 }

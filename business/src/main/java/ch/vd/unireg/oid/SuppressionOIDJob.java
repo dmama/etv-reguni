@@ -27,7 +27,6 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.SuppressionOIDRapport;
@@ -111,7 +110,7 @@ public class SuppressionOIDJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La suppression de l'OID n°" + oid + " est terminée.", rapport);
+		audit.success("La suppression de l'OID n°" + oid + " est terminée.", rapport);
 	}
 
 	/**

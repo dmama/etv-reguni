@@ -12,7 +12,6 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.DatabaseDump;
 import ch.vd.unireg.document.DocumentService;
@@ -34,12 +33,11 @@ public class DumpTiersListJob extends JobDefinition {
 	public static final String INCLUDE_SIT_FAM  = "INCLUDE_SIT_FAM";
 
 	private static final SimpleDateFormat SCREEN_DATE_FORMAT = new SimpleDateFormat();
-	
 	private static final SimpleDateFormat FILE_DATE_FORMAT = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 	
 	private DatabaseService dbService;
 	private DocumentService docService;
-	
+
 	public DumpTiersListJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DB, sortOrder, description);
 
@@ -140,7 +138,7 @@ public class DumpTiersListJob extends JobDefinition {
 				});
 
 		setLastRunReport(doc);
-		Audit.success("La base de données a été exportée dans le fichier " + doc.getNom() + " (document #" + doc.getId() + ").", doc);
+		audit.success("La base de données a été exportée dans le fichier " + doc.getNom() + " (document #" + doc.getId() + ").", doc);
 	}
 	
 	private List<Long> extractIds(String idsParam) {

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.StatusManager;
@@ -77,6 +78,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	private AssujettissementService assujettissementService;
 	private AvatarService avatarService;
 	private StatsService statsService;
+	private AuditManager audit;
 
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
 	private LoadAverager onTheFlyLoadAverager;
@@ -105,7 +107,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     	// on prends en compte toute la population
 		final EnumSet<TypeTiers> typesTiers = EnumSet.allOf(TypeTiers.class);
 
-		final DatabaseIndexationProcessor processor = new DatabaseIndexationProcessor(tiersDAO, serviceCivilCacheWarmer, statsService, tiersSearcher, this, globalIndex, sessionFactory, transactionManager);
+		final DatabaseIndexationProcessor processor = new DatabaseIndexationProcessor(tiersDAO, serviceCivilCacheWarmer, statsService, tiersSearcher, this, globalIndex, sessionFactory, transactionManager, audit);
 		final DatabaseIndexationResults results = processor.run(mode, typesTiers, nbThreads, statusManager);
 		return results.getIndexes().size();
 	}
@@ -475,5 +477,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
 		this.serviceEntreprise = serviceEntreprise;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

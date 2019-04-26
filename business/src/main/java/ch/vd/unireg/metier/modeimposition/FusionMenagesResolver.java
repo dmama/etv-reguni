@@ -1,6 +1,7 @@
 package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -18,8 +19,8 @@ public class FusionMenagesResolver extends MariageModeImpositionResolver {
 	private final MenageCommun premierMenage;
 	private final MenageCommun secondMenage;
 	
-	public FusionMenagesResolver(TiersService tiersService, MenageCommun premierMenage, MenageCommun secondMenage) {
-		super(tiersService, null);
+	public FusionMenagesResolver(TiersService tiersService, MenageCommun premierMenage, MenageCommun secondMenage, AuditManager audit) {
+		super(tiersService, null, audit);
 		
 		this.premierMenage = premierMenage;
 		this.secondMenage = secondMenage;

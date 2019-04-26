@@ -15,7 +15,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplate;
 import ch.vd.unireg.common.StatusManager;
@@ -36,10 +35,7 @@ import ch.vd.unireg.tiers.TypeTiers;
  */
 public class DumpAssujettissementsJob extends JobDefinition {
 
-	//private final Logger LOGGER = LoggerFactory.getLogger(DumpAssujettissementsJob.class);
-
 	public static final String NAME = "DumpAssujettissementsJob";
-
 	public static final String FILENAME = "FILENAME";
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String POPULATION = "POPULATION";
@@ -115,7 +111,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		}
 
 		statusManager.setMessage("Terminé");
-		Audit.success("Le batch de dump des assujettissements est terminé");
+		audit.success("Le batch de dump des assujettissements est terminé");
 	}
 
 	private void processAll(List<Long> ids, int nbThreads, final FileWriter file, final StatusManager statusManager) {

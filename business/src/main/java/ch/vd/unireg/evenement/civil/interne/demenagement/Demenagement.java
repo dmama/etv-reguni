@@ -5,12 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FiscalDateHelper;
@@ -24,6 +18,11 @@ import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -205,7 +204,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 					if ((forPrincipalHabitant.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalHabitant.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommune))) {
 						// mise à jour du for fiscal habitant avec le même mode d'imposition
 						updateForFiscalPrincipal(habitant, dateEvenement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsCommune, null, MotifFor.DEMENAGEMENT_VD, null);
-						Audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers habitant");
+						context.audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers habitant");
 					}
 					/*
 					 * Fermetures des adresses temporaires du fiscal 
@@ -224,7 +223,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 							if ((forPrincipalMenage.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalMenage.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommune))) {
 								// mise à jour du for fiscal menage commun avec le même mode d'imposition
 								updateForFiscalPrincipal(menage, dateEvenement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsCommune, null, MotifFor.DEMENAGEMENT_VD, null);
-								Audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers ménage commun");
+								context.audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers ménage commun");
 							}
 						}
 						/*
@@ -281,7 +280,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 					if ((forPrincipalMenage.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalMenage.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommune))) {
 						// mise à jour du for fiscal menage commun avec le même mode d'imposition
 						updateForFiscalPrincipal(menage, dateEvenement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsCommune, null, MotifFor.DEMENAGEMENT_VD, null);
-						Audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers ménage commun");
+						context.audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers ménage commun");
 					}
 				}
 				/*

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.RattraperDatesMetierDroitProcessorRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -72,7 +71,7 @@ public class RattraperDatesMetierDroitRFJob extends JobDefinition {
 		final RattraperDatesMetierDroitRFProcessorResults results = processor.process(dataSelection, immeubleIds, nbThreads, getStatusManager());
 		final RattraperDatesMetierDroitProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le rattrapage des dates métier des droits RF est terminé.", rapport);
+		audit.success("Le rattrapage des dates métier des droits RF est terminé.", rapport);
 	}
 
 	public void setProcessor(RattraperDatesMetierDroitRFProcessor processor) {

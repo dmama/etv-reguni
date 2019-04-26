@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.DatabaseIndexationRapport;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -66,14 +65,14 @@ public class DatabaseIndexerJob extends JobDefinition {
 		final Set<TypeTiers> typesTiers = population.isEmpty() ? EnumSet.allOf(TypeTiers.class) : EnumSet.copyOf(population);    // [SIFISC-29781] pas de population spécifique renseignée -> on prends toute la population
 		final StatusManager status = getStatusManager();
 
-		Audit.info("Indexation de la base de données (mode = " + mode + ", typesTiers = " + typesTiers + ")");
+		audit.info("Indexation de la base de données (mode = " + mode + ", typesTiers = " + typesTiers + ")");
 
 		final DatabaseIndexationResults results = processor.run(mode, typesTiers, nbThreads, status);
 		final DatabaseIndexationRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
 
-		Audit.success("L'indexation de la base de données est terminée", rapport);
+		audit.success("L'indexation de la base de données est terminée", rapport);
 	}
 
 	public void setProcessor(DatabaseIndexationProcessor processor) {

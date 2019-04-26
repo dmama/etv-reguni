@@ -17,14 +17,14 @@ public class EnvoiAnnexeImmeubleJobTest extends BusinessTest {
 
 	@Test
 	public void testNullInputFileParsing() throws Exception {
-		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(null, new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(null, new LoggingStatusManager(LOGGER), audit);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(0, liste.size());
 	}
 
 	@Test
 	public void testEmptyInputFileParsing() throws Exception {
-		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(new byte[0], new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(new byte[0], new LoggingStatusManager(LOGGER), audit);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(0, liste.size());
 	}
@@ -32,7 +32,7 @@ public class EnvoiAnnexeImmeubleJobTest extends BusinessTest {
 	@Test
 	public void testBasicInputFileParsing() throws Exception {
 		final String content = "NO_CTB;NB_IMMEUBLES\n10010010;2\n10010011;5";
-		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), audit);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(2, liste.size());
 
@@ -45,7 +45,7 @@ public class EnvoiAnnexeImmeubleJobTest extends BusinessTest {
 	@Test
 	public void testInputFileParsingWithMoreThanTwoColumns() throws Exception {
 		final String content = "NO_CTB;NB_IMMEUBLES;TRALALA\n10010010;2;dghjuze\n10010011;5;261\n10010001;65;";
-		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), audit);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(3, liste.size());
 
@@ -60,7 +60,7 @@ public class EnvoiAnnexeImmeubleJobTest extends BusinessTest {
 	@Test
 	public void testInputFileParsingWithInvalidLines() throws Exception {
 		final String content = "NO_CTB;NB_IMMEUBLES\n10010010;2d\n10010011d;5\nTOTO;12353;3";
-		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER));
+		final List<ContribuableAvecImmeuble> liste = EnvoiAnnexeImmeubleJob.extractCtbFromCSV(content.getBytes(ENCODING), new LoggingStatusManager(LOGGER), audit);
 		Assert.assertNotNull(liste);
 		Assert.assertEquals(0, liste.size());
 	}

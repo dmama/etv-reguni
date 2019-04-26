@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.EnvoiRappelsQuestionnairesSNCRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -20,7 +19,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class EnvoiRappelsQuestionnairesSNCJob extends JobDefinition {
 
 	private static final String NAME = "EnvoiRappelsQuestionnairesSNCJob";
-
 	private static final String PARAM_MAX_RAPPELS = "NB_MAX_RAPPELS";
 	private static final String PERIODE_FISCALE = "PERIODE";
 
@@ -81,6 +79,6 @@ public class EnvoiRappelsQuestionnairesSNCJob extends JobDefinition {
 		final EnvoiRappelsQuestionnairesSNCRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
 
-		Audit.success("L'envoi des rappels des questionnaires SNC à la date du " + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminé.", rapport);
+		audit.success("L'envoi des rappels des questionnaires SNC à la date du " + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminé.", rapport);
 	}
 }

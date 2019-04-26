@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -73,7 +72,7 @@ public class InsertEmployeurFictifEmpAciJob extends JobDefinition {
 
 		final String message = "L'employeur fictif n°" + ID_EMPLOYEUR_FICTIF + " pour EmpACI a bien été inséré dans la base de données.";
 		status.setMessage(message);
-		Audit.success(message);
+		audit.success(message);
 	}
 
 	private void insertEmployeurFictif() {

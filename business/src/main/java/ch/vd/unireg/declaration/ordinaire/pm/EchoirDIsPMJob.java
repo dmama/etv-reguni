@@ -3,7 +3,6 @@ package ch.vd.unireg.declaration.ordinaire.pm;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.EchoirDIsPMRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -14,10 +13,10 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 
 public class EchoirDIsPMJob extends JobDefinition {
 
+	private static final String NAME = "EchoirDIsPMJob";
+
 	private DeclarationImpotService declarationImpotService;
 	private RapportService rapportService;
-
-	private static final String NAME = "EchoirDIsPMJob";
 
 	public EchoirDIsPMJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI_PM, sortOrder, description);
@@ -51,6 +50,6 @@ public class EchoirDIsPMJob extends JobDefinition {
 		final EchoirDIsPMRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 
-		Audit.success("Le passage à l'état 'échu' des DIs PM sommées est terminé.", rapport);
+		audit.success("Le passage à l'état 'échu' des DIs PM sommées est terminé.", rapport);
 	}
 }

@@ -3,7 +3,6 @@ package ch.vd.unireg.documentfiscal;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.EnvoiLettresBienvenueRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -16,7 +15,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class EnvoiLettresBienvenueJob extends JobDefinition {
 
 	private static final String NAME = "EnvoiLettresBienvenueJob";
-
 	private static final String DELAI = "DELAI_CARENCE";
 
 	private RapportService rapportService;
@@ -64,6 +62,6 @@ public class EnvoiLettresBienvenueJob extends JobDefinition {
 		final EnvoiLettresBienvenueResults results = service.envoyerLettresBienvenueEnMasse(dateTraitement, delaiCarence, statusManager);
 		final EnvoiLettresBienvenueRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
-		Audit.success("L'envoi des lettres de bienvenue est terminé.");
+		audit.success("L'envoi des lettres de bienvenue est terminé.");
 	}
 }

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.unireg.admin.ScriptBean.DBUnitMode;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.database.DatabaseService;
 import ch.vd.unireg.document.DatabaseDump;
@@ -53,16 +53,15 @@ import ch.vd.unireg.utils.UniregModeHelper;
 public class TiersImportController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersImportController.class);
-
 	private static final String SCRIPTS_FOLDER_PATH = "DBUnit4Import";
 	private static final String SCRIPTS_LIST_FILES = SCRIPTS_FOLDER_PATH + "/files-list.txt";
 
 	private TiersDAO dao;
 	private DocumentService docService;
 	private DatabaseService dbService;
-
 	private GlobalTiersIndexer globalIndexer;
 	private SecurityProviderInterface securityProvider;
+	private AuditManager audit;
 
 	/**
 	 * Cette méthode est appelée pour afficher la page qui liste les scripts DBUnit préxistants + le formulaire pour en uploader d'autres.
@@ -232,7 +231,7 @@ public class TiersImportController {
 		case CLEAN_INSERT: {
 			dbService.truncateDatabase();
 			globalIndexer.overwriteIndex();
-			Audit.success("La base de données est vidée");
+			audit.success("La base de données est vidée");
 		}
 		break;
 		}
@@ -241,14 +240,14 @@ public class TiersImportController {
 		case INSERT_APPEND:
 		case CLEAN_INSERT: {
 			dbService.loadFromDbunitFile(inputXML, null, false);
-			Audit.success("La base de données a été chargée avec le fichier " + filename);
+			audit.success("La base de données a été chargée avec le fichier " + filename);
 		}
 		break;
 		}
 
 		// Tout s'est bien passé => Re-Indexation des données
 		final int count = globalIndexer.indexAllDatabase();
-		Audit.success("La base de données a été réindexée. Elle contient " + count + " entrées");
+		audit.success("La base de données a été réindexée. Elle contient " + count + " entrées");
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -272,5 +271,9 @@ public class TiersImportController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

@@ -6,10 +6,6 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -17,6 +13,9 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -101,7 +100,7 @@ public class DepartPrincipal extends Depart {
 	}
 
 	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
-		Audit.info(getNumeroEvenement(), "Verification de la cohérence du départ");
+		context.audit.info(getNumeroEvenement(), "Verification de la cohérence du départ");
 
 		if (getNumeroOfsEntiteForAnnonce() == null) {
 			erreurs.addErreur("La commune d'annonce est vide");
@@ -119,7 +118,7 @@ public class DepartPrincipal extends Depart {
 
 		super.validateSpecific(erreurs, warnings);
 
-		Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
+		context.audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
 	}
 
@@ -142,7 +141,7 @@ public class DepartPrincipal extends Depart {
 			final List<ForFiscal> tousFors = ctb.getForsFiscauxNonAnnules(false);
 			if (tousFors == null || tousFors.isEmpty()) {
 				// pas de fors non-annulés -> tout va bien, on accepte l'événement sans autre
-				Audit.info(getNumeroEvenement(), "Commune de départ inconnue mais contribuable sans for, départ traité sans autre");
+				context.audit.info(getNumeroEvenement(), "Commune de départ inconnue mais contribuable sans for, départ traité sans autre");
 			}
 			else {
 				throw new EvenementCivilException("La commune de départ n'a pas été trouvée");
@@ -152,13 +151,13 @@ public class DepartPrincipal extends Depart {
 		// [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre (notamment au niveau des fors fiscaux)
 		final RegDate dateDepartComplet = getDateDepartComplet(false);
 		if (!isAncienTypeDepart() && dateDepartComplet == null) {
-			Audit.info(getNumeroEvenement(), String.format("La résidence principale du conjoint à partir du %s est toujours sur VD, pas d'action sur les fors fiscaux", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter())));
+			context.audit.info(getNumeroEvenement(), String.format("La résidence principale du conjoint à partir du %s est toujours sur VD, pas d'action sur les fors fiscaux", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter())));
 			return dateFermeture;
 		}
 
 		final RegDate dateFermetureEffective = dateDepartComplet != null ? dateDepartComplet : dateFermeture;
 
-		Audit.info(getNumeroEvenement(), "Traitement du départ principal");
+		context.audit.info(getNumeroEvenement(), "Traitement du départ principal");
 
 		/*
 		 * Fermetures des adresses temporaires du fiscal
@@ -221,12 +220,12 @@ public class DepartPrincipal extends Depart {
 	 */
 	private void handleDepartResidencePrincipale(Depart depart, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale) throws EvenementCivilException {
 
-		Audit.info(depart.getNumeroEvenement(), String.format("Fermeture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture));
+		context.audit.info(depart.getNumeroEvenement(), String.format("Fermeture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture));
 
 		// [SIFISC-11521] si le for était déjà fermé à la même date pour le même motif, rien à faire...
 		final ForFiscalPrincipalPP precedent = contribuable.getForFiscalPrincipalAt(dateFermeture);
 		if (precedent != null && precedent.getDateFin() == dateFermeture && precedent.getMotifFermeture() == motifFermeture) {
-			Audit.info(depart.getNumeroEvenement(),
+			context.audit.info(depart.getNumeroEvenement(),
 			           String.format("Le for principal du contribuable est déjà fermé au %s pour le motif '%s', pas de traitement supplémentaire à prévoir sur les fors",
 			                         RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture.getDescription(false)));
 			return;
@@ -237,7 +236,7 @@ public class DepartPrincipal extends Depart {
 			throw new RuntimeException("Le for du contribuable est déjà hors du canton");
 		}
 
-		Audit.info(depart.getNumeroEvenement(),
+		context.audit.info(depart.getNumeroEvenement(),
 		           String.format("Ouverture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter()), motifFermeture));
 
 		if (ffp != null) {

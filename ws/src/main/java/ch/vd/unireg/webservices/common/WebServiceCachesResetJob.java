@@ -3,7 +3,6 @@ package ch.vd.unireg.webservices.common;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
@@ -24,10 +23,10 @@ public class WebServiceCachesResetJob extends JobDefinition {
 			for (UniregCacheInterface cache : caches) {
 				cache.reset();
 			}
-			Audit.success("Les caches des web-services ont été correctement resettés.");
+			audit.success("Les caches des web-services ont été correctement resettés.");
 		}
 		catch (Exception e) {
-			Audit.error("Impossible de resetter les caches des web-services pour la raison suivante: " + e.getMessage());
+			audit.error("Impossible de resetter les caches des web-services pour la raison suivante: " + e.getMessage());
 			throw e;
 		}
 	}

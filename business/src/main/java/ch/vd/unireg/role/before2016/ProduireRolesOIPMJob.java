@@ -7,7 +7,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.RolesOIPMRapport;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -50,6 +49,6 @@ public class ProduireRolesOIPMJob extends AbstractProduireRolesJob {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des rôles (OIPM) pour l'année " + annee + " est terminée.", rapport);
+		audit.success("La production des rôles (OIPM) pour l'année " + annee + " est terminée.", rapport);
 	}
 }

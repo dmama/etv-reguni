@@ -7,7 +7,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ListeEchangeRenseignementsRapport;
@@ -97,7 +96,7 @@ public class ListeEchangeRenseignementsJob extends JobDefinition {
 		final ListeEchangeRenseignementsRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
-		Audit.success("La production de la liste pour l'échanche automatique de renseignements (EAR) " + pf + " est terminée.", rapport);
+		audit.success("La production de la liste pour l'échanche automatique de renseignements (EAR) " + pf + " est terminée.", rapport);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

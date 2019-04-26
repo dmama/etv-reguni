@@ -8,7 +8,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.StatistiquesEvenementsRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -23,10 +22,6 @@ import ch.vd.unireg.scheduler.JobParamInteger;
  */
 public class StatistiquesEvenementsJob extends JobDefinition {
 
-	private StatistiquesEvenementsService service;
-	private RapportService rapportService;
-	private PlatformTransactionManager transactionManager;
-
 	public static final String NAME = "StatistiquesEvenementsJob";
 
 	private static final String EVTS_CIVILS = "EVTS_CIVILS";
@@ -35,6 +30,10 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	private static final String EVTS_IDENT_CTB = "EVTS_IDENT_CTB";
 	private static final String EVTS_NOTAIRES = "EVTS_NOTAIRES";
 	private static final String DUREE_REFERENCE = "DUREE";
+
+	private StatistiquesEvenementsService service;
+	private RapportService rapportService;
+	private PlatformTransactionManager transactionManager;
 
 	public StatistiquesEvenementsJob(int sortOrder, String description) {
 		super(NAME, JobCategory.STATS, sortOrder, description);
@@ -136,7 +135,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des statistiques des événements reçus en date du " + RegDate.get() + " est terminée.", rapport);
+		audit.success("La production des statistiques des événements reçus en date du " + RegDate.get() + " est terminée.", rapport);
 	}
 
 	@Override

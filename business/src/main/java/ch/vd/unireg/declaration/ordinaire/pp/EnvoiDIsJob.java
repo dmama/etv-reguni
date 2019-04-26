@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.EnvoiDIsPPRapport;
@@ -23,9 +22,6 @@ import ch.vd.unireg.scheduler.JobParamLong;
  */
 public class EnvoiDIsJob extends JobDefinition {
 
-	private DeclarationImpotService service;
-	private RapportService rapportService;
-
 	public static final String NAME = "EnvoiDIsEnMasseJob";
 
 	public static final String PERIODE_FISCALE = "PERIODE";
@@ -35,6 +31,9 @@ public class EnvoiDIsJob extends JobDefinition {
 	public static final String CTB_NO_MIN = "CTB_NO_MIN";
 	public static final String CTB_NO_MAX = "CTB_NO_MAX";
 	public static final String NB_THREADS = "NB_THREADS";
+
+	private DeclarationImpotService service;
+	private RapportService rapportService;
 
 	public EnvoiDIsJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI_PP, sortOrder, description);
@@ -152,6 +151,6 @@ public class EnvoiDIsJob extends JobDefinition {
 			builder.append(" avec exclusion des décédés de fin d'année");
 		}
 		builder.append(" est terminé.");
-		Audit.success(builder.toString(), rapport);
+		audit.success(builder.toString(), rapport);
 	}
 }

@@ -64,7 +64,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 
 		processor = new EnvoiDeclarationsPMProcessor(hibernateTemplate, periodeDAO, diService, assujettissementService,
-		                                             TAILLE_LOT, transactionManager, parametreAppService, ticketService);
+		                                             TAILLE_LOT, transactionManager, parametreAppService, ticketService, audit);
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");

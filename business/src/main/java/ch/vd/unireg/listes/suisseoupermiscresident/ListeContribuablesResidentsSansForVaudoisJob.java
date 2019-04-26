@@ -8,7 +8,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.unireg.listes.ListesTiersService;
@@ -25,13 +24,10 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition {
 
 	public static final String NAME = "ListeCtbsResidentsSansForVdJob";
-
 	public static final String I_NB_THREADS = "nbThreads";
 
 	private RapportService rapportService;
-
 	private PlatformTransactionManager transactionManager;
-
 	private ListesTiersService service;
 
 	public ListeContribuablesResidentsSansForVaudoisJob(int order, String description) {
@@ -82,7 +78,7 @@ public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition 
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des listes des contribuables suisses ou permis C avec adresse principale sur le canton mais sans for vaudois en date du " + dateTraitement + " est terminée.", rapport);
+		audit.success("La production des listes des contribuables suisses ou permis C avec adresse principale sur le canton mais sans for vaudois en date du " + dateTraitement + " est terminée.", rapport);
 	}
 
 	@Override

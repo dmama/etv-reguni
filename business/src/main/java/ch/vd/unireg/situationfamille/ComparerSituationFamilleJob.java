@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ComparerSituationFamilleRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -15,13 +14,11 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 
 public class ComparerSituationFamilleJob extends JobDefinition {
 
-	private SituationFamilleService situationFamilleService;
-	private RapportService rapportService;
-
 	public static final String NAME = "ComparerSituationFamilleJob";
-
 	public static final String NB_THREADS = "NB_THREADS";
 
+	private SituationFamilleService situationFamilleService;
+	private RapportService rapportService;
 
 	public ComparerSituationFamilleJob(int sortOrder, String description) {
 		super(NAME, JobCategory.TIERS, sortOrder, description);
@@ -54,7 +51,7 @@ public class ComparerSituationFamilleJob extends JobDefinition {
 		final ComparerSituationFamilleRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La comparaison des situations de famille à la date du "
+		audit.success("La comparaison des situations de famille à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 

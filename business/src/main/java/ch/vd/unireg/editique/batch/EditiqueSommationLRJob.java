@@ -3,7 +3,6 @@ package ch.vd.unireg.editique.batch;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.unireg.declaration.source.ListeRecapService;
@@ -20,11 +19,9 @@ public class EditiqueSommationLRJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueSommationLRJob";
 	private static final String FIN_PERIODE = "FIN_PERIODE";
-
 	public static final String CATEGORIE_DEB = "CATEGORIE_DEB";
 
 	private ListeRecapService listeRecapService;
-
 	private RapportService rapportService;
 
 	public EditiqueSommationLRJob(int sortOrder) {
@@ -71,14 +68,14 @@ public class EditiqueSommationLRJob extends JobDefinition {
 		// Sommation des LRs
 		final EnvoiSommationLRsResults results = listeRecapService.sommerAllLR(categorie, dateFinPeriode, dateTraitement, status);
 		if (results == null) {
-			Audit.error("L'envoi en masse des sommations de LRs  a échoué");
+			audit.error("L'envoi en masse des sommations de LRs  a échoué");
 			return;
 		}
 
 		// Génération du rapport
 		final EnvoiSommationLRsRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
-		Audit.success("L'envoi en masse des sommations LRs est terminé.", rapport);
+		audit.success("L'envoi en masse des sommations LRs est terminé.", rapport);
 	}
 
 	private RegDate endOfMonth(RegDate date) {
@@ -93,5 +90,4 @@ public class EditiqueSommationLRJob extends JobDefinition {
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
 	}
-
 }

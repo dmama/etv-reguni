@@ -19,6 +19,7 @@
 		<property name="processingMode" value="BATCH"/>
 		<property name="recuperateur" ref="evtCivilEchRecuperateur"/>
 		<property name="delaiRecuperationMinutes" value="${extprop.evtCivil.rethrowDelayOnStartup}"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtCivilEchRecuperateur" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchRecuperateurImpl">
@@ -39,6 +40,7 @@
 
 	<bean id="evtCivilEchIndividuelEsbHandler" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
 		<property name="processingMode" value="MANUAL"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<!-- Parties communes -->
@@ -74,6 +76,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
         <property name="evtCivilService" ref="evtCivilEchService" />
 		<property name="statsService" ref="statsService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtCivilEchProcessor" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchProcessorImpl">
@@ -87,6 +90,7 @@
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="mainInterceptor" ref="modificationInterceptor"/>
 		<property name="parentesSynchronizerInterceptor" ref="parentesSynchronizerInterceptor"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 	
 	<bean id="evtCivilEchProcessorRetry" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">

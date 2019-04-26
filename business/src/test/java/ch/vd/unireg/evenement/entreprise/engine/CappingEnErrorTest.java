@@ -109,6 +109,7 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.setCappingLevelProvider(() -> NiveauCappingEtat.EN_ERREUR);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 		buildProcessor(translator);
 

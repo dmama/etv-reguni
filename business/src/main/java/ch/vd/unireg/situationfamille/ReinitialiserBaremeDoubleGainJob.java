@@ -3,7 +3,7 @@ package ch.vd.unireg.situationfamille;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -23,6 +23,7 @@ public class ReinitialiserBaremeDoubleGainJob extends JobDefinition {
 
 	private SituationFamilleService service;
 	private RapportService rapportService;
+	private AuditManager audit;
 
 	public ReinitialiserBaremeDoubleGainJob(int sortOrder, String description) {
 		super(NAME, JobCategory.LR, sortOrder, description);
@@ -51,7 +52,7 @@ public class ReinitialiserBaremeDoubleGainJob extends JobDefinition {
 		final ReinitialiserBaremeDoubleGainRapport rapport = rapportService.generateRapport(results, statusManager);
 
 		setLastRunReport(rapport);
-		Audit.success("La réinitialisation des barèmes double-gain est terminée.", rapport);
+		audit.success("La réinitialisation des barèmes double-gain est terminée.", rapport);
 	}
 
 	public void setSituationFamilleService(SituationFamilleService service) {
@@ -60,5 +61,9 @@ public class ReinitialiserBaremeDoubleGainJob extends JobDefinition {
 
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
+	}
+
+	public void setService(SituationFamilleService service) {
+		this.service = service;
 	}
 }

@@ -69,6 +69,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		proc.setDataEventService(dataEventService);
 		proc.setMainInterceptor(mainInterceptor);
 		proc.setParentesSynchronizerInterceptor(parentesSynchronizer);
+		proc.setAudit(audit);
 		if (restart && processor != null) {
 			processor.stop();
 		}
@@ -95,6 +96,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		translator.setTiersDAO(tiersDAO);
 		translator.setTiersService(tiersService);
 		translator.setParameters(getBean(EvenementCivilEchStrategyParameters.class, "evenementCivilEchStrategyParameters"));
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 		callback.overrideStrategies(translator);
 		buildProcessor(translator, restart);

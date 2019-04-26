@@ -4,10 +4,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -15,6 +11,9 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -88,7 +87,7 @@ public class DepartSecondaire extends Depart {
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		super.validateSpecific(erreurs, warnings);
 
-		Audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
+		context.audit.info(getNumeroEvenement(), "Validation du départ de résidence secondaire");
 		validateAbsenceForPrincipalPourDepartVaudois(erreurs);
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
 	}
@@ -102,7 +101,7 @@ public class DepartSecondaire extends Depart {
 
 	@Override
 	protected RegDate doHandleFermetureFors(EvenementCivilWarningCollector warnings, PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
-		Audit.info(getNumeroEvenement(), "Traitement du départ secondaire");
+		context.audit.info(getNumeroEvenement(), "Traitement du départ secondaire");
 		handleDepartResidenceSecondaire(pp, ctb, dateFermeture, motifFermeture);
 		return dateFermeture;
 	}

@@ -7,7 +7,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.RolesCommunesPPRapport;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -20,7 +19,6 @@ import ch.vd.unireg.scheduler.JobParamCommune;
 public class ProduireRolesPPCommunesJob extends AbstractProduireRolesJob {
 
 	public static final String NAME = "ProduireRolesPPCommuneJob";
-
 	public static final String NO_OFS_COMMUNE = "NO_OFS_COMMUNE";
 
 	public ProduireRolesPPCommunesJob(int sortOrder, String description) {
@@ -67,6 +65,6 @@ public class ProduireRolesPPCommunesJob extends AbstractProduireRolesJob {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des rôles PP (communes) pour l'année " + annee + " est terminée.", rapport);
+		audit.success("La production des rôles PP (communes) pour l'année " + annee + " est terminée.", rapport);
 	}
 }

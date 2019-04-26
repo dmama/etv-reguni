@@ -1,6 +1,5 @@
 package ch.vd.unireg.evenement.entreprise.interne.information;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -45,64 +44,64 @@ public class FailliteConcordatStrategy extends AbstractEntrepriseStrategy {
 		TypeEvenementEntreprise evtType = event.getType();
 		switch (evtType) {
 		case FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.AVIS_PREALABLE_OUVERTURE_FAILLITE);
 		case FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
 			return new InformationComplementaireAVerifier(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS);
 		case FOSC_SUSPENSION_FAILLITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
 			return new InformationComplementaireAVerifier(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.SUSPENSION_FAILLITE);
 		case FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.ETAT_COLLOCATION_INVENTAIRE_FAILLITE);
 		case FOSC_CLOTURE_DE_LA_FAILLITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
 			return new InformationComplementaireAVerifier(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.CLOTURE_FAILLITE);
 		case FOSC_REVOCATION_DE_LA_FAILLITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
 			return new InformationComplementaireAVerifier(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.REVOCATION_FAILLITE);
 		case FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE);
 		case FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.SURSIS_CONCORDATAIRE_PROVISOIRE);
 		case FOSC_SURSIS_CONCORDATAIRE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.SURSIS_CONCORDATAIRE);
 		case FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.APPEL_CREANCIERS_CONCORDAT);
 		case FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.AUDIENCE_LIQUIDATION_ABANDON_ACTIF);
 		case FOSC_PROLONGATION_SURSIS_CONCORDATAIRE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.PROLONGATION_SURSIS_CONCORDATAIRE);
 		case FOSC_ANNULATION_SURSIS_CONCORDATAIRE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.ANNULATION_SURSIS_CONCORDATAIRE);
 		case FOSC_HOMOLOGATION_DU_CONCORDAT:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.HOMOLOGATION_CONCORDAT);
 		case FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF);
 		case FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT);
 		case FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.CONCORDAT_BANQUE_CAISSE_EPARGNE);
 		case FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation.", evtType));
 			return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE);
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Propagation + à vérifier.", evtType));
 			return new InformationComplementaireAVerifier(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.APPEL_CREANCIERS_TRANSFERT_HS);
 		default:
-			Audit.info(event.getId(), String.format("Evénement de type [%s] -> Pas de propagation.", evtType));
+			context.audit.info(event.getId(), String.format("Evénement de type [%s] -> Pas de propagation.", evtType));
 			return null;
 		}
 	}

@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.entreprise.interne.adresse;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -70,7 +69,7 @@ public class AdresseStrategy extends AbstractEntrepriseStrategy {
 				                                    nouvelleAdresseEffective != null ? "effective" : "",
 				                                    nouvelleAdresseEffective != null && nouvelleAdresseLegale != null ? " et d'adresse " : "",
 				                                    nouvelleAdresseLegale != null ? "légale" : "");
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return new Adresse(event, entrepriseCivile, entreprise, context, options, nouvelleAdresseEffective, nouvelleAdresseLegale);
 			}
 		}

@@ -2,7 +2,6 @@ package ch.vd.unireg.registrefoncier.importcleanup;
 
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.CleanupRFProcessorRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -42,7 +41,7 @@ public class CleanupImportRFJob extends JobDefinition {
 		final CleanupRFProcessorResults results = processor.cleanupImports(statusManager);
 		final CleanupRFProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le nettoyage des imports RF est terminé.", rapport);
+		audit.success("Le nettoyage des imports RF est terminé.", rapport);
 
 		statusManager.setMessage("Traitement terminé.");
 	}

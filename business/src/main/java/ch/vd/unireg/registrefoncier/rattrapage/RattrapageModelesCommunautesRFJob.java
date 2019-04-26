@@ -2,7 +2,6 @@ package ch.vd.unireg.registrefoncier.rattrapage;
 
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.RattrapageModelesCommunautesRFProcessorRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -41,7 +40,7 @@ public class RattrapageModelesCommunautesRFJob extends JobDefinition {
 		final RattrapageModelesCommunautesRFProcessorResults results = processor.process(nbThreads, statusManager);
 		final RattrapageModelesCommunautesRFProcessorRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
-		Audit.success("Le rattrapage du regroupement des communautés RF est terminé.", rapport);
+		audit.success("Le rattrapage du regroupement des communautés RF est terminé.", rapport);
 	}
 
 	public void setProcessor(RattrapageModelesCommunautesRFProcessor processor) {

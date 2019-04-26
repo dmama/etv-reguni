@@ -10,7 +10,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.audit.AuditLineDAO;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
@@ -54,7 +53,7 @@ public class AuditLogPurgeJob extends JobDefinition {
 			throw new IllegalArgumentException("Le nombre de jours à conserver doit être d'au moins " + MIN_DAYS_ALLOWED);
 		}
 		final RegDate seuilPurge = RegDate.get().addDays(- delaiPurge);
-		Audit.info(String.format("Purge des lignes d'audit plus vieilles que %d jour(s) - %s.", delaiPurge, RegDateHelper.dateToDisplayString(seuilPurge)));
+		audit.info(String.format("Purge des lignes d'audit plus vieilles que %d jour(s) - %s.", delaiPurge, RegDateHelper.dateToDisplayString(seuilPurge)));
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
@@ -65,6 +64,6 @@ public class AuditLogPurgeJob extends JobDefinition {
 				return auditLineDao.purge(seuilPurge);
 			}
 		});
-		Audit.info(String.format("Purge de l'audit terminée : %d ligne(s) effacée(s)", nbPurged));
+		audit.info(String.format("Purge de l'audit terminée : %d ligne(s) effacée(s)", nbPurged));
 	}
 }

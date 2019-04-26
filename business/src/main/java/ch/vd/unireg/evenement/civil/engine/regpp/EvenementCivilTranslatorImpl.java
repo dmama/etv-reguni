@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
@@ -147,6 +148,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
 	private ParametreAppService parametreAppService;
+	private AuditManager audit;
 
 	private EvenementCivilContext context;
 
@@ -161,7 +163,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -207,7 +209,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 		this.parametreAppService = parametreAppService;
 	}
 
-	public void setContext(EvenementCivilContext context) {
-		this.context = context;
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

@@ -4,10 +4,6 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
@@ -18,6 +14,9 @@ import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilTranslationStrate
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 
 /**
@@ -35,7 +34,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 
 			if (communes.avant == null || communes.apres == null) {
 				final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
-				Audit.warn(event.getId(), message);
+				context.audit.warn(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new Demenagement(event, context, options);
 			}
@@ -43,7 +42,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
 				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point de vue fiscal.",
 						communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new ArriveePrincipale(event, context, options);
 			}
@@ -76,7 +75,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 
 			if (communes.avant == null || communes.apres == null) {
 				final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
-				Audit.warn(event.getId(), message);
+				context.audit.warn(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new Demenagement(event, context, options);
 			}
@@ -100,7 +99,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 					                                                communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel(), event.getDateEvenement().year()));
 				}
 
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new ArriveePrincipale(event, context, options);
 			}

@@ -12,13 +12,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -29,6 +22,12 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -82,7 +81,7 @@ public class CorrectionRelation extends EvenementCivilInterne {
 
 		final boolean hasDifference = RelationConjoint.hasDifference(fisc, civ);
 		if (hasDifference) {
-			Audit.error(getNumeroEvenement(),
+			context.audit.error(getNumeroEvenement(),
 			            String.format("Conjoints différents : fiscal = {%s}, civil = {%s}",
 			                          CollectionsUtils.toString(fisc, REL_CNJNT_RENDERER, ", "),
 			                          CollectionsUtils.toString(civ, REL_CNJNT_RENDERER, ", ")));

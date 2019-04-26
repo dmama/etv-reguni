@@ -14,7 +14,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -41,6 +41,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 	private SessionFactory sessionFactory;
 	private DelaiAutreDocumentFiscalDAO delaiAutreDocumentFiscalDAO;
 	private MessageHelper messageHelper;
+	private AuditManager audit;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -65,6 +66,10 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 
 	public void setDelaiAutreDocumentFiscalDAO(DelaiAutreDocumentFiscalDAO delaiDocumentFiscalDAO) {
 		this.delaiAutreDocumentFiscalDAO = delaiDocumentFiscalDAO;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -154,7 +159,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
 		                                             docView.getLibelleSousType(), FormatNumeroHelper.numeroCTBToDisplay(lettre.getTiers().getNumero()));
 
-		Audit.info(messageInfoImpression);
+		audit.info(messageInfoImpression);
 
 		return autreDocumentFiscalService.imprimeDuplicataLettreBienvenueOnline(lettre);
 	}
@@ -169,7 +174,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
 		                                             docView.getLibelleSousType(), FormatNumeroHelper.numeroCTBToDisplay(demande.getTiers().getNumero()));
 
-		Audit.info(messageInfoImpression);
+		audit.info(messageInfoImpression);
 
 		return autreDocumentFiscalService.imprimeDuplicataDemandeDegrevementOnline(demande);
 	}

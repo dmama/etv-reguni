@@ -18,7 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -44,9 +44,11 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	private static final int MAX_ROLES_PAR_FICHIER = 50000;
 
 	private final ServiceInfrastructureService infraService;
+	protected final AuditManager audit;
 
-	public PdfRolesRapport(ServiceInfrastructureService infraService) {
+	public PdfRolesRapport(ServiceInfrastructureService infraService, AuditManager audit) {
 		this.infraService = infraService;
+		this.audit = audit;
 	}
 
 	protected ServiceInfrastructureService getInfraService() {
@@ -140,7 +142,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 			final Commune commune = getCommune(noOfsCommune, RegDate.get(annee, 12, 31));
 
 			if (commune == null) {
-				Audit.error("Rôles: impossible de déterminer la commune avec le numéro Ofs = " + noOfsCommune);
+				audit.error("Rôles: impossible de déterminer la commune avec le numéro Ofs = " + noOfsCommune);
 				continue;
 			}
 			if (!Objects.equals(noOfsCommune, commune.getNoOFS())) {

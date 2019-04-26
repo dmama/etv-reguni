@@ -5,7 +5,7 @@ import java.util.Objects;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.entreprise.data.NumeroIDE;
@@ -21,6 +21,7 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 
 	private TiersService tiersService;
 	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
+	private AuditManager audit;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -28,6 +29,10 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 
 	public void setReferenceAnnonceIDEDAO(ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO) {
 		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -69,13 +74,13 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 			 */
 			if (etablissement.getNumero().equals(etablissementPrincipal.getNumero())) {
 				if (etablissementPrincipal.getNumeroEtablissement() == null) {
-					Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers établissement n°%s principal non encore apparié.",
+					audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers établissement n°%s principal non encore apparié.",
 					                                                 annonceIDE.getNoIde().getValeur(),
 					                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
 					tiersService.setIdentifiantEntreprise(etablissementPrincipal, annonceIDE.getNoIde().getValeur());
 				}
 				if (entreprise.getNumeroEntreprise() == null) {
-					Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers entreprise n°%s non encore apparié.",
+					audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers entreprise n°%s non encore apparié.",
 					                                                 annonceIDE.getNoIde().getValeur(),
 					                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 					tiersService.setIdentifiantEntreprise(entreprise, annonceIDE.getNoIde().getValeur());
@@ -95,27 +100,27 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 			final NumeroIDE noIdeRemplacant = annonceIDE.getNoIdeRemplacant();
 			/* Cas de dédoublonnage */
 			if (noIdeRemplacant != null) {
-				Audit.warn(annonceIDE.getNumero(),
+				audit.warn(annonceIDE.getNumero(),
 				           String.format("Refus de l'IDE pour cause de doublon: numéro IDE de remplacement %s. Vérifier si l'entreprise n°%s n'a pas été créé à double dans Unireg. ",
 				                         noIdeRemplacant.getValeur(),
 				                         FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 			}
 			/* Cas d'erreur */
 			else {
-				Audit.warn(annonceIDE.getNumero(), String.format("Refus de l'IDE pour cause d'erreur. L'inscription ou la modification de l'entreprise n°%s a été rejetée.",
+				audit.warn(annonceIDE.getNumero(), String.format("Refus de l'IDE pour cause d'erreur. L'inscription ou la modification de l'entreprise n°%s a été rejetée.",
 				                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 				           )
 				);
 			}
 		}
 		else if (statut == StatutAnnonce.REJET_RCENT) {
-			Audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'entreprise n°%s par RCEnt.",
+			audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'entreprise n°%s par RCEnt.",
 			                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 			           )
 			);
 		}
 		else {
-			Audit.warn(annonceIDE.getNumero(), String.format("L'annonce à l'IDE portant sur l'entreprise n°%s par RCEnt est passée à l'état %s. Aucune action à entreprendre.",
+			audit.warn(annonceIDE.getNumero(), String.format("L'annonce à l'IDE portant sur l'entreprise n°%s par RCEnt est passée à l'état %s. Aucune action à entreprendre.",
 			                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 			                                                 statut
 			           )

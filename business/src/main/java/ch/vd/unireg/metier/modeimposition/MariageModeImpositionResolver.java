@@ -4,7 +4,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -25,8 +25,8 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 
 	private final Long numeroEvenement;
 
-	public MariageModeImpositionResolver(TiersService tiersService, Long numeroEvenement) {
-		super(tiersService);
+	public MariageModeImpositionResolver(TiersService tiersService, Long numeroEvenement, AuditManager audit) {
+		super(tiersService, audit);
 		this.numeroEvenement = numeroEvenement;
 	}
 
@@ -59,7 +59,7 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 	}
 
 	private Imposition resolveSeul(PersonnePhysique principal, RegDate date) throws ModeImpositionResolverException {
-		Audit.info(numeroEvenement, "Mariage seul détecté");
+		audit.info(numeroEvenement, "Mariage seul détecté");
 		final ForFiscalPrincipalPP forFPPrincipal = principal.getForFiscalPrincipalAt(null);
 		/*
 		 * le contribuable est assujetti
@@ -129,7 +129,7 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 		}
 
 		if (principalSansFor.booleanValue() && conjointSansFor.booleanValue()) {
-			Audit.info(numeroEvenement, "les 2 maries ne sont pas assujetti : aucune action sur les fors");
+			audit.info(numeroEvenement, "les 2 maries ne sont pas assujetti : aucune action sur les fors");
 			return null;
 		}
 
@@ -170,7 +170,7 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 		}
 
 		final String logAudit = String.format("Le nouveau for fiscal principal pour le tiers ménage commun aura le role %s", modeImposition.texte());
-		Audit.info(numeroEvenement, logAudit);
+		audit.info(numeroEvenement, logAudit);
 		
 		return new Imposition(date, modeImposition);
 	}

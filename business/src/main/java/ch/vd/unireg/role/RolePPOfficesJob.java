@@ -2,7 +2,6 @@ package ch.vd.unireg.role;
 
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.RolePPOfficesRapport;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamOfficeImpot;
@@ -36,10 +35,10 @@ public class RolePPOfficesJob extends RoleJob {
 		setLastRunReport(rapport);
 
 		if (oid != null) {
-			Audit.success("Le rôle PP " + annee + " de l'OID " + oid + " est terminé.", rapport);
+			audit.success("Le rôle PP " + annee + " de l'OID " + oid + " est terminé.", rapport);
 		}
 		else {
-			Audit.success("Le rôle PP " + annee + " des OID vaudois est terminé.", rapport);
+			audit.success("Le rôle PP " + annee + " des OID vaudois est terminé.", rapport);
 		}
 	}
 

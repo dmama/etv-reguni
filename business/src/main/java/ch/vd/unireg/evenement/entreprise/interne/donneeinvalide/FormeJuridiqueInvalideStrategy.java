@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -53,7 +52,7 @@ public class FormeJuridiqueInvalideStrategy extends AbstractEntrepriseStrategy {
 
 		final FormeLegale formeLegale = entrepriseCivile.getFormeLegale(dateApres);
 		if (formeLegale == null) {
-			Audit.info(event.getId(), "La forme juridique (LegalForm) est absente des données civiles.");
+			context.audit.info(event.getId(), "La forme juridique (LegalForm) est absente des données civiles.");
 			return null;
 		}
 
@@ -70,7 +69,7 @@ public class FormeJuridiqueInvalideStrategy extends AbstractEntrepriseStrategy {
 				                        entrepriseCivile.getNom(dateApres),
 				                        FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
 			}
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 		}
 

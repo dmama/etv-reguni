@@ -96,6 +96,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 	}
 

@@ -28,7 +28,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.shared.validation.ValidationService;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
@@ -117,6 +117,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private BamMessageSender bamMessageSender;
 	private PeriodeImpositionService periodeImpositionService;
 	private DelaisService delaisService;
+	private AuditManager audit;
 
 
 	/**
@@ -380,7 +381,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (saveModele) {
 			messageInfoImpression = String.format("%s. Sauvegarde du nouveau type de document sur la DI", messageInfoImpression);
 		}
-		Audit.info(messageInfoImpression);
+		audit.info(messageInfoImpression);
 
 		return getPrinter(typeDocument).imprimeDuplicata(declaration, typeDocument, annexes);
 	}
@@ -837,6 +838,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	/**

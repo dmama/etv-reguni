@@ -17,7 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.StringsUtils;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StringRenderer;
@@ -126,6 +126,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 	private ParametreAppService parametreAppService;
 	private boolean useOrganisationsOfNotice;
 	private EvenementEntrepriseCappingLevelProvider cappingLevelProvider;
+	private AuditManager audit;
 
 	/*
 	 * Non injecté mais créé ci-dessous dans afterPropertiesSet()
@@ -146,7 +147,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		context = new EvenementEntrepriseContext(serviceEntreprise, evenementEntrepriseService, serviceInfrastructureService, regimeFiscalService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
-		                                         evenementFiscalService, assujettissementService, appariementService, parametreAppService);
+		                                         evenementFiscalService, assujettissementService, appariementService, parametreAppService, audit);
 
 		// Construction des stratégies
 		strategies = new ArrayList<>();
@@ -224,7 +225,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 		sanityCheck(event, entrepriseCivile);
 
 		final String entrepriseDescription = serviceEntreprise.createEntrepriseDescription(entrepriseCivile, event.getDateEvenement());
-		Audit.info(event.getNoEvenement(), String.format("Entreprise civile trouvée: %s", entrepriseDescription));
+		audit.info(event.getNoEvenement(), String.format("Entreprise civile trouvée: %s", entrepriseDescription));
 
 		final String raisonSocialeCivile = entrepriseCivile.getNom(event.getDateEvenement());
 		final String noIdeCivil = entrepriseCivile.getNumeroIDE(event.getDateEvenement());
@@ -278,7 +279,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 									              "provenir de cette annonce à l'IDE. C'est un bug du registre civil. Traitement manuel.",
 							              event.getNoEvenement(), noAnnonceIDE
 							);
-					Audit.error(event.getNoEvenement(), message);
+					audit.error(event.getNoEvenement(), message);
 					throw new EvenementEntrepriseException(message);
 				}
 			}
@@ -288,7 +289,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 								              "provenir de cette annonce à l'IDE. C'est un bug du registre civil. Traitement manuel.",
 						              event.getNoEvenement(), noAnnonceIDE
 						);
-				Audit.error(event.getNoEvenement(), message);
+				audit.error(event.getNoEvenement(), message);
 				throw new EvenementEntrepriseException(message);
 			}
 
@@ -303,7 +304,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 			                                     raisonSocialeCivile,
 			                                     noIdeCivil != null ? ", IDE: " + NO_IDE_RENDERER.toString(noIdeCivil) : StringUtils.EMPTY,
 			                                     entrepriseCivile.getNumeroEntreprise());
-			Audit.info(event.getNoEvenement(), message);
+			audit.info(event.getNoEvenement(), message);
 			evenements.add(new MessageSuiviPreExecution(event, entrepriseCivile, entreprise, context, options, message));
 
 		}
@@ -332,7 +333,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 					String message = String.format("Plusieurs entreprises ont été trouvées (numéros %s) pour les attributs civils [%s]. Arrêt du traitement.",
 					                               listeTrouves,
 					                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-					Audit.info(event.getNoEvenement(), message);
+					audit.info(event.getNoEvenement(), message);
 					return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 				}
 			}
@@ -340,7 +341,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 			catch (TooManyIdentificationPossibilitiesException e) {
 				String message = String.format("L'identification de l'entreprise civile a renvoyé un trop grand nombre de résultats pour les attributs civils [%s]! Arrêt du traitement.",
 				                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-				Audit.info(event.getNoEvenement(), message);
+				audit.info(event.getNoEvenement(), message);
 				return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 			}
 			// L'identification a retourné un tiers. Reste à savoir si c'est un candidat acceptable.
@@ -366,7 +367,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 						                        entrepriseCivileDejaAppariee == null ? "<introuvable au civil>" : attributsCivilsAffichage(entrepriseCivileDejaAppariee.getNom(event.getDateEvenement()), entrepriseCivileDejaAppariee.getNumeroIDE(event.getDateEvenement())));
 						return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 					}
-					Audit.info(event.getNoEvenement(), message);
+					audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuiviPreExecution(event, entrepriseCivile, entreprise, context, options, message));
 
 					if (checkFormesJuridiquesCompatibles(event, entrepriseCivile, entreprise)) {
@@ -402,7 +403,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 					                                     entrepriseCivile.getNumeroEntreprise(),
 					                                     FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
 					                                     tiers.getType().getDescription());
-							Audit.info(event.getNoEvenement(), message);
+							audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageWarningPreExectution(event, entrepriseCivile, null, context, options, message));
 				}
 			}
@@ -411,7 +412,7 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 				final String message = String.format("Aucune entreprise identifiée pour le numéro civil %d ou les attributs civils [%s].",
 				                                     entrepriseCivile.getNumeroEntreprise(),
 				                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-				Audit.info(event.getNoEvenement(), message);
+				audit.info(event.getNoEvenement(), message);
 				evenements.add(new MessageSuiviPreExecution(event, entrepriseCivile, null, context, options, message));
 			}
 		}
@@ -453,14 +454,14 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 
 		if (resultatEvaluationStrategies.size() == 0) {
 			// Pas de véritable traitement à exécuter. Indexation seulement. Le status sera TRAITE.
-			Audit.info(event.getId(), "Pas de changement détecté. L'entité sera simplement réindexée (si connue).");
+			audit.info(event.getId(), "Pas de changement détecté. L'entité sera simplement réindexée (si connue).");
 			evenements.add(new IndexationPure(event, entrepriseCivile, entreprise, context, options));
 
 		}
 		else {
 			// Il y a des traitements à exécuter. Indexation obligatoire pour toute entité connue d'Unireg. Le status sera laissé inchangé.
 			evenements.addAll(resultatEvaluationStrategies);
-			Audit.info(event.getId(), "L'entité sera (re)indexée.");
+			audit.info(event.getId(), "L'entité sera (re)indexée.");
 			evenements.add(new Indexation(event, entrepriseCivile, entreprise, context, options));
 		}
 
@@ -753,5 +754,9 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCappingLevelProvider(EvenementEntrepriseCappingLevelProvider cappingLevelProvider) {
 		this.cappingLevelProvider = cappingLevelProvider;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

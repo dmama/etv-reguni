@@ -25,7 +25,7 @@ import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
@@ -43,12 +43,10 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 	private static final Logger LOGGER = LoggerFactory.getLogger(NoticeReportEventJmsHandler.class);
 
 	private ReponseIDEProcessor reponseIDEProcessor;
-
 	private Schema schemaCache;
-
 	private JAXBContext jaxbContext;
-
 	private HibernateTemplate hibernateTemplate;
+	private AuditManager audit;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -62,6 +60,10 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -122,7 +124,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 					.map(NoticeRequestREEHeader::getNoticeRequestIdentification)
 					.map(NoticeRequestIdentification::getNoticeRequestId)
 					.orElse(null);
-			Audit.warn("Arrivée d'un événement d'annonce au REE (requestId=[" + requestId + "]). Le traitement des événements REE n'est pas implémenté, on l'ignore.");
+			audit.warn("Arrivée d'un événement d'annonce au REE (requestId=[" + requestId + "]). Le traitement des événements REE n'est pas implémenté, on l'ignore.");
 			return;
 		}
 
@@ -136,7 +138,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 		final String texteErreurs = annonce.getStatut().getTexteErreurs();
 
-		Audit.info(annonce.getNumero(),
+		audit.info(annonce.getNumero(),
 		           String.format("Arrivée de l'événement de rapport d'annonce à l'IDE %d (%s du %s), no IDE %s%s, statut %s le %s.%s",
 		                         annonce.getNumero(),
 		                         annonce.getType(),
@@ -153,7 +155,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 			reponseIDEProcessor.traiterReponseAnnonceIDE(annonce);
 		}
 		catch (RuntimeException | ReponseIDEProcessorException e) {
-			Audit.error(annonce.getNumero(), String.format("Erreur au cours du traitement de l'événement de rapport d'annonce à l'IDE %d:", annonce.getNumero()));
+			audit.error(annonce.getNumero(), String.format("Erreur au cours du traitement de l'événement de rapport d'annonce à l'IDE %d:", annonce.getNumero()));
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e); // On est conscient qu'on est au delà du simple xml invalide. TODO: Demander l'ajout d'un code spécifique?
 		}
 	}

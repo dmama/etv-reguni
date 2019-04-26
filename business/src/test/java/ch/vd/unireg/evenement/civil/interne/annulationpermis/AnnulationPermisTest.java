@@ -1,8 +1,14 @@
 package ch.vd.unireg.evenement.civil.interne.annulationpermis;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
@@ -12,10 +18,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
@@ -87,7 +89,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		}
 	});
 
-	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
+	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO, Mockito.mock(AuditManager.class));
 	final EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Override

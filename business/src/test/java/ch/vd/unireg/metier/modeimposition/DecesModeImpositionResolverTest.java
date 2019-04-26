@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieEtranger;
@@ -35,7 +35,7 @@ public class DecesModeImpositionResolverTest extends BusinessTest {
 		super.onSetUp();
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
-		resolver = new DecesModeImpositionResolver(tiersService, null);
+		resolver = new DecesModeImpositionResolver(tiersService, null, audit);
 	}
 
 	@Test

@@ -11,7 +11,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -86,7 +85,7 @@ public class RaisonSocialeStrategy extends AbstractEntrepriseStrategy {
 
 			}
 			if (!changementsRaison.isEmpty()) {
-				Audit.info(event.getId(), "Changement de raison sociale détecté.");
+				context.audit.info(event.getId(), "Changement de raison sociale détecté.");
 				return new RaisonSociale(event, entrepriseCivile, entreprise, context, options, changementsRaison);
 			}
 		}

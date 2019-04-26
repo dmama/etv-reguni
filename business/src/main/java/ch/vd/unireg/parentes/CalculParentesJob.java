@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.MultipleSwitch;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.Switchable;
@@ -84,6 +84,10 @@ public class CalculParentesJob extends JobDefinition {
 		this.interceptorSwitch = new MultipleSwitch(interceptors);
 	}
 
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final StatusManager statusManager = getStatusManager();
@@ -101,6 +105,6 @@ public class CalculParentesJob extends JobDefinition {
 			}
 		});
 		setLastRunReport(rapport);
-		Audit.success("La génération des données de parenté est terminée.", rapport);
+		audit.success("La génération des données de parenté est terminée.", rapport);
 	}
 }

@@ -31,7 +31,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -76,11 +76,12 @@ public class EnvoiDeclarationsPMProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final ParametreAppService parametres;
 	private final TicketService ticketService;
+	private final AuditManager audit;
 
 	public EnvoiDeclarationsPMProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, DeclarationImpotService declarationImpotService,
 	                                    AssujettissementService assujettissementService, int tailleLot,
 	                                    PlatformTransactionManager transactionManager, ParametreAppService parametres,
-	                                    TicketService ticketService) {
+	                                    TicketService ticketService, AuditManager audit) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.declarationImpotService = declarationImpotService;
@@ -89,6 +90,7 @@ public class EnvoiDeclarationsPMProcessor {
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.ticketService = ticketService;
+		this.audit = audit;
 	}
 
 	/**
@@ -233,12 +235,12 @@ public class EnvoiDeclarationsPMProcessor {
 						// cas de conflit
 						final String msg = String.format("La tâche d'envoi de déclaration PM %d %s est en conflit avec les déclarations existantes du contribuable %s. Aucune nouvelle déclaration n'est créée et la tâche reste en instance.",
 						                                 tache.getId(), DateRangeHelper.toDisplayString(tache), FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero()));
-						Audit.error(msg);
+						audit.error(msg);
 						rapport.addCollisionAvecDi(pm.getNumero(), msg);
 					}
 					else {
 						// en fait, la DI correspond tout pile à la tâche... on va juste marquer la tâche comme traitée
-						Audit.warn(String.format("Une déclaration correspond déjà à la tâche %d %s du contribuable %s. Aucune nouvelle déclaration n'est créée et la tâche est considérée comme traitée.",
+						audit.warn(String.format("Une déclaration correspond déjà à la tâche %d %s du contribuable %s. Aucune nouvelle déclaration n'est créée et la tâche est considérée comme traitée.",
 						                         tache.getId(), DateRangeHelper.toDisplayString(tache), FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero())));
 						tache.setEtat(TypeEtatTache.TRAITE);
 						rapport.addTacheIgnoreeDeclarationExistante(pm.getNumero(), tache.getDateDebut(), tache.getDateFin());

@@ -162,7 +162,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 */
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService,
 		                                          transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService,
-		                                          assujettissementService, ticketService, regimeFiscalService, demandeDelaisMandataireDAO);
+		                                          assujettissementService, ticketService, regimeFiscalService, demandeDelaisMandataireDAO, audit);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override

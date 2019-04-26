@@ -18,7 +18,7 @@ import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesFiscales;
 import ch.vd.unireg.adresse.AdressesFiscalesHisto;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StringRenderer;
@@ -66,6 +66,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
 	private ServiceEntreprise serviceEntreprise;
+	private AuditManager audit;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -89,6 +90,10 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
 		this.serviceEntreprise = serviceEntreprise;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -131,7 +136,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		}
 		catch (AdresseException e) {
 			final String message = "Problème rencontré lors de la recherche des adresses de l'entreprise.";
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message, e);
 		}
 
@@ -164,7 +169,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			catch (AnnonceIDEException e) {
 				final String message =
 						String.format("Erreur lors de l'émission de l'annonce à l'IDE de l'entreprise n°%s. %s", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), e.getMessage());
-				Audit.warn(message);
+				audit.warn(message);
 				throw new ServiceIDEException(message, e);
 			}
 		}
@@ -184,17 +189,17 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			throw new IllegalArgumentException("Impossible de synchroniser l'IDE sans une entreprise!");
 		}
 
-		Audit.info(String.format("Evaluation de l'entreprise n°%s dont les données civiles pertinentes ont changé.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
+		audit.info(String.format("Evaluation de l'entreprise n°%s dont les données civiles pertinentes ont changé.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 
 		if (!isServiceIDEObligEtendues(entreprise, date)) {
 			final String message = String.format("Unireg n'est pas responsable de l'entreprise n°%s. Pas d'annonce.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-			Audit.info(message);
+			audit.info(message);
 			return null;
 		}
 
 		if (entreprise.isIdeDesactive()) {
 			final String message = String.format("Annonces au registre IDE désactivées en base Unireg pour l'entreprise n°%s", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-			Audit.warn(message);
+			audit.warn(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -203,7 +208,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		if (etablissement == null) {
 			final String message = String.format("Aucun établissement trouvé pour l'entreprise n°%s en date d'aujourd'hui (%s)!",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), RegDateHelper.dateToDisplayString(date));
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -229,7 +234,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			                                     formeLegaleHisto != null ? "" : "[forme juridique]",
 			                                     adresseGenerique != null ? "" : "[adresse]"
 			);
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -240,7 +245,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		}
 		catch (AdresseException e) {
 			final String message = "Erreur lors de la récupération de l'adresse actuelle du tiers: " + e.getMessage();
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message, e);
 		}
 
@@ -250,7 +255,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				final String message = String.format("Entreprise n°%s: l'établissement civil apparié à l'établissement n°%s n'est pas un établissement principal.",
 				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 				                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()));
-				Audit.error(message);
+				audit.error(message);
 				throw new ServiceIDEException(message);
 			}
 		}
@@ -280,7 +285,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					                                     "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 			);
-			Audit.warn(message);
+			audit.warn(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -313,7 +318,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 						                                     numeroIDEFiscalEntreprise, numeroIDEEtablissement,
 						                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
 						);
-						Audit.error(message);
+						audit.error(message);
 						throw new ServiceIDEException(message);
 					}
 					noIde = numeroIDEEtablissement;
@@ -332,7 +337,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				case AUTRE:
 					final String messageAutre = String.format("L'entreprise n°%s a un statut inattendu au registre IDE: %s", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 					                                          statusRegistreIDE.toString());
-					Audit.error(messageAutre);
+					audit.error(messageAutre);
 					throw new ServiceIDEException(messageAutre);
 				case EN_MUTATION:
 				case EN_REACTIVATION:
@@ -352,11 +357,11 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				case DEFINITIVEMENT_RADIE:
 					final String messageDefRadie = String.format("L'entreprise n°%s est définitivement radiée du registre IDE et ne peut plus être modifiée.",
 					                                             FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-					Audit.error(messageDefRadie);
+					audit.error(messageDefRadie);
 					throw new ServiceIDEException(messageDefRadie);
 				default:
 					final String message = "Type de statut à l'IDE inconnu: " + statusRegistreIDE;
-					Audit.error(message);
+					audit.error(message);
 					throw new ServiceIDEException(message);
 				}
 
@@ -376,14 +381,14 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					if (derniereAnnonceEmise != null) {
 						final String message = String.format("L'entreprise n°%s a été annoncée au registre IDE mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.",
 						                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-						Audit.warn(message);
+						audit.warn(message);
 						throw new ServiceIDEException(
 								message);
 					}
 					else {
 						final String message = String.format("L'entreprise n°%s est connue par Unireg comme étant inscrite au registre IDE (n°%s), mais RCEnt ne possède pas ses données IDE. Impossible d'annoncer le tiers à l'IDE.",
 						                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), numeroIDEFiscalEntreprise);
-						Audit.error(message);
+						audit.error(message);
 						throw new ServiceIDEException(
 								message);
 					}
@@ -408,14 +413,14 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				if (derniereAnnonceEmise != null) {
 					final String message = String.format("L'entreprise n°%s non appariée a été annoncée au registre IDE mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-					Audit.warn(message);
+					audit.warn(message);
 					throw new ServiceIDEException(message);
 				}
 				else {
 					final String message = String.format(
 							"L'entreprise n°%s non appariée est connue par Unireg comme étant inscrite au registre IDE (n°%s). Elle doit d'abord être appariée à RCEnt avant de pouvoir annoncer les changements la concernant.",
 							FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), numeroIDEFiscalEntreprise);
-					Audit.error(message);
+					audit.error(message);
 					throw new ServiceIDEException(message);
 				}
 			}
@@ -435,7 +440,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			final String message = String.format("Entreprise n°%s: impossible de communiquer des changements à l'IDE car il manque le secteur d'activité.",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 			);
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -454,13 +459,13 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		 */
 		if (derniereAnnonceEmise != null && derniereAnnonceEmise.getType() == TypeAnnonce.CREATION && protoActuel.getType() == TypeAnnonce.CREATION) {
 			final String message = String.format("L'entreprise n°%s a déjà été annoncée à l'IDE en création.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-			Audit.warn(message);
+			audit.warn(message);
 			throw new ServiceIDEException(message);
 		}
 
 		if (derniereAnnonceEmise != null && derniereAnnonceEmise.getType() == TypeAnnonce.RADIATION && protoActuel.getType() == TypeAnnonce.RADIATION) {
 			final String message = String.format("L'entreprise n°%s a déjà été annoncée à l'IDE comme radiée.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -470,14 +475,14 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		if (typeAnnonce == TypeAnnonce.REACTIVATION) {
 			String message = String.format("L'entreprise n°%s doit être réactivée au registre IDE avant de pouvoir annoncer des modifications. La demande doit être adressée à l'IDE directement.",
 			                               FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
 		if (derniereAnnonceEmise != null &&
 				typeAnnonce == TypeAnnonce.MUTATION &&
 				protoActuel.getContenu() != null && protoActuel.getContenu().equals(derniereAnnonceEmise.getContenu())) {
-			Audit.info(String.format("L'entreprise n°%s a déjà été annoncée à l'IDE avec les mêmes données. Pas d'annonce.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
+			audit.info(String.format("L'entreprise n°%s a déjà été annoncée à l'IDE avec les mêmes données. Pas d'annonce.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 			return null;
 		}
 
@@ -494,11 +499,11 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					return paire.getFirst() + ": " + paire.getSecond();
 				}
 			}, "; "));
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
-		Audit.info(String.format("Annonce à l'IDE de l'entreprise (%s) n°%s %s, domiciliée à %s, type %s, %s.",
+		audit.info(String.format("Annonce à l'IDE de l'entreprise (%s) n°%s %s, domiciliée à %s, type %s, %s.",
 		                         protoActuel.getType().getLibelle(),
 		                         FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 		                         protoActuel.getContenu() == null ? "" : protoActuel.getContenu().getNom(),
@@ -534,12 +539,12 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			default:
 				final String message = String.format("Entreprise n°%s: statut d'annonce inattendu retourné par le service de validation du registre civil: %s",
 				                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), statut.getStatut());
-				Audit.error(message);
+				audit.error(message);
 				throw new ServiceIDEException(message);
 			}
 		} catch (ServiceEntrepriseException e) {
 			final String message = "Un problème est survenu lors de la validation du prototype de l'annonce: " + e.getMessage();
-			Audit.error(message);
+			audit.error(message);
 			throw new ServiceIDEException(message, e);
 		}
 	}
@@ -559,7 +564,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			return identificationsEntreprise.iterator().next().getNumeroIde();
 		} else {
 			final String message = String.format("Plusieurs numéros IDE trouvés sur l'établissement n°%s alors qu'il ne devrait y en avoir qu'un.", FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()));
-			Audit.info(message);
+			audit.info(message);
 			throw new ServiceIDEException(message);
 		}
 	}

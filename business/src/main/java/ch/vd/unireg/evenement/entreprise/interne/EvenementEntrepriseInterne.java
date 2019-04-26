@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.adresse.AdresseTiers;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.BouclementHelper;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -451,7 +450,7 @@ public abstract class EvenementEntrepriseInterne {
 	}
 
 	protected void programmeReindexation(Entreprise pm, EvenementEntrepriseSuiviCollector suivis) {
-		Audit.info(getNumeroEvenement(), String.format("Déclenchement de la réindexation pour l'entreprise n°%s.", FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero())));
+		context.audit.info(getNumeroEvenement(), String.format("Déclenchement de la réindexation pour l'entreprise n°%s.", FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero())));
 		context.getIndexer().schedule(pm.getNumero());
 	}
 

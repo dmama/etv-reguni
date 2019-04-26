@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.DeterminationDIsPMRapport;
@@ -84,7 +83,7 @@ public class DeterminerDIsPMJob extends JobDefinition {
 		final DeterminationDIsPMRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La détermination des DIs PM à envoyer pour l'année " + annee + " à la date du "
+		audit.success("La détermination des DIs PM à envoyer pour l'année " + annee + " à la date du "
 				              + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

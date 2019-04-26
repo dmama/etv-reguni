@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -15,14 +14,11 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 
 public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 
+	public static final String NAME = "ComparerForFiscalEtCommuneJob";
+	public static final String NB_THREADS = "NB_THREADS";
 
 	private MetierService metierService;
 	private RapportService rapportService;
-
-	public static final String NAME = "ComparerForFiscalEtCommuneJob";
-
-	public static final String NB_THREADS = "NB_THREADS";
-
 
 	public ComparerForFiscalEtCommuneJob(int sortOrder, String description) {
 		super(NAME, JobCategory.FORS, sortOrder, description);
@@ -62,7 +58,7 @@ public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 		final ComparerForFiscalEtCommuneResults results = metierService.comparerForFiscalEtCommune(dateTraitement, nbThreads, status);
 		final ComparerForFiscalEtCommuneRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
-		Audit.success("La comparaison de la commune du for et de la commune de l'adresse pour un contribuable à la date du "
+		audit.success("La comparaison de la commune du for et de la commune de l'adresse pour un contribuable à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 

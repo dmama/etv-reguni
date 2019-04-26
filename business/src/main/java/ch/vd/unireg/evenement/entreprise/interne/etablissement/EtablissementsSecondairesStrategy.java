@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -58,7 +57,7 @@ public class EtablissementsSecondairesStrategy extends AbstractEntrepriseStrateg
 
 		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivile.getEtablissementPrincipal(dateAvant);
 		if (etablissementPrincipalAvantRange == null) {
-			Audit.info("EntrepriseCivile nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changé.");
+			context.audit.info("EntrepriseCivile nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changé.");
 			// FIXME: Cela pose la question de savoir si on ne devrait pas utiliser Unireg comme "avant" dans ces cas là?
 			return new MessageWarningPreExectution(event, entrepriseCivile, null, context, options,
 			                                       String.format("L'entreprise civile n°%d est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du registre " +
@@ -77,14 +76,14 @@ public class EtablissementsSecondairesStrategy extends AbstractEntrepriseStrateg
 				if (!etablissementsAFermer.isEmpty() || !etablissementsACreer.isEmpty() || !demenagements.isEmpty()) {
 					final String message = String.format("Modification des établissements secondaires de l'entreprise %s (civil: %d).",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entrepriseCivile.getNumeroEntreprise());
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new EtablissementsSecondaires(event, entrepriseCivile, entreprise, context, options, etablissementsAFermer, etablissementsACreer, demenagements);
 				}
 			}
 			catch (EvenementEntrepriseException e) {
 				final String message = String.format("Erreur lors de la determination des changements de domicile des établissements secondaires de l'entreprise n°%s (civil: %d): %s",
 				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entrepriseCivile.getNumeroEntreprise(), e.getMessage());
-				Audit.error(event.getId(), message);
+				context.audit.error(event.getId(), message);
 				return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 			}
 		}

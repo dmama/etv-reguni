@@ -39,6 +39,7 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="delaiAutreDocumentFiscalDAO" ref="delaiAutreDocumentFiscalDAO"/>
 		<property name="messageHelper" ref="messageHelper"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 </beans>

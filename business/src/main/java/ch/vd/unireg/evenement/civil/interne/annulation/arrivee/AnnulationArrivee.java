@@ -5,8 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -17,6 +15,7 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -71,7 +70,7 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 			final Contribuable ctb = couple != null ? couple.getMenage() : pp;
 			final List<ForFiscal> fors = ctb.getForsFiscauxNonAnnules(false);
 			if (fors == null || fors.isEmpty()) {
-				Audit.info(getNumeroEvenement(), String.format("Aucun for non-annulé existant sur le contribuable %s (%s) : rien à faire",
+				context.audit.info(getNumeroEvenement(), String.format("Aucun for non-annulé existant sur le contribuable %s (%s) : rien à faire",
 						FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()),
 						couple != null ? "ménage de personnes physiques mineures" : "mineur"));
 				erreur = false;

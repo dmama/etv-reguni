@@ -17,7 +17,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.EvenementCivilHelper;
@@ -60,6 +60,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
+	private AuditManager audit;
 
 	private List<ErrorPostProcessingStrategy> postProcessingStrategies;
 
@@ -90,6 +91,10 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	/**
@@ -151,7 +156,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 					final EvenementEntreprise evt = fetchDatabaseEvent(info);
 					if (evt.getEtat().isTraite()) {
 						if (!force || info.getEtat() != EtatEvenementEntreprise.A_VERIFIER) {
-							Audit.info(evt.getId(), String.format("Evénement %s (rcent: %d) déjà dans l'état %s, on ne le re-traite pas", info.getId(), info.getNoEvenement(), evt.getEtat()));
+							audit.info(evt.getId(), String.format("Evénement %s (rcent: %d) déjà dans l'état %s, on ne le re-traite pas", info.getId(), info.getNoEvenement(), evt.getEtat()));
 							return Boolean.TRUE;
 						}
 					}
@@ -168,14 +173,14 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		catch (EvenementEntrepriseWrappingException e) {
 			final String message = String.format("Exception reçue lors du traitement de l'événement %d (rcent: %d)", info.getId(), info.getNoEvenement());
 			LOGGER.error(message, e.getCause());
-			Audit.error(info.getId(), message + " : " + e.getCause().getMessage());
+			audit.error(info.getId(), message + " : " + e.getCause().getMessage());
 			onException(info, e.getCause(), force);
 			return false;
 		}
 		catch (Exception e) {
 			final String message = String.format("Exception reçue lors du traitement de l'événement %d (rcent: %d)", info.getId(), info.getNoEvenement());
 			LOGGER.error(message, e);
-			Audit.error(info.getId(), message + " : " + e.getMessage());
+			audit.error(info.getId(), message + " : " + e.getMessage());
 			onException(info, e, force);
 			return false;
 		}
@@ -315,7 +320,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 	 * @throws EvenementEntrepriseException en cas de problème métier
 	 */
 	private boolean processEvent(final EvenementEntreprise event, final boolean force) throws EvenementEntrepriseException {
-		Audit.info(event.getNoEvenement(), String.format("Début du traitement de l'événement entreprise %s, type %s.",
+		audit.info(event.getNoEvenement(), String.format("Début du traitement de l'événement entreprise %s, type %s.",
 		                                        event.toString(), event.getType()));
 
 		// élimination des erreurs et du commentaire de traitement en cas de retraitement
@@ -382,13 +387,13 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		for (EvenementEntrepriseErreur e : entrees) {
 			switch (e.getType()) {
 			case ERROR:
-				Audit.error(event.getNoEvenement(), e.getMessage());
+				audit.error(event.getNoEvenement(), e.getMessage());
 				break;
 			case WARNING:
-				Audit.warn(event.getNoEvenement(), e.getMessage());
+				audit.warn(event.getNoEvenement(), e.getMessage());
 				break;
 			case SUIVI:
-				Audit.info(event.getNoEvenement(), e.getMessage());
+				audit.info(event.getNoEvenement(), e.getMessage());
 				break;
 			default:
 				throw new IllegalArgumentException(String.format("Type d'erreur inconnu: %s", e.getType()));
@@ -396,18 +401,18 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		}
 	}
 
-	private static void assignerEtatApresTraitement(EtatEvenementEntreprise etat, EvenementEntreprise event) {
+	private void assignerEtatApresTraitement(EtatEvenementEntreprise etat, EvenementEntreprise event) {
 		event.setEtat(etat);
 
 		final String messageAudit = String.format("Statut de l'événement passé à '%s'", etat);
 		if (etat == EtatEvenementEntreprise.EN_ERREUR) {
-			Audit.error(event.getNoEvenement(), messageAudit);
+			audit.error(event.getNoEvenement(), messageAudit);
 		}
 		else if (etat == EtatEvenementEntreprise.A_VERIFIER) {
-			Audit.warn(event.getNoEvenement(), messageAudit);
+			audit.warn(event.getNoEvenement(), messageAudit);
 		}
 		else {
-			Audit.success(event.getNoEvenement(), messageAudit);
+			audit.success(event.getNoEvenement(), messageAudit);
 		}
 	}
 
@@ -419,7 +424,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 		// Translate event
 		final EvenementEntrepriseInterne evtInterne = buildInterne(event);
 		if (evtInterne == null) {
-			Audit.error(event.getId(), String.format("Aucun code de traitement trouvé pour l'événement %s", event.toString()));
+			audit.error(event.getId(), String.format("Aucun code de traitement trouvé pour l'événement %s", event.toString()));
 			erreurs.addErreur("Aucun code de traitement trouvé.");
 			return EtatEvenementEntreprise.EN_ERREUR;
 		}
@@ -458,6 +463,6 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		postProcessingStrategies = new ArrayList<>();
-		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtEntrepriseDAO));
+		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtEntrepriseDAO, audit));
 	}
 }

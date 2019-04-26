@@ -1,6 +1,7 @@
 package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
@@ -16,9 +17,9 @@ public class DecesModeImpositionResolver extends TerminaisonCoupleModeImposition
 
 	private final DivorceModeImpositionResolver resolver;
 
-	public DecesModeImpositionResolver(TiersService tiersService, Long numeroEvenement) {
-		super(tiersService);
-		resolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
+	public DecesModeImpositionResolver(TiersService tiersService, Long numeroEvenement, AuditManager audit) {
+		super(tiersService, audit);
+		resolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement, audit);
 	}
 
 	@Override

@@ -35,7 +35,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -135,6 +135,7 @@ public class TacheServiceImpl implements TacheService {
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
 	private AdresseService adresseService;
+	private AuditManager audit;
 
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<>();
 	private Map<TypeTache, List<String>> commentairesDistincts = new EnumMap<>(TypeTache.class);
@@ -175,6 +176,10 @@ public class TacheServiceImpl implements TacheService {
 
 	public void setQsncService(QuestionnaireSNCService qsncService) {
 		this.qsncService = qsncService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -697,7 +702,7 @@ public class TacheServiceImpl implements TacheService {
 					actions.addAll(determineSynchronizeActionsForDIs((Contribuable) tiers));
 				}
 				catch (AssujettissementException e) {
-					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
+					audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
 							           + " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
 							           + " aucune action n'est effectuée.");
 					LOGGER.warn(e.getMessage(), e);

@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -77,7 +76,7 @@ public class PassageNouveauxRentiersSourciersEnMixteJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("Le passage des nouveaux rentiers de sourcier à mixte 1 en date du "
+		audit.success("Le passage des nouveaux rentiers de sourcier à mixte 1 en date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

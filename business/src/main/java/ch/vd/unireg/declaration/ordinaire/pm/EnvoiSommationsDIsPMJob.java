@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.EnvoiSommationsDIsPMRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -17,7 +16,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class EnvoiSommationsDIsPMJob extends JobDefinition {
 
 	private static final String NAME = "EnvoiSommationsDIsPMJob";
-
 	private static final String PARAM_NB_MAX_SOMMATIONS = "NB_MAX_SOMMATIONS";
 
 	private DeclarationImpotService service;
@@ -65,6 +63,6 @@ public class EnvoiSommationsDIsPMJob extends JobDefinition {
 		final EnvoiSommationsDIsPMResults results = service.envoyerSommationsPM(dateTraitement, nbEnvoisMax, getStatusManager());
 		final EnvoiSommationsDIsPMRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success(String.format("L'envoi en masse des sommations DIs PM au %s est terminée.", RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
+		audit.success(String.format("L'envoi en masse des sommations DIs PM au %s est terminée.", RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
 	}
 }

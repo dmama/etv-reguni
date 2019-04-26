@@ -8,6 +8,7 @@
 		<property name="docService" ref="docService" />
 		<property name="dbService" ref="databaseService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="databasePreviewController" class="ch.vd.unireg.admin.DatabasePreviewController">
@@ -89,6 +90,7 @@
 		<property name="batchScheduler" ref="batchScheduler" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<!-- Gestion des documents -->
@@ -96,6 +98,7 @@
 		<property name="docService" ref="docService" />
 		<property name="servletService" ref="servletService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<!-- Gestion du recalcul des parentés -->

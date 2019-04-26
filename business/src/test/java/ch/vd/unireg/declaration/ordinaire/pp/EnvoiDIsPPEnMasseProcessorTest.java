@@ -112,7 +112,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
-		                                         diService, TAILLE_LOT, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService, ticketService);
+		                                           diService, TAILLE_LOT, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService, ticketService, audit);
 	}
 
 	@Test

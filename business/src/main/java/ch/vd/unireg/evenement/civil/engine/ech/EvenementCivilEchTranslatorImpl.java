@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
@@ -283,6 +284,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
 	private ParametreAppService parametreAppService;
+	private AuditManager audit;
 
 	private EvenementCivilContext context;
 	
@@ -331,7 +333,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 		strategies = buildStrategies(context, parameters);
 
 		// TODO [ech99] jde : à enlever dès que possible
@@ -391,5 +393,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

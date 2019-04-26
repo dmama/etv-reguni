@@ -22,6 +22,7 @@
 		<property name="evenementEntrepriseService" ref="evtEntrepriseService" />
 		<property name="appariementService" ref="appariementService" />
 		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 </beans>

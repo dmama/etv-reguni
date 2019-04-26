@@ -36,6 +36,7 @@
 		<property name="validator" ref="evtEntrepriseCriteriaValidator" />
 		<property name="manager" ref="evtEntrepriseManager" />
 		<property name="cappingLevelProvider" ref="evenementEntrepriseTraitementCapping"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtCivRegPPManager" class="ch.vd.unireg.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">

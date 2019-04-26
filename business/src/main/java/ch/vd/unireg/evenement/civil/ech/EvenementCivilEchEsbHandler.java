@@ -25,7 +25,7 @@ import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
@@ -53,6 +53,8 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
 	private Set<TypeEvenementCivilEch> eventTypesWithNullEventDateReplacement;
 	private EvenementCivilEchProcessingMode processingMode;
+	private AuditManager audit;
+
 	private boolean running;
 
 	/**
@@ -89,6 +91,10 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setProcessingMode(EvenementCivilEchProcessingMode processingMode) {
 		this.processingMode = processingMode;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -256,7 +262,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	}
 
 	protected void onIgnoredEvent(EvenementCivilEch evt) {
-		Audit.info(evt.getId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getId(), evt.getType(), evt.getAction()));
+		audit.info(evt.getId(), String.format("Evénement civil ignoré (id=%d, type=%s/%s)", evt.getId(), evt.getType(), evt.getAction()));
 	}
 
 	private boolean isIgnored(EvenementCivilEch event) {
@@ -265,7 +271,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 
 	private EvenementCivilEch saveIncomingEvent(EvenementCivilEch event) {
 		final Long id = event.getId();
-		Audit.info(id, String.format("Arrivée de l'événement civil %d (%s/%s au %s)", id, event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement())));
+		audit.info(id, String.format("Arrivée de l'événement civil %d (%s/%s au %s)", id, event.getType(), event.getAction(), RegDateHelper.dateToDisplayString(event.getDateEvenement())));
 		return receptionHandler.saveIncomingEvent(event);
 	}
 

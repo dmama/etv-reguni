@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.WebParamPagination;
@@ -64,6 +64,7 @@ public class EvenementEntrepriseController extends AbstractEvenementCivilControl
 	private EvenementEntrepriseManager manager;
 	private Validator validator;
 	private EvenementEntrepriseCappingLevelProvider cappingLevelProvider;
+	private AuditManager audit;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
@@ -83,6 +84,10 @@ public class EvenementEntrepriseController extends AbstractEvenementCivilControl
 	@SuppressWarnings("UnusedDeclaration")
 	public void setCappingLevelProvider(EvenementEntrepriseCappingSwitch cappingLevelProvider) {
 		this.cappingLevelProvider = cappingLevelProvider;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@InitBinder("evenementOrganisationCriteria")
@@ -281,7 +286,7 @@ public class EvenementEntrepriseController extends AbstractEvenementCivilControl
 			entreprise = manager.creerEntreprisePourEvenementEntreprise(id);
 		} catch (Exception e) {
 			errorMessage = e.getMessage();
-			Audit.error(id, e);
+			audit.error(id, e);
 		}
 
 		if (entreprise != null) {
@@ -303,7 +308,7 @@ public class EvenementEntrepriseController extends AbstractEvenementCivilControl
 			entreprise = manager.creerEntreprisePourEvenementEntreprise(id);
 		} catch (Exception e) {
 			errorMessage = e.getMessage();
-			Audit.error(id, e);
+			audit.error(id, e);
 		}
 		String message;
 		if (entreprise != null) {

@@ -17,11 +17,13 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="serviceEntreprise" ref="serviceEntreprise" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="reponseIDEProcessor" class="ch.vd.unireg.evenement.ide.ReponseIDEProcessorImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 </beans>

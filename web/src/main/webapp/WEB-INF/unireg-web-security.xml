@@ -125,6 +125,7 @@
 	<bean id="securityProviderImpl" class="ch.vd.unireg.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
 		<property name="securiteDossierService" ref="securiteDossierService" />
 		<property name="securiteService" ref="serviceSecuriteService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="securityProviderCache" class="ch.vd.unireg.security.SecurityProviderCache">

@@ -21,6 +21,7 @@
 			</set>
 		</property>
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtEntrepriseNotificationQueue" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseNotificationQueueImpl">
@@ -34,11 +35,13 @@
 		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="statsService" ref="statsService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtEntrepriseProcessor" class="ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorFacade">
 		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
 		<property name="internalProcessor" ref="evtEntrepriseProcessorInternal"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtEntrepriseProcessorInternal" class="ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorInternal">
@@ -48,6 +51,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
 		<property name="dataEventService" ref="dataEventService"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="evtEntrepriseProcessorRetry" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseRetryProcessorImpl">

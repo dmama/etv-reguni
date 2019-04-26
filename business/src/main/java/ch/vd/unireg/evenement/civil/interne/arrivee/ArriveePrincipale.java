@@ -14,7 +14,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.adresse.HistoriqueCommune;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FiscalDateHelper;
@@ -399,7 +398,7 @@ public class ArriveePrincipale extends Arrivee {
 
 		final RegDate dateRetraite = dateNaissance.addYears(ageRetraite);
 		if (dateRetraite.isBeforeOrEqual(dateArrivee)) {
-			Audit.info(getNumeroEvenement(), "Mode d'imposition mixte car âge de la retraite atteint.");
+			context.audit.info(getNumeroEvenement(), "Mode d'imposition mixte car âge de la retraite atteint.");
 			return ModeImposition.MIXTE_137_1;
 		}
 		else {
@@ -610,16 +609,16 @@ public class ArriveePrincipale extends Arrivee {
 					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
 				}
 				if (forFiscal == null) {
-					Audit.info(getNumeroEvenement(), "Création d'un for fiscal ordinaire avec mode d'imposition [" + determination.getModeImposition() + ']');
+					context.audit.info(getNumeroEvenement(), "Création d'un for fiscal ordinaire avec mode d'imposition [" + determination.getModeImposition() + ']');
 					openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
 				}
 				else if (determination.getRattrapageDepartHSInconnu() != null) {
-					Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
+					context.audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
 					openForFiscalPrincipalAvecRattrapage(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(),
 					                                     determination.getRattrapageDepartHSInconnu());
 				}
 				else {
-					Audit.info(getNumeroEvenement(), "Mise-à-jour du fors fiscal avec mode d'imposition [" + determination.getModeImposition() + ']');
+					context.audit.info(getNumeroEvenement(), "Mise-à-jour du fors fiscal avec mode d'imposition [" + determination.getModeImposition() + ']');
 					updateForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
 				}
 			}
@@ -787,16 +786,16 @@ public class ArriveePrincipale extends Arrivee {
 				warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
 			}
 			if (ffpMenage == null) {
-				Audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImpositionTheorique.getModeImposition() + ']');
+				context.audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImpositionTheorique.getModeImposition() + ']');
 				openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImpositionTheorique.getModeImposition());
 			}
 			else if (modeImpositionTheorique.getRattrapageDepartHSInconnu() != null) {
-				Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
+				context.audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
 				openForFiscalPrincipalAvecRattrapage(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, modeImpositionTheorique.getModeImposition(),
 				                                     modeImpositionTheorique.getRattrapageDepartHSInconnu());
 			}
 			else {
-				Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImpositionTheorique.getModeImposition() + ']');
+				context.audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImpositionTheorique.getModeImposition() + ']');
 				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImpositionTheorique.getModeImposition());
 			}
 		}

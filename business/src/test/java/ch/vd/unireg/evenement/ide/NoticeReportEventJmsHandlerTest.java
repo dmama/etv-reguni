@@ -2,9 +2,11 @@ package ch.vd.unireg.evenement.ide;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
@@ -35,6 +37,7 @@ public class NoticeReportEventJmsHandlerTest extends WithoutSpringTest {
 			public void flush() {
 			}
 		});
+		handler.setAudit(Mockito.mock(AuditManager.class));
 		handler.afterPropertiesSet();
 	}
 

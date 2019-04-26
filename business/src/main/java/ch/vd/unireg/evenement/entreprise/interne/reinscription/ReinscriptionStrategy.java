@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise.interne.reinscription;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -54,7 +53,7 @@ public class ReinscriptionStrategy extends AbstractEntrepriseStrategy {
 		if (etablissementPrincipalAvantRange == null) {
 			if (isExisting(entrepriseCivile, dateApres)) {
 				final String message = String.format("Etablissement civil principal introuvable sur entreprise civile n°%s en date du %s", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateAvant));
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 			}
 		} else {
@@ -72,7 +71,7 @@ public class ReinscriptionStrategy extends AbstractEntrepriseStrategy {
 				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 				                                     entrepriseCivile.getNumeroEntreprise(),
 				                                     dateRadiationRCApres != null ? " Cependant, l'ancienne date de radiation persiste dans RCEnt: " + RegDateHelper.dateToDisplayString(dateRadiationRCApres) + "." : "");
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return new Reinscription(event, entrepriseCivile, entreprise, context, options);
 			}
 		}

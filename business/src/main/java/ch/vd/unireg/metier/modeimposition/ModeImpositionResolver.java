@@ -1,6 +1,7 @@
 package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
 
@@ -40,9 +41,11 @@ public abstract class ModeImpositionResolver {
 	}
 
 	private final TiersService tiersService;
+	protected final AuditManager audit;
 
-	public ModeImpositionResolver(TiersService tiersService) {
+	public ModeImpositionResolver(TiersService tiersService, AuditManager audit) {
 		this.tiersService = tiersService;
+		this.audit = audit;
 	}
 
 	protected TiersService getTiersService() {

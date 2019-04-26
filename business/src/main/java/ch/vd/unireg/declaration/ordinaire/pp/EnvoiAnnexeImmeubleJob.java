@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.EnvoiAnnexeImmeubleRapport;
@@ -31,9 +31,6 @@ import ch.vd.unireg.scheduler.JobParamInteger;
  */
 public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 
-	private DeclarationImpotService service;
-	private RapportService rapportService;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiAnnexeImmeubleJob.class);
 
 	public static final String NAME = "EnvoiAnnexeImmeubleJob";
@@ -41,6 +38,8 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String NB_MAX = "NB_MAX";
 
+	private DeclarationImpotService service;
+	private RapportService rapportService;
 
 	public EnvoiAnnexeImmeubleJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI_PP, sortOrder, description);
@@ -89,7 +88,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		// Récupération des paramètres
 		final int annee = getIntegerValue(params, PERIODE_FISCALE);
 		final byte[] listeCtb = getFileContent(params, LISTE_CTB);
-		final List<ContribuableAvecImmeuble> listeCtbAcvecImmeuble = extractCtbFromCSV(listeCtb, status);
+		final List<ContribuableAvecImmeuble> listeCtbAcvecImmeuble = extractCtbFromCSV(listeCtb, status, audit);
 		final int nbMax = getIntegerValue(params, NB_MAX);
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
 		final EnvoiAnnexeImmeubleResults results = service.envoyerAnnexeImmeubleEnMasse(annee, dateTraitement, listeCtbAcvecImmeuble, nbMax, status);
@@ -104,7 +103,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
 
 		builder.append(" est terminée.");
-		Audit.success(builder.toString(), rapport);
+		audit.success(builder.toString(), rapport);
 	}
 
 	/**
@@ -112,10 +111,11 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	 *
 	 * @param csv le contenu d'un fichier CSV
 	 * @param status status manager
+	 * @param audit
 	 * @return une liste de ctb possédant un  ou plusieurs immeuble
 	 * @throws java.io.UnsupportedEncodingException si l'encodage ISO-8859-1 n'est pas supporté par la JVM
 	 */
-	protected static List<ContribuableAvecImmeuble> extractCtbFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
+	protected static List<ContribuableAvecImmeuble> extractCtbFromCSV(byte[] csv, StatusManager status, AuditManager audit) throws UnsupportedEncodingException {
 
 		final List<ContribuableAvecImmeuble> listeCtb = new LinkedList<>();
 		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
@@ -147,7 +147,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 				}
 			}
 		}
-		Audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
+		audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
 
 		// tri dans l'ordre croissant des numéros de contribuables
 		listeCtb.sort(Comparator.comparing(ContribuableAvecImmeuble::getNumeroContribuable));

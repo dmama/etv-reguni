@@ -8,6 +8,7 @@ import java.util.Map;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -22,8 +23,8 @@ import ch.vd.unireg.role.before2016.ProduireRolesOIPMResults;
  */
 public class PdfRolesOIPMRapport extends PdfRolesRapport<ProduireRolesOIPMResults> {
 
-	public PdfRolesOIPMRapport(ServiceInfrastructureService infraService) {
-		super(infraService);
+	public PdfRolesOIPMRapport(ServiceInfrastructureService infraService, AuditManager audit) {
+		super(infraService, audit);
 	}
 
 	public void write(final ProduireRolesOIPMResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {

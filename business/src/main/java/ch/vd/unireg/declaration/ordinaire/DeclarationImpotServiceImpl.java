@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.StatusManager;
@@ -175,6 +176,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private PeriodeImpositionImpotSourceService piisService;
 	private RegimeFiscalService regimeFiscalService;
 	private DemandeDelaisMandataireDAO demandeDelaisMandataireDAO;
+	private AuditManager audit;
 
 	private Set<String> sourcesMonoQuittancement;
 
@@ -189,7 +191,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationPPSender evenementDeclarationPPSender, PeriodeImpositionService periodeImpositionService,
 	                                   AssujettissementService assujettissementService, TicketService ticketService, RegimeFiscalService regimeFiscalService,
-	                                   DemandeDelaisMandataireDAO demandeDelaisMandataireDAO) {
+	                                   DemandeDelaisMandataireDAO demandeDelaisMandataireDAO, AuditManager audit) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -209,6 +211,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.ticketService = ticketService;
 		this.regimeFiscalService = regimeFiscalService;
 		this.demandeDelaisMandataireDAO = demandeDelaisMandataireDAO;
+		this.audit = audit;
 		this.sourcesMonoQuittancement = Collections.emptySet();
 	}
 
@@ -316,6 +319,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.demandeDelaisMandataireDAO = demandeDelaisMandataireDAO;
 	}
 
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+
 	/**
 	 * Pour le testing uniquement
 	 */
@@ -344,7 +351,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                             int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
 		final EnvoiDIsPPEnMasseProcessor processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-		                                                                            delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
+		                                                                            delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService, audit);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 	}
 
@@ -387,7 +394,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
 		                                                                                            tacheDAO, tiersService, delaisService, this, transactionManager, parametres,
 		                                                                                            serviceCivilCacheWarmer, validationService, periodeImpositionService,
-		                                                                                            adresseService, ticketService);
+		                                                                                            adresseService, ticketService, audit);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -936,7 +943,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                             StatusManager statusManager) throws DeclarationException {
 		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(hibernateTemplate, periodeDAO,
 		                                                                                this, assujettissementService,
-		                                                                                tailleLot, transactionManager, parametres, ticketService);
+		                                                                                tailleLot, transactionManager, parametres, ticketService, audit);
 		return processor.run(periodeFiscale, categorieEnvoi, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
 	}
 

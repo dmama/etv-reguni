@@ -16,6 +16,7 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="ticketService" ref="ticketService"/>
 		<property name="messageHelper" ref="messageHelper"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="lrListManager" class="ch.vd.unireg.lr.manager.ListeRecapListManagerImpl">

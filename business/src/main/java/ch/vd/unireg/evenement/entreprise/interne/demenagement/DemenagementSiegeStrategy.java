@@ -9,10 +9,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -73,7 +71,7 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 		if (communeDeSiegeApres == null) {
 			final String message = String.format("Autorité fiscale (siège) introuvable l'entreprise civile n°%s %s. On est peut-être en présence d'un déménagement vers l'étranger.",
 			                                     entrepriseCivile.getNumeroEntreprise(), entrepriseCivile.getNom(dateApres));
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new TraitementManuel(event, entrepriseCivile, null, context, options,
 			                            message
 			);
@@ -83,7 +81,7 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 			if (isExisting(entrepriseCivile, dateApres)) {
 				final String message = String.format("Autorité fiscale (siège) introuvable l'entreprise civile n°%s %s. On est peut-être en présence d'un déménagement depuis l'étranger.",
 				                                     entrepriseCivile.getNumeroEntreprise(), entrepriseCivile.getNom(dateApres));
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 			}
 			else {
@@ -127,7 +125,7 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 					final String message = String.format("Données RCEnt insuffisantes pour déterminer la situation de l'entreprise (une seule photo) " +
 							                                     "alors qu'une entreprise est déjà présente dans Unireg depuis moins de %d jours. Entreprise créée à la main?",
 					                                     EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 				}
 
@@ -154,13 +152,13 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 						if (communeDeSiegeApres.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 							final String message = String.format("L'entreprise %s vaudoise est rattachée à une entreprise civile qui n'était pas connu de RCEnt avant aujourd'hui. RCEnt aurait du déjà la connaître." +
 									                                     "Possible erreur d'identification / rattachement? Veuillez traiter le cas à la main.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-							Audit.info(event.getId(), message);
+							context.audit.info(event.getId(), message);
 							return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 						}
 						else {
 							final String message = String.format("L'entreprise %s vaudoise est rattachée à une entreprise civile vaudoise nouvelle dans RCEnt. Il faut " +
 									                                     "craindre une erreur d'identification / rattachement. Veuillez traiter le cas à la main.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-							Audit.info(event.getId(), message);
+							context.audit.info(event.getId(), message);
 							return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 						}
 					}
@@ -172,23 +170,23 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 								final String message = String.format("L'entreprise %s vaudoise n'est pas rattachée à la bonne entreprise civile RCEnt. L'entreprise civile n°%d actuellement rattachée" +
 										                                     " est en cours de fondation et ne peut correspondre à l'entreprise %s. Une intervention est nécessaire.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 								                                     entrepriseCivile.getNumeroEntreprise(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-								Audit.info(event.getId(), message);
+								context.audit.info(event.getId(), message);
 								return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 							}
 							final String message = "Utilisation des données fiscales d'Unireg comme point de départ d'un éventuel déménagement.";
-							Audit.warn(message);
+							context.audit.warn(message);
 							messageWarning = new MessageWarning(event, entrepriseCivile, entreprise, context, options, message);
 						}
 						catch (EvenementEntrepriseException e) {
 							final String message = e.getMessage();
-							Audit.error(message);
+							context.audit.error(message);
 							return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 						}
 					}
 				}
 				catch (RangeUtil.RangeUtilException e) {
 					final String message = String.format("Problème pour déterminer le siège précédant de l'entreprise: %s", e.getMessage());
-					Audit.error(event.getId(), message);
+					context.audit.error(event.getId(), message);
 					return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 				}
 			}
@@ -201,25 +199,25 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 			return null;
 		}
 		else if (isDemenagementVD(communeDeSiegeAvant, communeDeSiegeApres)) {
-			Audit.info(event.getId(), String.format("Déménagement VD -> VD: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
+			context.audit.info(event.getId(), String.format("Déménagement VD -> VD: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
 			aRenvoyer = new DemenagementVD(event, entrepriseCivile, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isDemenagementHC(communeDeSiegeAvant, communeDeSiegeApres)) {
-			Audit.info(event.getId(), String.format("Déménagement HC -> HC: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
+			context.audit.info(event.getId(), String.format("Déménagement HC -> HC: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
 			aRenvoyer = new DemenagementHC(event, entrepriseCivile, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isDepart(communeDeSiegeAvant, communeDeSiegeApres)) {
-			Audit.info(event.getId(), String.format("Départ VD -> HC: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
+			context.audit.info(event.getId(), String.format("Départ VD -> HC: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
 			aRenvoyer = new DemenagementDepart(event, entrepriseCivile, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isArrivee(communeDeSiegeAvant, communeDeSiegeApres)) {
-			Audit.info(event.getId(), String.format("Arrivée HC -> VD: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
+			context.audit.info(event.getId(), String.format("Arrivée HC -> VD: commune %d vers commune %d.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale()));
 			aRenvoyer = new DemenagementArrivee(event, entrepriseCivile, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else {
 			final String message = String.format("Il existe manifestement un type de siège qu'Unireg ne sait pas traiter. Type avant: %s. Type après: %s. Impossible de continuer.",
 			                                     communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale());
-			Audit.error(event.getId(), message);
+			context.audit.error(event.getId(), message);
 			throw new EvenementEntrepriseException(message);
 		}
 

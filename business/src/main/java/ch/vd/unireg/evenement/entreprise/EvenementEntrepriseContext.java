@@ -1,6 +1,7 @@
 package ch.vd.unireg.evenement.entreprise;
 
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
@@ -30,10 +31,12 @@ public class EvenementEntrepriseContext {
 	private final AssujettissementService assujettissementService;
 	private final AppariementService appariementService;
 	private final ParametreAppService parametreAppService;
+	public final AuditManager audit;
 
-	public EvenementEntrepriseContext(ServiceEntreprise serviceEntreprise, ServiceInfrastructureService serviceInfra, RegimeFiscalService regimeFiscalService, TiersDAO tiersDAO) {
+	public EvenementEntrepriseContext(ServiceEntreprise serviceEntreprise, ServiceInfrastructureService serviceInfra, RegimeFiscalService regimeFiscalService, TiersDAO tiersDAO, AuditManager audit) {
 		this.serviceEntreprise = serviceEntreprise;
 		this.regimeFiscalService = regimeFiscalService;
+		this.audit = audit;
 		this.evenementEntrepriseService = null;
 		this.serviceInfra = serviceInfra;
 		this.tiersDAO = tiersDAO;
@@ -52,7 +55,7 @@ public class EvenementEntrepriseContext {
 	                                  RegimeFiscalService regimeFiscalService, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
 	                                  MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,
 	                                  AssujettissementService assujettissementService,
-	                                  AppariementService appariementService, ParametreAppService parametreAppService) {
+	                                  AppariementService appariementService, ParametreAppService parametreAppService, AuditManager audit) {
 		this.serviceEntreprise = serviceEntreprise;
 		this.evenementEntrepriseService = evenementEntrepriseService;
 		this.serviceInfra = serviceInfra;
@@ -67,6 +70,7 @@ public class EvenementEntrepriseContext {
 		this.assujettissementService = assujettissementService;
 		this.appariementService = appariementService;
 		this.parametreAppService = parametreAppService;
+		this.audit = audit;
 	}
 
 	public final ServiceEntreprise getServiceEntreprise() {

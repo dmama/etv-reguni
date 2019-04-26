@@ -13,7 +13,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.DatabaseDump;
 import ch.vd.unireg.document.DocumentService;
@@ -28,9 +27,7 @@ import ch.vd.unireg.tiers.TiersDAO;
 public class DumpDatabaseJob extends JobDefinition {
 
 	private static final SimpleDateFormat SCREEN_DATE_FORMAT = new SimpleDateFormat();
-
 	private static final SimpleDateFormat FILE_DATE_FORMAT = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
-
 	public static final String NAME = "DumpDatabaseJob";
 
 	private DatabaseService dbService;
@@ -99,7 +96,7 @@ public class DumpDatabaseJob extends JobDefinition {
 		});
 
 		setLastRunReport(doc);
-		Audit.success("La base de données a été exportée dans le fichier " + doc.getNom() + " (document #" + doc.getId() + ").", doc);
+		audit.success("La base de données a été exportée dans le fichier " + doc.getNom() + " (document #" + doc.getId() + ").", doc);
 	}
 
 	@Override

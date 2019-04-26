@@ -3,7 +3,6 @@ package ch.vd.unireg.documentfiscal;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.RappelLettresBienvenueRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -52,6 +51,6 @@ public class RappelLettresBienvenueJob extends JobDefinition {
 		final RappelLettresBienvenueResults results = service.envoyerRappelsLettresBienvenueEnMasse(dateTraitement, statusManager);
 		final RappelLettresBienvenueRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
-		Audit.success("L'envoi des rappels des lettres de bienvenue est terminé.");
+		audit.success("L'envoi des rappels des lettres de bienvenue est terminé.");
 	}
 }

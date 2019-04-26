@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -26,6 +26,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 
 	private SecuriteDossierService securiteDossierService;
 	private ServiceSecuriteService securiteService;
+	private AuditManager audit;
 	private boolean bypassUnitTest;
 
 	/**
@@ -88,6 +89,10 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 		this.securiteService = securiteService;
 	}
 
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		bypassUnitTest = SecurityDebugConfig.isSecurityBypassUnitTest();
@@ -100,7 +105,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 
 			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 			try {
-				Audit.warn("La sécurité est en mode 'test unitaire'.");
+				audit.warn("La sécurité est en mode 'test unitaire'.");
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();

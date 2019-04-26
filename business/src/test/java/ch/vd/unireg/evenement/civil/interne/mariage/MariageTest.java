@@ -1,8 +1,14 @@
 package ch.vd.unireg.evenement.civil.interne.mariage;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -10,10 +16,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
@@ -67,7 +69,7 @@ public class MariageTest extends WithoutSpringTest {
 
 	// Crée les données du mock service civil
 	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil());
-	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
+	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO, Mockito.mock(AuditManager.class));
 	private EvenementCivilOptions options = new EvenementCivilOptions(false);
 
 	@Test

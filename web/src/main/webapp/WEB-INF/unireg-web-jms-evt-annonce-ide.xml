@@ -21,6 +21,7 @@
 	<bean id="noticeReportEventJmsHandler" class="ch.vd.unireg.evenement.ide.NoticeReportEventJmsHandler">
 		<property name="reponseIDEProcessor" ref="reponseIDEProcessor" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 </beans>

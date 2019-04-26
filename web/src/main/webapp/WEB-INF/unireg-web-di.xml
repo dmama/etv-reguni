@@ -52,6 +52,7 @@
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="delaisService" ref="delaisService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<!-- Excercices commerciaux -->

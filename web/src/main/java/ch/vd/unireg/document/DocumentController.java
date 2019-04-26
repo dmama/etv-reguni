@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.HttpHelper;
@@ -29,6 +29,7 @@ public class DocumentController {
 	private DocumentService docService;
 	private ServletService servletService;
 	private SecurityProviderInterface securityProvider;
+	private AuditManager audit;
 
 	public void setDocService(DocumentService docService) {
 		this.docService = docService;
@@ -42,6 +43,10 @@ public class DocumentController {
 		this.securityProvider = securityProvider;
 	}
 
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+
 	@RequestMapping(value = "/download.do", method = RequestMethod.GET)
 	public String download(@RequestParam("id") long id, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -51,7 +56,7 @@ public class DocumentController {
 				// On veut que la réponse provoque un téléchargement de fichier
 				docService.readDoc(doc, (doc1, is) -> servletService.downloadAsFile(doc1.getFileName(), is, (int) doc1.getFileSize(), response));
 
-				Audit.info("Le document '" + doc.getNom() + "' a été téléchargé par l'utilisateur " + AuthenticationHelper.getCurrentPrincipal() + ".");
+				audit.info("Le document '" + doc.getNom() + "' a été téléchargé par l'utilisateur " + AuthenticationHelper.getCurrentPrincipal() + ".");
 
 				// le document a déjà été placé dans la réponse HTTP, il ne faut surtout rien renvoyer d'autre
 				return null;
@@ -74,7 +79,7 @@ public class DocumentController {
 
 		final Document doc = docService.get(id);
 		if (doc != null) {
-			Audit.info("Le document '" + doc.getNom() + "' a été effacé du serveur.");
+			audit.info("Le document '" + doc.getNom() + "' a été effacé du serveur.");
 			docService.delete(doc);
 		}
 

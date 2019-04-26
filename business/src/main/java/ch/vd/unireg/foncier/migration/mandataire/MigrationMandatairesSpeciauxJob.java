@@ -17,10 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.MigrationMandatairesSpeciauxRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -36,7 +35,6 @@ public class MigrationMandatairesSpeciauxJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationMandatairesSpeciauxJob.class);
 
 	private static final String NAME = "MigrationMandatairesSpeciauxJob";
-
 	private static final String CSV_FILE = "FILE";
 	private static final String ENCODING = "ENCODING";
 	private static final String DATE_DEBUT = "DATE_DEBUT";
@@ -118,7 +116,7 @@ public class MigrationMandatairesSpeciauxJob extends JobDefinition {
 		lignesInvalides.forEach(results::addLigneInvalide);
 		final MigrationMandatairesSpeciauxRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le traitement de la migration des mandataires spéciaux est terminé.", rapport);
+		audit.success("Le traitement de la migration des mandataires spéciaux est terminé.", rapport);
 	}
 
 	private List<DonneesMandat> extractMandats(byte[] data, String encoding, Consumer<String> ligneInvalideConsumer) throws IOException {

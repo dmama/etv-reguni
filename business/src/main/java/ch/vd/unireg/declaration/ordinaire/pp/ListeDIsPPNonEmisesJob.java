@@ -8,7 +8,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.Document;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -20,14 +19,13 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 
 public class ListeDIsPPNonEmisesJob extends JobDefinition {
 
+	public static final String NAME = "ListeDINonEmisesJob";
+	public static final String PERIODE_FISCALE = "PERIODE";
+
 	private DeclarationImpotService service;
 	private RapportService rapportService;
 	private PlatformTransactionManager transactionManager;
-
 	private ParametreAppService paramsApp;
-
-	public static final String NAME = "ListeDINonEmisesJob";
-	public static final String PERIODE_FISCALE = "PERIODE";
 
 	public ListeDIsPPNonEmisesJob(int sortOrder, String description) {
 		super(NAME, JobCategory.STATS, sortOrder, description);
@@ -82,7 +80,7 @@ public class ListeDIsPPNonEmisesJob extends JobDefinition {
 			}
 		});
 		setLastRunReport(report);
-		Audit.success("Liste DIs non émises générée correctement", report);
+		audit.success("Liste DIs non émises générée correctement", report);
 	}
 
 	public void setParamsApp(ParametreAppService paramsApp) {

@@ -8,6 +8,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 </beans>

@@ -21,7 +21,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.LienAssociesSNCEnMasseImporterRapport;
@@ -42,7 +41,6 @@ public class ImportLienAssociesSNCEnMasseJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImportLienAssociesSNCEnMasseJob.class);
 
 	private static final String NAME = "ImportSNCJob";
-
 	private static final String CSV_FILE = "FILE";
 	private static final String ENCODING = "ENCODING";
 	private static final String DEFAULT_ENCODING = "ISO-8859-15";
@@ -51,7 +49,6 @@ public class ImportLienAssociesSNCEnMasseJob extends JobDefinition {
 	private HibernateTemplate hibernateTemplate;
 	private LienAssociesSNCService lienAssociesSNCService;
 	private RapportService rapportService;
-
 
 	public ImportLienAssociesSNCEnMasseJob(int sortOrder, String description) {
 		super(NAME, JobCategory.RAPPORT_ENTRE_TIERS, sortOrder, description);
@@ -102,7 +99,7 @@ public class ImportLienAssociesSNCEnMasseJob extends JobDefinition {
 		final LienAssociesSNCEnMasseImporterRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
 
-		Audit.success("L'import des liens entre associés et SNC à la date du " + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminé.", rapport);
+		audit.success("L'import des liens entre associés et SNC à la date du " + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminé.", rapport);
 
 	}
 
@@ -142,24 +139,8 @@ public class ImportLienAssociesSNCEnMasseJob extends JobDefinition {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	public PlatformTransactionManager getTransactionManager() {
-		return transactionManager;
-	}
-
-	public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
-	}
-
-	public LienAssociesSNCService getLienAssociesSNCService() {
-		return lienAssociesSNCService;
-	}
-
 	public void setLienAssociesSNCService(LienAssociesSNCService lienAssociesSNCService) {
 		this.lienAssociesSNCService = lienAssociesSNCService;
-	}
-
-	public RapportService getRapportService() {
-		return rapportService;
 	}
 
 	public void setRapportService(RapportService rapportService) {

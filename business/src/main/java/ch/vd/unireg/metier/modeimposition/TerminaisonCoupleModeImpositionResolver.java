@@ -1,6 +1,7 @@
 package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.ModeImposition;
@@ -12,8 +13,8 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  */
 public abstract class TerminaisonCoupleModeImpositionResolver extends ModeImpositionResolver {
 
-	protected TerminaisonCoupleModeImpositionResolver(TiersService tiersService) {
-		super(tiersService);
+	protected TerminaisonCoupleModeImpositionResolver(TiersService tiersService, AuditManager audit) {
+		super(tiersService, audit);
 	}
 
 	/**

@@ -31,7 +31,7 @@ import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
@@ -61,10 +61,11 @@ public class EvenementEntrepriseEsbHandler implements EsbMessageHandler, Initial
 	private JAXBContext jaxbContext;
 
 	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
-
 	private EvenementEntrepriseReceptionHandler receptionHandler;
 	private Set<TypeEvenementEntreprise> ignoredEventTypes;
 	private EvenementEntrepriseProcessingMode processingMode;
+	private AuditManager audit;
+
 	private boolean running;
 
 	/**
@@ -96,6 +97,10 @@ public class EvenementEntrepriseEsbHandler implements EsbMessageHandler, Initial
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setProcessingMode(EvenementEntrepriseProcessingMode processingMode) {
 		this.processingMode = processingMode;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -193,11 +198,11 @@ public class EvenementEntrepriseEsbHandler implements EsbMessageHandler, Initial
 		}
 
 		final EvenementEntreprise premierEvt = events.get(0);
-		Audit.info((Long) premierEvt.getNoEvenement(), String.format("Arrivée de l'événement entreprise %d (%s au %s)", premierEvt.getNoEvenement(), premierEvt.getType(), RegDateHelper.dateToDisplayString(premierEvt.getDateEvenement())));
+		audit.info((Long) premierEvt.getNoEvenement(), String.format("Arrivée de l'événement entreprise %d (%s au %s)", premierEvt.getNoEvenement(), premierEvt.getType(), RegDateHelper.dateToDisplayString(premierEvt.getDateEvenement())));
 
 		// si un événement entreprise existe déjà avec le businessId donné, on log un warning et on s'arrête là...
 		if (receptionHandler.dejaRecu(businessId)) {
-			Audit.warn(premierEvt.getNoEvenement(), String.format("Le message ESB %s pour l'événement entreprise n°%d a déjà été reçu: cette nouvelle réception est donc ignorée!", businessId, premierEvt.getNoEvenement()));
+			audit.warn(premierEvt.getNoEvenement(), String.format("Le message ESB %s pour l'événement entreprise n°%d a déjà été reçu: cette nouvelle réception est donc ignorée!", businessId, premierEvt.getNoEvenement()));
 			return;
 		}
 
@@ -382,7 +387,7 @@ public class EvenementEntrepriseEsbHandler implements EsbMessageHandler, Initial
 	protected void onIgnoredEvent(OrganisationsOfNotice message) throws EvenementEntrepriseEsbException {
 		try {
 			Notice notice = message.getNotice();
-			Audit.info(notice.getNoticeId().longValue(), String.format("Evénement entreprise ignoré (id=%d, type=%s)",
+			audit.info(notice.getNoticeId().longValue(), String.format("Evénement entreprise ignoré (id=%d, type=%s)",
 			                                                           notice.getNoticeId(),
 			                                                           notice.getTypeOfNotice().name()));
 		}

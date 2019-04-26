@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.DemandeDelaiCollectiveRapport;
@@ -23,14 +23,13 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
  */
 public class DemandeDelaiCollectiveJob extends JobDefinition {
 
-	private DeclarationImpotService diService;
-	private RapportService rapportService;
-
 	public static final String NAME = "DemandeDelaiCollectiveJob";
-
 	public static final String FICHIER = "FICHIER";
 	public static final String DELAI = "DELAI";
 	public static final String PERIODE = "PERIODE";
+
+	private DeclarationImpotService diService;
+	private RapportService rapportService;
 
 	public DemandeDelaiCollectiveJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI, sortOrder, description);
@@ -82,6 +81,10 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 		this.rapportService = rapportService;
 	}
 
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -99,7 +102,7 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 		final DemandeDelaiCollectiveRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La demande de délai collective a été traitée.", rapport);
+		audit.success("La demande de délai collective a été traitée.", rapport);
 	}
 
 	@Override

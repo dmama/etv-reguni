@@ -9,13 +9,12 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -118,7 +117,7 @@ public class DefaultCorrectionCivilEchTranslationStrategy implements EvenementCi
 
 		// un peu de log pour pouvoir suivre après coup ce qui s'est passé
 		if (StringUtils.isNotBlank(event.getCommentaireTraitement())) {
-			Audit.info(event.getId(), event.getCommentaireTraitement());
+			context.audit.info(event.getId(), event.getCommentaireTraitement());
 		}
 
 		return strategieApplicable.create(event, context, options);

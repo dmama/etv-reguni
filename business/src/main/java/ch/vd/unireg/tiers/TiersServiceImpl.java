@@ -57,7 +57,7 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -211,6 +211,7 @@ public class TiersServiceImpl implements TiersService {
 	private BouclementService bouclementService;
 	private TransitionEtatEntrepriseService transitionEtatEntrepriseService;
 	private MetierServicePM metierServicePM;
+	private AuditManager audit;
 
 	/**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -306,6 +307,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setMetierServicePM(MetierServicePM metierServicePM) {
 		this.metierServicePM = metierServicePM;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	/**
@@ -1054,11 +1059,11 @@ public class TiersServiceImpl implements TiersService {
 		final UpdateHabitantFlagResultat changement = getFlagHabitantChangementNecessaire(pp, noInd);
 		if (changement == UpdateHabitantFlagResultat.CHANGE_EN_HABITANT) {
 			changeNHenHabitant(pp, noInd, dateReferenceDonnees);
-			Audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée habitante.");
+			audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée habitante.");
 		}
 		else if (changement == UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT) {
 			changeHabitantenNH(pp);
-			Audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée non-habitante.");
+			audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée non-habitante.");
 		}
 		return changement;
 	}

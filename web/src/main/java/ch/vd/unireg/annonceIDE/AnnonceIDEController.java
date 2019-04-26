@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.PaginationHelper;
@@ -77,6 +77,7 @@ public class AnnonceIDEController {
 	private TiersService tiersService;
 	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 	private EvenementEntrepriseDAO evtEntrepriseDAO;
+	private AuditManager audit;
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
@@ -96,6 +97,10 @@ public class AnnonceIDEController {
 
 	public void setEvtEntrepriseDAO(EvenementEntrepriseDAO evtEntrepriseDAO) {
 		this.evtEntrepriseDAO = evtEntrepriseDAO;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@InitBinder
@@ -219,7 +224,7 @@ public class AnnonceIDEController {
 				}
 				catch (NonUniqueResultException e) {
 					final String message = String.format("Plusieurs événements RCEnt sont associés à l'annonce à l'IDE n°%d. Impossible d'afficher le numéro d'événement.", annonce.getNumero());
-					Audit.error(message);
+					audit.error(message);
 					messages.add(message);
 				}
 			}

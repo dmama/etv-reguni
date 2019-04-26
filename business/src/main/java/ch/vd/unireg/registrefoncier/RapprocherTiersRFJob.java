@@ -2,7 +2,6 @@ package ch.vd.unireg.registrefoncier;
 
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.RapprochementTiersRFRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.registrefoncier.processor.RapprochementTiersRFProcessor;
@@ -47,6 +46,6 @@ public class RapprocherTiersRFJob extends JobDefinition {
 		final RapprochementTiersRFResults results = processor.run(nbThreads, getStatusManager());
 		final RapprochementTiersRFRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le processus de rapprochement des tiers RF est terminé.", rapport);
+		audit.success("Le processus de rapprochement des tiers RF est terminé.", rapport);
 	}
 }

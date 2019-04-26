@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseBasicInfo;
 import ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseNotificationQueue;
 
@@ -17,10 +17,9 @@ public class EvenementEntrepriseProcessorFacade implements EvenementEntreprisePr
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementEntrepriseProcessorFacade.class);
 
 	private EvenementEntrepriseNotificationQueue notificationQueue;
-
 	private ProcessorInternal internalProcessor;
-
 	private ProcessorThread processor;
+	private AuditManager audit;
 
 	private final ProcessorPublisher publisher = new ProcessorPublisher();
 
@@ -97,9 +96,13 @@ public class EvenementEntrepriseProcessorFacade implements EvenementEntreprisePr
 		this.internalProcessor = internalProcessor;
 	}
 
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+
 	@Override
 	public void forceEvenement(EvenementEntrepriseBasicInfo evt) {
-		Audit.info(evt.getNoEvenement(),
+		audit.info(evt.getNoEvenement(),
 		           String.format("Forçage manuel de l'événement entreprise %s.",
 		                         evt.getNoEvenement()));
 		internalProcessor.forceEvent(evt);

@@ -76,7 +76,7 @@ public class CreateEntrepriseCivileStrategyTest extends AbstractEvenementEntrepr
 
 		final RegimeFiscalServiceImpl regimeFiscalService = new RegimeFiscalServiceImpl();
 		regimeFiscalService.setServiceInfra(serviceInfra);
-		context = new EvenementEntrepriseContext(this.serviceEntreprise, serviceInfra, regimeFiscalService, tiersDAO);
+		context = new EvenementEntrepriseContext(this.serviceEntreprise, serviceInfra, regimeFiscalService, tiersDAO, audit);
 
 		// La stratégie à tester
 		strategy = new CreateEntrepriseStrategy(context, new EvenementEntrepriseOptions());

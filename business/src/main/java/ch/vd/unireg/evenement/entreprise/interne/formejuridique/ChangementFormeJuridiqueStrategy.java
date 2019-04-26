@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise.interne.formejuridique;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -59,7 +58,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 			final FormeLegale formeLegaleApres = entrepriseCivile.getFormeLegale(dateApres);
 
 			if (formeLegaleAvant == null || formeLegaleApres == null) {
-				Audit.warn(event.getId(), String.format("Il manque une des deux ou les deux formes juridiques (avant: %s, après: %s). Impossible de déterminer un éventuellement changement.", formeLegaleAvant, formeLegaleApres));
+				context.audit.warn(event.getId(), String.format("Il manque une des deux ou les deux formes juridiques (avant: %s, après: %s). Impossible de déterminer un éventuellement changement.", formeLegaleAvant, formeLegaleApres));
 				return null;
 			}
 			if (formeLegaleAvant != formeLegaleApres) { // Ce que l'on fait si la forme juridique est nulle est défini dans la stratégie idoine.
@@ -71,7 +70,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 					final String message = String.format("La forme juridique passe de %s à %s. Cependant, on ne trouve pas en date du %s " +
 							                                     "de régime fiscal de portée VD sur l'entreprise n°%s correspondante. Impossible de statuer. Veuillez traiter manuellement.",
 					                                     formeLegaleAvant, formeLegaleApres, RegDateHelper.dateToDisplayString(dateAvant), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 				}
 
@@ -84,7 +83,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 				// Pas de changement de régime. Annoncer comme neutre.
 				if (typeRegimeFiscalVDAvant.getCode().equals(typeRegimeFiscalParDefautApres.getCode())) {
 					final String message = String.format("La forme juridique passe de %s à %s. Le régime fiscal VD reste %s.", formeLegaleAvant, formeLegaleApres, typeRegimeFiscalParDefautApres.getLibelleAvecCode());
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new ChangementNeutreFormeJuridique(event, entrepriseCivile, entreprise, context, options);
 				}
 
@@ -99,7 +98,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 				if (wasAuto || typeRegimeFiscalParDefautApres.isIndetermine()) {
 					final String message = String.format("La forme juridique passe de %s à %s. Le régime fiscal VD passe de %s à %s.",
 					                                     formeLegaleAvant, formeLegaleApres, typeRegimeFiscalVDAvant.getLibelleAvecCode(), typeRegimeFiscalParDefautApres.getLibelleAvecCode());
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new ChangementRegimeFiscalParDefaut(event, entrepriseCivile, entreprise, context, options);
 				}
 
@@ -107,7 +106,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 				final String message = String.format(
 						"La forme juridique passe de %s à %s. Le régime fiscal VD passerait de %s à %s. Comme le précédent régime fiscal avait été attribué à la main, le nouveau est réglé comme indéterminé.",
 						formeLegaleAvant, formeLegaleApres, typeRegimeFiscalVDAvant.getLibelleAvecCode(), typeRegimeFiscalParDefautApres.getLibelleAvecCode());
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return new ChangementRegimeFiscalIndetermine(event, entrepriseCivile, entreprise, context, options);
 
 			}

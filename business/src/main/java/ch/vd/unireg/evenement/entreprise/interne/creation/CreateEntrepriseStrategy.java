@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -92,14 +91,14 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 					message = String.format("L'entreprise %s (civil: n°%d), domiciliée à %s, n'existe pas à l'IDE ni au RC. Pas de création automatique.",
 					                        entrepriseCivile.getNom(dateEvenement), numeroEntreprise, communeDomicile.getNomOfficielAvecCanton());
 				}
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 			}
 
 			// S'assurer qu'on a bien une forme juridique à ce stade.
 			if (formeLegale == null) {
 				final String message = String.format("L'entreprise civile n°%d n'a pas de forme juridique (legalForm). Pas de création.", numeroEntreprise);
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				return null;
 			}
 
@@ -124,12 +123,12 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 					final String message = String.format("Pas de création automatique de l'association/fondation n°%d [%s] non inscrite au RC (risque de création de doublon). " +
 							                                     "Veuillez vérifier et le cas échéant créer le tiers associé à la main.",
 					                                     numeroEntreprise, entrepriseCivile.getNom(dateEvenement));
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 				}
 
 				final String message = String.format("Création du tiers entreprise pour l'entreprise civile vaudoise n°%s.", numeroEntreprise);
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				info = extraireInformationDeDateEtDeCreation(event, entrepriseCivile);
 				return new CreateEntrepriseVD(event, entrepriseCivile, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 			}
@@ -139,22 +138,22 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 				// On ne crée l'entreprise que si elle a une présence vaudoise concrétisée par une succursale au RC VD active. Ceci pour éviter les établissements REE.
 				if (succursalesRCVD.isEmpty()){
 					final String message = String.format("L'entreprise civile n°%d n'a pas de succursale active au RC Vaud (inscrite et non radiée). Pas de création.", numeroEntreprise);
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new MessageSuiviPreExecution(event, entrepriseCivile, null, context, options, message);
 				}
 				final String message = String.format("Création du tiers entreprise pour l'entreprise civile non-vaudoise n°%s avec succursale vaudoise active.", numeroEntreprise);
-				Audit.info(event.getId(), message);
+				context.audit.info(event.getId(), message);
 				info = extraireInformationDeDateEtDeCreation(event, entrepriseCivile);
 				return new CreateEntrepriseHorsVD(event, entrepriseCivile, null, context, options, info.isCreation(), succursalesRCVD);
 			}
 			// Entreprises strictement hors VD
 			final String message = String.format("L'entreprise civile n°%d n'a pas de présence sur Vaud. Pas de création.", numeroEntreprise);
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new MessageSuiviPreExecution(event, entrepriseCivile, null, context, options, message);
 		}
 		catch (EvenementEntrepriseException e) {
 			final String message = String.format("Une erreur est survenue lors de l'analyse de l'événement RCEnt: %s", e.getMessage());
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 		}
 	}
@@ -163,7 +162,7 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 	private EvenementEntrepriseInterne handleRaisonIndividuelle(EvenementEntreprise event, EntrepriseCivile entrepriseCivile, EvenementEntrepriseContext context, EvenementEntrepriseOptions options)
 			throws EvenementEntrepriseException {
 		final String message = String.format("L'entreprise civile n°%d est une entreprise individuelle %s. Pas de création.", entrepriseCivile.getNumeroEntreprise(), getQualificatifLieu(entrepriseCivile, event.getDateEvenement()));
-		Audit.info(event.getId(), message);
+		context.audit.info(event.getId(), message);
 		return new MessageSuiviPreExecution(event, entrepriseCivile, null, context, options, message);
 	}
 
@@ -176,7 +175,7 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 	private EvenementEntrepriseInterne handleSocieteSimple(EvenementEntreprise event, EntrepriseCivile entrepriseCivile, EvenementEntrepriseContext context, EvenementEntrepriseOptions options)
 			throws EvenementEntrepriseException {
 		final String message = String.format("L'entreprise civile n°%d est une société simple %s. Pas de création.", entrepriseCivile.getNumeroEntreprise(), getQualificatifLieu(entrepriseCivile, event.getDateEvenement()));
-		Audit.info(event.getId(), message);
+		context.audit.info(event.getId(), message);
 		return new MessageSuiviPreExecution(event, entrepriseCivile, null, context, options, message);
 	}
 
@@ -186,7 +185,7 @@ public class CreateEntrepriseStrategy extends AbstractEntrepriseStrategy {
 		final String message = String.format(
 				"Autorité fiscale (siège) introuvable pour l'établissement civil principal %s de l'entreprise civile %s %s, en date du %s. Etablissement probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
 				etablissementPrincipal.getNumeroEtablissement(), entrepriseCivile.getNumeroEntreprise(), entrepriseCivile.getNom(dateEvenement), RegDateHelper.dateToDisplayString(dateEvenement));
-		Audit.info(event.getId(), message);
+		context.audit.info(event.getId(), message);
 		return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 	}
 

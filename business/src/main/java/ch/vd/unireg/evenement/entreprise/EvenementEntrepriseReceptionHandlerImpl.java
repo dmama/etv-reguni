@@ -13,7 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseNotificationQueue;
 import ch.vd.unireg.load.BasicLoadMonitor;
 import ch.vd.unireg.load.LoadAverager;
@@ -22,13 +22,14 @@ import ch.vd.unireg.stats.StatsService;
 
 public class EvenementEntrepriseReceptionHandlerImpl implements EvenementEntrepriseReceptionHandler, EvenementEntrepriseReceptionMonitor, InitializingBean, DisposableBean {
 
+	private static final String SERVICE_NAME = "EvtsEntrepriseQueueSize";
+
 	private EvenementEntrepriseNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
 	private EvenementEntrepriseDAO evtEntrepriseDAO;
-
-	private static final String SERVICE_NAME = "EvtsEntrepriseQueueSize";
 	private StatsService statsService;
 	private LoadAverager loadAverager;
+	private AuditManager audit;
 
 	private final AtomicInteger nombreEvenementsNonIgnores = new AtomicInteger(0);
 
@@ -53,6 +54,10 @@ public class EvenementEntrepriseReceptionHandlerImpl implements EvenementEntrepr
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -164,7 +169,7 @@ public class EvenementEntrepriseReceptionHandlerImpl implements EvenementEntrepr
 				for (EvenementEntreprise event : events) {
 					final EvenementEntreprise savedEvent = evtEntrepriseDAO.save(event);
 					saved.add(savedEvent);
-					Audit.info(event.getNoEvenement(), String.format("L'événement entreprise %d pour l'entreprise %d est inséré en base de données", event.getNoEvenement(), event.getNoEntrepriseCivile()));
+					audit.info(event.getNoEvenement(), String.format("L'événement entreprise %d pour l'entreprise %d est inséré en base de données", event.getNoEvenement(), event.getNoEntrepriseCivile()));
 				}
 				return saved;
 			}

@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.ChangementRegimesFiscauxRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.regimefiscal.rattrapage.RattrapageRegimesFiscauxJob;
@@ -82,7 +81,7 @@ public class ChangementRegimesFiscauxJob extends JobDefinition {
 		final ChangementRegimesFiscauxJobResults results = processor.process(ancienCode, nouveauCode, dateChangement, nbThreads, getStatusManager());
 		final ChangementRegimesFiscauxRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le changement des régimes fiscaux est terminé.", rapport);
+		audit.success("Le changement des régimes fiscaux est terminé.", rapport);
 
 	}
 

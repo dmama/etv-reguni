@@ -7,6 +7,7 @@
     <bean id="schedulerJob" class="ch.vd.unireg.scheduler.JobDefinition" abstract="true">
         <property name="batchScheduler" ref="batchScheduler"/>
         <property name="uniregModeHelper" ref="uniregModeHelper"/>
+	    <property name="audit" ref="auditManager"/>
     </bean>
 
 	<bean id="dumpAssujettissementsJob" parent="schedulerJob" class="ch.vd.unireg.metier.assujettissement.DumpAssujettissementsJob">

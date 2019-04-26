@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.IdentifierContribuableFromListeRapport;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
@@ -38,7 +38,6 @@ public class IdentifierContribuableFromListeJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IdentifierContribuableFromListeJob.class);
 
 	public static final String NAME = "IdentifierContribuableFromListeJob";
-
 	public static final String LISTE_TIERS = "LISTE_TIERS";
 	public static final String NB_THREADS = "NB_THREADS";
 
@@ -73,13 +72,13 @@ public class IdentifierContribuableFromListeJob extends JobDefinition {
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
 
 		final StatusManager status = getStatusManager();
-		final List<CriteresPersonne> ListeCriteresPersonnes = extractCriteresFromCSV(listeTiers, status);
+		final List<CriteresPersonne> ListeCriteresPersonnes = extractCriteresFromCSV(listeTiers, status, audit);
 
 		final IdentifierContribuableFromListeResults results = identificationService.identifieFromListe(ListeCriteresPersonnes, status, RegDate.get(), nbThreads);
 		final IdentifierContribuableFromListeRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("L'identification de contribuable à partir d'une liste est terminée.", rapport);
+		audit.success("L'identification de contribuable à partir d'une liste est terminée.", rapport);
 	}
 
 
@@ -93,10 +92,11 @@ public class IdentifierContribuableFromListeJob extends JobDefinition {
 	 *
 	 * @param csv
 	 *            le contenu d'un fichier CSV
+	 * @param audit
 	 * @return une liste d'ids
 	 * @throws UnsupportedEncodingException
 	 */
-	protected static List<CriteresPersonne> extractCriteresFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
+	protected static List<CriteresPersonne> extractCriteresFromCSV(byte[] csv, StatusManager status, AuditManager audit) throws UnsupportedEncodingException {
 
 
 		final List<CriteresPersonne> criteresPersonnes = new LinkedList<>();
@@ -216,7 +216,7 @@ public class IdentifierContribuableFromListeJob extends JobDefinition {
 
 		// tri de la liste par numéro du registre foncier
 
-		Audit.info("Nombre de demande d'identification lus dans le fichier : " + demandeLues);
+		audit.info("Nombre de demande d'identification lus dans le fichier : " + demandeLues);
 		return criteresPersonnes;
 	}
 

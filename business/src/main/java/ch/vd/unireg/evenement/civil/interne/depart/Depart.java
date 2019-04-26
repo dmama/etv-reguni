@@ -14,7 +14,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.MovingWindow;
@@ -138,7 +137,7 @@ public abstract class Depart extends Mouvement {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isDepartVaudois()) { // on ignore les départs vaudois car dans ce cas c'est l'arrivée qui fait foi
-			Audit.info(getNumeroEvenement(), "Départ vaudois -> ignoré.");
+			context.audit.info(getNumeroEvenement(), "Départ vaudois -> ignoré.");
 			return HandleStatus.TRAITE;
 		}
 
@@ -219,7 +218,7 @@ public abstract class Depart extends Mouvement {
 			}
 			else {
 				// on ne devrait jamais avoir ce cas pour un départ: c'est un déménagement
-				// Audit.warn("La commune de destination est dans le canton de Vaud une erreur a du se produire");
+				// audit.warn("La commune de destination est dans le canton de Vaud une erreur a du se produire");
 				/*
 				 * msi (16.09.2008) : en fait, il s'agit d'un cas valide où un contribuable bénéficiant d'un arrangement fiscal (= for
 				 * principal ouvert sur une résidence secondaire dans le canton) quitte sa résidence secondaire pour sa résidence principale
@@ -230,7 +229,7 @@ public abstract class Depart extends Mouvement {
 			}
 		}
 		else {
-			Audit.warn("Le pays de destination est inconnu");
+			context.audit.warn("Le pays de destination est inconnu");
 			motifFermeture = MotifFor.DEPART_HS;
 		}
 

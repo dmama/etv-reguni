@@ -14,7 +14,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.document.AnnoncesIDERapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -125,7 +124,7 @@ public class AnnonceIDEJob extends JobDefinition {
 
 		final AnnoncesIDERapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""), rapport);
+		audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""), rapport);
 	}
 
 	protected AnnonceIDEJobResults traiteTiers(Long tiersId, RegDate date, boolean simulation) throws ServiceIDEException {

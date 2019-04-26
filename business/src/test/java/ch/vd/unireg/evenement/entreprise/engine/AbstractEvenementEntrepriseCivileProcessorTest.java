@@ -82,6 +82,7 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 
 	protected EvenementEntrepriseProcessorFacade createProcessor(EvenementEntrepriseTranslator translator) throws Exception {
 		final EvenementEntrepriseProcessorFacade facade = new EvenementEntrepriseProcessorFacade();
+		facade.setAudit(audit);
 		facade.setNotificationQueue(queue);
 
 		final EvenementEntrepriseProcessorInternal internal = new EvenementEntrepriseProcessorInternal();
@@ -91,6 +92,7 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 		internal.setTiersService(tiersService);
 		internal.setIndexer(globalTiersIndexer);
 		internal.setDataEventService(dataEventService);
+		internal.setAudit(audit);
 		internal.afterPropertiesSet();
 
 		facade.setInternalProcessor(internal);

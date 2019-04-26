@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -15,6 +13,7 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -67,7 +66,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 			if (ffp == null) {
 				// si le tiers est mineur à la date d'arrivée (la nouvelle), on passe tout droit
 				if (context.getTiersService().isMineur(pp, getDate())) {
-					Audit.info(getNumeroEvenement(), "Individu mineur au moment de l'arrivée, événement ignoré.");
+					context.audit.info(getNumeroEvenement(), "Individu mineur au moment de l'arrivée, événement ignoré.");
 				}
 				else {
 					erreurs.addErreur("L'individu n'a pas de for fiscal principal connu.");
@@ -119,7 +118,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 			if (ancienneDateOuverture == getDate()) {
 				final String msg = String.format("La date d'ouverture du dernier for fiscal principal du contribuable %s est déjà au %s",
 				                                 FormatNumeroHelper.numeroCTBToDisplay(tiersDeterminant.getNumero()), RegDateHelper.dateToDisplayString(ancienneDateOuverture));
-				Audit.info(getNumeroEvenement(), msg);
+				context.audit.info(getNumeroEvenement(), msg);
 			}
 			else {
 				context.getTiersService().annuleForFiscal(ffp);

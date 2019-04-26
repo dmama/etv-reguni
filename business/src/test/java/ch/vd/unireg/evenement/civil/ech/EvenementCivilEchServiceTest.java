@@ -39,6 +39,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		service.setServiceCivil(serviceCivil);
 		service.setTiersDAO(tiersDAO);
 		service.setTiersService(tiersService);
+		service.setAudit(audit);
 		service.afterPropertiesSet();
 		return service;
 	}

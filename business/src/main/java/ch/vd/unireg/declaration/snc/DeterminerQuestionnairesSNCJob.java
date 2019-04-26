@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.DeterminationQuestionnairesSNCRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -74,7 +73,7 @@ public class DeterminerQuestionnairesSNCJob extends JobDefinition {
 		final DeterminationQuestionnairesSNCRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 
-		Audit.success("La détermination des questionnaires SNC à envoyer pour l'année " + pf + " à la date du "
+		audit.success("La détermination des questionnaires SNC à envoyer pour l'année " + pf + " à la date du "
 				              + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

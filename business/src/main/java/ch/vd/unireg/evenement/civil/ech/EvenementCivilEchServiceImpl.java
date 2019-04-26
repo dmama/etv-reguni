@@ -18,14 +18,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -54,6 +54,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
     private EvenementCivilEchDAO evenementCivilEchDAO;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
+	private AuditManager audit;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -101,6 +102,10 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -471,7 +476,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
         }
         evt.setEtat(EtatEvenementCivil.FORCE);
 
-	    Audit.info(id, String.format("Forçage manuel de l'événement civil %d de type %s/%s au %s sur l'individu %d", id, evt.getType(), evt.getAction(), RegDateHelper.dateToDisplayString(evt.getDateEvenement()), evt.getNumeroIndividu()));
+	    audit.info(id, String.format("Forçage manuel de l'événement civil %d de type %s/%s au %s sur l'individu %d", id, evt.getType(), evt.getAction(), RegDateHelper.dateToDisplayString(evt.getDateEvenement()), evt.getNumeroIndividu()));
 
 	    // [SIFISC-6908] En cas de forçage de l'événement, on essaie au moins de mettre-à-jour le flag habitant, pour que les droits d'édition corrects s'appliquent sur la personne physiques.
 	    final Long numeroIndividu = evt.getNumeroIndividu();

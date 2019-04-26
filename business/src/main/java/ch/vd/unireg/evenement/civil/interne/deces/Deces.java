@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationResults;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -208,7 +207,7 @@ public class Deces extends EvenementCivilInterne {
 
 			if (dateDecesUnireg.equals(getDate())) {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
-				Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal, rien à faire");
+				context.audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal, rien à faire");
 				checkForsFermesAvecPassageToutDroit(warnings);
 				return redondantSelonFors ? HandleStatus.REDONDANT : HandleStatus.TRAITE;
 			}
@@ -217,7 +216,7 @@ public class Deces extends EvenementCivilInterne {
 				final boolean unJourDifference = RegDateHelper.isBetween(getDate(), dateDecesUnireg.getOneDayBefore(), dateDecesUnireg.getOneDayAfter(), NullDateBehavior.EARLIEST);
 				if (unJourDifference && dateDecesUnireg.year() == getDate().year()) {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
-					Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal avec un jour de différence (" + RegDateHelper.dateToDisplayString(dateDecesUnireg) + "), rien à faire");
+					context.audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal avec un jour de différence (" + RegDateHelper.dateToDisplayString(dateDecesUnireg) + "), rien à faire");
 					checkForsFermesAvecPassageToutDroit(warnings);
 					return redondantSelonFors ? HandleStatus.REDONDANT : HandleStatus.TRAITE;
 				}

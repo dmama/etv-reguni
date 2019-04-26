@@ -32,7 +32,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
@@ -87,6 +87,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	private ModificationInterceptor mainInterceptor;
 	private ParentesSynchronizerInterceptor parentesSynchronizerInterceptor;
+	private AuditManager audit;
 
 	private Processor processor;
 	private final Map<Long, Listener> listeners = new LinkedHashMap<>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
@@ -137,6 +138,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	public void setParentesSynchronizerInterceptor(ParentesSynchronizerInterceptor parentesSynchronizerInterceptor) {
 		this.parentesSynchronizerInterceptor = parentesSynchronizerInterceptor;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	/**
@@ -580,14 +585,14 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	};
 
-	private static final GroupAction TRAITEMENT_ANNULATION = new GroupAction() {
+	private final GroupAction TRAITEMENT_ANNULATION = new GroupAction() {
 		@Override
 		public void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt) {
 			if (!evt.getEtat().isTraite()) {
 				evt.setDateTraitement(DateHelper.getCurrentDate());
 				evt.setCommentaireTraitement(COMMENTAIRE_ANNULATION_GROUPEE);
 				evt.setEtat(EtatEvenementCivil.REDONDANT);
-				Audit.info(evt.getId(), String.format("Marquage de l'événement %d (%s/%s) comme redondant (groupe d'événements annulés avant d'avoir été traités)", evt.getId(), evt.getType(), evt.getAction()));
+				audit.info(evt.getId(), String.format("Marquage de l'événement %d (%s/%s) comme redondant (groupe d'événements annulés avant d'avoir été traités)", evt.getId(), evt.getType(), evt.getAction()));
 			}
 		}
 	};
@@ -601,12 +606,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 	};
 
-	private static class CorrectionGrappeAction implements GroupAction {
+	private class CorrectionGrappeAction implements GroupAction {
 
 		private final long idEvtPrincipal;
 		private final EtatEvenementCivil etatReferrers;
 
-		private static final Set<EtatEvenementCivil> PASSER_EN_ATTENTE_SI_ERREUR = EnumSet.of(EtatEvenementCivil.A_TRAITER, EtatEvenementCivil.EN_ATTENTE);
+		private final Set<EtatEvenementCivil> PASSER_EN_ATTENTE_SI_ERREUR = EnumSet.of(EtatEvenementCivil.A_TRAITER, EtatEvenementCivil.EN_ATTENTE);
 
 		private CorrectionGrappeAction(long idEvtPrincipal, EtatEvenementCivil etatReferrers) {
 			this.idEvtPrincipal = idEvtPrincipal;
@@ -634,7 +639,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 					evt.setEtat(etatReferrers);
 				}
 				evt.setCommentaireTraitement(COMMENTAIRE_CORRECTION_GROUPEE);
-				Audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), evt.getEtat(), idEvtPrincipal));
+				audit.info(evt.getId(), String.format("Evénement %d (%s/%s) traité (-> %s) avec son événement référencé (%d)", evt.getId(), evt.getType(), evt.getAction(), evt.getEtat(), idEvtPrincipal));
 			}
 		}
 	}
@@ -652,7 +657,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		if (refDate != event.getDateEvenement()) {
 			dateMove = String.format(" (-> %s)", RegDateHelper.dateToDisplayString(refDate));
 		}
-		Audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s%s sur l'individu %d",
+		audit.info(event.getId(), String.format("Début du traitement de l'événement civil %d de type %s/%s au %s%s sur l'individu %d",
 		                                        event.getId(), event.getType(), event.getAction(),
 		                                        RegDateHelper.dateToDisplayString(event.getDateEvenement()), dateMove,
 		                                        event.getNumeroIndividu()));
@@ -686,10 +691,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			event.getErreurs().addAll(warnings);
 
 			for (EvenementCivilEchErreur e : erreurs) {
-				Audit.error(event.getId(), e.getMessage());
+				audit.error(event.getId(), e.getMessage());
 			}
 			for (EvenementCivilEchErreur w : warnings) {
-				Audit.warn(event.getId(), w.getMessage());
+				audit.warn(event.getId(), w.getMessage());
 			}
 
 			final boolean hasErrors = collector.hasErreurs();
@@ -709,19 +714,19 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		return new EvenementCivilGrappe(eventPrincipal, referrers);
 	}
 
-	private static void assignerEtatApresTraitement(EtatEvenementCivil etat, EvenementCivilGrappe grappe) {
+	private void assignerEtatApresTraitement(EtatEvenementCivil etat, EvenementCivilGrappe grappe) {
 		final EvenementCivilEch eventPrincipal = grappe.eventPrincipal;
 		eventPrincipal.setEtat(etat);
 
 		final String messageAudit = String.format("Statut de l'événement passé à '%s'", etat);
 		if (etat == EtatEvenementCivil.EN_ERREUR) {
-			Audit.error(eventPrincipal.getId(), messageAudit);
+			audit.error(eventPrincipal.getId(), messageAudit);
 		}
 		else if (etat == EtatEvenementCivil.A_VERIFIER) {
-			Audit.warn(eventPrincipal.getId(), messageAudit);
+			audit.warn(eventPrincipal.getId(), messageAudit);
 		}
 		else {
-			Audit.success(eventPrincipal.getId(), messageAudit);
+			audit.success(eventPrincipal.getId(), messageAudit);
 		}
 
 		// tous les éléments du groupe sont passés au même état de traitement avec un commentaire
@@ -864,6 +869,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	public void afterPropertiesSet() throws Exception {
 		postProcessingStrategies = new ArrayList<>();
 		postProcessingStrategies.add(new ErrorPostProcessingIndexationPureStrategy(evtCivilDAO, translator, this));
-		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtCivilDAO));
+		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtCivilDAO, audit));
 	}
 }

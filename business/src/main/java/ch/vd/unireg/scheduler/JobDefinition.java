@@ -35,7 +35,7 @@ import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.Document;
@@ -81,6 +81,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	private boolean logDisabled = false;
 
 	protected BatchScheduler batchScheduler;
+	protected AuditManager audit;
 
 	/**
 	 * La queue des exécutions du job en attente d'être exécutées.
@@ -181,7 +182,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 		// le batch tournera avec le nom d'utilisateur égal au nom du batch
 		if (!logDisabled) {
-			Audit.info(String.format("Démarrage du job %s", name));
+			audit.info(String.format("Démarrage du job %s", name));
 		}
 		AuthenticationHelper.pushPrincipal(name);
 		try {
@@ -190,7 +191,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		finally {
 			AuthenticationHelper.popPrincipal();
 			if (!logDisabled) {
-				Audit.info(String.format("Arrêt du job %s", name));
+				audit.info(String.format("Arrêt du job %s", name));
 			}
 		}
 	}
@@ -358,6 +359,10 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	public void setBatchScheduler(BatchScheduler batchScheduler) {
 		this.batchScheduler = batchScheduler;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -7,10 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -19,6 +15,9 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.TypePermis;
 
@@ -85,15 +84,15 @@ public class FinPermis extends EvenementCivilInterne {
 			}
 
 			if (isSuisse) {
-				Audit.info(getNumeroEvenement(), "Permis C : l'habitant a obtenu la nationalité suisse, rien à faire");
+				context.audit.info(getNumeroEvenement(), "Permis C : l'habitant a obtenu la nationalité suisse, rien à faire");
 			}
 			else {
-				Audit.info(getNumeroEvenement(), "Permis C : l'habitant n'a pas obtenu la nationalité suisse, passage en traitement manuel");
+				context.audit.info(getNumeroEvenement(), "Permis C : l'habitant n'a pas obtenu la nationalité suisse, passage en traitement manuel");
 				erreurs.addErreur("La fin du permis C doit être traitée manuellement");
 			}
 		}
 		else {
-			Audit.info(getNumeroEvenement(), String.format("Permis non C (%s) : ignoré", getTypePermis()));
+			context.audit.info(getNumeroEvenement(), String.format("Permis non C (%s) : ignoré", getTypePermis()));
 		}
 	}
 

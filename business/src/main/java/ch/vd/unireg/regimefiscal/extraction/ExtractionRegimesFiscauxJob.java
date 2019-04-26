@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.ExtractionRegimesFiscauxRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -93,7 +92,7 @@ public class ExtractionRegimesFiscauxJob extends JobDefinition {
 		final ExtractionRegimesFiscauxResults results = processor.run(avecHistorique, nbThreads, dateTraitement, getStatusManager());
 		final ExtractionRegimesFiscauxRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le job d'extraction des régimes fiscaux est maintenant terminé", rapport);
+		audit.success("Le job d'extraction des régimes fiscaux est maintenant terminé", rapport);
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.entreprise.interne.information;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -56,7 +55,7 @@ public class ModificationCapitalStrategy extends AbstractEntrepriseStrategy {
 			final Capital capitalApres = entrepriseCivile.getCapital(dateApres);
 
 			if (changementCapital(capitalAvant, capitalApres)) {
-				Audit.info(event.getId(), "Modification du capital -> Propagation.");
+				context.audit.info(event.getId(), "Modification du capital -> Propagation.");
 				return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_CAPITAL);
 			}
 		}

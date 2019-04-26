@@ -7,7 +7,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.InitialisationIFoncRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.rapport.RapportService;
@@ -94,7 +93,7 @@ public class InitialisationIFoncJob extends JobDefinition {
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		final InitialisationIFoncRapport rapport = template.execute(status -> rapportService.generateRapport(results, getStatusManager()));
 		setLastRunReport(rapport);
-		Audit.success("La génération des données d'initialisation de la taxation IFONC est terminée.", rapport);
+		audit.success("La génération des données d'initialisation de la taxation IFONC est terminée.", rapport);
 	}
 
 	@Override

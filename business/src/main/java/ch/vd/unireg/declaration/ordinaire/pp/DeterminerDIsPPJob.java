@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.DeterminationDIsPPRapport;
@@ -20,12 +19,12 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
  */
 public class DeterminerDIsPPJob extends JobDefinition {
 
-	private DeclarationImpotService service;
-	private RapportService rapportService;
-
 	public static final String NAME = "DetermineDIsEnMasseJob";
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String NB_THREADS = "NB_THREADS";
+
+	private DeclarationImpotService service;
+	private RapportService rapportService;
 
 	public DeterminerDIsPPJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI_PP, sortOrder, description);
@@ -82,7 +81,7 @@ public class DeterminerDIsPPJob extends JobDefinition {
 		final DeterminationDIsPPRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La détermination des DIs PP à envoyer pour l'année " + annee + " à la date du "
+		audit.success("La détermination des DIs PP à envoyer pour l'année " + annee + " à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

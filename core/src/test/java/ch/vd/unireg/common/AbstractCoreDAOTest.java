@@ -50,6 +50,7 @@ import org.xml.sax.InputSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -209,6 +210,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Dialect dialect;
 	protected TiersDAO tiersDAO;
 	protected SessionFactory sessionFactory;
+	protected AuditManager audit;
 
 	public enum ProducerType {
 		Flat,
@@ -230,6 +232,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		referenceAnnonceIDEDAO = getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO");
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		audit = getBean(AuditManager.class, "auditManager");
 
 		truncateDatabase();
 	}

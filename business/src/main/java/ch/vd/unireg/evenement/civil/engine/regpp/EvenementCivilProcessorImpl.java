@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CheckedTransactionCallback;
 import ch.vd.unireg.common.CheckedTransactionTemplate;
@@ -59,12 +59,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private ServiceCivilService serviceCivil;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
+	private AuditManager audit;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public void traiteEvenementsCivils(StatusManager status) {
 
 		// Récupère les ids des événements à traiter
@@ -248,29 +245,29 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		if (!erreurs.isEmpty() || etat == EtatEvenementCivil.EN_ERREUR) {
 			evenementCivilExterne.setEtat(EtatEvenementCivil.EN_ERREUR);
 			evenementCivilExterne.setDateTraitement(DateHelper.getCurrentDate());
-			Audit.error(evenementCivilExterne.getId(), "Status changé à ERREUR");
+			audit.error(evenementCivilExterne.getId(), "Status changé à ERREUR");
 			result = null;
 			dumpForDebug(erreurs);
 		}
 		else if (!warnings.isEmpty() || etat == EtatEvenementCivil.A_VERIFIER) {
 			evenementCivilExterne.setEtat(EtatEvenementCivil.A_VERIFIER);
 			evenementCivilExterne.setDateTraitement(DateHelper.getCurrentDate());
-			Audit.warn(evenementCivilExterne.getId(), "Status changé à A VERIFIER");
+			audit.warn(evenementCivilExterne.getId(), "Status changé à A VERIFIER");
 			result = evenementCivilExterne.getNumeroIndividuPrincipal();
 			dumpForDebug(warnings);
 		}
 		else {
 			evenementCivilExterne.setEtat(etat);
 			evenementCivilExterne.setDateTraitement(DateHelper.getCurrentDate());
-			Audit.success(evenementCivilExterne.getId(), "Status changé à " + etat.name() + "");
+			audit.success(evenementCivilExterne.getId(), "Status changé à " + etat.name() + "");
 			result = evenementCivilExterne.getNumeroIndividuPrincipal();
 		}
 
 		for (EvenementCivilRegPPErreur e : erreurs) {
-			Audit.error(evenementCivilExterne.getId(), e.getMessage());
+			audit.error(evenementCivilExterne.getId(), e.getMessage());
 		}
 		for (EvenementCivilRegPPErreur w : warnings) {
-			Audit.warn(evenementCivilExterne.getId(), w.getMessage());
+			audit.warn(evenementCivilExterne.getId(), w.getMessage());
 		}
 
 		evenementCivilExterne.addErrors(erreurs);
@@ -290,7 +287,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	                                           final EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final String message = String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilExterne.getId(), evenementCivilExterne.getType());
-		Audit.info(evenementCivilExterne.getId(), message);
+		audit.info(evenementCivilExterne.getId(), message);
 
 		// On converti l'événement externe en événement interne, qui contient tout l'information nécessaire à l'exécution de l'événement.
 		final EvenementCivilInterne event = buildInterne(evenementCivilExterne, refreshCache);
@@ -298,7 +295,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// 2.2 - lancement de la validation
 		event.validate(erreurs, warnings);
 		if (erreurs.hasErreurs()) {
-			Audit.error(event.getNumeroEvenement(), "L'événement n'est pas valide");
+			audit.error(event.getNumeroEvenement(), "L'événement n'est pas valide");
 			return EtatEvenementCivil.EN_ERREUR;
 		}
 
@@ -411,5 +408,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

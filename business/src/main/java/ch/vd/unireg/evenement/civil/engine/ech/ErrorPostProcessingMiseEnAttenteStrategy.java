@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
@@ -15,9 +15,11 @@ import ch.vd.unireg.type.EtatEvenementCivil;
 public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProcessingStrategy<Object> {
 
 	private final EvenementCivilEchDAO evtCivilDAO;
+	private final AuditManager audit;
 
-	public ErrorPostProcessingMiseEnAttenteStrategy(EvenementCivilEchDAO dao) {
+	public ErrorPostProcessingMiseEnAttenteStrategy(EvenementCivilEchDAO dao, AuditManager audit) {
 		evtCivilDAO = dao;
+		this.audit = audit;
 	}
 
 	@Override
@@ -59,9 +61,9 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 		return remaining;
 	}
 
-	private static void setEnAttente(EvenementCivilEch evt) {
+	private void setEnAttente(EvenementCivilEch evt) {
 		evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
-		Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
+		audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
 	}
 
 	@Override

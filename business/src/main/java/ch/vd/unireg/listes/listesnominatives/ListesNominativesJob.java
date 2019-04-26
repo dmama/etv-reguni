@@ -8,7 +8,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ListesNominativesRapport;
 import ch.vd.unireg.listes.ListesTiersService;
@@ -36,9 +35,7 @@ public class ListesNominativesJob extends JobDefinition {
 	private static final String FILE_TIERS_LIST = "FILE_TIERS_LIST";
 
 	private ListesTiersService service;
-
 	private RapportService rapportService;
-
 	private PlatformTransactionManager transactionManager;
 
 	public ListesNominativesJob(int order, String description) {
@@ -129,7 +126,7 @@ public class ListesNominativesJob extends JobDefinition {
 		final ListesNominativesRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
-		Audit.success("La production des listes nominatives en date du " + dateTraitement + " est terminée.", rapport);
+		audit.success("La production des listes nominatives en date du " + dateTraitement + " est terminée.", rapport);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.RecalculTachesRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.rapport.RapportService;
@@ -87,6 +86,6 @@ public class RecalculTachesJob extends JobDefinition {
 		final TacheSyncResults results = processor.run(cleanup, nbThreads, scope, getStatusManager());
 		final RecalculTachesRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Recalcul des tâches d'envoi et d'annulation de déclaration d'impôt terminé.");
+		audit.success("Recalcul des tâches d'envoi et d'annulation de déclaration d'impôt terminé.");
 	}
 }

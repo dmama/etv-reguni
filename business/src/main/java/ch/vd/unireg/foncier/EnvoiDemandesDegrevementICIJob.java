@@ -3,7 +3,6 @@ package ch.vd.unireg.foncier;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.EnvoiFormulairesDemandeDegrevementICIRapport;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.unireg.rapport.RapportService;
@@ -74,6 +73,6 @@ public class EnvoiDemandesDegrevementICIJob extends JobDefinition {
 		final EnvoiFormulairesDemandeDegrevementICIRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 
-		Audit.success("L'envoi en masse des formulaires de demande de dégrèvement ICI est terminé.", rapport);
+		audit.success("L'envoi en masse des formulaires de demande de dégrèvement ICI est terminé.", rapport);
 	}
 }

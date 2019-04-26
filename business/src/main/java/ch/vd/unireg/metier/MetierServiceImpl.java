@@ -29,7 +29,7 @@ import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.EtatCivilHelper;
@@ -112,6 +112,7 @@ public class MetierServiceImpl implements MetierService {
 	private EFactureService eFactureService;
 	private ParametreAppService parametreAppService;
 	private EtiquetteService etiquetteService;
+	private AuditManager audit;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -182,6 +183,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void setEtiquetteService(EtiquetteService etiquetteService) {
 		this.etiquetteService = etiquetteService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
@@ -315,7 +320,7 @@ public class MetierServiceImpl implements MetierService {
 
 		RegDate dateEffective = date;
 
-		final MariageModeImpositionResolver mariageResolver = new MariageModeImpositionResolver(tiersService, numeroEvenement);
+		final MariageModeImpositionResolver mariageResolver = new MariageModeImpositionResolver(tiersService, numeroEvenement, audit);
 		final ModeImpositionResolver.Imposition imposition;
 		try {
 			imposition = mariageResolver.resolve(menageCommun, dateEffective);
@@ -370,7 +375,7 @@ public class MetierServiceImpl implements MetierService {
 			if (conjoint != null) {
 				tiersService.closeAllForsFiscaux(conjoint, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			}
-			Audit.info(numeroEvenement, "Fermeture des fors fiscaux des membres du ménage");
+			audit.info(numeroEvenement, "Fermeture des fors fiscaux des membres du ménage");
 
 			/* On récupère la commune de résidence du contribuable principal, ou à défaut celle de son conjoint. */
 			Integer noOfsCommune = null;
@@ -786,7 +791,7 @@ public class MetierServiceImpl implements MetierService {
 		setCoordonneesFinancieres(principal, conjoint, menageCommun);
 
 		menageCommun = (MenageCommun) getTiersDAO().save(menageCommun);
-		Audit.info("Création d'un tiers MenageCommun");
+		audit.info("Création d'un tiers MenageCommun");
 
 		return rattachToMenage(menageCommun, principal, conjoint, dateMariage, remarque, etatCivilFamille, numeroEvenement);
 	}
@@ -870,7 +875,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Création des rapports entre tiers ménage commun
 		 */
-		Audit.info("Création des rapports entre tiers ménage commun et tiers");
+		audit.info("Création des rapports entre tiers ménage commun et tiers");
 		getTiersService().addTiersToCouple(menage, principal, date, null);
 		if (conjoint != null) {
 			getTiersService().addTiersToCouple(menage, conjoint, date, null);
@@ -949,7 +954,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * ajout du tiers précédemment absent au ménage commun
 		 */
-		Audit.info("Ajout du membre au ménage commun");
+		audit.info("Ajout du membre au ménage commun");
 		getTiersService().addTiersToCouple(menage, pp, date, null);
 
 		/*
@@ -1076,7 +1081,7 @@ public class MetierServiceImpl implements MetierService {
 		final RapportEntreTiers premierRapport = menageChoisi.getPremierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE, principal);
 		final RegDate dateDebut = premierRapport.getDateDebut();
 
-		final FusionMenagesResolver fusionResolver = new FusionMenagesResolver(tiersService, menageChoisi, autreMenage);
+		final FusionMenagesResolver fusionResolver = new FusionMenagesResolver(tiersService, menageChoisi, autreMenage, audit);
 		ModeImpositionResolver.Imposition imposition = null;
 		try {
 			imposition = fusionResolver.resolve(menageChoisi, dateDebut);
@@ -1418,7 +1423,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture des rapports entre tiers du ménage commun
 		 */
-		Audit.info(numeroEvenement, "Réouverture des rapports entre tiers ménage commun et tiers");
+		audit.info(numeroEvenement, "Réouverture des rapports entre tiers ménage commun et tiers");
 		getTiersService().addTiersToCouple(menageCommun, principal, date, null);
 		if (conjoint != null) {
 			getTiersService().addTiersToCouple(menageCommun, conjoint, date, null);
@@ -1565,7 +1570,7 @@ public class MetierServiceImpl implements MetierService {
 
 			// S'il existe un for sur le ménage (non indigents)
 			if (forMenage != null) {
-				final DivorceModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
+				final DivorceModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement, audit);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
 				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, hadForSecondaire, numeroEvenement, false);
@@ -1950,7 +1955,7 @@ public class MetierServiceImpl implements MetierService {
 					// pas d'adresse de domicile connue -> on n'ouvre aucun for
 					final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s et pas de for principal sur le ménage : pas d'ouverture de for",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
-					Audit.warn(numeroEvenement, message);
+					audit.warn(numeroEvenement, message);
 
 					noOfs = null;
 					typeAutoriteFiscale = null;
@@ -1991,7 +1996,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 		catch (AdresseException e) {
 			final String message = String.format("Impossible de déterminer l'adresse de domicile du contribuable %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-			Audit.warn(message);
+			audit.warn(message);
 			return null;
 		}
 		catch (ModeImpositionResolverException | ServiceInfrastructureException ex) {
@@ -2453,7 +2458,7 @@ public class MetierServiceImpl implements MetierService {
 			if (ffp != null && lendemainDeces == ffp.getDateDebut() && ffp.getMotifOuverture() == MotifFor.VEUVAGE_DECES) {
 
 				// il faut alors simplement annuler le for fiscal principal
-				Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
+				audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
 				tiersService.annuleForFiscal(ffp);
 
 				// le deuxième défunt doit avoir une situation de famille VEUF
@@ -2498,7 +2503,7 @@ public class MetierServiceImpl implements MetierService {
 			final List<ForFiscalAutreElementImposable> forsAutreElement = forsParType.autreElementImpot;
 
 			// fermeture des fors sur le ménage
-			Audit.info(numeroEvenement, String.format("Fermeture des fors fiscaux du ménage commun (%d)", menage.getNumero()));
+			audit.info(numeroEvenement, String.format("Fermeture des fors fiscaux du ménage commun (%d)", menage.getNumero()));
 			tiersService.closeAllForsFiscaux(menage, date, MotifFor.VEUVAGE_DECES);
 
 			// fermeture des liens d'appartenance ménage des personnes impliquées
@@ -2532,9 +2537,9 @@ public class MetierServiceImpl implements MetierService {
 
 					if (forMenage != null) {
 
-						Audit.info(numeroEvenement, String.format("Ouverture du for fiscal sur le tiers survivant (%d)", veuf.getNumero()));
+						audit.info(numeroEvenement, String.format("Ouverture du for fiscal sur le tiers survivant (%d)", veuf.getNumero()));
 
-						final DecesModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
+						final DecesModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement, audit);
 
 						// d'abord le for fiscal principal
 						final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, hadForSecondaire, numeroEvenement, true);
@@ -2555,14 +2560,14 @@ public class MetierServiceImpl implements MetierService {
 					}
 					else {
 						// ok, pas de for sur le ménage, mais peut-être faut-il quand-même en ouvrir un sur le veuf...
-						Audit.info(numeroEvenement, String.format("Il n'y avait pas de for sur le ménage, aucun for ne sera donc ouvert sur le survivant (%d)", veuf.getNumero()));
+						audit.info(numeroEvenement, String.format("Il n'y avait pas de for sur le ménage, aucun for ne sera donc ouvert sur le survivant (%d)", veuf.getNumero()));
 					}
 				}
 			}
 		}
 		else {
 			if (defunt != null) {
-				Audit.info(numeroEvenement, "Fermeture des fors fiscaux du défunt");
+				audit.info(numeroEvenement, "Fermeture des fors fiscaux du défunt");
 				tiersService.closeAllForsFiscaux(defunt, date, MotifFor.VEUVAGE_DECES);
 
 				// [SIFISC-25653] on ferme tous les rapports sauf les rapports d'héritage (côté "défunt")

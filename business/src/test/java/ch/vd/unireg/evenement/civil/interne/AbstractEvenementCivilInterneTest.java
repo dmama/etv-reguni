@@ -43,7 +43,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		eventSender.reset();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService, audit);
 		options = buildOptions();
 	}
 

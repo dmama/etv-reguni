@@ -8,7 +8,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 
@@ -17,10 +16,10 @@ import ch.vd.unireg.scheduler.JobDefinition;
  */
 public class RamasseDocumentJob extends JobDefinition {
 
+	public static final String NAME = "RamasseDocumentJob";
+
 	private DocumentService docService;
 	private PlatformTransactionManager transactionManager;
-
-	public static final String NAME = "RamasseDocumentJob";
 
 	public RamasseDocumentJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DB, sortOrder, description);
@@ -34,7 +33,6 @@ public class RamasseDocumentJob extends JobDefinition {
 		this.transactionManager = transactionManager;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -48,8 +46,8 @@ public class RamasseDocumentJob extends JobDefinition {
 		});
 
 		for (Document doc : docs) {
-			Audit.info("Le fichier " + doc.getFileName() + " a été récupéré et inséré dans la base de données", doc);
+			audit.info("Le fichier " + doc.getFileName() + " a été récupéré et inséré dans la base de données", doc);
 		}
-		Audit.success("La ramassage des documents est terminé.");
+		audit.success("La ramassage des documents est terminé.");
 	}
 }

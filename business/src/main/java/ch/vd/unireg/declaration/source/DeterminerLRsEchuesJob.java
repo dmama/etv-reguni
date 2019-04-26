@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.DeterminerLRsEchuesRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -26,7 +25,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class DeterminerLRsEchuesJob extends JobDefinition {
 
 	public static final String NAME = "DeterminerLRsEchuesJob";
-
 	private static final String PERIODE_FISCALE = "PERIODE_FISCALE";
 
 	private RapportService rapportService;
@@ -92,6 +90,6 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success(String.format("La détermination des LR échues pour la période fiscale %d à la date du %s est terminée.", periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
+		audit.success(String.format("La détermination des LR échues pour la période fiscale %d à la date du %s est terminée.", periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
 	}
 }

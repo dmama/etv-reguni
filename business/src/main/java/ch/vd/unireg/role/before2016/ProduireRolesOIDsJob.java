@@ -7,7 +7,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.RolesOIDsRapport;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -20,7 +19,6 @@ import ch.vd.unireg.scheduler.JobParamOfficeImpot;
 public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 
 	public static final String NAME = "ProduireRolesOIDJob";
-
 	public static final String NO_COL_OFFICE_IMPOT = "NO_COL_OFFICE_IMPOT";
 
 	public ProduireRolesOIDsJob(int sortOrder, String description) {
@@ -69,6 +67,6 @@ public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des rôles (OID) pour l'année " + annee + " est terminée.", rapport);
+		audit.success("La production des rôles (OID) pour l'année " + annee + " est terminée.", rapport);
 	}
 }

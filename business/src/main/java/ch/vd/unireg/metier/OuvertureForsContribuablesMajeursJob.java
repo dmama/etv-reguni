@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.MajoriteRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -77,7 +76,7 @@ public class OuvertureForsContribuablesMajeursJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("L'ouverture des fors des habitants majeurs à la date du "
+		audit.success("L'ouverture des fors des habitants majeurs à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

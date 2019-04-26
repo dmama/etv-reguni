@@ -30,8 +30,8 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	public void testLogAuditLine() throws Exception {
 
 		setAuthentication("UnitTest");
-		Audit.info("bla");
-		Audit.info("bli");
+		audit.info("bla");
+		audit.info("bli");
 		resetAuthentication();
 
 		doInNewTransaction(status -> {
@@ -46,13 +46,13 @@ public class AuditLineDAOTest extends CoreDAOTest {
 
 		doInNewTransaction(status -> {
 			setAuthentication("UnitTest");
-			Audit.info("bla");
+			audit.info("bla");
 
 			setAuthentication("UnitTest2");
-			Audit.info("bli");
+			audit.info("bli");
 
 			setAuthentication("UnitTest");
-			Audit.info("blo");
+			audit.info("blo");
 
 			resetAuthentication();
 			return null;
@@ -84,10 +84,10 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		doInNewTransaction(status -> {
 
 			setAuthentication("UnitTest");
-			Audit.info("foo");
-			Audit.info("bar");
-			Audit.info("ggg");
-			Audit.info("kuc");
+			audit.info("foo");
+			audit.info("bar");
+			audit.info("ggg");
+			audit.info("kuc");
 			return null;
 		});
 
@@ -136,11 +136,11 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		doInNewTransaction(status -> {
 
 			setAuthentication("UnitTest");
-			Audit.info("foo");
-			Audit.info("bar");
-			Audit.info("ggg");
-			Audit.info("kuc");
-			Audit.info("truc");
+			audit.info("foo");
+			audit.info("bar");
+			audit.info("ggg");
+			audit.info("kuc");
+			audit.info("truc");
 
 			return null;
 		});
@@ -193,8 +193,6 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	@Test
 	public void testLogEventWhenThrowException() throws Exception {
 
-		final AuditLineDAOTestService service = new AuditLineDAOTestServiceImpl();
-
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.execute(status -> {
@@ -203,17 +201,20 @@ public class AuditLineDAOTest extends CoreDAOTest {
 			return null;
 		});
 
-		template.execute(status -> {
-			try {
-				service.logAuditAndThrowException();
-				fail();
-			}
-			catch (Exception e) {
-				status.setRollbackOnly();
-			}
-			return null;
-		});
+		// on simule un log d'audit suivi d'un rollback de la transaction
+		try {
+			template.execute(status -> {
+				audit.info("Blabla");
+				throw new RuntimeException("Exception métier quelconque");
+			});
+			fail();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			assertEquals("Exception métier quelconque", e.getMessage());
+		}
 
+		// l'audit doit bien être présent (= inséré en dehors de la transaction métier)
 		template.execute(status -> {
 			final List<AuditLine> list = auditLineDAO.getAll();
 			assertEquals(1, list.size());

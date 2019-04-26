@@ -3,6 +3,7 @@ package ch.vd.unireg.rapport;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -12,8 +13,8 @@ import ch.vd.unireg.role.before2016.ProduireRolesPPCommunesResults;
 
 public class PdfRolesPPCommunesRapport extends PdfRolesCommunesRapport<ProduireRolesPPCommunesResults, InfoContribuablePP, InfoCommunePP> {
 
-	public PdfRolesPPCommunesRapport(ServiceInfrastructureService infraService) {
-		super(infraService);
+	public PdfRolesPPCommunesRapport(ServiceInfrastructureService infraService, AuditManager audit) {
+		super(infraService, audit);
 	}
 
 	@Override

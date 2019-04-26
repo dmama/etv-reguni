@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.entreprise.interne.transformation;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -56,15 +55,15 @@ public class FusionScissionStrategy extends AbstractEntrepriseStrategy {
 					case FUSION_ART_25_LFUS:
 					case FUSION_INSTITUTIONS_DE_PREVOYANCE:
 					case FUSION_SUISSE_VERS_ETRANGER:
-						Audit.info(event.getId(), "Fusion de l'entreprise détectée");
+						context.audit.info(event.getId(), "Fusion de l'entreprise détectée");
 						return new Fusion(event, entrepriseCivile, entreprise, context, options);
 					case SCISSION_ART_45_LFUS:
 					case SCISSION_SUISSE_VERS_ETRANGER:
-						Audit.info(event.getId(), "Sission de l'entreprise détectée");
+						context.audit.info(event.getId(), "Sission de l'entreprise détectée");
 						return new Scission(event, entrepriseCivile, entreprise, context, options);
 					default:
 						final String message = String.format("Type de fusion inconnu: %s", publication.getTypeDeFusion());
-						Audit.info(event.getId(), message);
+						context.audit.info(event.getId(), message);
 						return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 					}
 				}

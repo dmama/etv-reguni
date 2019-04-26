@@ -145,6 +145,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -230,6 +231,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 				return NiveauCappingEtat.A_VERIFIER;
 			}
 		});
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -322,6 +324,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 				return NiveauCappingEtat.EN_ERREUR;
 			}
 		});
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -422,6 +425,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -699,6 +703,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -837,6 +842,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1000,6 +1006,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1121,6 +1128,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1224,6 +1232,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1325,6 +1334,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1432,6 +1442,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1538,6 +1549,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1614,6 +1626,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1703,6 +1716,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1806,6 +1820,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -1896,6 +1911,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		translator.setEvenementEntrepriseService(getBean(EvenementEntrepriseService.class, "evtEntrepriseService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);

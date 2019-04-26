@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.entreprise.interne.transformation;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -69,11 +68,11 @@ public class LiquidationStrategy extends AbstractEntrepriseStrategy {
 					case SOCIETE_NOM_COLLECTIF:
 					case SOCIETE_COMMANDITE:
 					case SOCIETE_COMMANDITE_PAR_ACTION:
-						Audit.info(event.getId(), "Liquidation de l'entreprise détectée");
+						getContext().audit.info(event.getId(), "Liquidation de l'entreprise détectée");
 						return new Liquidation(event, entrepriseCivile, entreprise, context, options);
 					default:
 						final String message = String.format("Type de liquidation inconnu: %s", publication.getTypeDeLiquidation());
-						Audit.info(event.getId(), message);
+						getContext().audit.info(event.getId(), message);
 						return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 					}
 				}

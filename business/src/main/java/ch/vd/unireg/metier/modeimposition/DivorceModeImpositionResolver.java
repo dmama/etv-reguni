@@ -1,7 +1,7 @@
 package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -19,9 +19,9 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositionResolver {
 
 	private final Long numeroEvenement;
-	
-	public DivorceModeImpositionResolver(TiersService tiersService, Long numeroEvenement) {
-		super(tiersService);
+
+	public DivorceModeImpositionResolver(TiersService tiersService, Long numeroEvenement, AuditManager audit) {
+		super(tiersService, audit);
 		this.numeroEvenement = numeroEvenement;
 	}
 
@@ -70,16 +70,16 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 					}
 					else {
 						result.setModeImposition(ModeImposition.ORDINAIRE);
-						Audit.info(numeroEvenement, String.format("Couple ordinaire : contribuable %s, suisse ou permis C -> ordinaire", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
+						audit.info(numeroEvenement, String.format("Couple ordinaire : contribuable %s, suisse ou permis C -> ordinaire", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 					}
 					break;
 				case DEPENSE:
 					result.setModeImposition(ModeImposition.DEPENSE);
-					Audit.info(numeroEvenement, String.format("Couple à la dépense : contribuable %s -> dépense", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
+					audit.info(numeroEvenement, String.format("Couple à la dépense : contribuable %s -> dépense", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 					break;
 				case INDIGENT:
 					result.setModeImposition(ModeImposition.INDIGENT);
-					Audit.info(numeroEvenement, String.format("Couple indigent : contribuable %s -> indigent", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
+					audit.info(numeroEvenement, String.format("Couple indigent : contribuable %s -> indigent", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 					break;
 				case MIXTE_137_1:
 				case MIXTE_137_2:
@@ -91,7 +91,7 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 					break;
 				case SOURCE:
 					result.setModeImposition(ModeImposition.SOURCE);
-					Audit.info(numeroEvenement, String.format("Couple à la source : contribuable %s -> source", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
+					audit.info(numeroEvenement, String.format("Couple à la source : contribuable %s -> source", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 					break;
 			}
 			
@@ -103,14 +103,14 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 		return result;
 	}
 
-	private static ModeImposition normaliseModeImpositionMixte(ModeImposition modeImposition, TypeAutoriteFiscale typeAutoriteFiscale, boolean hasForSecondaire, Long numeroEvenement, String auditPrefixe) {
+	private ModeImposition normaliseModeImpositionMixte(ModeImposition modeImposition, TypeAutoriteFiscale typeAutoriteFiscale, boolean hasForSecondaire, Long numeroEvenement, String auditPrefixe) {
 		if (modeImposition != ModeImposition.MIXTE_137_1 && modeImposition != ModeImposition.MIXTE_137_2) {
 			throw new IllegalArgumentException("Mode d'imposition non mixte : " + modeImposition);
 		}
 		final ModeImposition normalise = typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 				? modeImposition
 				: (hasForSecondaire ? ModeImposition.ORDINAIRE : ModeImposition.SOURCE);
-		Audit.info(numeroEvenement, String.format("%s (%s) -> %s", auditPrefixe, typeAutoriteFiscale, normalise.texte()));
+		audit.info(numeroEvenement, String.format("%s (%s) -> %s", auditPrefixe, typeAutoriteFiscale, normalise.texte()));
 		return normalise;
 	}
 }

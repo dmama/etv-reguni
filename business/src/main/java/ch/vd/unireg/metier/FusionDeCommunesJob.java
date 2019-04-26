@@ -11,7 +11,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.FusionDeCommunesRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -30,7 +29,6 @@ import ch.vd.unireg.scheduler.JobParamString;
 public class FusionDeCommunesJob extends JobDefinition {
 
 	public static final String NAME = "FusionDeCommunesJob";
-
 	private static final String ANCIENNES_COMMUNES = "ANCIENNES_COMMUNES";
 	private static final String NOUVELLE_COMMUNE = "NOUVELLE_COMMUNE";
 	private static final String DATE_FUSION = "DATE_FUSION";
@@ -94,7 +92,7 @@ public class FusionDeCommunesJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("Le traitement de la fusion des communes est terminé.", rapport);
+		audit.success("Le traitement de la fusion des communes est terminé.", rapport);
 	}
 
 	private Set<Integer> getNosOfs(Map<String, Object> params, String key) {

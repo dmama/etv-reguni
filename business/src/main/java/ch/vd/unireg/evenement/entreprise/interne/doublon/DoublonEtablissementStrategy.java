@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -88,10 +87,10 @@ public class DoublonEtablissementStrategy extends AbstractEntrepriseStrategy {
 
 		if (!doublons.isEmpty()) {
 			if (doublons.size() == 1) {
-				Audit.info(event.getId(), "Un doublon d'établissement détecté.");
+				context.audit.info(event.getId(), "Un doublon d'établissement détecté.");
 				return doublons.get(0);
 			} else {
-				Audit.info(event.getId(), String.format("%d doublons d'établissement détectés.", doublons.size()));
+				context.audit.info(event.getId(), String.format("%d doublons d'établissement détectés.", doublons.size()));
 				return new EvenementEntrepriseInterneComposite(event, entrepriseCivile, entreprise, context, options, doublons);
 			}
 		}

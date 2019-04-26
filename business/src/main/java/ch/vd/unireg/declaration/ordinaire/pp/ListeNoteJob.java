@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.ListeNoteRapport;
@@ -17,12 +16,10 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 public class ListeNoteJob extends JobDefinition {
 
 	public static final String NAME = "ListeNoteJob";
-
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String PERIODE_FISCALE = "PERIODE";
 
 	private DeclarationImpotService service;
-
 	private RapportService rapportService;
 
 	public ListeNoteJob(int order, String description) {
@@ -68,7 +65,7 @@ public class ListeNoteJob extends JobDefinition {
 	final ListeNoteRapport rapport = rapportService.generateRapport(results, statusManager);
 
 		setLastRunReport(rapport);
-		Audit.success("La production de la liste des contribuables avec une note du "
+		audit.success("La production de la liste des contribuables avec une note du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 

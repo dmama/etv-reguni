@@ -2,7 +2,6 @@ package ch.vd.unireg.role;
 
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.RolePMOfficeRapport;
 
 public class RolePMOfficeJob extends RoleJob {
@@ -22,7 +21,7 @@ public class RolePMOfficeJob extends RoleJob {
 		final RolePMOfficeRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 
-		Audit.success("Le rôle PM " + annee + " de l'OIPM est terminé.", rapport);
+		audit.success("Le rôle PM " + annee + " de l'OIPM est terminé.", rapport);
 	}
 
 	@Override

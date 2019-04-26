@@ -20,7 +20,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.document.RattrapageRegimesFiscauxRapport;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
@@ -141,7 +140,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 
 		final RattrapageRegimesFiscauxRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""), rapport);
+		audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""), rapport);
 	}
 
 

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -22,7 +21,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class ExclureContribuablesEnvoiJob extends JobDefinition {
 
 	public static final String NAME = "ExclureContribuablesEnvoiJob";
-
 	public static final String LISTE_CTBS = "LISTE_CTBS";
 	public static final String DATE_LIMITE = "DATE_LIMITE";
 
@@ -63,7 +61,7 @@ public class ExclureContribuablesEnvoiJob extends JobDefinition {
 		final ExclureContribuablesEnvoiRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("L'exclusion des contribuables de l'envoi automatique est terminée.", rapport);
+		audit.success("L'exclusion des contribuables de l'envoi automatique est terminée.", rapport);
 	}
 
 	public void setTiersService(TiersService tiersService) {

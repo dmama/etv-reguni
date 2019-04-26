@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.unireg.document.EnvoiSommationsDIsPPRapport;
@@ -19,7 +18,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class EditiqueSommationDIJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueSommationDIJob";
-
 	public static final String PARAM_MISE_SS_PLI  = "PARAM_MISE_SS_PLI";
 	public static final String PARAM_NB_MAX_SOMMATIONS  = "PARAM_NB_MAX_SOMMATIONS";
 
@@ -64,7 +62,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 		final Integer nombreMax = getOptionalIntegerValue(params, PARAM_NB_MAX_SOMMATIONS);
 		final EnvoiSommationsDIsPPResults results = declarationImpotService.envoyerSommationsPP(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax == null ? 0 : nombreMax, getStatusManager());
 		if (results == null) {
-			Audit.error( String.format(
+			audit.error( String.format(
 					"L'envoi en masse des sommations DIs  pour le %s a échoué"
 					, RegDateHelper.dateToDisplayString(dateTraitment)
 			));
@@ -73,7 +71,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 
 		final EnvoiSommationsDIsPPRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success(
+		audit.success(
 				"L'envoi en masse des sommations DIs  pour le "
 				+ RegDateHelper.dateToDisplayString(dateTraitment) +
 				" est terminée.", rapport);
@@ -86,5 +84,4 @@ public class EditiqueSommationDIJob extends JobDefinition {
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
 	}
-
 }

@@ -6,10 +6,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -18,6 +14,9 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -55,7 +54,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 		final Individu individu = getIndividu();
 		final Permis permis = individu.getPermis().getPermisActif(getDate());
 		if (permis == null || permis.getTypePermis() != TypePermis.ETABLISSEMENT) {
-			Audit.info(getNumeroEvenement(), "Permis autre que permis C à la date de l'événement : ignoré");
+			context.audit.info(getNumeroEvenement(), "Permis autre que permis C à la date de l'événement : ignoré");
 		}
 		else {
 			// nous avons donc une modification de date de début d'un permis C
@@ -83,7 +82,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 						final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(aujourdhui);
 						if (fors.isEmpty()) {
 							ignorable = true;
-							Audit.info(getNumeroEvenement(), "Permis C sur mineur sans for (à la date de traitement) : ignoré");
+							context.audit.info(getNumeroEvenement(), "Permis C sur mineur sans for (à la date de traitement) : ignoré");
 						}
 					}
 				}

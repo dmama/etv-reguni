@@ -19,7 +19,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.database.DatabaseService;
 import ch.vd.unireg.database.DumpDatabaseJob;
@@ -54,6 +54,7 @@ public class DatabaseDumpController {
 	private TiersDAO dao;
 	private PlatformTransactionManager transactionManager;
 	private SecurityProviderInterface securityProvider;
+	private AuditManager audit;
 
 	@RequestMapping(value = "/dump.do", method = RequestMethod.POST)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -93,7 +94,7 @@ public class DatabaseDumpController {
 
 		// Retourne le contenu de la base sous forme de fichier XML
 		final String filename = "database-dump-" + RegDate.get().toString() + ".xml";
-		Audit.info("La base de données de données à été exportée directement sur le poste client (" + filename + ").");
+		audit.info("La base de données de données à été exportée directement sur le poste client (" + filename + ").");
 
 		ServletOutputStream out = response.getOutputStream();
 		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
@@ -194,5 +195,9 @@ public class DatabaseDumpController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 }

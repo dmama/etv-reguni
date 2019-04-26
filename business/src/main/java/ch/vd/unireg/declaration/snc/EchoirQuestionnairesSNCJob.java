@@ -3,7 +3,6 @@ package ch.vd.unireg.declaration.snc;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.EchoirQSNCRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -49,7 +48,7 @@ public class EchoirQuestionnairesSNCJob extends JobDefinition {
 		final EchoirQSNCRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("Le passage à l'état 'échu' des DIs PP sommées est terminé.", rapport);
+		audit.success("Le passage à l'état 'échu' des DIs PP sommées est terminé.", rapport);
 	}
 
 	public void setProcessor(EchoirQuestionnairesSNCProcessor processor) {

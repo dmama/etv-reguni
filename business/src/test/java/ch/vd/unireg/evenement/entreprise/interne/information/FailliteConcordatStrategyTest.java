@@ -3,8 +3,10 @@ package ch.vd.unireg.evenement.entreprise.interne.information;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -47,7 +49,7 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 		}
 	};
 
-	private final EvenementEntrepriseContext context = new EvenementEntrepriseContext(serviceEntreprise, null, null, null);
+	private final EvenementEntrepriseContext context = new EvenementEntrepriseContext(serviceEntreprise, null, null, null, Mockito.mock(AuditManager.class));
 
 	private final EvenementEntrepriseOptions options = new EvenementEntrepriseOptions();
 

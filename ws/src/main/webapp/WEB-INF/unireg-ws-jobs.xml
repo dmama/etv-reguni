@@ -7,6 +7,7 @@
 	<bean id="schedulerJob" class="ch.vd.unireg.scheduler.JobDefinition" abstract="true">
 		<property name="batchScheduler" ref="batchScheduler"/>
 		<property name="uniregModeHelper" ref="uniregModeHelper"/>
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
     <bean id="wsCacheResetJob" parent="schedulerJob" class="ch.vd.unireg.webservices.common.WebServiceCachesResetJob">
@@ -20,6 +21,7 @@
 				<ref bean="wsv7Cache"/>
 			</list>
         </property>
+	    <property name="audit" ref="auditManager"/>
     </bean>
 
 </beans>

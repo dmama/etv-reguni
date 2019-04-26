@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.ProgrammingException;
@@ -77,7 +76,7 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 		final RattraperEmissionDIPourCyberContexteRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("Les Dis émises existantes ont été publiées dans le contexte de la cyberfiscalité.", rapport);
+		audit.success("Les Dis émises existantes ont été publiées dans le contexte de la cyberfiscalité.", rapport);
 	}
 
 	/**

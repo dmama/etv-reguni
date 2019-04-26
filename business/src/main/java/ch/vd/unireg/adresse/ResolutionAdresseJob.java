@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ResolutionAdresseRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -15,11 +14,11 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 
 public class ResolutionAdresseJob extends JobDefinition{
 
-	private AdresseService adresseService;
-	private RapportService rapportService;
-
 	public static final String NAME = "ResolutionAdresseJob";
 	public static final String NB_THREADS = "NB_THREADS";
+
+	private AdresseService adresseService;
+	private RapportService rapportService;
 
 	public ResolutionAdresseJob(int sortOrder, String description) {
 		super(NAME, JobCategory.TIERS, sortOrder, description);
@@ -52,7 +51,7 @@ public class ResolutionAdresseJob extends JobDefinition{
 		final ResolutionAdresseRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La résolution des adresses à la date du "
+		audit.success("La résolution des adresses à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

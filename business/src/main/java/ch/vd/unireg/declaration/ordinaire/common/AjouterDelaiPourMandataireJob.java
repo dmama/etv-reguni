@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.AjouterDelaiPourMandataireRapport;
@@ -116,7 +115,7 @@ public class AjouterDelaiPourMandataireJob extends JobDefinition {
 		final AjouterDelaiPourMandataireRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La demande de délai pour les mandataires a été traitée.", rapport);
+		audit.success("La demande de délai pour les mandataires a été traitée.", rapport);
 	}
 
 	private List<InfosDelaisMandataire> extractInfosDelaisFromCSV(byte[] csv, Map<String, Object> params) throws IOException, ParseException {
@@ -150,7 +149,6 @@ public class AjouterDelaiPourMandataireJob extends JobDefinition {
 		}
 		return infos;
 	}
-
 
 	@Override
 	protected boolean isWebStartableInProductionMode() {

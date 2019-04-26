@@ -6,9 +6,10 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -16,6 +17,7 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.tiers.MockTiersDAO;
 import ch.vd.unireg.tiers.TiersDAO;
 
@@ -58,7 +60,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				return 1234567L;
 			}
 		};
-		mockEvenementCivilContext = new EvenementCivilContext(null, null, null) {
+		mockEvenementCivilContext = new EvenementCivilContext(null, null, null, Mockito.mock(AuditManager.class)) {
 			private MockTiersDAO mockTiersDAO = new MockTiersDAO();
 			@Override
 			public TiersDAO getTiersDAO() {

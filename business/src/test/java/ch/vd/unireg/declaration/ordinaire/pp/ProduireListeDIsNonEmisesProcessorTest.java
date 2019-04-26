@@ -49,7 +49,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 
 		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager,
 		                                                   parametreAppService, serviceCivilCacheWarmer, validationService,
-		                                                   periodeImpositionService, adresseService, ticketService);
+		                                                   periodeImpositionService, adresseService, ticketService, audit);
 	}
 
 	@Test

@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.entreprise.interne.donneeinvalide;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -80,12 +79,12 @@ public class FormeJuridiqueManquanteStrategy extends AbstractEntrepriseStrategy 
 	                                                               boolean inscriteIDE) throws EvenementEntrepriseException {
 		if (inscriteAuRC || inscriteIDE) {
 			final String message = String.format("Apparition de la forme juridique (legalForm) de l'entreprise civile au registre civil: %s. La forme juridique précédente manque. Traitement manuel.", formeLegale);
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 		}
 		else {
 			final String message = String.format("Le registre civil indique maintenant la forme juridique (legalForm) de l'entreprise civile: %s. Elle n'était pas fournie auparavant. Vérification requise.", formeLegale);
-			Audit.warn(event.getId(), message);
+			context.audit.warn(event.getId(), message);
 			return new MessageWarningPreExectution(event, entrepriseCivile, entreprise, context, options, message);
 		}
 	}
@@ -95,12 +94,12 @@ public class FormeJuridiqueManquanteStrategy extends AbstractEntrepriseStrategy 
 	                                                                boolean inscriteIDE) throws EvenementEntrepriseException {
 		if (inscriteAuRC || inscriteIDE) {
 			final String message = String.format("La forme juridique (legalForm) de l'entreprise civile a disparu du registre civil! Dernière forme juridique: %s. Traitement manuel.", formeLegaleAvant);
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 		}
 		else {
 			final String message = String.format("Le registre civil n'indique plus de forme juridique (legalForm) pour l'entreprise civile. Dernière forme juridique: %s. Vérification requise.", formeLegaleAvant);
-			Audit.warn(event.getId(), message);
+			context.audit.warn(event.getId(), message);
 			return new MessageWarningPreExectution(event, entrepriseCivile, entreprise, context, options, message);
 		}
 	}
@@ -110,12 +109,12 @@ public class FormeJuridiqueManquanteStrategy extends AbstractEntrepriseStrategy 
 			EvenementEntrepriseException {
 		if (inscriteAuRC || inscriteIDE) {
 			final String message = "La forme juridique (legalForm) de l'entreprise civile est introuvable au registre civil. Traitement manuel.";
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 		}
 		else {
 			final String message = "Le registre civil n'indique pas de forme juridique (legalForm) pour l'entreprise civile.";
-			Audit.info(event.getId(), message);
+			context.audit.info(event.getId(), message);
 			return new MessageSuiviPreExecution(event, entrepriseCivile, entreprise, context, options, message);
 		}
 	}

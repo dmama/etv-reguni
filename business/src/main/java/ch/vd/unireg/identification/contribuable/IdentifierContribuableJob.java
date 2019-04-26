@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.IdentifierContribuableRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -16,15 +15,12 @@ import ch.vd.unireg.scheduler.JobParamLong;
 
 public class IdentifierContribuableJob extends JobDefinition {
 
+	public static final String NAME = "IdentifierContribuableJob";
+	public static final String NB_THREADS = "NB_THREADS";
+	public static final String ID_MESSAGE = "ID_MESSAGE";
+
 	private IdentificationContribuableService identificationService;
 	private RapportService rapportService;
-
-
-	public static final String NAME = "IdentifierContribuableJob";
-
-	public static final String NB_THREADS = "NB_THREADS";
-
-	public static final String ID_MESSAGE = "ID_MESSAGE";
 
 	public IdentifierContribuableJob(int sortOrder, String description) {
 		super(NAME, JobCategory.EVENTS, sortOrder, description);
@@ -65,7 +61,7 @@ public class IdentifierContribuableJob extends JobDefinition {
 		final IdentifierContribuableRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La relance de l'identification des contribuables à la date du "
+		audit.success("La relance de l'identification des contribuables à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

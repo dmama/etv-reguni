@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.entreprise.interne.inscription;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -63,7 +62,7 @@ public class InscriptionStrategy extends AbstractEntrepriseStrategy {
 				final RegDate dateInscriptionRCApres = inscriptionApres != null ? inscriptionApres.getDateInscriptionCH() : null;
 
 				if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {
-					Audit.info(event.getId(), String.format("Inscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entrepriseCivile.getNumeroEntreprise()));
+					context.audit.info(event.getId(), String.format("Inscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entrepriseCivile.getNumeroEntreprise()));
 					return new Inscription(event, entrepriseCivile, entreprise, context, options);
 				}
 			}

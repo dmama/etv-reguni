@@ -3,15 +3,9 @@ package ch.vd.unireg.evenement.civil.interne.obtentionpermis;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -23,6 +17,11 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.metier.common.DecalageDateHelper;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -177,11 +176,11 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 						(MotifFor.ARRIVEE_HC == forPrincipalHabitant.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalHabitant.getMotifOuverture())) {
 					getService().annuleForFiscal(forPrincipalHabitant);
 					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, forPrincipalHabitant.getDateDebut(), forPrincipalHabitant.getMotifOuverture(), ModeImposition.ORDINAIRE);
-					Audit.info(getNumeroEvenement(), "Mise au rôle ordinaire de l'individu");
+					context.audit.info(getNumeroEvenement(), "Mise au rôle ordinaire de l'individu");
 				} else {
 					closeForFiscalPrincipal(habitant, datePriseEnCompte.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
 					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, datePriseEnCompte, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
-					Audit.info(getNumeroEvenement(), "Mise à jour du for principal de l'individu au rôle ordinaire");
+					context.audit.info(getNumeroEvenement(), "Mise à jour du for principal de l'individu au rôle ordinaire");
 				}
 			}
 
@@ -196,17 +195,17 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 						(MotifFor.ARRIVEE_HC == forPrincipalMenage.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalMenage.getMotifOuverture())) {
 					getService().annuleForFiscal(forPrincipalMenage);
 					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, forPrincipalMenage.getDateDebut(), forPrincipalMenage.getMotifOuverture(), ModeImposition.ORDINAIRE);
-					Audit.info(getNumeroEvenement(), "Mise au role ordinaire du ménage");
+					context.audit.info(getNumeroEvenement(), "Mise au role ordinaire du ménage");
 				} else {
 					closeForFiscalPrincipal(menage, datePriseEnCompte.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
 					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, datePriseEnCompte, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
-					Audit.info(getNumeroEvenement(), "Mise à jour du for principal du ménage au rôle ordinaire");
+					context.audit.info(getNumeroEvenement(), "Mise à jour du for principal du ménage au rôle ordinaire");
 				}
 			}
 			//else pas de changement du mode d'imposition
 		}
 		else if (!FiscalDateHelper.isMajeurAt(individu, datePriseEnCompte)) { //individu mineur non assujetti
-			Audit.info(getNumeroEvenement(), "Individu mineur non assujetti, il reste non assujetti");
+			context.audit.info(getNumeroEvenement(), "Individu mineur non assujetti, il reste non assujetti");
 		}
 		else { //individu majeur non assujetti
 			final EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
@@ -263,7 +262,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)) { // le for est ouvert sur le ménage commun
 					if (menage != null) {
 						openForFiscalPrincipalChangementModeImpositionImplicite(menage, datePriseEnCompte, noOfs);
-						Audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
+						context.audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
 					}
 					else {
 						throw new EvenementCivilException("L'individu est marié ou en partenariat enregistré mais ne possède pas de ménage commun");
@@ -271,11 +270,11 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				}
 				else { // le for est ouvert sur l'individu
 					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, datePriseEnCompte, noOfs);
-					Audit.info(getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
+					context.audit.info(getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
 				}
 			}
 			else {
-				Audit.info(getNumeroEvenement(), "Domicile hors du territoire cantonal : pas d'ouverture de for");
+				context.audit.info(getNumeroEvenement(), "Domicile hors du territoire cantonal : pas d'ouverture de for");
 			}
 		}
 		return HandleStatus.TRAITE;

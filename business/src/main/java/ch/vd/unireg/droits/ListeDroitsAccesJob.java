@@ -22,7 +22,6 @@ import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StatusManager;
@@ -165,7 +164,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 		final ListeDroitsAccesRapport rapport = rapportService.generateRapport(rapportFinal, statusManager);
 
 		setLastRunReport(rapport);
-		Audit.success("La production de la liste des droits d'accès au " + RegDateHelper.dateToDisplayString(dateValeur) + " est terminée.", rapport);
+		audit.success("La production de la liste des droits d'accès au " + RegDateHelper.dateToDisplayString(dateValeur) + " est terminée.", rapport);
 	}
 
 	/**

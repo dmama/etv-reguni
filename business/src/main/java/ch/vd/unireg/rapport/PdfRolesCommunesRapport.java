@@ -10,7 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -27,8 +27,8 @@ import ch.vd.unireg.role.before2016.ProduireRolesCommunesResults;
  */
 public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesResults<T>, ICTB extends InfoContribuable<ICTB>, ICOM extends InfoCommune<ICTB, ICOM>> extends PdfRolesRapport<T> {
 
-	public PdfRolesCommunesRapport(ServiceInfrastructureService infraService) {
-		super(infraService);
+	public PdfRolesCommunesRapport(ServiceInfrastructureService infraService, AuditManager audit) {
+		super(infraService, audit);
 	}
 
 	public void write(final T results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
@@ -146,7 +146,7 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 
 		    final ICOM infoCommune = infosCommunes.get(commune.getNoOFS());
 		    if (infoCommune == null) {
-		        Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomOfficiel()
+		        audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomOfficiel()
 		                + "(n°ofs " + commune.getNoOFS() + ')');
 		        continue;
 		    }

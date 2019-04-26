@@ -8,7 +8,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.AcomptesRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -25,9 +24,7 @@ public class AcomptesJob  extends JobDefinition {
 	public static final String PERIODE_FISCALE = "PERIODE";
 
 	private AcomptesService service;
-
 	private RapportService rapportService;
-
 	private PlatformTransactionManager transactionManager;
 
 	public AcomptesJob(int order, String description) {
@@ -85,7 +82,7 @@ public class AcomptesJob  extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des populations pour les bases acomptes en date du " + dateTraitement + " est terminée.", rapport);
+		audit.success("La production des populations pour les bases acomptes en date du " + dateTraitement + " est terminée.", rapport);
 	}
 
 	@Override

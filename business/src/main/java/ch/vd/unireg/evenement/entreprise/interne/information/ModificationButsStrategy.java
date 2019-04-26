@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise.interne.information;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -61,7 +60,7 @@ public class ModificationButsStrategy extends AbstractEntrepriseStrategy {
 				butsApres = butsApresDateRanged.getPayload();
 			}
 			if (!ComparisonHelper.areEqual(butsAvant, butsApres)) {
-				Audit.info(event.getId(), "Modification des buts de l'entreprise -> Propagation.");
+				context.audit.info(event.getId(), "Modification des buts de l'entreprise -> Propagation.");
 				return new InformationComplementaire(event, entrepriseCivile, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_BUT);
 			}
 		}

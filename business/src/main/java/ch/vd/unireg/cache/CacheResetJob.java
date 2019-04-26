@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
@@ -78,7 +77,7 @@ public class CacheResetJob extends JobDefinition {
 			if (reset != null && reset) {
 				message = "Reset du cache " + c.getDescription();
 				statusManager.setMessage(message, (100 * (i + 1)) / size);
-				Audit.warn(message);
+				audit.warn(message);
 
 				c.reset();
 				++i;

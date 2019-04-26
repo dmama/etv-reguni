@@ -18,6 +18,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="sessionFactory"  ref="sessionFactory"/>
 		<property name="statsService" ref="statsService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 
 	<bean id="globalTiersSearcher" class="ch.vd.unireg.indexer.tiers.GlobalTiersSearcherImpl">
@@ -86,6 +87,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
 	
 	<bean id="roleBefore2016Service" class="ch.vd.unireg.role.before2016.RoleServiceImpl">
@@ -198,7 +200,9 @@
 	<bean id="rapportService" class="ch.vd.unireg.rapport.RapportServiceImpl">
 		<property name="docService" ref="docService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="audit" ref="auditManager"/>
 	</bean>
+
 	<!--Fourre neutre -->
 	<bean id="fourreNeutreService" class="ch.vd.unireg.fourreNeutre.FourreNeutreServiceImpl">
 

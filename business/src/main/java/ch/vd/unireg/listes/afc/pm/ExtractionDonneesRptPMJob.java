@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ExtractionDonneesRptRapport;
 import ch.vd.unireg.listes.afc.ExtractionDonneesRptService;
@@ -26,16 +25,13 @@ import ch.vd.unireg.scheduler.JobParamInteger;
 public class ExtractionDonneesRptPMJob extends JobDefinition {
 
 	public static final String NAME = "ExtractionDonneesRptPMJob";
-
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String VERSION_WS = "VERSION_WS";
 	public static final String MODE = "MODE";
 
 	private RapportService rapportService;
-
 	private PlatformTransactionManager transactionManager;
-
 	private ExtractionDonneesRptService service;
 
 	public ExtractionDonneesRptPMJob(int order, String description) {
@@ -113,7 +109,7 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success(String.format("L'extraction des données de référence RPT PM IBC (%s %d) en date du %s est terminée.", null, pf, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
+		audit.success(String.format("L'extraction des données de référence RPT PM IBC (%s %d) en date du %s est terminée.", null, pf, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
 	}
 
 	@Override

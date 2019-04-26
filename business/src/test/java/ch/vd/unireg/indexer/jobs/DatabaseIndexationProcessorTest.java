@@ -48,7 +48,7 @@ public class DatabaseIndexationProcessorTest extends BusinessTest {
 
 		this.indexer = globalTiersIndexer;
 		this.searcher = globalTiersSearcher;
-		this.indexationProcessor = new DatabaseIndexationProcessor(tiersDAO, null, statsService, searcher, indexer, globalIndex, sessionFactory, transactionManager);
+		this.indexationProcessor = new DatabaseIndexationProcessor(tiersDAO, null, statsService, searcher, indexer, globalIndex, sessionFactory, transactionManager, audit);
 
 		this.indexer.overwriteIndex();
 		setWantIndexationTiers(false); // -> va mettre le flag dirty sur tous les tiers modifiés

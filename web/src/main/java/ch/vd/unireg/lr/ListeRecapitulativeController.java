@@ -32,7 +32,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.DebiteurPrestationImposableNotFoundException;
@@ -120,6 +120,7 @@ public class ListeRecapitulativeController {
 	private EvenementFiscalService evenementFiscalService;
 	private TicketService ticketService;
 	private MessageHelper messageHelper;
+	private AuditManager audit;
 
 	public void setLrListManager(ListeRecapListManager lrListManager) {
 		this.lrListManager = lrListManager;
@@ -169,7 +170,10 @@ public class ListeRecapitulativeController {
 		this.ticketService = ticketService;
 	}
 
-	//
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
+	}
+//
 	// Méthodes utilitaires
 	//
 
@@ -540,7 +544,7 @@ public class ListeRecapitulativeController {
 
 		final DeclarationImpotSource lr = getListeRecapitulative(idListe);
 
-		Audit.info(String.format("Impression (%s/%s) d'un duplicata de LR pour le débiteur %d et la période [%s ; %s]",
+		audit.info(String.format("Impression (%s/%s) d'un duplicata de LR pour le débiteur %d et la période [%s ; %s]",
 		                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
 		                         lr.getTiers().getNumero(),
 		                         RegDateHelper.dateToDashString(lr.getDateDebut()),

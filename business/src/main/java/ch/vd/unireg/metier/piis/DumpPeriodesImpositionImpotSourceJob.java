@@ -16,7 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
@@ -34,7 +33,6 @@ import ch.vd.unireg.tiers.TiersDAO;
 public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 
 	private static final String NAME = "DumpPeriodesImpositionImpotSourceJob";
-
 	private static final String NB_THREADS = "NB_THREADS";
 
 	private HibernateTemplate hibernateTemplate;
@@ -97,7 +95,7 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("Le dump des périodes d'imposition IS est terminé.", rapport);
+		audit.success("Le dump des périodes d'imposition IS est terminé.", rapport);
 	}
 
 	@Override

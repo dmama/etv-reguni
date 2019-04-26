@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.Document;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -25,17 +24,16 @@ import ch.vd.unireg.scheduler.JobParamInteger;
  */
 public class ProduireStatsJob extends JobDefinition {
 
-	private DeclarationImpotService service;
-	private RapportService rapportService;
-	private PlatformTransactionManager transactionManager;
-
-	private ParametreAppService paramsApp;
-
 	public static final String NAME = "ProduireStatsJob";
 
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String STATS_TYPE = "TYPE";
 	public static final String POPULATION = "POPULATION";
+
+	private DeclarationImpotService service;
+	private RapportService rapportService;
+	private PlatformTransactionManager transactionManager;
+	private ParametreAppService paramsApp;
 
 	public enum Type {
 		DECLARATIONS("déclarations"),
@@ -173,7 +171,7 @@ public class ProduireStatsJob extends JobDefinition {
 		}
 
 		setLastRunReport(rapport);
-		Audit.success("La production des statistiques pour l'année " + annee + " et sur les " + type.description() + " à la date du "
+		audit.success("La production des statistiques pour l'année " + annee + " et sur les " + type.description() + " à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 

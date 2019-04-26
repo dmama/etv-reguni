@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.Document;
 import ch.vd.unireg.document.DocumentService;
@@ -20,7 +19,6 @@ import ch.vd.unireg.scheduler.JobParamLong;
 public class LoadDatabaseJob extends JobDefinition {
 
 	public static final String NAME = "LoadDatabaseJob";
-
 	public static final String DOC_ID = "DocId";
 
 	private DatabaseService dbService;
@@ -79,7 +77,7 @@ public class LoadDatabaseJob extends JobDefinition {
 		status.setMessage("Reindexation de la base en cours...");
 		globalIndexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 2, status);
 
-		Audit.success("La base de données a été rechargée et indexée à partir du fichier " + doc.getNom() + " (document #" + doc.getId()
+		audit.success("La base de données a été rechargée et indexée à partir du fichier " + doc.getNom() + " (document #" + doc.getId()
 				+ ").");
 	}
 

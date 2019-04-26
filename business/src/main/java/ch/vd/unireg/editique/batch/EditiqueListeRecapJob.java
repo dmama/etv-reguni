@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.source.EnvoiLRsResults;
 import ch.vd.unireg.declaration.source.ListeRecapService;
@@ -18,7 +17,6 @@ import ch.vd.unireg.scheduler.JobParamRegDate;
 public class EditiqueListeRecapJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueListeRecapJob";
-
 	public static final String S_PARAM_DATE_FIN_PERIODE = "DATE_FIN_PERIODE";
 
 	private ListeRecapService listeRecapService;
@@ -47,13 +45,13 @@ public class EditiqueListeRecapJob extends JobDefinition {
 		final EnvoiLRsResults results = listeRecapService.imprimerAllLR(dateFinMoisPeriode, status);
 		if (results == null) {
 			final String message = String.format("L'envoi en masse des LRs pour le %s a échoué", RegDateHelper.dateToDisplayString(dateFinMoisPeriode));
-			Audit.error(message);
+			audit.error(message);
 			return;
 		}
 		final EnvoiLRsRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
 		final String message = "L'envoi en masse des LRs pour le " + RegDateHelper.dateToDisplayString(dateFinMoisPeriode) + " est terminé.";
-		Audit.success(message, rapport);
+		audit.success(message, rapport);
 	}
 
 	public void setListeRecapService(ListeRecapService listeRecapService) {
@@ -63,5 +61,4 @@ public class EditiqueListeRecapJob extends JobDefinition {
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
 	}
-
 }

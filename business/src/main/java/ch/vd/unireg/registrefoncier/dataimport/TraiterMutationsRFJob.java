@@ -6,7 +6,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.MutationsRFProcessorRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -95,7 +94,7 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		final MutationsRFProcessorResults results = processor.processImport(importId, nbThreads, statusManager);
 		final MutationsRFProcessorRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
-		Audit.success("Le traitement de l'import RF (traitement des mutations) est terminé.", rapport);
+		audit.success("Le traitement de l'import RF (traitement des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de rapprochement des propriétaires
 		if (startRapprochementJob && !statusManager.isInterrupted()) {

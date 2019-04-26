@@ -35,7 +35,7 @@ import ch.vd.registre.simpleindexer.LuceneException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
@@ -85,9 +85,10 @@ public class DatabaseIndexationProcessor {
 	private final GlobalIndexInterface globalIndex;
 	private final SessionFactory sessionFactory;
 	private final PlatformTransactionManager transactionManager;
+	private final AuditManager audit;
 
 	public DatabaseIndexationProcessor(TiersDAO tiersDAO, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer, StatsService statsService, GlobalTiersSearcher tiersSearcher, GlobalTiersIndexer tiersIndexer,
-	                                   GlobalIndexInterface globalIndex, SessionFactory sessionFactory, PlatformTransactionManager transactionManager) {
+	                                   GlobalIndexInterface globalIndex, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, AuditManager audit) {
 		this.tiersDAO = tiersDAO;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.statsService = statsService;
@@ -96,6 +97,7 @@ public class DatabaseIndexationProcessor {
 		this.globalIndex = globalIndex;
 		this.sessionFactory = sessionFactory;
 		this.transactionManager = transactionManager;
+		this.audit = audit;
 	}
 
 	@NotNull
@@ -151,7 +153,7 @@ public class DatabaseIndexationProcessor {
 		rapportFinal.setInterrompu(status.isInterrupted());
 		rapportFinal.end(template.getThreadStats());
 		rapportFinal.getTimeLog().logStats(LOGGER);
-		Audit.info("Indexation terminée.");
+		audit.info("Indexation terminée.");
 
 		return rapportFinal;
 

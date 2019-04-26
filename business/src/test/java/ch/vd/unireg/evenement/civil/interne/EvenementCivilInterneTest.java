@@ -7,8 +7,10 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.DataEventService;
@@ -34,6 +36,8 @@ import ch.vd.unireg.type.TypeEvenementCivil;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class EvenementCivilInterneTest extends WithoutSpringTest {
+
+	private AuditManager audit = Mockito.mock(AuditManager.class);
 
 	@Test
 	public void testInitCouple() throws Exception {
@@ -74,7 +78,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		/*
 		 * Création et initialisation de l'adapter
 		 */
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO, audit);
 		final EvenementCivilOptions options = new EvenementCivilOptions(false);
 		final EvenementCivilInterne adapter = new ArriveePrincipale(evenementArriveeCouple, context, options);
 
@@ -124,7 +128,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFS(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, tiersDAO, null, null, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, tiersDAO, null, null, null, audit);
 		final EvenementCivilOptions options = new EvenementCivilOptions(true);
 		final EvenementCivilInterne adapter = new Mariage(evtMariage, context, options);
 

@@ -5,11 +5,6 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.NationaliteHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -19,6 +14,10 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.tiers.PersonnePhysique;
 
 public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
@@ -70,13 +69,13 @@ public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
 			final Pays pays = ref.getPays();
 			final int noOfs = pays != null ? pays.getNoOFS() : ServiceInfrastructureRaw.noPaysInconnu;
 			pp.setNumeroOfsNationalite(noOfs);
-			Audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
+			context.audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
 			                                               getNoIndividu(),
 			                                               FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
 			                                               pays != null ? pays.getNomCourt() : "inconnu"));
 		}
 
-		Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");
+		context.audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");
 		return false;
 	}
 }

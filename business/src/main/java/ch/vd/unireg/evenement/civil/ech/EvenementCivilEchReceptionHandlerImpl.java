@@ -11,7 +11,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
 import ch.vd.unireg.load.BasicLoadMonitor;
@@ -21,15 +21,16 @@ import ch.vd.unireg.stats.StatsService;
 
 public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler, EvenementCivilEchReceptionMonitor, InitializingBean, DisposableBean {
 
+	private static final String SERVICE_NAME = "EvtsCivilsEchQueueSize";
+
 	private EvenementCivilNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
-    private EvenementCivilEchService evtCivilService;
-
-	private static final String SERVICE_NAME = "EvtsCivilsEchQueueSize";
+	private EvenementCivilEchService evtCivilService;
 	private StatsService statsService;
 	private LoadAverager loadAverager;
-	
+	private AuditManager audit;
+
 	private final AtomicInteger nombreEvenementsNonIgnores = new AtomicInteger(0);
 
     public EvenementCivilEchReceptionHandlerImpl() {
@@ -58,6 +59,10 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
+	}
+
+	public void setAudit(AuditManager audit) {
+		this.audit = audit;
 	}
 
 	@Override
@@ -143,7 +148,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 				// si un événement civil existe déjà avec l'ID donné, on log un warning et on s'arrête là...
 				final long id = event.getId();
 				if (evtCivilDAO.exists(id)) {
-					Audit.warn(id, String.format("L'événement civil %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
+					audit.warn(id, String.format("L'événement civil %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
 					return null;
 				}
 
@@ -151,7 +156,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 				nombreEvenementsNonIgnores.incrementAndGet();
 
 				final EvenementCivilEch saved = evtCivilDAO.save(event);
-				Audit.info(id, String.format("L'événement civil %d est inséré en base de données", id));
+				audit.info(id, String.format("L'événement civil %d est inséré en base de données", id));
 				return saved;
 			}
 		});

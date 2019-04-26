@@ -1,6 +1,5 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -34,7 +33,7 @@ public class EvenementCivilEchIssuDe99Strategy implements EvenementCivilEchTrans
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(event.getNumeroIndividu());
 		if (pp != null && !pp.isHabitantVD()) {
-			Audit.info(event.getId(), "Evénement civil issu d'un eCH-0099 sur un ancien habitant");
+			context.audit.info(event.getId(), "Evénement civil issu d'un eCH-0099 sur un ancien habitant");
 			return new EvenementCivilInterneComposite(event, context, options,
 					new ChangementNom(event, context, options),
 					new CorrectionOrigine(event, context, options));

@@ -30,7 +30,7 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
@@ -83,26 +83,17 @@ public class EnvoiDIsPPEnMasseProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsPPEnMasseProcessor.class);
 
 	private final TiersService tiersService;
-
 	private final HibernateTemplate hibernateTemplate;
-
 	private final PeriodeFiscaleDAO periodeDAO;
-
 	private final ModeleDocumentDAO modeleDAO;
-
 	private final DelaisService delaisService;
-
 	private final DeclarationImpotService diService;
-
 	private final PlatformTransactionManager transactionManager;
-
 	private final ParametreAppService parametreService;
-
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-
 	private final AdresseService adresseService;
-
 	private final TicketService ticketService;
+	private final AuditManager audit;
 
 	private final int tailleLot;
 	private RegDate dateExclusionDecedes;
@@ -124,7 +115,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 	public EnvoiDIsPPEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                  PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
 	                                  PlatformTransactionManager transactionManager, ParametreAppService parametreService,
-	                                  ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService, TicketService ticketService) {
+	                                  ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService, TicketService ticketService, AuditManager audit) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -137,6 +128,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.adresseService = adresseService;
 		this.ticketService = ticketService;
+		this.audit = audit;
 		this.dateExclusionDecedes = null;
 		if (tailleLot < 1) {
 			throw new IllegalArgumentException();
@@ -435,7 +427,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 
 			// Il existe déjà une (ou plusieurs) déclarations
 			if (list.size() == 1 && correspondent(list.get(0), tache)) {
-				Audit.warn("Il existe déjà une déclaration d'impôt pour la période [" + tache.getDateDebut() + " - " + tache.getDateFin()
+				audit.warn("Il existe déjà une déclaration d'impôt pour la période [" + tache.getDateDebut() + " - " + tache.getDateFin()
 						           + "] et le contribuable [" + numeroCtb + "]. Aucune nouvelle déclaration n'est créée" + " et la tâche ["
 						           + tache.getId() + "] est considérée comme traitée.");
 				tache.setEtat(TypeEtatTache.TRAITE);
@@ -444,7 +436,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 			else {
 				String message = "La tâche [id=" + tache.getId() + ", période=" + tache.getDateDebut() + '-' + tache.getDateFin() + "] est en conflit avec " + list.size() +
 						" déclaration(s) d'impôt pré-existante(s) sur le contribuable [" + numeroCtb + "]. Aucune nouvelle déclaration n'est créée et la tâche reste en instance.";
-				Audit.error(message);
+				audit.error(message);
 				rapport.addErrorDICollision(contribuable, tache.getDateDebut(), tache.getDateFin(), message);
 				return false;
 			}
@@ -544,7 +536,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 					+ "] à la date [" + tache.getDateFin() + "].";
 			rapport.addErrorForGestionNul(contribuable, tache.getDateDebut(), tache.getDateFin(), message);
 			if (!simul) {
-				Audit.error(message);
+				audit.error(message);
 			}
 			return null;
 		}

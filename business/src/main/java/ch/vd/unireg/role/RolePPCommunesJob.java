@@ -2,7 +2,6 @@ package ch.vd.unireg.role;
 
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.RolePPCommunesRapport;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamCommune;
@@ -36,10 +35,10 @@ public class RolePPCommunesJob extends RoleJob {
 		setLastRunReport(rapport);
 
 		if (ofsCommune != null) {
-			Audit.success("Le rôle PP " + annee + " de la commune " + ofsCommune + " est terminé.", rapport);
+			audit.success("Le rôle PP " + annee + " de la commune " + ofsCommune + " est terminé.", rapport);
 		}
 		else {
-			Audit.success("Le rôle PP " + annee + " des communes vaudoises est terminé.", rapport);
+			audit.success("Le rôle PP " + annee + " des communes vaudoises est terminé.", rapport);
 		}
 	}
 

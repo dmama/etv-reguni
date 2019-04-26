@@ -24,7 +24,6 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
@@ -102,7 +101,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 			statusManager = getStatusManager();
 		}
 
-		Audit.success("Démarrage du traitement de suppression des doublons des états des déclarations.");
+		audit.success("Démarrage du traitement de suppression des doublons des états des déclarations.");
 
 		statusManager.setMessage("Recherche des doublons sur les états de déclarations...");
 
@@ -122,7 +121,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 		final CorrectionEtatDeclarationRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
 
-		Audit.success("Traitement de suppression des doublons des états des déclarations terminé.", rapport);
+		audit.success("Traitement de suppression des doublons des états des déclarations terminé.", rapport);
 	}
 
 	private CorrectionEtatDeclarationResults traiteDeclarations(final StatusManager status, List<Long> ids) {

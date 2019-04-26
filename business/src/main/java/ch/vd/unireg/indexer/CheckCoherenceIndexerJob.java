@@ -11,7 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher.CheckCallback;
@@ -88,11 +87,11 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 
 		// Affiche le résultat
 		if (counts.errors > 0 || counts.warnings > 0) {
-			Audit.error("Les données de l'indexer sont incohérentes : " + counts.errors + " erreur(s) et " + counts.warnings
+			audit.error("Les données de l'indexer sont incohérentes : " + counts.errors + " erreur(s) et " + counts.warnings
 					+ " avertissement(s) ont été trouvés. Voir le log technique pour les détails.");
 		}
 		else {
-			Audit.info("Les données de l'indexer sont cohérentes.");
+			audit.info("Les données de l'indexer sont cohérentes.");
 		}
 	}
 

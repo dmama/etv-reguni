@@ -43,6 +43,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		translator.setTiersDAO(tiersDAO);
 		translator.setTiersService(tiersService);
 		translator.setParameters(getBean(EvenementCivilEchStrategyParameters.class, "evenementCivilEchStrategyParameters"));
+		translator.setAudit(audit);
 		translator.afterPropertiesSet();
 	}
 

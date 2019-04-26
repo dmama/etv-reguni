@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.entreprise.interne.radiation;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
@@ -63,16 +62,16 @@ public class RadiationStrategy extends AbstractEntrepriseStrategy {
 				if (dateRadiation == null) {
 					final String message = String.format("Traitement manuel requis: l'entreprise n°%s est radiée du RC mais la date de radiation est introuvable!",
 					                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-					Audit.info(event.getId(), message);
+					context.audit.info(event.getId(), message);
 					return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 				}
 				else {
 					if (formeLegale == FormeLegale.N_0109_ASSOCIATION || formeLegale == FormeLegale.N_0110_FONDATION) {
-						Audit.info(event.getId(), String.format("Radiation de l'association n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle()));
+						context.audit.info(event.getId(), String.format("Radiation de l'association n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle()));
 						return new RadiationAssociationFondation(event, entrepriseCivile, entreprise, context, options, dateRadiation);
 					}
 					else {
-						Audit.info(event.getId(), String.format("Radiation de l'entreprise n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle()));
+						context.audit.info(event.getId(), String.format("Radiation de l'entreprise n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle()));
 						return new Radiation(event, entrepriseCivile, entreprise, context, options, dateRadiation);
 					}
 				}

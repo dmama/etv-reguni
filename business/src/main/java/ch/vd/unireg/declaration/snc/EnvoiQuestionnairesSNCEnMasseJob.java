@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.EnvoiQuestionnairesSNCRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -77,6 +76,6 @@ public class EnvoiQuestionnairesSNCEnMasseJob extends JobDefinition {
 		final EnvoiQuestionnairesSNCRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
 
-		Audit.success("L'envoi des questionnaires SNC de l'année " + pf + " à la date du " + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminé.", rapport);
+		audit.success("L'envoi des questionnaires SNC de l'année " + pf + " à la date du " + RegDateHelper.dateToDisplayString(dateTraitement) + " est terminé.", rapport);
 	}
 }

@@ -18,7 +18,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ValidationJobRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -173,7 +172,7 @@ public class ValidationJob extends JobDefinition {
 		final ValidationJobRapport rapport = generateRapport(results, statusManager);
 
 		setLastRunReport(rapport);
-		Audit.success("Le batch de validation des tiers est terminé", rapport);
+		audit.success("Le batch de validation des tiers est terminé", rapport);
 	}
 
 	private List<Long> getTiersIds(@NotNull List<TypeTiers> typesTiers, final StatusManager statusManager) {

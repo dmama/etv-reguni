@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BusinessItTestApplication;
 import ch.vd.unireg.document.MajoriteRapport;
@@ -24,6 +24,7 @@ public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 
 	private MetierService service;
 	private RapportService rapportService;
+	private AuditManager audit;
 
 	public static void main(String[] args) throws Exception {
 
@@ -42,6 +43,7 @@ public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 			LOGGER.info("***** START OuvertureForsMajeursTestApp Main *****");
 			service = (MetierService) context.getBean("metierService");
 			rapportService = (RapportService) context.getBean("rapportService");
+			audit = (AuditManager) context.getBean("auditManager");
 
 			LOGGER.info("==> chargement de la base de données");
 			clearDatabase();
@@ -73,7 +75,7 @@ public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 
 		long duree = (System.currentTimeMillis() - start);
 		String message = "Ouverture terminée : " + (duree / 1000) + " secondes.";
-		Audit.success(message, rapport);
+		audit.success(message, rapport);
 		LOGGER.info(message);
 	}
 }

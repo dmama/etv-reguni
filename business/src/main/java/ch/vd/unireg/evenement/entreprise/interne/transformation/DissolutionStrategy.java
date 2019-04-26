@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.entreprise.interne.transformation;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -53,7 +52,7 @@ public class DissolutionStrategy extends AbstractEntrepriseStrategy {
 			case FAILLITE:
 			case TRANSFORMATION:
 			case CARENCE_DANS_ORGANISATION:
-				Audit.info(event.getId(), "Dissolution de l'entreprise détectée");
+				context.audit.info(event.getId(), "Dissolution de l'entreprise détectée");
 				return new Dissolution(event, entrepriseCivile, entreprise, context, options);
 			default:
 				return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, String.format("Type de dissolution inconnu: %s", raisonDeDissolution));

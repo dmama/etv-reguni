@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.document.ImportCodesSegmentRapport;
@@ -66,21 +66,22 @@ public class ImportCodesSegmentJob extends JobDefinition {
 		final byte[] input = getFileContent(params, INPUT_FILE);
 		final StatusManager statusManager = getStatusManager();
 		final MutableInt lignesLues = new MutableInt(0);
-		final List<ContribuableAvecCodeSegment> inputData = buildDataFromInputFile(input, statusManager, lignesLues);
+		final List<ContribuableAvecCodeSegment> inputData = buildDataFromInputFile(input, statusManager, lignesLues, audit);
 		final ImportCodesSegmentResults res = diService.importerCodesSegment(inputData, statusManager);
 		final ImportCodesSegmentRapport rapport = rapportService.generateRapport(res, lignesLues.intValue(), statusManager);
 		setLastRunReport(rapport);
-		Audit.success("L'import des codes segment est terminé", rapport);
+		audit.success("L'import des codes segment est terminé", rapport);
 	}
 
 	/**
 	 * @param csv contenu du fichier d'entrée
 	 * @param status status manager pour les messages de progression
 	 * @param nbrLignesLues si non-null, servira de réceptacle en sortie du nombre de lignes lues dans le fichier fourni
+	 * @param audit
 	 * @return la liste des informations lisibles dans le fichier d'entrée, doublons éliminés, triée par ordre croissant du numéro de contribuable
 	 * @throws UnsupportedEncodingException si l'encoding ISO-8859-1 n'est pas supportés par la JVM
 	 */
-	protected static List<ContribuableAvecCodeSegment> buildDataFromInputFile(byte[] csv, StatusManager status, @Nullable MutableInt nbrLignesLues) throws UnsupportedEncodingException {
+	protected static List<ContribuableAvecCodeSegment> buildDataFromInputFile(byte[] csv, StatusManager status, @Nullable MutableInt nbrLignesLues, AuditManager audit) throws UnsupportedEncodingException {
 		final List<ContribuableAvecCodeSegment> liste = new LinkedList<>();
 		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
 
@@ -111,11 +112,11 @@ public class ImportCodesSegmentJob extends JobDefinition {
 				}
 			}
 		}
-		Audit.info("Nombre de contribuables lus dans le fichier : " + lignesCtbLues);
+		audit.info("Nombre de contribuables lus dans le fichier : " + lignesCtbLues);
 
 		// élimination des doublons
 		final Set<ContribuableAvecCodeSegment> sansDoublons = new HashSet<>(liste);
-		Audit.info("Nombre de contribuables uniques présents dans le fichier : " + sansDoublons.size());
+		audit.info("Nombre de contribuables uniques présents dans le fichier : " + sansDoublons.size());
 
 		// récupération dans une liste et tri dans l'ordre croissant des numéros de contribuables
 		final List<ContribuableAvecCodeSegment> listeSansDoublons = new ArrayList<>(sansDoublons);

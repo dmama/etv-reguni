@@ -1,6 +1,7 @@
 package ch.vd.unireg.evenement.civil.common;
 
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
@@ -23,11 +24,14 @@ public class EvenementCivilContext {
 	private final AdresseService adresseService;
 	private final EvenementFiscalService evenementFiscalService;
 	private final ParametreAppService parametreAppService;
+	public final AuditManager audit;
 
-	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO) {
+
+	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO, AuditManager audit) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.tiersDAO = tiersDAO;
+		this.audit = audit;
 		this.dataEventService = null;
 		this.tiersService = null;
 		this.indexer = null;
@@ -38,7 +42,7 @@ public class EvenementCivilContext {
 	}
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, ParametreAppService parametreAppService) {
+	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, ParametreAppService parametreAppService, AuditManager audit) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -49,6 +53,7 @@ public class EvenementCivilContext {
 		this.adresseService = adresseService;
 		this.evenementFiscalService = evenementFiscalService;
 		this.parametreAppService = parametreAppService;
+		this.audit = audit;
 	}
 
 	public final ServiceCivilService getServiceCivil() {

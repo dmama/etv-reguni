@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise.interne;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseException;
@@ -40,9 +39,9 @@ public class IndexationPure extends Indexation {
 			else {
 				event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 			}
-			Audit.info(event.getNoEvenement(), MESSAGE_INDEXATION_PURE);
+			getContext().audit.info(event.getNoEvenement(), MESSAGE_INDEXATION_PURE);
 		} else {
-			Audit.info(event.getNoEvenement(), MESSAGE_PAS_INDEXEE);
+			getContext().audit.info(event.getNoEvenement(), MESSAGE_PAS_INDEXEE);
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
 	}

@@ -19,7 +19,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplate;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateCallback;
@@ -36,17 +35,13 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 public class CorrectionForsHCJob extends JobDefinition {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CorrectionForsHCJob.class);
-	
 	public static final String NAME = "CorrectionForsHCJob";
-	
 	public static final int BATCH_SIZE = 20;
 	
 	private PlatformTransactionManager transactionManager;
-	
 	private HibernateTemplate hibernateTemplate;
-
 	private TiersService tiersService;
-	
+
 	public CorrectionForsHCJob(int order, String description) {
 		super(NAME, JobCategory.DB, order, description);
 	}
@@ -73,7 +68,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		
 		final StatusManager statusManager = getStatusManager();
-		Audit.success("Demarrage du traitement de correction de fors HC.");
+		audit.success("Demarrage du traitement de correction de fors HC.");
 			
 		final List<Long> ids = retrieveIdFors();
 		final CorrectionMonitor monitor = new CorrectionMonitor();
@@ -91,12 +86,12 @@ public class CorrectionForsHCJob extends JobDefinition {
 				final String message = String.format("%d sur %d des for hors canton analysés (%d%%) : %d rouverts, %d en erreur",
 				                                     monitor.analyses, ids.size(), monitor.getProgressInPercent(), monitor.rouverts, monitor.erreurs);
 				getStatusManager().setMessage(message);
-				Audit.info(message);
+				audit.info(message);
 			}
 
 		}, monitor);
 
-		Audit.success("Traitement de correction de fors HC terminé.");
+		audit.success("Traitement de correction de fors HC terminé.");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,7 +140,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 		try {
 			final Set<ForFiscalPrincipal> fors = getFors(ids);
 			for (ForFiscalPrincipal ffp : fors) {
-				Audit.info(String.format("Analyse du for %d", ffp.getId()));
+				audit.info(String.format("Analyse du for %d", ffp.getId()));
 
 				MenageCommun menage = (MenageCommun) ffp.getTiers();
 				final RegDate dateDebutFor = ffp.getDateDebut();
@@ -155,7 +150,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 				final PersonnePhysique conjoint = couple.getConjoint();
 
 				if (conjoint == null) {
-					Audit.info("Marié seul détecté -> à vérifier manuellement");
+					audit.info("Marié seul détecté -> à vérifier manuellement");
 				}
 				else {
 					final RegDate veuilleDebutFor = dateDebutFor.getOneDayBefore();
@@ -163,7 +158,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 					final ForFiscalPrincipal ffpConjoint = conjoint.getForFiscalPrincipalAt(veuilleDebutFor);
 
 					if (ffpPrincipal == null || ffpConjoint == null) {
-						Audit.info("Aucun ou seulement un des deux membres possédait un for -> à vérifier manuellement");
+						audit.info("Aucun ou seulement un des deux membres possédait un for -> à vérifier manuellement");
 					}
 					else
 					{
@@ -171,7 +166,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 						final boolean isForDuConjointVaudois = isForVaudois(ffpConjoint);
 
 						if (!isForDuPrincipalVaudois && isForDuConjointVaudois) {
-							Audit.info(String.format("Rattachement du for à la commune # %d", ffpConjoint.getNumeroOfsAutoriteFiscale()));
+							audit.info(String.format("Rattachement du for à la commune # %d", ffpConjoint.getNumeroOfsAutoriteFiscale()));
 							ForFiscalPrincipal nouveauFor = (ForFiscalPrincipal) ffp.duplicate();
 							// annuler le for car il est pas rattaché à la bonne commune
 							tiersService.annuleForFiscal(ffp);
@@ -185,13 +180,13 @@ public class CorrectionForsHCJob extends JobDefinition {
 							++ monitor.rouverts;
 						}
 						else {
-							Audit.info("Les deux fors sont vaudois -> à vérifier manuellement");
+							audit.info("Les deux fors sont vaudois -> à vérifier manuellement");
 						}
 					}
 				}
 
 				++ monitor.analyses;
-				Audit.info(String.format("Analyse du for %d terminé", ffp.getId()));
+				audit.info(String.format("Analyse du for %d terminé", ffp.getId()));
 			}
 
 			return !getStatusManager().isInterrupted();

@@ -9,7 +9,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.AssujettiParSubstitutionRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -61,7 +60,7 @@ public class AssujettisParSubstitutionJob extends JobDefinition {
 			}
 		});
 		setLastRunReport(rapport);
-		Audit.success("La génération le la liste des assujettis par substitution est terminée.", rapport);
+		audit.success("La génération le la liste des assujettis par substitution est terminée.", rapport);
 
 	}
 

@@ -11,6 +11,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -27,8 +28,8 @@ import ch.vd.unireg.role.before2016.ProduireRolesOIDsResults;
  */
 public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResults> {
 
-	public PdfRolesOIDsRapport(ServiceInfrastructureService infraService) {
-		super(infraService);
+	public PdfRolesOIDsRapport(ServiceInfrastructureService infraService, AuditManager audit) {
+		super(infraService, audit);
 	}
 
 	public void write(final ProduireRolesOIDsResults[] results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {

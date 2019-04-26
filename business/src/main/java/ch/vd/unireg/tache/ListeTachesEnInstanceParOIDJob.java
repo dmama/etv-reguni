@@ -8,7 +8,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.document.Document;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -16,11 +15,11 @@ import ch.vd.unireg.scheduler.JobDefinition;
 
 public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 
+	public static final String NAME = "ListeTachesEnInstanceParOIDJob";
+
 	private TacheService service;
 	private RapportService rapportService;
 	private PlatformTransactionManager transactionManager;
-
-	public static final String NAME = "ListeTachesEnInstanceParOIDJob";
 
 	public ListeTachesEnInstanceParOIDJob(int sortOrder, String description) {
 		super(NAME, JobCategory.STATS, sortOrder, description);
@@ -69,7 +68,7 @@ public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 			}
 		});
 		setLastRunReport(report);
-		Audit.success("Liste des tâches en instance par OID générée correctement", report);
+		audit.success("Liste des tâches en instance par OID générée correctement", report);
 	}
 
 	@Override

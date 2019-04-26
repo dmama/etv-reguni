@@ -3,7 +3,6 @@ package ch.vd.unireg.registrefoncier.dataimport;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.MutationsRFDetectorRapport;
 import ch.vd.unireg.rapport.RapportService;
@@ -72,7 +71,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		final MutationsRFDetectorResults results = mutationsDetector.run(importId, nbThreads, statusManager);
 		final MutationsRFDetectorRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
-		Audit.success("Le traitement de l'import RF (détection des mutations) est terminé.", rapport);
+		audit.success("Le traitement de l'import RF (détection des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de traitement des mutations
 		if (startMutationJob && !statusManager.isInterrupted()) {

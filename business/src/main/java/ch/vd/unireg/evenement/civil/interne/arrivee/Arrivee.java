@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -231,7 +231,7 @@ public abstract class Arrivee extends Mouvement {
 	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	private Map.Entry<ModeDetection,List<PersonnePhysique>> findNonHabitants(Individu individu) throws EvenementCivilException {
-		return findNonHabitants(getService(), individu, getNumeroEvenement());
+		return findNonHabitants(getService(), individu, getNumeroEvenement(), context.audit);
 	}
 
 	/**
@@ -242,7 +242,7 @@ public abstract class Arrivee extends Mouvement {
 	 * @param individu                    un individu
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
-	protected static Map.Entry<ModeDetection,List<PersonnePhysique>> findNonHabitants(TiersService tiersService, Individu individu, @Nullable Long numeroEvenement) throws EvenementCivilException {
+	protected static Map.Entry<ModeDetection,List<PersonnePhysique>> findNonHabitants(TiersService tiersService, Individu individu, @Nullable Long numeroEvenement, AuditManager audit) throws EvenementCivilException {
 
 		// les critères de recherche
 		final List<PersonnePhysique> nonHabitants = new ArrayList<>();
@@ -255,10 +255,10 @@ public abstract class Arrivee extends Mouvement {
 		if (navs13 != null) {
 			//Recherche par navs13
 			final TiersCriteria criteriaNavs13 = getTiersCriteriaNavs13(navs13);
-			final List<PersonnePhysique> resultNavs13 = searchPersonne(tiersService, numeroEvenement, nomPrenom, criteriaNavs13);
+			final List<PersonnePhysique> resultNavs13 = searchPersonne(tiersService, numeroEvenement, nomPrenom, criteriaNavs13, audit);
 			if (resultNavs13.isEmpty()) {
 				//aucun resultat trouvé on lance la recherche par les autres critères
-				final List<PersonnePhysique> resultComplet = searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria);
+				final List<PersonnePhysique> resultComplet = searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria, audit);
 				if (resultComplet.isEmpty() || resultComplet.size() != 1 || candidatAvecNavs13Conforme(navs13, resultComplet)) {
 					//Aucun, plusieurs conadidats  ou 1 contribuable avec navs 13 conforme: on retourne le resultat trouvé
 					nonHabitants.addAll(resultComplet);
@@ -281,7 +281,7 @@ public abstract class Arrivee extends Mouvement {
 		}
 		else {
 
-			nonHabitants.addAll(searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria));
+			nonHabitants.addAll(searchPersonne(tiersService, numeroEvenement, nomPrenom, criteria, audit));
 			modeDetection = ModeDetection.COMPLET;
 		}
 
@@ -343,10 +343,11 @@ public abstract class Arrivee extends Mouvement {
 	 * @param numeroEvenement numero de l'évènement
 	 * @param nomPrenom le nom et premon de l'individu
 	 * @param criteria les critères de recherche
+	 * @param audit l'audit manager
 	 * @return une liste de personne correspondantes aux critères
 	 * @throws EvenementCivilException
 	 */
-	private static List<PersonnePhysique> searchPersonne(TiersService tiersService, Long numeroEvenement, String nomPrenom, TiersCriteria criteria) throws EvenementCivilException {
+	private static List<PersonnePhysique> searchPersonne(TiersService tiersService, Long numeroEvenement, String nomPrenom, TiersCriteria criteria, AuditManager audit) throws EvenementCivilException {
 		final List<TiersIndexedData> results;
 		try {
 		    results = tiersService.search(criteria);
@@ -361,7 +362,7 @@ public abstract class Arrivee extends Mouvement {
 			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersIndexedData.getNumero());
 			// [UNIREG-1603] on filtre les non habitants qui possèdent un numéro d'individu
 			if (pp.getNumeroIndividu() != null) {
-				Audit.warn(numeroEvenement, "Candidat " + pp.getNumero() + " écarté en raison de la présence d'un autre numéro d'individu");
+				audit.warn(numeroEvenement, "Candidat " + pp.getNumero() + " écarté en raison de la présence d'un autre numéro d'individu");
 				continue;
 			}
 			nonHabitants.add(pp);
@@ -413,7 +414,7 @@ public abstract class Arrivee extends Mouvement {
 				// est entrain de traiter l'arrivée du principal, et que l'on ne veut pas aussi traiter l'arrivée du conjoint. La solution, c'est de créer le
 				// conjoint non-habitant.
 				personnePhysiqueResultante = context.getTiersService().createNonHabitantFromIndividu(individu.getNoTechnique());
-				Audit.info(evenementId, "Un tiers non-habitant a été créé pour le nouvel arrivant");
+				context.audit.info(evenementId, "Un tiers non-habitant a été créé pour le nouvel arrivant");
 			}
 			else {
 				// [UNIREG-2650] Message d'erreur un peu plus explicite...
@@ -502,7 +503,7 @@ public abstract class Arrivee extends Mouvement {
 		final Individu conjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 
 		if (isArriveeRedondantePourIndividuEnMenage()) {
-			Audit.info(getNumeroEvenement(), "Arrivée considérée comme redondante fiscalement, ré-évaluation du flag habitant");
+			context.audit.info(getNumeroEvenement(), "Arrivée considérée comme redondante fiscalement, ré-évaluation du flag habitant");
 			updateHabitantStatus(getPrincipalPP(), dateEvenement);
 			return HandleStatus.REDONDANT;
 		}
@@ -631,7 +632,7 @@ public abstract class Arrivee extends Mouvement {
 					getService().addTiersToCouple(menageCommun, habitantConjoint, dateEvenement, null);
 				}
 
-				Audit.info(evenementId, String.format("Les arrivants ont appartenu au ménage commun [%d].", menageCommun.getNumero()));
+				context.audit.info(evenementId, String.format("Les arrivants ont appartenu au ménage commun [%d].", menageCommun.getNumero()));
 			}
 			else {
 				/*
@@ -640,7 +641,7 @@ public abstract class Arrivee extends Mouvement {
 				 */
 				final EnsembleTiersCouple ensemble = getService().createEnsembleTiersCouple(habitantPrincipal, habitantConjoint, dateDebutMenage, null);
 				menageCommun = ensemble.getMenage();
-				Audit.info(evenementId, String.format("Un nouveau ménage commun [%d] a été créé pour l'arrivée des nouveaux arrivants", menageCommun.getNumero()));
+				context.audit.info(evenementId, String.format("Un nouveau ménage commun [%d] a été créé pour l'arrivée des nouveaux arrivants", menageCommun.getNumero()));
 			}
 		}
 		else if (menageCommunHabitantPrincipal != null && menageCommunHabitantConjoint != null) {
@@ -657,7 +658,7 @@ public abstract class Arrivee extends Mouvement {
 				throw new IllegalArgumentException();
 			}
 			menageCommun = menageCommunHabitantPrincipal;
-			Audit.info(evenementId, String.format("Le ménage commun [%d] des nouveaux arrivants existe déjà.", menageCommun.getNumero()));
+			context.audit.info(evenementId, String.format("Le ménage commun [%d] des nouveaux arrivants existe déjà.", menageCommun.getNumero()));
 		}
 		else {
 			if (menageCommunHabitantPrincipal != null) {
@@ -689,7 +690,7 @@ public abstract class Arrivee extends Mouvement {
 					final RapportEntreTiers rapport = getService().addTiersToCouple(menageCommunHabitantPrincipal, habitantConjoint, dateDebutMenage, null);
 
 					menageCommun = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
-					Audit.info(evenementId, String.format("L'arrivant [%d] a été attaché au ménage commun [%d] déjà existant", habitantConjoint.getNumero(), menageCommun.getNumero()));
+					context.audit.info(evenementId, String.format("L'arrivant [%d] a été attaché au ménage commun [%d] déjà existant", habitantConjoint.getNumero(), menageCommun.getNumero()));
 				}
 				else {
 					menageCommun = menageCommunHabitantPrincipal;
@@ -730,7 +731,7 @@ public abstract class Arrivee extends Mouvement {
 				menageCommun = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
 
 				final String auditString = String.format("L'arrivant [%d] a été rattaché au ménage commun [%d] dèjà existant", habitantPrincipal.getNumero(), menageCommun.getNumero());
-				Audit.info(evenementId, auditString);
+				context.audit.info(evenementId, auditString);
 			}
 		}
 		return menageCommun;
