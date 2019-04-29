@@ -41,6 +41,7 @@ import ch.vd.unireg.tiers.TransfertPatrimoine;
 import ch.vd.unireg.tiers.Tutelle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 public class I18nMessageHelperTest extends WebTest {
@@ -267,6 +268,12 @@ public class I18nMessageHelperTest extends WebTest {
 		});
 
 		return TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseServiceMock, tiersServiceMock, messageHelper);
+	}
+
+	@Test
+	public void testApostrophe() throws Exception {
+		final String message = messageHelper.getMessage("lettre.demande.delai.di.editique.sous.title");
+		assertFalse("Le message ne devrait pas contenir de double apostrophes ",message.contains("''"));
 	}
 
 }
