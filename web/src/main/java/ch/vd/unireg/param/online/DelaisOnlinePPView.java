@@ -5,11 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -116,8 +116,8 @@ public class DelaisOnlinePPView {
 
 			// on met-à-jour les périodes existantes
 			toUpdate.forEach(pair -> {
-				final DelaisAccordablesOnlineDIPP edited = pair.getFirst();
-				final DelaisAccordablesOnlineDIPP persisted = pair.getSecond();
+				final DelaisAccordablesOnlineDIPP edited = pair.getLeft();
+				final DelaisAccordablesOnlineDIPP persisted = pair.getRight();
 				edited.copyTo(persisted);
 			});
 		}

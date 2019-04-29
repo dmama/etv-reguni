@@ -1,9 +1,9 @@
 package ch.vd.unireg.load;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.stats.LoadMonitorable;
 
@@ -14,7 +14,7 @@ public class LoadAveragerTest extends WithoutSpringTest {
 
 		// ne sert pas pendant ce test
 		final LoadMonitorable dummy = () -> {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		};
 
 		final int nbPoints = 100;

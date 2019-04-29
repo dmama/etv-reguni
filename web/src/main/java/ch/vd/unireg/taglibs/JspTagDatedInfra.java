@@ -4,13 +4,13 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
@@ -44,12 +44,10 @@ public abstract class JspTagDatedInfra<T> extends BodyTagSupport {
 		try {
 			final T instance = getInstance(service, ofs, date);
 			if (instance != null) {
-				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(displayProperty, clazz);
-				property = displayDescriptor.getReadMethod().invoke(instance);
+				property = PropertyUtils.getProperty(instance, displayProperty);
 
 				if (StringUtils.isNotBlank(titleProperty)) {
-					final ReadOnlyPropertyDescriptor titleDescriptor = new ReadOnlyPropertyDescriptor(titleProperty, clazz);
-					title = titleDescriptor.getReadMethod().invoke(instance);
+					title = PropertyUtils.getProperty(instance, titleProperty);
 				}
 			}
 

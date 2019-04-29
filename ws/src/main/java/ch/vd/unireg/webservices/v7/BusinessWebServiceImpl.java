@@ -38,7 +38,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -56,6 +55,7 @@ import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -1410,7 +1410,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			for (EvenementFiscal evtFiscal : sortedList) {
 				final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal xml = EvenementFiscalV3Factory.buildOutputData(evtFiscal);
 				list.add(new FiscalEvent(evtFiscal.getLogCreationUser(),
-				                         XmlUtils.date2cal(evtFiscal.getLogCreationDate()),
+				                         XmlUtils.date2xmlcal(evtFiscal.getLogCreationDate()),
 				                         EvenementFiscalDescriptionHelper.getTextualDescription(evtFiscal),
 				                         xml,
 				                         null));

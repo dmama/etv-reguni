@@ -2,7 +2,8 @@ package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ch.vd.registre.base.utils.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
+
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.security.AccessDeniedException;
 
@@ -22,12 +23,12 @@ public class MockControllerUtils implements ControllerUtils {
 
 	@Override
 	public String getDisplayTagRequestParametersForPagination(HttpServletRequest request, String tableName) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public String getDisplayTagRequestParametersForPagination(String tableName, ParamPagination pagination) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

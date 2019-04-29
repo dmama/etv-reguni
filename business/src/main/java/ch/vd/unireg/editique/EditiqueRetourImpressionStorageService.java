@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 
-import ch.vd.registre.base.utils.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Service qui maintient la donnée des impressions directes éditiques qui reviennent

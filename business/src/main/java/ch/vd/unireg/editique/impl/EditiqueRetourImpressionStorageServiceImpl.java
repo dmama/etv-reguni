@@ -4,12 +4,12 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AsyncStorage;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatRecu;

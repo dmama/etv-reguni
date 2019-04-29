@@ -24,6 +24,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,7 +35,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.StatusManager;
@@ -136,7 +136,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		defaultParamWebValues.clear();
 		if (paramsDef != null) {
 			for (Pair<JobParam, ?> paramDef : paramsDef) {
-				addParameterDefinition(paramDef.getFirst(), paramDef.getSecond());
+				addParameterDefinition(paramDef.getLeft(), paramDef.getRight());
 			}
 		}
 	}

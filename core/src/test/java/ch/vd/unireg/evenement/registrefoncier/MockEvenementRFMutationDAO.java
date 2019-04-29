@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 
 public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
@@ -42,12 +42,12 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public boolean exists(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean exists(Long id, FlushMode flushModeOverride) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public Object saveObject(Object object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -75,27 +75,27 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Iterator<EvenementRFMutation> iterate(String query) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int getCount(Class<?> clazz) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void clearSession() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void evict(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@NotNull
@@ -145,12 +145,12 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public int forceMutation(long mutId) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int forceMutations(long importId) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -164,23 +164,23 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public int deleteMutationsFor(long importId, int maxResults) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
 	public Long findNextMutationsToProcess() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@NotNull
 	@Override
 	public List<EvenementRFMutation> find(long importId, @Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int count(long importId, @Nullable List<EtatEvenementRF> etats) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

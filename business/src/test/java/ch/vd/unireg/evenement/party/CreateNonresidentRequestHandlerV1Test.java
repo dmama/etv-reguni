@@ -2,9 +2,9 @@ package ch.vd.unireg.evenement.party;
 
 import java.util.EnumSet;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;

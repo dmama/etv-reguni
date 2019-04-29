@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.view.NonHabitantCivilView;
 import ch.vd.unireg.type.Sexe;

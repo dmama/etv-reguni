@@ -18,10 +18,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-
-import ch.vd.registre.base.utils.ObjectGetterHelper;
 
 public abstract class ReflexionUtils {
 
@@ -160,16 +159,15 @@ public abstract class ReflexionUtils {
 	 * @param object un objet
 	 * @param path   le chemin vers l'attribut dont on veut récupérer la valeur
 	 * @return la valeur de l'attribut pointé.
-	 * @throws java.beans.IntrospectionException    en cas de problème
 	 * @throws IllegalAccessException    en cas de problème
 	 * @throws java.lang.reflect.InvocationTargetException en cas de problème
 	 */
-	public static Object getPathValue(Object object, String path) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+	public static Object getPathValue(Object object, String path) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		if (path.contains(".")) {
 			Object o = object;
 			final String[] sub = path.split("\\.");
 			for (String p : sub) {
-				o = ObjectGetterHelper.getValue(o, p);
+				o = PropertyUtils.getProperty(o, p);
 				if (o == null) {
 					break;
 				}
@@ -177,7 +175,7 @@ public abstract class ReflexionUtils {
 			return o;
 		}
 		else {
-			return ObjectGetterHelper.getValue(object, path);
+			return PropertyUtils.getProperty(object, path);
 		}
 	}
 
@@ -187,7 +185,7 @@ public abstract class ReflexionUtils {
 		FAILS_SILENTLY
 	}
 
-	public static void setPathValue(Object object, String path, Object value, SetPathBehavior behavior) throws IntrospectionException, IllegalAccessException, InvocationTargetException, InstantiationException {
+	public static void setPathValue(Object object, String path, Object value, SetPathBehavior behavior) throws IntrospectionException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
 
 		if (path.contains(".")) {
 			// première phase, on va jusqu'au dernier objet
@@ -197,7 +195,7 @@ public abstract class ReflexionUtils {
 				final String p = pathes[i];
 
 				// Get the value
-				Object sub = ObjectGetterHelper.getValue(o, p);
+				Object sub = PropertyUtils.getProperty(o, p);
 				if (sub == null) {
 					// traitement particulier si les objets n'existent pas tout-au-long du chemin
 					switch (behavior) {

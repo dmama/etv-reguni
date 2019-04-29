@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +20,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.metier.common.DecalageDateHelper;
@@ -1804,17 +1804,17 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		@Override
 		protected void removeRange(int fromIndex, int toIndex) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public boolean removeAll(@NotNull Collection<?> c) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public boolean retainAll(@NotNull Collection<?> c) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		/**

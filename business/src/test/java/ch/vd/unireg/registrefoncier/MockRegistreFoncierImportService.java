@@ -3,11 +3,11 @@ package ch.vd.unireg.registrefoncier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
@@ -32,7 +32,7 @@ public class MockRegistreFoncierImportService implements RegistreFoncierImportSe
 
 	@Override
 	public void forceImport(long importId) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -42,23 +42,23 @@ public class MockRegistreFoncierImportService implements RegistreFoncierImportSe
 
 	@Override
 	public void forceMutation(long mutId) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void forceAllMutations(long importId) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
 	public HibernateEntity findEntityForMutation(@NotNull TypeEntiteRF type, @NotNull String idRF, @Nullable String versionIdRF) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Long findMatchingImportServitudesToProcess(long importId) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	public List<Long> getStartedImports() {

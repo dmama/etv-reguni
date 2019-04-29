@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.RequestHandlerResult;

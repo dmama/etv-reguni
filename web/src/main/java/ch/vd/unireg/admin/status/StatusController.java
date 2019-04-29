@@ -3,6 +3,7 @@ package ch.vd.unireg.admin.status;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.statistics.StatisticsGateway;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.unireg.common.HtmlHelper;
 import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
@@ -219,7 +219,7 @@ public class StatusController {
 			return HtmlHelper.renderMultilines(status.toString());
 		}
 		catch (Exception e) {
-			String status = "NOK\n" + ExceptionUtils.extractCallStack(e);
+			String status = "NOK\n" + ExceptionUtils.getStackTrace(e);
 			status = HtmlHelper.renderMultilines(status);
 			return status;
 		}

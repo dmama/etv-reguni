@@ -8,12 +8,12 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -80,12 +80,10 @@ public class JspTagInfra extends BodyTagSupport {
 		try {
 			Object entity = invocator.invoke(service, entityId);
 			if (entity != null) {
-				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(entityPropertyName, entity.getClass());
-				property = displayDescriptor.getReadMethod().invoke(entity);
+				property = PropertyUtils.getProperty(entity, entityPropertyName);
 
 				if (StringUtils.isNotBlank(entityPropertyTitle)) {
-					final ReadOnlyPropertyDescriptor titleDescriptor = new ReadOnlyPropertyDescriptor(entityPropertyTitle, entity.getClass());
-					title = titleDescriptor.getReadMethod().invoke(entity);
+					title = PropertyUtils.getProperty(entity, entityPropertyTitle);
 				}
 			}
 

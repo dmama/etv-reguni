@@ -9,6 +9,7 @@ import ch.ech.ech0010.v6.AddressInformation;
 import ch.ech.ech0097.v2.NamedOrganisationId;
 import ch.ech.ech0097.v2.UidOrganisationIdCategorie;
 import ch.ech.ech0097.v2.UidStructure;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.Address;
@@ -22,7 +23,6 @@ import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.NoticeRequestStatus;
 import ch.vd.evd0022.v3.RequestApplication;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
@@ -415,7 +415,7 @@ public class RCEntAnnonceIDEHelper {
 		}
 		final ArrayList<Pair<String, String>> erreurs = new ArrayList<>();
 		for (ch.vd.evd0022.v3.Error error : noticeReport.getListOfErrors()) {
-			erreurs.add(new Pair<>(error.getErrorId(), error.getErrorDescription()));
+			erreurs.add(Pair.of(error.getErrorId(), error.getErrorDescription()));
 		}
 		return erreurs;
 	}

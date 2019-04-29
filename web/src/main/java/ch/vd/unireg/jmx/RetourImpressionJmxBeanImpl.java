@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.DelayedDownloadService;
 import ch.vd.unireg.common.TimeHelper;
 import ch.vd.unireg.editique.EditiqueRetourImpressionStorageService;
@@ -95,9 +95,9 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 		final List<String> logs = new ArrayList<>(triggers.size());
 		final long now = System.nanoTime();
 		for (Pair<Long, RetourImpressionTrigger> trigger : triggers) {
-			if (trigger.getSecond() instanceof RetourImpressionToInboxTrigger) {
-				final RetourImpressionToInboxTrigger inboxTrigger = (RetourImpressionToInboxTrigger) trigger.getSecond();
-				final String duration = TimeHelper.formatDureeShort(TimeUnit.NANOSECONDS.toMillis(now - trigger.getFirst()));
+			if (trigger.getRight() instanceof RetourImpressionToInboxTrigger) {
+				final RetourImpressionToInboxTrigger inboxTrigger = (RetourImpressionToInboxTrigger) trigger.getRight();
+				final String duration = TimeHelper.formatDureeShort(TimeUnit.NANOSECONDS.toMillis(now - trigger.getLeft()));
 				logs.add(String.format("%s (opérateur %s, depuis %s)", inboxTrigger.getDescription(), inboxTrigger.getVisa(), duration));
 			}
 		}

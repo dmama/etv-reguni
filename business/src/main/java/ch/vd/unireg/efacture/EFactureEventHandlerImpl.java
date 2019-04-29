@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
@@ -104,7 +104,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 					// [SIFISC-8210] On recherche le numéro d'adhérent (et la date) d'une inscription (ou juste d'une demande en cours) préalable
 					final Pair<RegDate, BigInteger> enCours = findDemandeEnCours(histo, demande.getIdDemande());
 					if (enCours != null) {
-						LOGGER.info(String.format("Trouvé une demande/inscription en cours en date du %s", RegDateHelper.dateToDisplayString(enCours.getFirst())));
+						LOGGER.info(String.format("Trouvé une demande/inscription en cours en date du %s", RegDateHelper.dateToDisplayString(enCours.getLeft())));
 						eFactureService.demanderDesinscriptionContribuable(tiers.getNumero(), demande.getIdDemande(), TRAITEMENT_NOUVELLE_DEMANDE);
 					}
 
@@ -128,7 +128,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 					final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), typeDocument,
 					                                                                    demande.getDateDemande(), demande.getNoAdherent(),
-					                                                                    enCours != null ? enCours.getFirst() : null, enCours != null ? enCours.getSecond() : null);
+					                                                                    enCours != null ? enCours.getLeft() : null, enCours != null ? enCours.getRight() : null);
 					eFactureService.notifieMiseEnAttenteInscription(demande.getIdDemande(), etatFinal, description, archivageId, false);
 					LOGGER.info(String.format("Demande d'inscription passée à l'état %s", etatFinal));
 				}
@@ -149,12 +149,12 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		if (histo.isInscrit()) {
 			final RegDate dateInscription = RegDateHelper.get(histo.getDernierEtat().getDateObtention());
 			final BigInteger noAdherent = histo.getDernierEtat().getNoAdherent();
-			return new Pair<>(dateInscription, noAdherent);
+			return Pair.of(dateInscription, noAdherent);
 		}
 		else {
 			final Demande autreDemande = findAutreDemandeEnAttente(histo, idDemande);
 			if (autreDemande != null) {
-				return new Pair<>(autreDemande.getDateDemande(), autreDemande.getNoAdherent());
+				return Pair.of(autreDemande.getDateDemande(), autreDemande.getNoAdherent());
 			}
 			else {
 				return null;

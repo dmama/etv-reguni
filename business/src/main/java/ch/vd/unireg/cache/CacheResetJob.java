@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.utils.Pair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
@@ -54,7 +55,7 @@ public class CacheResetJob extends JobDefinition {
 			param.setName(c.getName());
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(new Pair<>(param, Boolean.FALSE));
+			params.add(Pair.of(param, Boolean.FALSE));
 		}
 		refreshParameterDefinitions(params);
 	}

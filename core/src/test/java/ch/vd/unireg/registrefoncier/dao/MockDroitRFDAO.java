@@ -7,12 +7,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
@@ -33,12 +33,12 @@ public class MockDroitRFDAO implements DroitRFDAO {
 	@Nullable
 	@Override
 	public DroitRF findActive(@NotNull DroitRFKey key) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public @NotNull List<DroitRF> findForAyantDroit(long tiersRFId, boolean fetchSituationsImmeuble) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@NotNull
@@ -53,12 +53,12 @@ public class MockDroitRFDAO implements DroitRFDAO {
 
 	@Override
 	public @Nullable DroitProprieteRF findDroitPrecedentByMasterId(@NotNull DroitRFKey key) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public @Nullable DroitProprieteRF findDroitPrecedentByAyantDroit(@NotNull DroitProprieteRF droit) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -76,12 +76,12 @@ public class MockDroitRFDAO implements DroitRFDAO {
 
 	@Override
 	public boolean exists(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean exists(Long id, FlushMode flushModeOverride) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -93,36 +93,36 @@ public class MockDroitRFDAO implements DroitRFDAO {
 
 	@Override
 	public Object saveObject(Object object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void remove(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Iterator<DroitRF> iterate(String query) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int getCount(Class<?> clazz) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void clearSession() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void evict(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

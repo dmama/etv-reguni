@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -28,7 +29,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.common.HibernateEntity;
@@ -147,7 +147,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				// on détermine les droits virtuels du tiers RF courant à partir des droits des tiers décédés dont il est l'héritier
 				final List<DroitRF> droitsVirtuels = heritages.entrySet().stream()
 						.map(this::resolveContribuable)
-						.map(pair -> determineDroitsHeritageVirtuels(ctb, pair.getFirst(), pair.getSecond(), includeVirtualTransitive))
+						.map(pair -> determineDroitsHeritageVirtuels(ctb, pair.getLeft(), pair.getRight(), includeVirtualTransitive))
 						.flatMap(Collection::stream)
 						.collect(Collectors.toList());
 
@@ -164,7 +164,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				// on détermine les droits virtuels de l'entreprise RF courante à partir des droits des entreprises absorbées dont elle est le destinataire
 				final List<DroitRF> droitsVirtuels = fusions.entrySet().stream()
 						.map(this::resolveContribuable)
-						.map(pair -> determineDroitsFusionVirtuels(ctb, pair.getFirst(), pair.getSecond(), includeVirtualTransitive))
+						.map(pair -> determineDroitsFusionVirtuels(ctb, pair.getLeft(), pair.getRight(), includeVirtualTransitive))
 						.flatMap(Collection::stream)
 						.collect(Collectors.toList());
 
@@ -404,7 +404,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		if (decede == null) {
 			throw new TiersNotFoundException(entry.getKey());
 		}
-		return new Pair<>(decede, entry.getValue());
+		return Pair.of(decede, entry.getValue());
 	}
 
 	/**

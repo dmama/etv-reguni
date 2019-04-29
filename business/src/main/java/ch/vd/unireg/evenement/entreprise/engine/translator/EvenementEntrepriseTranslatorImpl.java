@@ -1,8 +1,8 @@
 package ch.vd.unireg.evenement.entreprise.engine.translator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.NonUniqueResultException;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.StringsUtils;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -328,9 +327,11 @@ public class EvenementEntrepriseTranslatorImpl implements EvenementEntrepriseTra
 				}
 				// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
 				else if (found.size() > 1) {
-					Collections.sort(found);
-					final String listeTrouves = StringsUtils.appendsWithDelimiter(", ", found);
-					String message = String.format("Plusieurs entreprises ont été trouvées (numéros %s) pour les attributs civils [%s]. Arrêt du traitement.",
+					final String listeTrouves = found.stream()
+							.sorted()
+							.map(String::valueOf)
+							.collect(Collectors.joining(", "));
+					String message = String.format("Plusieurs entreprises ont été trouvées (numéros [%s]) pour les attributs civils [%s]. Arrêt du traitement.",
 					                               listeTrouves,
 					                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					audit.info(event.getNoEvenement(), message);

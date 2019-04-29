@@ -1,10 +1,10 @@
 package ch.vd.unireg.common;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 
 /**
  * @author Raphaël Marmier, 2016-01-06, <raphael.marmier@vd.ch>
@@ -15,8 +15,8 @@ public class GentilDateRangeExtendedAdapterCallbackTest extends WithoutSpringTes
 	public void testDuplicate() throws Exception {
 		GentilDateRangeExtendedAdapterCallback<TestDateRange> cb = new GentilDateRangeExtendedAdapterCallback<>();
 		TestDateRange result = cb.duplicate(new TestDateRange(date(2015, 6, 25), date(2015, 12, 31)));
-		Assert.isEqual(date(2015, 6, 25), result.getDateDebut());
-		Assert.isEqual(date(2015, 12, 31), result.getDateFin());
+		Assert.assertEquals(date(2015, 6, 25), result.getDateDebut());
+		Assert.assertEquals(date(2015, 12, 31), result.getDateFin());
 	}
 
 	@Test
@@ -27,18 +27,18 @@ public class GentilDateRangeExtendedAdapterCallbackTest extends WithoutSpringTes
 
 		{
 			TestDateRange result = cb.adapt(new TestDateRange(date(2015, 6, 25), date(2015, 12, 31)), date(2015, 7, 5), sourceDebut, date(2015, 9, 23), sourceFin);
-			Assert.isEqual(date(2015, 7, 5), result.getDateDebut());
-			Assert.isEqual(date(2015, 9, 23), result.getDateFin());
+			Assert.assertEquals(date(2015, 7, 5), result.getDateDebut());
+			Assert.assertEquals(date(2015, 9, 23), result.getDateFin());
 		}
 		{
 			TestDateRange result = cb.adapt(new TestDateRange(date(2015, 6, 25), date(2015, 12, 31)), date(2015, 7, 5), sourceDebut, null, null);
-			Assert.isEqual(date(2015, 7, 5), result.getDateDebut());
-			Assert.isEqual(date(2015, 12, 31), result.getDateFin());
+			Assert.assertEquals(date(2015, 7, 5), result.getDateDebut());
+			Assert.assertEquals(date(2015, 12, 31), result.getDateFin());
 		}
 		{
 			TestDateRange result = cb.adapt(new TestDateRange(date(2015, 6, 25), date(2015, 12, 31)), null, null, null, null);
-			Assert.isEqual(date(2015, 6, 25), result.getDateDebut());
-			Assert.isEqual(date(2015, 12, 31), result.getDateFin());
+			Assert.assertEquals(date(2015, 6, 25), result.getDateDebut());
+			Assert.assertEquals(date(2015, 12, 31), result.getDateFin());
 		}
 
 	}
@@ -47,8 +47,8 @@ public class GentilDateRangeExtendedAdapterCallbackTest extends WithoutSpringTes
 	public void testAdapt() throws Exception {
 		GentilDateRangeExtendedAdapterCallback<TestDateRange> cb = new GentilDateRangeExtendedAdapterCallback<>();
 		TestDateRange result = cb.adapt(new TestDateRange(date(2015, 6, 25), date(2015, 12, 31)), date(2015, 7, 5), date(2015, 9, 23));
-		Assert.isEqual(date(2015, 7, 5), result.getDateDebut());
-		Assert.isEqual(date(2015, 9, 23), result.getDateFin());
+		Assert.assertEquals(date(2015, 7, 5), result.getDateDebut());
+		Assert.assertEquals(date(2015, 9, 23), result.getDateFin());
 	}
 
 	/*

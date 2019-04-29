@@ -7,16 +7,16 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sf.ehcache.CacheManager;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.cache.UniregCacheManagerImpl;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.cache.UniregCacheManagerImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -233,12 +233,12 @@ public class ServiceInfrastructureCommuneCacheTest {
 
 		@Override
 		public RegDate getDateDebutValidite() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public RegDate getDateFinValidite() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
@@ -248,12 +248,12 @@ public class ServiceInfrastructureCommuneCacheTest {
 
 		@Override
 		public String getSigleCanton() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public String getNomOfficielAvecCanton() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
@@ -273,22 +273,22 @@ public class ServiceInfrastructureCommuneCacheTest {
 
 		@Override
 		public Integer getCodeDistrict() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public Integer getCodeRegion() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public String getNomCourt() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public String getNomOfficiel() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
@@ -298,17 +298,17 @@ public class ServiceInfrastructureCommuneCacheTest {
 
 		@Override
 		public String getSigleOFS() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public RegDate getDateDebut() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public RegDate getDateFin() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 	}

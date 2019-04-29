@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.avatar.ImageData;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.indexer.EmptySearchCriteriaException;
@@ -303,7 +303,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				final int nbItems = countParties(parties.getEntries());
 				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					throw new NotImplementedException();
+					throw new NotImplementedException("");
 				}
 				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
 					return ExecutionResult.with(Response.ok(parties, preferred).build(), nbItems);

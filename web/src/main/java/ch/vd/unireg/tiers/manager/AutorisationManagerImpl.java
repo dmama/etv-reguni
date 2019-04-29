@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -924,7 +924,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			isEditable = codeFactorise3(tiers, visa, oid, allowedOnglet, isEditable);
 
 			Pair<TypeImposition, TypeAutoriteFiscale> types = calculeTypeImpositionEtAutoriteFiscale(tiers);
-			if (types.getFirst() == TypeImposition.AUCUN_FOR_ACTIF && isPersonnePhysique) {
+			if (types.getLeft() == TypeImposition.AUCUN_FOR_ACTIF && isPersonnePhysique) {
 				// [UNIREG-1736] un sourcier est un individu qui a un for source ou dont le
 				// ménage commun actif a un for source...
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, null);
@@ -934,8 +934,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 			}
 
-			final TypeImposition typeImposition = types.getFirst();
-			final TypeAutoriteFiscale typeAutoriteFiscale = types.getSecond();
+			final TypeImposition typeImposition = types.getLeft();
+			final TypeAutoriteFiscale typeAutoriteFiscale = types.getRight();
 			if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && isGranted(securityProvider, RT, visa, oid)) {
 				allowedOnglet.put(MODIF_DOSSIER, TRUE);
 				allowedOnglet.put(DOSSIER_TRAVAIL, TRUE);
@@ -1077,6 +1077,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		else {
 			typeAutoriteFiscale = null;
 		}
-		return new Pair<>(typeImposition, typeAutoriteFiscale);
+		return Pair.of(typeImposition, typeAutoriteFiscale);
 	}
 }

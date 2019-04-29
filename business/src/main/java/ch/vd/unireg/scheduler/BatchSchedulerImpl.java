@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.stats.JobMonitor;
 import ch.vd.unireg.stats.StatsService;
@@ -561,7 +561,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 	@Override
 	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -581,7 +581,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 	@Override
 	public AttributeList setAttributes(AttributeList attributes) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

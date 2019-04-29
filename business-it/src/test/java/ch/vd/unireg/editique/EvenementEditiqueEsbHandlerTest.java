@@ -8,12 +8,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.unireg.common.BusinessItTest;
@@ -58,42 +58,42 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 
 			@Override
 			public void registerTrigger(String nomDocument, RetourImpressionTrigger trigger) {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public EditiqueResultat getDocument(String nomDocument, Duration timeout) {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getDocumentsRecus() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getDocumentsEnAttenteDeDispatch() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getCleanupPeriod() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getDocumentsPurges() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Date getDateDernierePurgeEffective() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Collection<Pair<Long, RetourImpressionTrigger>> getTriggersEnregistres() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 		});
 

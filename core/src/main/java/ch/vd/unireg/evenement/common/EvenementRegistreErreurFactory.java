@@ -1,9 +1,9 @@
 package ch.vd.unireg.evenement.common;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
@@ -80,6 +80,6 @@ public abstract class EvenementRegistreErreurFactory<T extends EvenementErreur> 
 	 * @return la callstack, ou <code>null</code> si l'exception était nulle
 	 */
 	protected static String extractCallstack(@Nullable Exception e) {
-		return e != null ? ExceptionUtils.extractCallStack(e) : null;
+		return e != null ? ExceptionUtils.getStackTrace(e) : null;
 	}
 }

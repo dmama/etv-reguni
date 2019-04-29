@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.xml.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
+
 
 public class EchangeAciComImpl implements EchangeAciCom, Serializable {
 
@@ -25,7 +26,7 @@ public class EchangeAciComImpl implements EchangeAciCom, Serializable {
 
 	public static List<EchangeAciCom> get(List<ch.vd.fidor.xml.colladm.v1.EchangeAciCom> echangesAciCom) {
 		return echangesAciCom.stream()
-				.map(aux -> new EchangeAciComImpl(XmlUtils.cal2regdate(aux.getDateDebut()), XmlUtils.cal2regdate(aux.getDateFin()),
+				.map(aux -> new EchangeAciComImpl(XmlUtils.xmlcal2regdate(aux.getDateDebut()), XmlUtils.xmlcal2regdate(aux.getDateFin()),
 				                                  aux.getTypeCommunication() != null ? TypeCommunication.getTypeCommunication(aux.getTypeCommunication()) : null,
 				                                  aux.getSupportEchange() != null ? SupportEchange.getSupportEchange(aux.getSupportEchange()) : null))
 				.collect(Collectors.toList());

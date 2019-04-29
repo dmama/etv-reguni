@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.rest.CommuneSimple;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
@@ -42,8 +42,8 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	protected CommuneImpl(CommuneSimple target) {
 		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
-		this.dateDebut = ch.vd.registre.base.xml.XmlUtils.cal2regdate(target.getDateDebutValidite());
-		this.dateFin = ch.vd.registre.base.xml.XmlUtils.cal2regdate(target.getDateFinValidite());
+		this.dateDebut = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
+		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.getNumTechMere();
 		this.vaudoise = ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(sigleCanton);

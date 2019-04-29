@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.dbutils.WrappingDataSource;
+import ch.vd.shared.tracing.datasource.WrappingDataSource;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 

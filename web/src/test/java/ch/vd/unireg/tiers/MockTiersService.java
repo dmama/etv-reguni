@@ -8,13 +8,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -1355,7 +1355,7 @@ public class MockTiersService implements TiersService {
 
 	@Override
 	public @NotNull Map<Long, CommunauteHeritiers> getCommunautesHeritiers(@NotNull Collection<Long> tiersIds) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

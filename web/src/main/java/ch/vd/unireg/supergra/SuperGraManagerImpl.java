@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
@@ -31,7 +32,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
@@ -839,7 +839,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	private Collection<?> getCollection(String collName, HibernateEntity entity) {
 		try {
-			return (Collection<?>) ObjectGetterHelper.getValue(entity, collName);
+			return (Collection<?>) PropertyUtils.getProperty(entity, collName);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

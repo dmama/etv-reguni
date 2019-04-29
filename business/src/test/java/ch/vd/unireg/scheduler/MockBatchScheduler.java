@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
-
-import ch.vd.registre.base.utils.NotImplementedException;
 
 public class MockBatchScheduler implements BatchScheduler {
 
@@ -37,22 +36,22 @@ public class MockBatchScheduler implements BatchScheduler {
 
 	@Override
 	public boolean isStarted() throws org.quartz.SchedulerException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void register(JobDefinition jobDef) throws SchedulerException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void registerCron(JobDefinition job, String cronExpression) throws SchedulerException, ParseException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void registerCron(JobDefinition job, @Nullable Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -63,32 +62,32 @@ public class MockBatchScheduler implements BatchScheduler {
 
 	@Override
 	public JobDefinition queueJob(@NotNull String jobName, @Nullable Map<String, Object> params) throws SchedulerException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Map<String, JobDefinition> getJobs() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public JobDefinition getJob(String name) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<JobDefinition> getSortedJobs() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void stopJob(String name, @Nullable Duration timeout) throws SchedulerException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean stopAllRunningJobs() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	public List<JobData> getStartedJobs() {

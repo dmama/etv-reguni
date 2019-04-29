@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.ReflexionUtils;
 import ch.vd.unireg.perfs.PerfsAccessFileIterator;
 import ch.vd.unireg.webservices.party3.BatchParty;
@@ -196,7 +196,7 @@ public class PerfsThread extends Thread {
 
 		@Override
 		public List<?> executeBatch(PartyWebService port, Collection<Integer> ids) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override

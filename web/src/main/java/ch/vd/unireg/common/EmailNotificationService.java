@@ -3,13 +3,13 @@ package ch.vd.unireg.common;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.utils.LogLevel;
 
 /**
@@ -64,7 +64,7 @@ public class EmailNotificationService implements NotificationService {
 		text += " - utilisateur : " + user;
 
 		// Extrait la call-stack
-		text += "\n\n" + ExceptionUtils.extractCallStack(exception);
+		text += "\n\n" + ExceptionUtils.getStackTrace(exception);
 		mail.setSubject(sujet);
 		mail.setText(text);
 

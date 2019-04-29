@@ -12,10 +12,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ch.vd.registre.base.utils.Pair;
 
 /**
  * Classe qui maintient le contenu des inbox dont l'InboxService est dépositaire ; cette classe est thread-safe
@@ -50,7 +49,7 @@ public class InboxContainer {
 		if (byUuid.containsKey(element.getUuid())) {
 			throw new IllegalArgumentException("Elément " + element.getUuid() + " déjà présent");
 		}
-		byUuid.put(element.getUuid(), new Pair<>(visa, element));
+		byUuid.put(element.getUuid(), Pair.of(visa, element));
 		final Set<InboxElement> set = getUserRelativeSet(visa, true);
 		set.add(element);
 	}
@@ -80,7 +79,7 @@ public class InboxContainer {
 	 */
 	public synchronized InboxElement get(UUID uuid) {
 		final Pair<String, InboxElement> elt = byUuid.get(uuid);
-		return elt != null ? elt.getSecond() : null;
+		return elt != null ? elt.getRight() : null;
 	}
 
 	/**
@@ -91,9 +90,9 @@ public class InboxContainer {
 	public synchronized void removeElement(UUID uuid, String visa) {
 		final Pair<String, InboxElement> elt = byUuid.get(uuid);
 		if (elt != null) {
-			if (elt.getFirst().equals(visa)) {
+			if (elt.getLeft().equals(visa)) {
 				final Set<InboxElement> set = getUserRelativeSet(visa, false);
-				final InboxElement inboxElement = elt.getSecond();
+				final InboxElement inboxElement = elt.getRight();
 				if (set != null) {
 					set.remove(inboxElement);
 				}

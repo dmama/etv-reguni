@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 
 public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
@@ -41,12 +41,12 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public boolean exists(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean exists(Long id, FlushMode flushModeOverride) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public Object saveObject(Object object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -77,12 +77,12 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Iterator<EvenementRFImport> iterate(String query) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -92,30 +92,30 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public void clearSession() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void evict(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
 	public EvenementRFImport findNextImportToProcess(TypeImportRF type) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
 	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId, TypeImportRF type) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
 	public RegDate findValueDateOfOldestProcessedImport(long importId, TypeImportRF type) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -128,17 +128,17 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	@Override
 	@Nullable
 	public EvenementRFImport find(@NotNull TypeImportRF type, @NotNull RegDate dateEvenement) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<EvenementRFImport> find(@Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int count(@Nullable List<EtatEvenementRF> etats) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

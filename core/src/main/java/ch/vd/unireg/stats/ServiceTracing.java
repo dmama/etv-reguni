@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
  * Classe utilitaire qui permet de comptabiliser le ping moyen (depuis le début de l'application et sur les 5 dernières minutes) ainsi que le temps passé entre deux appels.
@@ -205,7 +205,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 
 		@Override
 		public void onTick() {
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 	}
 

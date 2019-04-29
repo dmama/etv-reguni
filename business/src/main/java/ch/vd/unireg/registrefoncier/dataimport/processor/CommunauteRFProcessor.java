@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
@@ -110,7 +110,7 @@ public class CommunauteRFProcessor {
 		persistes.forEach(r -> r.setAnnule(true));
 
 		// on ferme les regroupements à fermer
-		fermes.forEach(p -> fermeRegroupement(p.getFirst(), p.getSecond().getDateFin()));
+		fermes.forEach(p -> fermeRegroupement(p.getLeft(), p.getRight().getDateFin()));
 
 		// ce qui reste dans la collection 'theoriques' manque, on l'ajoute
 		theoriques.forEach(communaute::addRegroupement);

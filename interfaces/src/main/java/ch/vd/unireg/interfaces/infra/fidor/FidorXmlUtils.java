@@ -6,6 +6,7 @@ import ch.vd.fidor.xml.common.v1.Date;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.xml.common.v2.XmlDateRangeFr;
 
 /**
@@ -43,6 +44,6 @@ public abstract class FidorXmlUtils {
 	 * @return vrai si le range est valide, faux autrement
 	 */
 	public static boolean isValid(@NotNull XmlDateRangeFr range, RegDate date) {
-		return RegDateHelper.isBetween(date, ch.vd.registre.base.xml.XmlUtils.cal2regdate(range.getDateDebut()), ch.vd.registre.base.xml.XmlUtils.cal2regdate(range.getDateFin()), NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, XmlUtils.xmlcal2regdate(range.getDateDebut()), XmlUtils.xmlcal2regdate(range.getDateFin()), NullDateBehavior.LATEST);
 	}
 }

@@ -4,12 +4,12 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -119,7 +119,7 @@ public class ExtractionRegimesFiscauxResults extends AbstractJobResults<Long, Ex
 
 	@Override
 	public void addErrorException(Long idEntreprise, Exception e) {
-		erreurs.add(new Erreur(idEntreprise, ExceptionUtils.extractCallStack(e)));
+		erreurs.add(new Erreur(idEntreprise, ExceptionUtils.getStackTrace(e)));
 	}
 
 	public void addIdentifiantInvalide(Long id) {

@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;

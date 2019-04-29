@@ -26,6 +26,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>unireg-core</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ubr</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>

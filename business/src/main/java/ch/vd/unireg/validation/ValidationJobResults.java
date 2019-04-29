@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.JobResults;
@@ -174,11 +175,11 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 
 	@Override
 	public void addErrorException(Long element, Exception e) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void addAll(ValidationJobResults rapport) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

@@ -1,13 +1,12 @@
 package ch.vd.unireg.transaction;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.CallbackPreferringPlatformTransactionManager;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-
-import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
  * Mock du transaction manager qui ne gère aucune transaction et délègue les opérations aux callbacks.

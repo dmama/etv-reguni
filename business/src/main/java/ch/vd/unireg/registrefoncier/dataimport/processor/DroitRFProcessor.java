@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
@@ -248,7 +248,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		if (!toUpdateList.isEmpty()) {
 			// les droits modifiés dans l'import courant et qui impactent des droits créés dans des imports précédents
 			toUpdateList.forEach(pair -> {
-				final RegDate dateImportDroit = pair.getSecond().getDateDebut();
+				final RegDate dateImportDroit = pair.getRight().getDateDebut();
 				final RegDate key = (dateImportDroit == null ? RegDateHelper.getEarlyDate() : dateImportDroit);
 				affaires.merge(key, new AffaireData(dateImportDroit, Collections.singletonList(pair)), AffaireData::merge);
 			});

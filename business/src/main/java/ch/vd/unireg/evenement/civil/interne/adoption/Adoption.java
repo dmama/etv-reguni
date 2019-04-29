@@ -2,11 +2,11 @@ package ch.vd.unireg.evenement.civil.interne.adoption;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -51,12 +51,12 @@ public class Adoption extends EvenementCivilInterne {
 
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

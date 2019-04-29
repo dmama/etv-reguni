@@ -3,6 +3,7 @@ package ch.vd.unireg.evenement.ide;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
@@ -496,7 +496,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			String message = String.format("%s %s", e.getMessage(), CollectionsUtils.toString(e.getErreurs(), new StringRenderer<Pair<String, String>>() {
 				@Override
 				public String toString(Pair<String, String> paire) {
-					return paire.getFirst() + ": " + paire.getSecond();
+					return paire.getLeft() + ": " + paire.getRight();
 				}
 			}, "; "));
 			audit.error(message);

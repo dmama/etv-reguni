@@ -8,12 +8,12 @@ import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.interfaces.entreprise.data.Domicile;
@@ -164,7 +164,7 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public Map<String, List<DateRanged<FonctionOrganisation>>> getFonction() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

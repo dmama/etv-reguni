@@ -1,9 +1,9 @@
 package ch.vd.unireg.validation.rapport;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.AssujettissementParSubstitution;
@@ -36,12 +36,12 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 		final RapportEntreTiers rapport = new RapportEntreTiers() {
 			@Override
 			public TypeRapportEntreTiers getType() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public RapportEntreTiers duplicate() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override

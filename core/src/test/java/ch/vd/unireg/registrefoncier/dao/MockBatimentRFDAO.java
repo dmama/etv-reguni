@@ -7,11 +7,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.key.BatimentRFKey;
 
@@ -59,7 +59,7 @@ public class MockBatimentRFDAO implements BatimentRFDAO {
 
 	@Override
 	public boolean exists(Long id, FlushMode flushModeOverride) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -71,36 +71,36 @@ public class MockBatimentRFDAO implements BatimentRFDAO {
 
 	@Override
 	public Object saveObject(Object object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void remove(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Iterator<BatimentRF> iterate(String query) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int getCount(Class<?> clazz) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void clearSession() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void evict(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

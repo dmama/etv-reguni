@@ -26,10 +26,16 @@ import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.degrevement.EvenementIntegrationMetierDegrevementHandler;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.xml.degrevement.quittance.v1.Commune;
 import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.Caracteristiques;
@@ -39,12 +45,6 @@ import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.event.degrevement.v1.SousTypeDocument;
 import ch.vd.unireg.xml.event.degrevement.v1.Supervision;
 import ch.vd.unireg.xml.event.degrevement.v1.TypeDocument;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.evenement.EvenementTest;
-import ch.vd.unireg.evenement.degrevement.EvenementIntegrationMetierDegrevementHandler;
-import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.hibernate.HibernateTemplateImpl;
-import ch.vd.unireg.jms.EsbMessageHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -122,7 +122,7 @@ public class EvenementIntegrationMetierEsbHandlerV5ITTest extends EvenementTest 
 			synchronized (collected) {
 				collected.add(Pair.of(quittance, headers));
 				collected.notifyAll();
-				return new QuittanceIntegrationMetierImmDetails(XmlUtils.date2cal(DateHelper.getCurrentDate()),
+				return new QuittanceIntegrationMetierImmDetails(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()),
 				                                                BigInteger.valueOf(quittance.getDonneesMetier().getPeriodeFiscale()),
 				                                                quittance.getDonneesMetier().getNumeroContribuable(),
 				                                                TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE,
@@ -176,8 +176,8 @@ public class EvenementIntegrationMetierEsbHandlerV5ITTest extends EvenementTest 
 
 		final Supervision supervision = q.getLeft().getSupervision();
 		assertNotNull(supervision);
-		assertEquals(RegDate.get(2017, 3, 8), XmlUtils.cal2regdate(supervision.getHorodatageReception()));
-		assertEquals(RegDate.get(2017, 3, 8), XmlUtils.cal2regdate(supervision.getHorodatagePublication()));
+		assertEquals(RegDate.get(2017, 3, 8), XmlUtils.xmlcal2regdate(supervision.getHorodatageReception()));
+		assertEquals(RegDate.get(2017, 3, 8), XmlUtils.xmlcal2regdate(supervision.getHorodatagePublication()));
 		assertEquals("Tralala", supervision.getIdBusinessId());
 
 		final DonneesMetier donneesMetier = q.getLeft().getDonneesMetier();

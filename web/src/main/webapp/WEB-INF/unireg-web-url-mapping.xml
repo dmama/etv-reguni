@@ -103,7 +103,7 @@
 				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
 				<entry key="java.lang.Exception" value="errors/error" />
 				<entry key="ch.vd.unireg.security.AccessDeniedException" value="errors/accessDeniedIHM" />
-				<entry key="ch.vd.registre.base.utils.NotImplementedException" value="errors/notImplemented" />
+				<entry key="org.apache.commons.lang3.NotImplementedException" value="errors/notImplemented" />
 				<entry key="ch.vd.unireg.common.EditiqueCommunicationException" value="errors/editique" />
 				<entry key="ch.vd.unireg.common.ObjectNotFoundException" value="errors/objectNotFound" />
 				<entry key="ch.vd.unireg.adresse.AdressesResolutionException" value="errors/adressesResolution" />

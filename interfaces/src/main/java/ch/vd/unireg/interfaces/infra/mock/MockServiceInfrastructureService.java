@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -183,7 +183,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Override
 	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	public List<Commune> getListeCommunes(String cantonAsString) throws ServiceInfrastructureException {

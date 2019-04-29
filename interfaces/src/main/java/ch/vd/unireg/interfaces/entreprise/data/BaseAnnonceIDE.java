@@ -3,9 +3,8 @@ package ch.vd.unireg.interfaces.entreprise.data;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.utils.Pair;
 
 /**
  * @author Raphaël Marmier, 2016-09-09, <raphael.marmier@vd.ch>

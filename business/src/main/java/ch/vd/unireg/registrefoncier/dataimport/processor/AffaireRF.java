@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +22,6 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -73,7 +73,7 @@ public class AffaireRF {
 					.filter(AnnulableHelper::nonAnnule)
 					.filter(d -> d.getDateDebut() != dateValeur && d.getDateFin() != veilleImport)
 					.filter(d -> hasDebutRaisonAcquisitionEquals(d, dateValeur))
-					.map(d -> new Pair<>(d, d))
+					.map(d -> Pair.of(d, d))
 					.collect(Collectors.toList());
 			this.fermes = immeuble.getDroitsPropriete().stream()
 					.filter(AnnulableHelper::nonAnnule)
@@ -130,7 +130,7 @@ public class AffaireRF {
 
 		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
 		aMettreAJour.forEach(p -> {
-			processMiseAJour(p.getFirst(), p.getSecond());
+			processMiseAJour(p.getLeft(), p.getRight());
 			misesajour.add(p);
 		});
 
@@ -179,7 +179,7 @@ public class AffaireRF {
 				.map(d -> new Mutation(d, MutationType.CREATION))
 				.forEach(mutations::add);
 		miseajour.stream()
-				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
+				.map(d -> new Mutation(d.getRight(), MutationType.UPDATE))
 				.forEach(mutations::add);
 		return mutations;
 	}

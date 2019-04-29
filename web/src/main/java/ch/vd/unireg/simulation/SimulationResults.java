@@ -3,7 +3,8 @@ package ch.vd.unireg.simulation;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import ch.vd.unireg.tache.sync.SynchronizeAction;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -22,7 +23,7 @@ public class SimulationResults {
 	}
 
 	public void setException(Exception exception) {
-		this.exception = ExceptionUtils.extractCallStack(exception);
+		this.exception = ExceptionUtils.getStackTrace(exception);
 	}
 
 	public void addActions(List<SynchronizeAction> actions) {

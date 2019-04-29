@@ -9,9 +9,10 @@ import ch.ech.ech0084.v1.ValuesStoredUnderAhvvn;
 import ch.ech.ech0085.v1.GetInfoPersonResponse;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -19,9 +20,8 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.upi.ServiceUpiException;
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 
 public class ServiceUpiRCPers implements ServiceUpiRaw {
 

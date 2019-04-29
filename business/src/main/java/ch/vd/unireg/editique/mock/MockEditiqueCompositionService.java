@@ -6,12 +6,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.MimeTypeHelper;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
@@ -157,7 +157,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

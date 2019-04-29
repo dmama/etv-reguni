@@ -1,8 +1,8 @@
 package ch.vd.unireg.evenement.entreprise.engine;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseBasicInfo;
 import ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessor;
 
@@ -17,11 +17,11 @@ public class MockEvenementEntrepriseEvenementProcessor implements EvenementEntre
 
 	@Override
 	public void restartProcessingThread() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void forceEvenement(EvenementEntrepriseBasicInfo evt) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

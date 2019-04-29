@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.xml.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -47,7 +47,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		}
 		// UNIREG-474 : si une adresse civile possède une date de fin de validité et que celle-ci est avant le 1er janvier 1900, il s'agit
 		// en fait d'une adresse annulée et il ne faut pas en tenir compte
-		final Date dateFinValidite = XmlUtils.cal2date(target.getDateFinValidite());
+		final Date dateFinValidite = XmlUtils.xmlcal2date(target.getDateFinValidite());
 		if (dateFinValidite != null && DateHelper.isNullDate(dateFinValidite)) {
 			return null;
 		}
@@ -65,7 +65,7 @@ public class AdresseImpl implements Adresse, Serializable {
 
 	public AdresseImpl(@NotNull ch.vd.fidor.xml.colladm.v1.Adresse right, @NotNull ServiceInfrastructureRaw service) {
 
-		final RegDate dateDebut = XmlUtils.cal2regdate(right.getDateDebut());
+		final RegDate dateDebut = XmlUtils.xmlcal2regdate(right.getDateDebut());
 		final Optional<Rue> rue = Optional.ofNullable(right.getEstrid())
 				.map(estrid -> service.getRueByNumero(estrid, dateDebut));
 		final Optional<Localite> localite = Optional.of(right.getNoOrdrePoste())
@@ -73,7 +73,7 @@ public class AdresseImpl implements Adresse, Serializable {
 				.map(onrp -> service.getLocaliteByONRP(onrp, dateDebut));
 
 		this.dateDebut = dateDebut;
-		this.dateFin = XmlUtils.cal2regdate(right.getDateFin());
+		this.dateFin = XmlUtils.xmlcal2regdate(right.getDateFin());
 		this.casePostale = CasePostale.get(right.getCasePostale(), right.getNumeroCasePostale());
 		this.localiteAbregeMinuscule = localite.map(Localite::getNomAbrege).orElse(null);
 		this.numero = right.getNumeroMaison();
@@ -92,8 +92,8 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	public AdresseImpl(ch.vd.common.model.rest.AdresseImpl target) {
-		this.dateDebut = XmlUtils.cal2regdate(target.getDateDebutValidite());
-		this.dateFin = XmlUtils.cal2regdate(target.getDateFinValidite());
+		this.dateDebut = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
+		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.casePostale = CasePostale.parse(target.getCasePostale());
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.numero = null;         // numéro de police TOUJOURS déjà concaténé dans la rue

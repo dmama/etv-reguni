@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -13,7 +14,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -96,7 +96,7 @@ public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ord
 	 * @return le nombre total de fois que cette exception a été vue. Retourne <code>1</code> si l'exception est vue pour la première fois.
 	 */
 	private int registerException(Exception ex) {
-		final String callstack = ExceptionUtils.extractCallStack(ex);
+		final String callstack = ExceptionUtils.getStackTrace(ex);
 		final byte[] bytes = DigestUtils.sha1(callstack);
 		final String sha = new String(bytes);
 

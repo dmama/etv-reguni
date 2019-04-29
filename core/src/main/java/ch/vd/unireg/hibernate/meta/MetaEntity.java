@@ -38,6 +38,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
@@ -47,7 +48,6 @@ import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.ReflexionUtils;
 import ch.vd.unireg.hibernate.ActionAutoEtiquetteUserType;
 import ch.vd.unireg.hibernate.DayMonthUserType;

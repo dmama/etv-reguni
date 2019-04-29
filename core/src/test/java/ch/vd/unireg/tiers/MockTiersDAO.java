@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.declaration.Declaration;
@@ -73,98 +73,98 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public Map<Class, List<Tiers>> getFirstGroupedByClass(int count) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Set<Long> getRelatedIds(long id, int maxDepth) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public @NotNull List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Set<Long> getIdsTiersLies(Collection<Long> ids, boolean includeContactsImpotSource) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public RapportEntreTiers save(RapportEntreTiers object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getAllIds() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getAllIdsFor(boolean includeCancelled, TypeTiers... types) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getAllIdsFor(boolean includeCancelled, @Nullable Collection<TypeTiers> types) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getDirtyIds() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getAllNumeroIndividu() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Nullable
 	@Override
 	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Contribuable getContribuableByNumero(Long numeroContribuable) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -179,26 +179,26 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	public Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissementCivil) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public PersonnePhysique getHabitantByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -238,17 +238,17 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public List<PersonnePhysique> getSourciers(int noSourcier) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<PersonnePhysique> getAllMigratedSourciers() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Tiers getTiersForIndexation(long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -259,132 +259,132 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public List<Long> getEntreprisesSansRegimeFiscal() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getEntreprisesAvecRegimeFiscalAt(@NotNull String code, @NotNull RegDate date) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void updateOids(Map<Long, Integer> tiersOidsMapping) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getListeDebiteursSansPeriodicites() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public <T extends Declaration> T addAndSave(Tiers tiers, T declaration) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public <T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public <T extends AllegementFoncier> T addAndSave(ContribuableImpositionPersonnesMorales pm, T allegementFoncier) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getIdsConnusDuCivil() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Long> getIdsParenteDirty() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public List<Tiers> getAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -399,7 +399,7 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public boolean exists(Long id, FlushMode flushModeOverride) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -413,37 +413,37 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public Object saveObject(Object object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void remove(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Iterator<Tiers> iterate(String query) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int getCount(Class<?> clazz) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void clearSession() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void evict(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -458,6 +458,6 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public void setDirtyFlag(@Nullable Collection<Long> ids, boolean flag, @NotNull Session session) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

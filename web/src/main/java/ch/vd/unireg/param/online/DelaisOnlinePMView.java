@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -91,8 +91,8 @@ public class DelaisOnlinePMView {
 
 			// on met-à-jour les périodes existantes
 			toUpdate.forEach(pair -> {
-				final DelaisAccordablesOnlineDIPM edited = pair.getFirst();
-				final DelaisAccordablesOnlineDIPM persisted = pair.getSecond();
+				final DelaisAccordablesOnlineDIPM edited = pair.getLeft();
+				final DelaisAccordablesOnlineDIPM persisted = pair.getRight();
 				edited.copyTo(persisted);
 			});
 		}

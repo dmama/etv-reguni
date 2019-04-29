@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +15,7 @@ import ch.vd.infrastructure.model.rest.TypeCollectivite;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.base.xml.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -218,7 +218,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 			types[0] = type;
 			final ListeCollectiviteAdministrative collectivitesAdministratives = client.getCollectivitesAdministratives(types);
 			for (ch.vd.infrastructure.model.rest.CollectiviteAdministrative c : collectivitesAdministratives.getCollectiviteAdministrative()) {
-				if (isValid(XmlUtils.cal2date(c.getDateFinValidite()))) {
+				if (isValid(XmlUtils.xmlcal2date(c.getDateFinValidite()))) {
 					CollectiviteAdministrative oid = CollectiviteAdministrativeImpl.get(c);
 					offices.add((OfficeImpot) oid);
 				}

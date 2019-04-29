@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
@@ -79,7 +79,7 @@ public class AppariementEtablissementsSecondairesResults extends AbstractJobResu
 
 		public AppariementErreur(long idEntreprise, Exception e) {
 			super(idEntreprise);
-			this.stack = ExceptionUtils.extractCallStack(e);
+			this.stack = ExceptionUtils.getStackTrace(e);
 		}
 
 		@Override

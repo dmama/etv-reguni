@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.Predicate;
-
-import ch.vd.registre.base.utils.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * Mock du persistent cache qui utilise une map en mémoire (!) comme backend.
@@ -63,6 +62,6 @@ public class MockPersistentCache<T extends Serializable> implements PersistentCa
 
 	@Override
 	public CacheStats buildStats() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

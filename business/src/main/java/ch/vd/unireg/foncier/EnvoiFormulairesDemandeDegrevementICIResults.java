@@ -8,14 +8,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
@@ -335,7 +335,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		public final String msg;
 		public Erreur(long noContribuable, RegDate dateTraitement, Exception e) {
 			super(noContribuable, null, dateTraitement);
-			this.msg = ExceptionUtils.extractCallStack(e);
+			this.msg = ExceptionUtils.getStackTrace(e);
 		}
 		public Erreur(Tiers ctb, ImmeubleRF immeuble, RegDate dateTraitement, String message) {
 			super(ctb, immeuble, dateTraitement);

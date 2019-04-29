@@ -3,8 +3,9 @@ package ch.vd.unireg.registrefoncier.dataimport;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
 
 public class MutationsRFDetectorResults {
@@ -142,6 +143,6 @@ public class MutationsRFDetectorResults {
 	}
 
 	public void addErrorException(Object id, Exception e) {
-		erreurs.add(new Erreur(String.valueOf(id), String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.extractCallStack(e))));
+		erreurs.add(new Erreur(String.valueOf(id), String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.getStackTrace(e))));
 	}
 }

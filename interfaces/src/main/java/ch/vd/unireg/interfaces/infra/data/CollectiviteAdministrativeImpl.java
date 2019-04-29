@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.fidor.xml.colladm.v1.NomComplet;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.xml.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
@@ -65,7 +65,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 
 	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target) {
 		this.adresse = AdresseImpl.get(target.getAdresse());
-		this.dateFin = XmlUtils.cal2regdate(target.getDateFinValidite());
+		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.adresseEmail = target.getAdresseEmail();
 		this.noCCP = target.getNoCCP();
 		this.noColAdm = target.getNoColAdm();
@@ -85,7 +85,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 
 	protected CollectiviteAdministrativeImpl(@NotNull ch.vd.fidor.xml.colladm.v1.CollectiviteAdministrative right, @NotNull ServiceInfrastructureRaw service) {
 		this.adresse = AdresseImpl.getAt(right.getAdresses(), null, service);
-		this.dateFin = XmlUtils.cal2regdate(right.getDateFin());
+		this.dateFin = XmlUtils.xmlcal2regdate(right.getDateFin());
 		this.adresseEmail = right.getEmail();
 		this.noCCP = null;
 		this.noColAdm = right.getId();

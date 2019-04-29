@@ -4,9 +4,9 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.HtmlHelper;
 
 /**
@@ -34,7 +34,7 @@ public class JspTagCallstack extends BodyTagSupport {
 			out.print(HtmlUtils.htmlEscape(headerMessage));
 			out.print("<span id=\"details_link\">(<a href=\"#\" onclick=\"javascript:showDetails()\">détails</a>)</span></td></tr>");
 			out.print("<tr id=\"exception_callstack\"><td class=\"callstack\">");
-			final String cs = (exception != null ? ExceptionUtils.extractCallStack(exception) : callstack);
+			final String cs = (exception != null ? ExceptionUtils.getStackTrace(exception) : callstack);
 			out.print(HtmlHelper.renderMultilines(cs));
 			out.print("</td></tr>");
 			out.print("</table>");

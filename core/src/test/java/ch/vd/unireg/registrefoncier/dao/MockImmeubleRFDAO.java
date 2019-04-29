@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.TypeDroit;
@@ -40,12 +40,12 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Override
 	public @Nullable ImmeubleRF findByEgrid(@NotNull String egrid) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public @Nullable ImmeubleRF getBySituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@NotNull
@@ -71,12 +71,12 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	@NotNull
 	@Override
 	public List<Long> findImmeubleIdsAvecDatesDeFinDroitsACalculer() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public @NotNull List<Long> getAllIds() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	@NotNull
 	@Override
 	public List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	private static boolean hasDroitOfType(@NotNull ImmeubleRF immeuble, @NotNull TypeDroit typeDroit) {
@@ -100,7 +100,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Override
 	public List<ImmeubleRF> getAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -113,12 +113,12 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Override
 	public boolean exists(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean exists(Long id, FlushMode flushModeOverride) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -130,36 +130,36 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Override
 	public Object saveObject(Object object) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void remove(Long id) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Iterator<ImmeubleRF> iterate(String query) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int getCount(Class<?> clazz) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void clearSession() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void evict(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

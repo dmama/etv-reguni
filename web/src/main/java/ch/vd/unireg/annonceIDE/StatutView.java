@@ -3,9 +3,9 @@ package ch.vd.unireg.annonceIDE;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 

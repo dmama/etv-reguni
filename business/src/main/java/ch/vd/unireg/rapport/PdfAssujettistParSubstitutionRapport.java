@@ -7,8 +7,8 @@ import java.util.List;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;

@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
@@ -346,7 +346,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public ErreurImmeuble(long idImmeuble, Exception e) {
 			this.idImmeuble = idImmeuble;
 			this.message = e.getMessage();
-			this.stackTrace = ExceptionUtils.extractCallStack(e);
+			this.stackTrace = ExceptionUtils.getStackTrace(e);
 		}
 	}
 

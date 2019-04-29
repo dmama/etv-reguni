@@ -3,13 +3,13 @@ package ch.vd.unireg.evenement.registrefoncier;
 import javax.activation.DataHandler;
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -85,7 +85,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		m.addAttachment("data", new EsbDataHandler() {
 			@Override
 			public DataHandler getDataHandler() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override

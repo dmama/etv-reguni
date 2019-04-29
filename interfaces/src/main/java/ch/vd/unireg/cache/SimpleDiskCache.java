@@ -20,15 +20,10 @@ import java.util.Set;
 
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.ObjectKey;
-import ch.vd.unireg.cache.PersistentCache;
-import ch.vd.unireg.cache.SimpleCacheStats;
 
 /**
  * Implémente un cache persistant où chaque objet est stocké sous forme de fichier sur le disque. Les fichiers sont stockés sous une arborescence de répertoire pour éviter d'avoir tous les fichiers en
@@ -297,16 +292,16 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 
 	@Override
 	public Set<Map.Entry<ObjectKey, T>> entrySet() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public Set<ObjectKey> keySet() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public int size() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

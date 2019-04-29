@@ -7,12 +7,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.EtatCivilHelper;
@@ -730,8 +730,8 @@ public class ArriveePrincipale extends Arrivee {
 		}
 
 		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
-		final RegDate dateEvenement = getDateArriveeEffective(infosFor.getSecond());
-		final Commune commune = infosFor.getFirst();
+		final RegDate dateEvenement = getDateArriveeEffective(infosFor.getRight());
+		final Commune commune = infosFor.getLeft();
 
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
@@ -963,7 +963,7 @@ public class ArriveePrincipale extends Arrivee {
 				}
 			}
 
-			return commune == null ? null : new Pair<>(commune, dateDebutFor);
+			return commune == null ? null : Pair.of(commune, dateDebutFor);
 		}
 		catch (ServiceInfrastructureException | DonneesCivilesException e) {
 			throw new EvenementCivilException(e.getMessage(), e);

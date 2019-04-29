@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.JobResults;
@@ -238,7 +238,7 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 
 	@Override
 	public void addErrorException(Long tiersRF, Exception e) {
-		erreurs.add(new ErreurRapprochement(tiersRF, String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.extractCallStack(e))));
+		erreurs.add(new ErreurRapprochement(tiersRF, String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.getStackTrace(e))));
 	}
 
 	public void addTiersNonIdentifie(TiersRF tiersRF, List<Long> candidats) {

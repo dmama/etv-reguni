@@ -5,7 +5,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.registre.base.utils.Pair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import ch.vd.unireg.tiers.Tiers;
 
 /**
@@ -27,11 +28,11 @@ public class IndexerBatchException extends RuntimeException {
 	}
 
 	public void addException(Tiers tiers, Exception first) {
-		exceptions.add(new Pair<>(tiers.getId(), first));
+		exceptions.add(Pair.of(tiers.getId(), first));
 	}
 
 	public void addException(Long tiersId, Exception first) {
-		exceptions.add(new Pair<>(tiersId, first));
+		exceptions.add(Pair.of(tiersId, first));
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class IndexerBatchException extends RuntimeException {
 		for (int i = 0; i < size; ++i) {
 			final Pair<Long, Exception> p = exceptions.get(i);
 			s.println("---- Batch Sub-Exception #" + i + " ------------");
-			p.getSecond().printStackTrace(s);
+			p.getRight().printStackTrace(s);
 		}
 	}
 
@@ -59,7 +60,7 @@ public class IndexerBatchException extends RuntimeException {
 		for (int i = 0; i < size; ++i) {
 			final Pair<Long, Exception> p = exceptions.get(i);
 			s.println("---- Batch Sub-Exception #" + i + " ------------");
-			p.getSecond().printStackTrace(s);
+			p.getRight().printStackTrace(s);
 		}
 	}
 
@@ -77,8 +78,8 @@ public class IndexerBatchException extends RuntimeException {
 
 			// Entête
 			final Pair<Long, Exception> p = exceptions.get(0);
-			final Long tiersId = p.getFirst();
-			final Exception e = p.getSecond();
+			final Long tiersId = p.getLeft();
+			final Exception e = p.getRight();
 
 			if (tiersId != null) {
 				message.append("Impossible d'indexer le tiers n°").append(tiersId).append(": ");
@@ -103,8 +104,8 @@ public class IndexerBatchException extends RuntimeException {
 			final int size = exceptions.size();
 			for (int i = 0; i < size; ++i) {
 				final Pair<Long, Exception> p = exceptions.get(i);
-				final Long tiersId = p.getFirst();
-				final Exception e = p.getSecond();
+				final Long tiersId = p.getLeft();
+				final Exception e = p.getRight();
 				message.append("\n  ");
 				if (tiersId != null) {
 					message.append(tiersId);
@@ -132,7 +133,7 @@ public class IndexerBatchException extends RuntimeException {
 		final int size = exceptions.size();
 		for (int i = 0; i < size; ++i) {
 			final Pair<Long, Exception> p = exceptions.get(i);
-			final Long tiersId = p.getFirst();
+			final Long tiersId = p.getLeft();
 			if (tiersId == null) {
 				continue;
 			}

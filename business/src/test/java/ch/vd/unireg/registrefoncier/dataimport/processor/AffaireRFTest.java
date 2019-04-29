@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -1626,7 +1626,7 @@ public class AffaireRFTest {
 
 		renoncementCornelia.apply(new MockDroitRFDAO(),
 		                          Collections.emptyList(),
-		                          Collections.singletonList(new Pair<>(droitAmandine2Updated, droitAmandine2)),
+		                          Collections.singletonList(Pair.of(droitAmandine2Updated, droitAmandine2)),
 		                          Collections.singletonList(droitCornelia1), listener);
 
 

@@ -3,10 +3,11 @@ package ch.vd.unireg.foncier.migration.mandataire;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.tiers.Contribuable;
 
 public class MigrationMandatImporterResults extends AbstractJobResults<DonneesMandat, MigrationMandatImporterResults> {
@@ -35,7 +36,7 @@ public class MigrationMandatImporterResults extends AbstractJobResults<DonneesMa
 
 	@Override
 	public void addErrorException(DonneesMandat element, Exception e) {
-		erreurs.add(new Erreur(element, ExceptionUtils.extractCallStack(e)));
+		erreurs.add(new Erreur(element, ExceptionUtils.getStackTrace(e)));
 	}
 
 	@Override

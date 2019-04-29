@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.ObjectGetterHelper;
 
 /**
  * Classe de base pour les entités Unireg
@@ -205,7 +205,7 @@ public abstract class HibernateEntity implements Loggable, Annulable {
 	}
 
 	public Object getValue(String name) throws Exception {
-		return ObjectGetterHelper.getValue(this, name);
+		return PropertyUtils.getProperty(this, name);
 	}
 
 	public void setValue(String name, Object value) throws SQLException {

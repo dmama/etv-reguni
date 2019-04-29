@@ -26,12 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.jmx.export.MBeanExportOperations;
-
-import ch.vd.registre.base.utils.NotImplementedException;
 
 public class JmxStatContainer implements SmartLifecycle {
 
@@ -147,7 +146,7 @@ public class JmxStatContainer implements SmartLifecycle {
 		@Override
 		public final void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
 			// ne devrait jamais être appelé... aucun attribute n'est indiqué comme isWritable...
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
@@ -171,13 +170,13 @@ public class JmxStatContainer implements SmartLifecycle {
 		@Override
 		public final AttributeList setAttributes(AttributeList attributes) {
 			// ne devrait jamais être appelé... aucun attribute n'est indiqué comme isWritable...
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override
 		public final Object invoke(String actionName, Object[] params, String[] signature) throws MBeanException, ReflectionException {
 			// ne devrait jamais être appelé... aucune opération exposée
-			throw new NotImplementedException();
+			throw new NotImplementedException("");
 		}
 
 		@Override

@@ -13,12 +13,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
@@ -54,7 +54,7 @@ public class CommunauteRFProcessorTest {
 		final EvenementFiscalService evenementFiscalService = new MockEvenementFiscalService() {
 			@Override
 			public void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute) {
-				evenementsModificationPrincipalCommunaute.add(new Pair<>(dateDebut, communaute));
+				evenementsModificationPrincipalCommunaute.add(Pair.of(dateDebut, communaute));
 			}
 		};
 		processor = new CommunauteRFProcessor(this::getModeleCommunauteRF, this::getPrincipalCommunauteId, evenementFiscalService);
@@ -637,8 +637,8 @@ public class CommunauteRFProcessorTest {
 		// un événement de modification de principal devrait être envoyé
 		assertEquals(1, evenementsModificationPrincipalCommunaute.size());
 		final Pair<RegDate, CommunauteRF> event0 = evenementsModificationPrincipalCommunaute.get(0);
-		assertNull(event0.getFirst());
-		assertEquals(communaute, event0.getSecond());
+		assertNull(event0.getLeft());
+		assertEquals(communaute, event0.getRight());
 	}
 
 	/**

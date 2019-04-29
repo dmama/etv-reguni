@@ -2,7 +2,7 @@ package ch.vd.unireg.evenement.ide;
 
 import java.util.List;
 
-import ch.vd.registre.base.utils.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * @author Raphaël Marmier, 2016-09-06, <raphael.marmier@vd.ch>

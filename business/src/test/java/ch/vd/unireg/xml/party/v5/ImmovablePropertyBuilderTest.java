@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
@@ -86,7 +86,7 @@ public class ImmovablePropertyBuilderTest {
 		                                                               tiers -> null) {
 			@Override
 			public int compare(RightHolder o1, RightHolder o2) {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 		};
 	}

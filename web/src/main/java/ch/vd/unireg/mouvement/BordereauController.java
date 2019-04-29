@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.RetourEditiqueControllerHelper;
 import ch.vd.unireg.editique.EditiqueException;
@@ -101,7 +101,7 @@ public class BordereauController {
 			if (matcher.matches()) {
 				final Long noTiers = Long.valueOf(matcher.group(1));
 				final Integer noCa = Integer.valueOf(matcher.group(2));
-				return new Pair<>(noTiers, noCa);
+				return Pair.of(noTiers, noCa);
 			}
 		}
 		return null;
@@ -123,11 +123,11 @@ public class BordereauController {
 		if (typeMouvement == TypeMouvement.ReceptionDossier) {
 			// les bordereaux de réception sont pour les archives
 			criteria.setLocalisation(Localisation.ARCHIVES);
-			criteria.setIdCollAdministrativeInitiatrice(src.getFirst());
+			criteria.setIdCollAdministrativeInitiatrice(src.getLeft());
 		}
 		else {
-			criteria.setIdCollAdministrativeDestinataire(dest.getFirst());
-			criteria.setIdCollAdministrativeInitiatrice(src.getFirst());
+			criteria.setIdCollAdministrativeDestinataire(dest.getLeft());
+			criteria.setIdCollAdministrativeInitiatrice(src.getLeft());
 		}
 
 		// la liste des mouvements
@@ -138,13 +138,13 @@ public class BordereauController {
 
 		// les détails de la recherche...
 		view.setTypeMouvement(typeMouvement);
-		final String nomCollInitiatrice = infraService.getCollectivite(src.getSecond()).getNomCourt();
+		final String nomCollInitiatrice = infraService.getCollectivite(src.getRight()).getNomCourt();
 		final String nomCollReceptrice;
 		if (typeMouvement == TypeMouvement.ReceptionDossier) {
 			nomCollReceptrice = null;
 		}
 		else {
-			nomCollReceptrice = infraService.getCollectivite(dest.getSecond()).getNomCourt();
+			nomCollReceptrice = infraService.getCollectivite(dest.getRight()).getNomCourt();
 		}
 		view.setNomCollAdmInitiatrice(nomCollInitiatrice);
 		view.setNomCollAdmDestinataire(nomCollReceptrice);

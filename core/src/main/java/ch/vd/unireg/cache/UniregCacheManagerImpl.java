@@ -17,10 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.utils.LogLevel;
 
 public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean {
@@ -64,7 +64,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 	@Override
 	public void setAttribute(Attribute attribute) throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 
 	@Override
 	public AttributeList setAttributes(AttributeList attributes) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override

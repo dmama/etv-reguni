@@ -4,7 +4,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -91,7 +92,7 @@ public abstract class RoleResults<R extends RoleResults<R>> extends AbstractJobR
 
 	@Override
 	public void addErrorException(Long element, Exception e) {
-		errors.add(new RoleError(element, ExceptionUtils.extractCallStack(e)));
+		errors.add(new RoleError(element, ExceptionUtils.getStackTrace(e)));
 		addContribuableAuDecompte();
 	}
 

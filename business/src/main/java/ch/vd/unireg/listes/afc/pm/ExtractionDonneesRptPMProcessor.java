@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;

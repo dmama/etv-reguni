@@ -1,6 +1,6 @@
 package ch.vd.unireg.declaration;
 
-import ch.vd.registre.base.utils.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 
 public class DeclarationImpotCriteria {

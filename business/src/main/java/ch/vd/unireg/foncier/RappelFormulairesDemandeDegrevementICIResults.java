@@ -6,13 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.registrefoncier.SituationRF;
 
 public class RappelFormulairesDemandeDegrevementICIResults extends AbstractJobResults<Long, RappelFormulairesDemandeDegrevementICIResults> {
@@ -179,7 +179,7 @@ public class RappelFormulairesDemandeDegrevementICIResults extends AbstractJobRe
 
 	@Override
 	public void addErrorException(Long idFormulaire, Exception e) {
-		erreurs.add(new EnErreur(idFormulaire, ExceptionUtils.extractCallStack(e)));
+		erreurs.add(new EnErreur(idFormulaire, ExceptionUtils.getStackTrace(e)));
 	}
 
 	@Override

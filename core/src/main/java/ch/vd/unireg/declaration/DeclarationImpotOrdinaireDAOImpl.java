@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<DeclarationImpotOrdinaire> implements DeclarationImpotOrdinaireDAO {
@@ -53,8 +53,8 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 			final Pair<Integer, Integer> anneeRange = criterion.getAnneeRange();
 			if (anneeRange != null) {
 				b.append(" AND di.periode.annee BETWEEN :pfMin AND :pfMax");
-				params.put("pfMin", anneeRange.getFirst());
-				params.put("pfMax", anneeRange.getSecond());
+				params.put("pfMin", anneeRange.getLeft());
+				params.put("pfMax", anneeRange.getRight());
 			}
 		}
 

@@ -1,8 +1,7 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
-
-import ch.vd.registre.base.utils.NotImplementedException;
 
 public class MockEvenementCivilEvenementProcessor implements EvenementCivilEchProcessor {
 
@@ -16,6 +15,6 @@ public class MockEvenementCivilEvenementProcessor implements EvenementCivilEchPr
 
 	@Override
 	public void restartProcessingThread() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.batchtemplate.ThreadStats;
 import ch.vd.unireg.common.JobResults;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
@@ -113,7 +113,7 @@ public class DatabaseIndexationResults extends JobResults<Long, DatabaseIndexati
 
 	@Override
 	public synchronized void addErrorException(Long id, Exception e) {
-		errors.add(new Error(id, ExceptionUtils.extractCallStack(e)));
+		errors.add(new Error(id, ExceptionUtils.getStackTrace(e)));
 	}
 
 	@Override

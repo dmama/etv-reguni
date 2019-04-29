@@ -49,7 +49,7 @@
 		<property name="connectionManager" ref="jdbcConnectionManager"/>
 	</bean>
 
-	<bean id="debugDataSource" class="ch.vd.registre.base.dbutils.DebugDataSource">
+	<bean id="debugDataSource" class="ch.vd.shared.tracing.datasource.DebugDataSource">
 		<property name="target" ref="realDataSource" />
 		<property name="maxConnections" value="${extprop.jdbc.poolMaxSize}" />
 		<property name="enabled" value="${extprop.jdbc.datasource.debug}" />

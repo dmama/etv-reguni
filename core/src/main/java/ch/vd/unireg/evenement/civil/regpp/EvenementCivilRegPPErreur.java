@@ -11,11 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.evenement.common.EvenementErreur;
@@ -49,7 +49,7 @@ public class EvenementCivilRegPPErreur extends HibernateEntity implements Evenem
 		else {
 			message = m + e.getClass().getSimpleName();
 		}
-		setCallstack(ExceptionUtils.extractCallStack(e));
+		setCallstack(ExceptionUtils.getStackTrace(e));
 		type = TypeEvenementErreur.ERROR;
 		validateMessage();
 	}

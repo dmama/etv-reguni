@@ -5,10 +5,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
-
-import ch.vd.registre.base.utils.NotImplementedException;
 
 public class MockEvenementReqDesProcessor implements EvenementReqDesProcessor, InitializingBean {
 
@@ -32,7 +31,7 @@ public class MockEvenementReqDesProcessor implements EvenementReqDesProcessor, I
 	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	/**

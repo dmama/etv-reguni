@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -12,7 +13,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.Constants;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.indexer.IndexerException;

@@ -3,7 +3,8 @@ package ch.vd.unireg.data;
 import java.util.HashSet;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
+
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class MockDataEventService implements DataEventService {
@@ -15,22 +16,22 @@ public class MockDataEventService implements DataEventService {
 
 	@Override
 	public void register(CivilDataEventListener listener) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void unregister(CivilDataEventListener listener) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void register(FiscalDataEventListener listener) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void unregister(FiscalDataEventListener listener) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	public void clear() {

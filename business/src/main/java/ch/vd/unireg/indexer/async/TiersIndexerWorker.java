@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.Switchable;
 import ch.vd.unireg.indexer.IndexerBatchException;
@@ -174,7 +174,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			final Set<Long> inErrorIds = new HashSet<>();
 			final List<Pair<Long, Exception>> list = e.getExceptions();
 			for (Pair<Long, Exception> p : list) {
-				final Long tiersId = p.getFirst();
+				final Long tiersId = p.getLeft();
 				if (tiersId != null) {
 					inErrorIds.add(tiersId);
 				}

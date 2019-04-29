@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
@@ -123,7 +123,7 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 	@Override
 	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) {
 		final BaseAnnonceIDE.Statut statut = annoncesIDEValidations.get(modele.getContenu());
-		Assert.notNull(statut, "Objet statut introuvable pour le prototype reçu. Le statut à renvoyer pour un proto d'annonce précis doit être configuré au début du test. La comparaison se base sur ProtoAnnonceIDE.Contenu.");
+		Assert.assertNotNull("Objet statut introuvable pour le prototype reçu. Le statut à renvoyer pour un proto d'annonce précis doit être configuré au début du test. La comparaison se base sur ProtoAnnonceIDE.Contenu.", statut);
 		return statut;
 	}
 

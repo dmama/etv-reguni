@@ -3,10 +3,10 @@ package ch.vd.unireg.stats;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.cache.UniregCacheInterface;
 
 /**
@@ -42,17 +42,17 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	@Override
 	public void registerCache(String serviceName, UniregCacheInterface cache) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void registerJobMonitor(String jobName, JobMonitor job) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -64,17 +64,17 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	@Override
 	public void unregisterCache(String serviceName) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void unregisterLoadMonitor(String serviceName) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public void unregisterJobMonitor(String jobName) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -236,11 +236,11 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	@Override
 	public String buildStats() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public ServiceStats getServiceStats(String serviceName) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 }

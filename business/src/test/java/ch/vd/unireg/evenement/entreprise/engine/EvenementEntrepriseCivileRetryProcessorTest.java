@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseBasicInfo;
@@ -104,7 +104,7 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 
 			@Override
 			public void restartProcessingThread() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
@@ -134,67 +134,67 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 
 			@Override
 			public Batch poll(Duration timeout) throws InterruptedException {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getTotalCount() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getInBulkQueueCount() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Long getBulkQueueSlidingAverageAge() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Long getBulkQueueGlobalAverageAge() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getInPriorityQueueCount() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Long getPriorityQueueSlidingAverageAge() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Long getPriorityQueueGlobalAverageAge() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getInImmediateQueueCount() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Long getImmediateQueueSlidingAverageAge() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public Long getImmediateQueueGlobalAverageAge() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getInFinalQueueCount() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 
 			@Override
 			public int getInHatchesCount() {
-				throw new NotImplementedException();
+				throw new NotImplementedException("");
 			}
 		}
 

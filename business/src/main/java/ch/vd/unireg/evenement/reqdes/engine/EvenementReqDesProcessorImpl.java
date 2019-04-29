@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +40,6 @@ import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseException;
@@ -420,7 +420,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				ut.setEtat(EtatTraitement.EN_ERREUR);
 
 					final ErreurTraitement erreur = new ErreurTraitement();
-					erreur.setCallstack(ExceptionUtils.extractCallStack(e));
+					erreur.setCallstack(ExceptionUtils.getStackTrace(e));
 					erreur.setMessage(e.getMessage());
 					erreur.setType(ErreurTraitement.TypeErreur.ERROR);
 

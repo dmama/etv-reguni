@@ -7,10 +7,10 @@ import java.util.List;
 
 import gnu.trove.TIntObjectHashMap;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.avs.AvsHelper;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.EtatCivilList;

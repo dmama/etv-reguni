@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -30,7 +31,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.simpleindexer.LuceneException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -242,10 +242,10 @@ public class DatabaseIndexationProcessor {
 			final Set<Long> inErrorIds = new HashSet<>();
 			final List<Pair<Long, Exception>> list = e.getExceptions();
 			for (Pair<Long, Exception> p : list) {
-				final Long tiersId = p.getFirst();
+				final Long tiersId = p.getLeft();
 				if (tiersId != null) {
 					inErrorIds.add(tiersId);
-					results.addErrorException(tiersId, p.getSecond());
+					results.addErrorException(tiersId, p.getRight());
 				}
 			}
 			indexedIds.removeAll(inErrorIds);

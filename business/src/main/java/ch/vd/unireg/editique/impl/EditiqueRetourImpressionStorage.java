@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AsyncStorageWithPeriodicCleanup;
 import ch.vd.unireg.common.TimeHelper;
 import ch.vd.unireg.editique.EditiqueResultatRecu;
@@ -54,10 +54,10 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 									try {
 										if (LOGGER.isDebugEnabled()) {
 											final long now = System.nanoTime();
-											final String duration = TimeHelper.formatDuree(TimeUnit.NANOSECONDS.toMillis(now - trigger.getFirst()));
+											final String duration = TimeHelper.formatDuree(TimeUnit.NANOSECONDS.toMillis(now - trigger.getLeft()));
 											LOGGER.debug(String.format("Exécution du trigger enregistré pour le document '%s' il y a %s", dh.getValue().getIdDocument(), duration));
 										}
-										trigger.getSecond().trigger(dh.getValue());
+										trigger.getRight().trigger(dh.getValue());
 									}
 									catch (Throwable e) {
 										LOGGER.error(String.format("Exception levée lors du traitement du document '%s' par le trigger associé", dh.getValue().getIdDocument()), e);
@@ -177,7 +177,7 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 			public Object execute(Iterable<Map.Entry<String, Mutable<EditiqueResultatRecu>>> entries) {
 
 				// on enregistre le trigger ...
-				delayedTriggers.put(nomDocument, new Pair<>(System.nanoTime(), trigger));
+				delayedTriggers.put(nomDocument, Pair.of(System.nanoTime(), trigger));
 
 				// .., et on réveille tout le monde : si le document
 				// est en fait déjà là, il sera alors traité par le réveil

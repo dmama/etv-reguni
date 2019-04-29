@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
+
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
@@ -27,11 +28,11 @@ import ch.vd.unireg.webservices.party3.SearchPartyRequest;
 import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.webservices.party3.impl.ExceptionHelper;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.unireg.webservices.party3.impl.ExceptionHelper;
 
 /**
  * Implémentation du web-service qui délègue les appels à une autre implémentation, mais qui permet de simuler le crash (= exception) des appels sur certains numéros de contribuables.
@@ -126,12 +127,12 @@ public class PartyWebServiceCrashing implements PartyWebService {
 
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest request) throws WebServiceException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	private void check(Integer numero) throws WebServiceException {

@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.xml.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.xml.event.fiscal.v3.CategorieTiers;
@@ -59,7 +59,7 @@ public class WebServiceGetFiscalEventsItTest extends AbstractWebServiceItTest {
 				final FiscalEvent evt = container.getEvents().get(0);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals("tiers-basic", evt.getUser());
-				Assert.assertEquals(RegDate.get(2008, 1, 1), XmlUtils.cal2regdate(evt.getTreatmentDate()));
+				Assert.assertEquals(RegDate.get(2008, 1, 1), XmlUtils.xmlcal2regdate(evt.getTreatmentDate()));
 				Assert.assertEquals("Ouverture d'un for principal pour motif 'Mariage / enregistrement partenariat / réconciliation'", evt.getDescription());
 
 				final EvenementFiscal xml = evt.getEvent();
@@ -78,7 +78,7 @@ public class WebServiceGetFiscalEventsItTest extends AbstractWebServiceItTest {
 				final FiscalEvent evt = container.getEvents().get(1);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals("tiers-basic", evt.getUser());
-				Assert.assertEquals(RegDate.get(2008, 1, 1), XmlUtils.cal2regdate(evt.getTreatmentDate()));
+				Assert.assertEquals(RegDate.get(2008, 1, 1), XmlUtils.xmlcal2regdate(evt.getTreatmentDate()));
 				Assert.assertEquals("Ouverture d'un for secondaire pour motif 'Achat immobilier'", evt.getDescription());
 
 				final EvenementFiscal xml = evt.getEvent();

@@ -3,13 +3,13 @@ package ch.vd.unireg.declaration.source;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.StatusManager;
@@ -117,7 +117,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
 			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
-				imprimees.add(new Pair<>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+				imprimees.add(Pair.of(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
 		};
 
@@ -146,9 +146,9 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 			final Pair<Long, DateRange> data = imprimees.get(0);
 			Assert.assertNotNull(data);
-			Assert.assertEquals((Long) dpiId, data.getFirst());
-			Assert.assertEquals(date(anneeReference, 10, 1), data.getSecond().getDateDebut());
-			Assert.assertEquals(date(anneeReference, 10, 31), data.getSecond().getDateFin());
+			Assert.assertEquals((Long) dpiId, data.getLeft());
+			Assert.assertEquals(date(anneeReference, 10, 1), data.getRight().getDateDebut());
+			Assert.assertEquals(date(anneeReference, 10, 31), data.getRight().getDateFin());
 		}
 
 		// après la période -> la LR doit être envoyée
@@ -163,9 +163,9 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 			final Pair<Long, DateRange> data = imprimees.get(0);
 			Assert.assertNotNull(data);
-			Assert.assertEquals((Long) dpiId, data.getFirst());
-			Assert.assertEquals(date(anneeReference, 10, 1), data.getSecond().getDateDebut());
-			Assert.assertEquals(date(anneeReference, 10, 31), data.getSecond().getDateFin());
+			Assert.assertEquals((Long) dpiId, data.getLeft());
+			Assert.assertEquals(date(anneeReference, 10, 1), data.getRight().getDateDebut());
+			Assert.assertEquals(date(anneeReference, 10, 31), data.getRight().getDateFin());
 		}
 	}
 
@@ -189,7 +189,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
 			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
-				imprimees.add(new Pair<>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+				imprimees.add(Pair.of(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
 		};
 
@@ -271,7 +271,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
 			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
-				imprimees.add(new Pair<>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+				imprimees.add(Pair.of(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
 		};
 
@@ -300,9 +300,9 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 			final Pair<Long, DateRange> data = imprimees.get(0);
 			Assert.assertNotNull(data);
-			Assert.assertEquals((Long) dpiId, data.getFirst());
-			Assert.assertEquals(date(annee, 1, 1), data.getSecond().getDateDebut());
-			Assert.assertEquals(date(annee, 6, 30), data.getSecond().getDateFin());
+			Assert.assertEquals((Long) dpiId, data.getLeft());
+			Assert.assertEquals(date(annee, 1, 1), data.getRight().getDateDebut());
+			Assert.assertEquals(date(annee, 6, 30), data.getRight().getDateFin());
 		}
 
 		// fin de période -> la LR doit être envoyée
@@ -317,9 +317,9 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 			final Pair<Long, DateRange> data = imprimees.get(0);
 			Assert.assertNotNull(data);
-			Assert.assertEquals((Long) dpiId, data.getFirst());
-			Assert.assertEquals(date(annee, 1, 1), data.getSecond().getDateDebut());
-			Assert.assertEquals(date(annee, 6, 30), data.getSecond().getDateFin());
+			Assert.assertEquals((Long) dpiId, data.getLeft());
+			Assert.assertEquals(date(annee, 1, 1), data.getRight().getDateDebut());
+			Assert.assertEquals(date(annee, 6, 30), data.getRight().getDateFin());
 		}
 	}
 

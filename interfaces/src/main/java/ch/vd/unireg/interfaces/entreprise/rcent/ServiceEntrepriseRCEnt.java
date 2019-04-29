@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.PaginationHelper;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
@@ -199,7 +199,7 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 			if (erreurs != null && !erreurs.isEmpty()) {
 				final List<Pair<String, String>> aEnlever = new ArrayList<>(erreurs.size());
 				for (Pair<String, String> erreur : erreurs) {
-					if (StringUtils.isBlank(erreur.getFirst()) && StringUtils.isBlank(erreur.getSecond())) {
+					if (StringUtils.isBlank(erreur.getLeft()) && StringUtils.isBlank(erreur.getRight())) {
 						aEnlever.add(erreur);
 					}
 				}

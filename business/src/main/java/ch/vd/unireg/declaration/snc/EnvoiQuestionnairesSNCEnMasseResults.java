@@ -4,10 +4,10 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 
@@ -87,7 +87,7 @@ public class EnvoiQuestionnairesSNCEnMasseResults extends AbstractJobResults<Lon
 
 	@Override
 	public void addErrorException(Long element, Exception e) {
-		erreurs.add(new TraitementEnErreur(element, CauseErreur.EXCEPTION, ExceptionUtils.extractCallStack(e)));
+		erreurs.add(new TraitementEnErreur(element, CauseErreur.EXCEPTION, ExceptionUtils.getStackTrace(e)));
 	}
 
 	@Override

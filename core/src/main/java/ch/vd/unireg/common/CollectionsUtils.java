@@ -19,10 +19,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.utils.Pair;
 
 public abstract class CollectionsUtils {
 
@@ -325,7 +324,7 @@ public abstract class CollectionsUtils {
 					// les deux éléments sont équivalents, on les supprime donc des deux listes et on les insère dans la liste commune
 					liter.remove();
 					riter.remove();
-					common.add(new Pair<>(l, r));
+					common.add(Pair.of(l, r));
 					break;
 				}
 			}

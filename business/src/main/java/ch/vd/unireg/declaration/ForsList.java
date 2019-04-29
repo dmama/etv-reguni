@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -188,27 +188,27 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 
 	@Override
 	public boolean remove(Object o) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public T remove(int index) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean removeAll(@NotNull Collection<?> c) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public boolean retainAll(@NotNull Collection<?> c) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
 	public T set(int index, T element) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@Override
@@ -219,7 +219,7 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 	@NotNull
 	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 	@NotNull

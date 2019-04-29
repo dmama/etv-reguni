@@ -3,7 +3,7 @@ package ch.vd.unireg.log;
 import java.io.IOException;
 import java.io.Writer;
 
-import ch.vd.registre.base.utils.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * Specialized writer that keeps in memory <i>max</i> lines of text. This class is meant to be used along with
@@ -116,7 +116,7 @@ public class RollingInMemoryWriter extends Writer {
 
 	@Override
 	public void write(char[] cbuf, int off, int len) throws IOException {
-		throw new NotImplementedException();
+		throw new NotImplementedException("");
 	}
 
 }
