@@ -57,7 +57,7 @@ public class SimpleCacheStats implements CacheStats {
 	}
 
 	@Override
-	public Integer getMaxElements() {
+	public Long getMaxElements() {
 		return null;
 	}
 

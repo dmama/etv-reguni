@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-	  <property name="configLocation" value="classpath:ut/ehcache.xml" />
+		<property name="configLocation" value="classpath:ut/ehcache.xml" />
+		<property name="acceptExisting" value="true" /> <!-- réutilisation du même cache manager entre les différents contextes Spring -->
 	</bean>
 
 </beans>

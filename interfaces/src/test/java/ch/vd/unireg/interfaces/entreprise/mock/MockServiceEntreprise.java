@@ -1,9 +1,9 @@
 package ch.vd.unireg.interfaces.entreprise.mock;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
@@ -110,7 +110,7 @@ public abstract class MockServiceEntreprise implements ServiceEntrepriseRaw {
 		if (userId == null) {
 			userId = RCEntAnnonceIDEHelper.UNIREG_USER;
 		}
-		return new PageImpl<AnnonceIDE>(Collections.singletonList(annoncesIDE.get(noticeId + userId)));
+		return new PageImpl<>(Collections.singletonList(annoncesIDE.get(noticeId + userId)));
 	}
 
 	protected void addAnnonceIDE(AnnonceIDE annonce, String userId) {

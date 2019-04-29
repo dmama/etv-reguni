@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
@@ -55,9 +54,7 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		final CacheManager manager = CacheManager.create();
-		Cache ehcache = new Cache("webServiceParty3", 1000, false, false, 5, 5);
-		manager.addCache(ehcache);
+		final CacheManager manager = getBean(CacheManager.class, "ehCacheManager");
 
 		crashingTiersDAO = new CrashingTiersDAO();
 		crashingTiersDAO.setDialect(getBean(Dialect.class, "hibernateDialect"));

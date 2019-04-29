@@ -1,7 +1,7 @@
 package ch.vd.unireg.cache;
 
 import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Statistics;
+import net.sf.ehcache.statistics.StatisticsGateway;
 
 /**
  * Expose les statistiques de fonctionnement d'un ehcache.
@@ -15,17 +15,17 @@ public class EhCacheStats implements CacheStats {
 	private final long totalCount;
 	private final long timeToIdle;
 	private final long timeToLive;
-	private final int maxElements;
+	private final long maxElements;
 
 	public EhCacheStats(Ehcache cache) {
 
-		timeToIdle = cache.getTimeToIdleSeconds();
-		timeToLive = cache.getTimeToLiveSeconds();
-		maxElements = cache.getMaxElementsInMemory();
+		timeToIdle = cache.getCacheConfiguration().getTimeToIdleSeconds();
+		timeToLive = cache.getCacheConfiguration().getTimeToLiveSeconds();
+		maxElements = cache.getCacheConfiguration().getMaxEntriesLocalHeap();
 
-		final Statistics statistics = cache.getStatistics();
-		final long hits = statistics.getCacheHits();
-		final long misses = statistics.getCacheMisses();
+		final StatisticsGateway statistics = cache.getStatistics();
+		final long hits = statistics.cacheHitCount();
+		final long misses = statistics.cacheMissCount();
 		final long total = hits + misses;
 
 		this.hitsCount = hits;
@@ -82,7 +82,7 @@ public class EhCacheStats implements CacheStats {
 	 * @return nombre maximum d'éléments en mémoire
 	 */
 	@Override
-	public Integer getMaxElements() {
+	public Long getMaxElements() {
 		return maxElements;
 	}
 

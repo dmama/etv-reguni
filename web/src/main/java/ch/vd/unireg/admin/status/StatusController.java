@@ -2,7 +2,7 @@ package ch.vd.unireg.admin.status;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Statistics;
+import net.sf.ehcache.statistics.StatisticsGateway;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -205,14 +205,21 @@ public class StatusController {
 			final StringBuilder status = new StringBuilder();
 			String[] names = cacheManager.getCacheNames();
 			for (String name : names) {
-				Cache cache = cacheManager.getCache(name);
-				Statistics stats = cache.getStatistics();
-				status.append(stats.toString()).append('\n');
+				final Cache cache = cacheManager.getCache(name);
+				final StatisticsGateway stats = cache.getStatistics();
+				final String line = "name = " + name +
+						" cacheHits = " + stats.cacheHitCount() +
+						" onDiskHits = " + stats.localDiskHitCount() +
+						" inMemoryHits = " + stats.localHeapHitCount() +
+						" misses = " + stats.cacheMissCount() +
+						" size = " + stats.getSize() +
+						" evictionCount = " + stats.cacheEvictedCount();
+				status.append(line).append('\n');
 			}
 			return HtmlHelper.renderMultilines(status.toString());
 		}
 		catch (Exception e) {
-			String status = "NOK\n" + ExceptionUtils.extractCallStack(e);;
+			String status = "NOK\n" + ExceptionUtils.extractCallStack(e);
 			status = HtmlHelper.renderMultilines(status);
 			return status;
 		}

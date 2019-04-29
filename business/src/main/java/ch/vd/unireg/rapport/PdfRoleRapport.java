@@ -1,6 +1,7 @@
 package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;

@@ -2,10 +2,10 @@ package ch.vd.unireg.evenement.declaration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +85,6 @@ public class EvenementDeclarationEsbHandlerV2Test extends EvenementTest {
 				events.add(event);
 			}
 		};
-		//noinspection unchecked
 		final Map<Class<? extends DeclarationEvent>, EvenementDeclarationHandler<?>> handlers = Collections.singletonMap(DeclarationAck.class, ackHandler);
 		handler.setHandlers(handlers);
 		handler.afterPropertiesSet();

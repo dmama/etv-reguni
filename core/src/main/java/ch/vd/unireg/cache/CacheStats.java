@@ -35,7 +35,7 @@ public interface CacheStats {
 	/**
 	 * @return nombre maximum d'éléments en mémoire; ou <b>null</b> si cette information n'est pas applicable
 	 */
-	Integer getMaxElements();
+	Long getMaxElements();
 
 	String toString();
 }

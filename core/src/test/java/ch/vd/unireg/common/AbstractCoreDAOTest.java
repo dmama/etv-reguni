@@ -261,11 +261,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * @return the current Hibernate session
 	 */
-	protected final Session getCurrentSession() {
+	protected Session getCurrentSession() {
 		return sessionFactoryBean.getObject().getCurrentSession();
 	}
 
-	protected final <T extends HibernateEntity> T merge(T entity) {
+	protected <T extends HibernateEntity> T merge(T entity) {
 		return hibernateTemplate.merge(entity);
 	}
 
