@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
@@ -22,6 +23,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.unireg.audit.AuditManager;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -112,6 +114,7 @@ public class EvenementEntrepriseCivileEsbHandlerItTest extends EvenementTest {
 		};
 		esbHandler.setIgnoredEventTypes(IGNORED);
 		esbHandler.setReceptionHandler(receptionHandler);
+		esbHandler.setAudit(Mockito.mock(AuditManager.class));
 		esbHandler.afterPropertiesSet();
 
 		initListenerContainer(INPUT_QUEUE, esbHandler);

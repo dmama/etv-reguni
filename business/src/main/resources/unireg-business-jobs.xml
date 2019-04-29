@@ -33,6 +33,7 @@
 			    <constructor-arg ref="globalTiersIndex" />
 			    <constructor-arg ref="sessionFactory" />
 			    <constructor-arg ref="transactionManager" />
+			    <constructor-arg ref="auditManager" />
 		    </bean>
 	    </property>
     </bean>
