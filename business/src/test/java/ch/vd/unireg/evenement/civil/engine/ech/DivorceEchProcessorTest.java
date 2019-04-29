@@ -5,18 +5,17 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -49,7 +48,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -76,16 +75,13 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				assertDivorce(noMonsieur, dateMariage, dateDivorce);
-				assertDivorce(noMadame, dateMariage, dateDivorce);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			assertDivorce(noMonsieur, dateMariage, dateDivorce);
+			assertDivorce(noMadame, dateMariage, dateDivorce);
+			return null;
 		});
 	}
 
@@ -112,7 +108,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
 				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -173,23 +169,18 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMadame);
 
 		// on vérifie que les ménages communs ont bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
+			assertNotNull(evtDivorceMonsieur);
+			assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
 
-				final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
-				assertNotNull(evtDivorceMonsieur);
-				assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
+			final EvenementCivilEch evtDivorceMadame = evtCivilDAO.get(divorceMadameId);
+			assertNotNull(evtDivorceMadame);
+			assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMadame.getEtat());
 
-				final EvenementCivilEch evtDivorceMadame = evtCivilDAO.get(divorceMadameId);
-				assertNotNull(evtDivorceMadame);
-				assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMadame.getEtat());
-
-				assertDivorce(noMonsieur, dateMariage, dateDivorce);
-				assertDivorce(noMadame, dateMariage, dateDivorce);
-
-				return null;
-			}
+			assertDivorce(noMonsieur, dateMariage, dateDivorce);
+			assertDivorce(noMadame, dateMariage, dateDivorce);
+			return null;
 		});
 	}
 
@@ -212,7 +203,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
 				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -258,14 +249,11 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// Verification que l'evenement est en erreur car madame n'est pas encore divorcée dans le civil.
 		// Ce comportement est succeptible et sans doute devrait changer dans le futur...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
-				assertNotNull(evtDivorceMonsieur);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evtDivorceMonsieur.getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
+			assertNotNull(evtDivorceMonsieur);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evtDivorceMonsieur.getEtat());
+			return null;
 		});
 
 		// Divorce de madame dans le civil
@@ -287,29 +275,22 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// Verification que l'evenement est traité madame et monsieur étant desormais tout 2 divorcé dans le civil
 		// Il devrait ne plus y avoir de problème, l'évenement de Madame devrait être traité et celui de Monsieur redondant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evtDivorceMadame = evtCivilDAO.get(divorceMadameId);
-				assertNotNull(evtDivorceMadame);
-				assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMadame.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evtDivorceMadame = evtCivilDAO.get(divorceMadameId);
+			assertNotNull(evtDivorceMadame);
+			assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMadame.getEtat());
 
-				final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
-				assertNotNull(evtDivorceMonsieur);
-				assertEquals(EtatEvenementCivil.REDONDANT, evtDivorceMonsieur.getEtat());
-
-				return null;
-			}
+			final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
+			assertNotNull(evtDivorceMonsieur);
+			assertEquals(EtatEvenementCivil.REDONDANT, evtDivorceMonsieur.getEtat());
+			return null;
 		});
 
 		// on vérifie que le menage commun ait bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				assertDivorce(noMonsieur, dateMariage, dateDivorce);
-				assertDivorce(noMadame, dateMariage, dateDivorce);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			assertDivorce(noMonsieur, dateMariage, dateDivorce);
+			assertDivorce(noMadame, dateMariage, dateDivorce);
+			return null;
 		});
 	}
 
@@ -335,7 +316,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addNonHabitant("Crispus","Santacorpus",date(1923, 2, 12), Sexe.MASCULIN);
+				final PersonnePhysique monsieur = addNonHabitant("Crispus", "Santacorpus", date(1923, 2, 12), Sexe.MASCULIN);
 				monsieur.setNumeroOfsNationalite(MockPays.Suisse.getNoOfsEtatSouverain());
 				final PersonnePhysique madame = addHabitant(noMadame);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
@@ -351,15 +332,12 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMadame);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				assertDivorce(noMadame, dateMariage, dateDivorce);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			assertDivorce(noMadame, dateMariage, dateDivorce);
+			return null;
 		});
 	}
 
@@ -399,7 +377,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
 				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1974, 8, 1), null);
@@ -451,24 +429,18 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		// Verification du traitement de l'evt:
 		//    - si en ménage commun alors EN_ERREUR car Madame est célibataire dans le civil
 		//    - si Monsieur est marié seul c'est ok (on ne cherche plus a savoir qui est l'eventuelle conjoint dans le civil voir SIFISC-4641)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
-				assertNotNull(evtDivorceMonsieur);
-				assertEquals(menageNormal ? EtatEvenementCivil.EN_ERREUR : EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
+			assertNotNull(evtDivorceMonsieur);
+			assertEquals(menageNormal ? EtatEvenementCivil.EN_ERREUR : EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
+			return null;
 		});
 
 		if (!menageNormal) {
 			// on vérifie que le menage commun ait bien été divorcé dans le fiscal
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					assertDivorce(noMonsieur, dateMariage, dateDivorce);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				assertDivorce(noMonsieur, dateMariage, dateDivorce);
+				return null;
 			});
 		}
 	}
@@ -486,7 +458,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -502,7 +474,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final PersonnePhysique madame = addHabitant(noMadame);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addDecisionAci(monsieur,dateMariage,null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				addDecisionAci(monsieur, dateMariage, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 				return null;
 			}
 		});
@@ -514,23 +486,20 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				Assert.assertNotNull(monsieur);
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
-				Assert.assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			Assert.assertNotNull(monsieur);
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+			                               FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
+			Assert.assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -548,7 +517,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -564,7 +533,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final PersonnePhysique madame = addHabitant(noMadame);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addDecisionAci(monsieur,dateDebutDecision,null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				addDecisionAci(monsieur, dateDebutDecision, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 				return null;
 			}
 		});
@@ -576,23 +545,20 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				Assert.assertNotNull(monsieur);
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
-				Assert.assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			Assert.assertNotNull(monsieur);
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+			                               FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
+			Assert.assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 	@Test(timeout = 10000L)
@@ -608,7 +574,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -624,7 +590,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final PersonnePhysique madame = addHabitant(noMadame);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addDecisionAci(madame,dateMariage,null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				addDecisionAci(madame, dateMariage, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 				return null;
 			}
 		});
@@ -636,27 +602,24 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				Assert.assertNotNull(monsieur);
-				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
-				Assert.assertNotNull(madame);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
-				Assert.assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			Assert.assertNotNull(monsieur);
+			final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+			Assert.assertNotNull(madame);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+			                               FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
+			Assert.assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -677,7 +640,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			protected void init() {
 				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
 				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
-				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923, 2, 12), null);
 				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
 				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
 				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
@@ -693,7 +656,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final PersonnePhysique madame = addHabitant(noMadame);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addDecisionAci(ensemble.getMenage(),dateMariage,null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				addDecisionAci(ensemble.getMenage(), dateMariage, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 				ids.couple = ensemble.getMenage().getId();
 				return null;
 			}
@@ -706,47 +669,41 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		traiterEvenements(noMonsieur);
 
 		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				Assert.assertNotNull(monsieur);
-				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
-				Assert.assertNotNull(madame);
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			Assert.assertNotNull(monsieur);
+			final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+			Assert.assertNotNull(madame);
 
-				final MenageCommun couple = (MenageCommun) tiersDAO.get(ids.couple);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
-				Assert.assertEquals(message, erreur.getMessage());
-				return null;
-			}
+			final MenageCommun couple = (MenageCommun) tiersDAO.get(ids.couple);
+			Assert.assertNotNull(couple);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+			                               FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
+			Assert.assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
 
 	private long genereEvenementDivorce(final long noEvt, final long noIndiv, final RegDate dateDivorce) throws Exception {
-		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(noEvt);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateDivorce);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndiv);
-				evt.setType(TypeEvenementCivilEch.DIVORCE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		return doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(noEvt);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateDivorce);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndiv);
+			evt.setType(TypeEvenementCivilEch.DIVORCE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 	}
 

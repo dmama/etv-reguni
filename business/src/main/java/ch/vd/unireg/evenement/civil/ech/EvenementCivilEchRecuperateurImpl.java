@@ -6,9 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecuperateur {
@@ -39,12 +36,7 @@ public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecup
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final List<EvenementCivilEch> relanceables = template.execute(new TransactionCallback<List<EvenementCivilEch>>() {
-			@Override
-			public List<EvenementCivilEch> doInTransaction(TransactionStatus status) {
-				return evtCivilDAO.getEvenementsCivilsARelancer();
-			}
-		});
+		final List<EvenementCivilEch> relanceables = template.execute(status -> evtCivilDAO.getEvenementsCivilsARelancer());
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Trouvé %d événement(s) à relancer", relanceables == null ? 0 : relanceables.size()));
@@ -56,17 +48,15 @@ public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecup
 				// [SIFISC-9534] introduction d'une transaction ici car cette méthode handleEvent doit être appelée
 				// dans un contexte transactionnel depuis que l'on peut utiliser les dépendances d'un événement civil
 				// pour récupérer un numéro d'individu associé
-				template.execute(new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus status) {
-						try {
-							// [SIFISC-9181] ici on ne demande que la récupération du numéro d'invidu, d'où le <code>null</code>
-							receptionHandler.handleEvent(evt, null);
-						}
-						catch (Exception e) {
-							LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
-						}
+				template.execute(status -> {
+					try {
+						// [SIFISC-9181] ici on ne demande que la récupération du numéro d'invidu, d'où le <code>null</code>
+						receptionHandler.handleEvent(evt, null);
 					}
+					catch (Exception e) {
+						LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
+					}
+					return null;
 				});
 			}
 

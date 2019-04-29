@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class SqlFileExecutor {
@@ -25,38 +23,32 @@ public class SqlFileExecutor {
 
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-        tmpl.execute(new TransactionCallback<Object>() {
+        tmpl.execute(status -> {
+	        try {
+		        final InputStream sqlFile = SqlFileExecutor.class.getResourceAsStream(fileResource);
+		        try (InputStreamReader isr = new InputStreamReader(sqlFile); BufferedReader input = new BufferedReader(isr)) {
+			        String statStr;
+			        while ((statStr = input.readLine()) != null) {
 
-            @Override
-            public Object doInTransaction(TransactionStatus status) {
+				        if (!statStr.isEmpty() && !statStr.startsWith("#") && !statStr.startsWith("--")) {
 
-                try {
-                    final InputStream sqlFile = SqlFileExecutor.class.getResourceAsStream(fileResource);
-	                try (InputStreamReader isr = new InputStreamReader(sqlFile); BufferedReader input = new BufferedReader(isr)) {
-		                String statStr;
-		                while ((statStr = input.readLine()) != null) {
+					        if (statStr.endsWith(";")) {
+						        statStr = statStr.substring(0, statStr.length() - 1);
+					        }
 
-			                if (!statStr.isEmpty() && !statStr.startsWith("#") && !statStr.startsWith("--")) {
-
-				                if (statStr.endsWith(";")) {
-					                statStr = statStr.substring(0, statStr.length() - 1);
-				                }
-
-				                if (LOGGER.isTraceEnabled()) {
-					                LOGGER.trace("SQL: " + statStr);
-				                }
-				                template.execute(statStr);
-			                }
-		                }
-	                }
-                }
-                catch (IOException e) {
-                	LOGGER.error(e.getMessage(), e);
-                    throw new RuntimeException(e);
-                }
-                return null;
-            }
-
+					        if (LOGGER.isTraceEnabled()) {
+						        LOGGER.trace("SQL: " + statStr);
+					        }
+					        template.execute(statStr);
+				        }
+			        }
+		        }
+	        }
+	        catch (IOException e) {
+		        LOGGER.error(e.getMessage(), e);
+		        throw new RuntimeException(e);
+	        }
+	        return null;
         });
     }
 

@@ -10,8 +10,6 @@ import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -75,17 +73,14 @@ public class ValidationJobThread extends Thread {
 
 			// Valide les tiers dans la queue en procédant par batchs, ceci pour limiter le nombre d'objets en mémoire
 			do {
-				continueProcessing = template.execute(new TransactionCallback<Boolean>() {
-					@Override
-					public Boolean doInTransaction(TransactionStatus status) {
-						try {
-							processBatch();
-						}
-						catch (InterruptedException e) {
-							return Boolean.FALSE;
-						}
-						return !(queue.isEmpty() && noMoreInput);
+				continueProcessing = template.execute(status -> {
+					try {
+						processBatch();
 					}
+					catch (InterruptedException e) {
+						return Boolean.FALSE;
+					}
+					return !(queue.isEmpty() && noMoreInput);
 				});
 			}
 			while (continueProcessing);

@@ -3,7 +3,6 @@ package ch.vd.unireg.declaration.ordinaire.pp;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -205,7 +204,7 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
 				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation,dateSommation.addDays(3), null);
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
 		});
@@ -221,14 +220,11 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 		assertNotNull(echue);
 		assertEquals(id.longValue(), echue.diId);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
-				assertNotNull(di);
-				assertEquals(TypeEtatDocumentFiscal.ECHU, di.getDernierEtatDeclaration().getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+			assertNotNull(di);
+			assertEquals(TypeEtatDocumentFiscal.ECHU, di.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 

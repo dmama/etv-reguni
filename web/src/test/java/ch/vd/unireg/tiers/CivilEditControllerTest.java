@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -15,8 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.tiers.view.NonHabitantCivilView;
 import ch.vd.unireg.type.Sexe;
 
@@ -83,12 +82,9 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 	@Test
 	public void testOnSubmitWithNom() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		request.addParameter("id", Long.toString(ppId));
@@ -100,30 +96,24 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 		final Map<String, Object> model = mav.getModel();
 		Assert.assertNotNull(model);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				Assert.assertEquals("Kamel", nh.getNom());
-				return null;
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			Assert.assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			Assert.assertEquals("Kamel", nh.getNom());
+			return null;
 		});
 	}
 
 	@Test
 	public void testOnSubmitWithDateNaissancePartielle() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		final String nom = "TestKamel";
@@ -139,31 +129,25 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 		final Map<String, Object> model = mav.getModel();
 		Assert.assertNotNull(model);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				Assert.assertEquals(nom, nh.getNom());
-				Assert.assertEquals(dateN, nh.getDateNaissance());
-				return null;
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			Assert.assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			Assert.assertEquals(nom, nh.getNom());
+			Assert.assertEquals(dateN, nh.getDateNaissance());
+			return null;
 		});
 	}
 
 	@Test
 	public void testOnSubmitWithWrongDateNaissance() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		request.addParameter("id", Long.toString(ppId));
@@ -175,30 +159,24 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 		final Map<String, Object> model = mav.getModel();
 		Assert.assertNotNull(model);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				Assert.assertNull(nh.getDateNaissance());
-				return null;
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			Assert.assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			Assert.assertNull(nh.getDateNaissance());
+			return null;
 		});
 	}
 
 	@Test
 	public void testOnSubmitWithDateNaissance() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alexander", "Kaminski", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		request.addParameter("id", Long.toString(ppId));
@@ -209,41 +187,32 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 		request.setRequestURI(NH_URI);
 
 		handle(request, response);
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				Assert.assertEquals(dateN, nh.getDateNaissance());
-				return null;
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			Assert.assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			Assert.assertEquals(dateN, nh.getDateNaissance());
+			return null;
 		});
 	}
 
 	@Test
 	public void testModifyNonHabitant() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant(null, "Kamel", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant(null, "Kamel", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(ppId);
-				final PersonnePhysique nh = (PersonnePhysique)tiers;
-				Assert.assertEquals("Kamel", nh.getNom());
-				Assert.assertEquals(null, nh.getPrenomUsuel());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ppId);
+			final PersonnePhysique nh = (PersonnePhysique) tiers;
+			Assert.assertEquals("Kamel", nh.getNom());
+			Assert.assertEquals(null, nh.getPrenomUsuel());
+			return null;
 		});
 
 		request.addParameter("id", Long.toString(ppId));
@@ -254,16 +223,13 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 		request.setRequestURI(NH_URI);
 		handle(request, response);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(ppId);
-				final PersonnePhysique nh = (PersonnePhysique)tiers;
-				Assert.assertEquals("Kamel", nh.getNom());
-				Assert.assertEquals("toto", nh.getPrenomUsuel());
-				Assert.assertEquals("toto titi tata", nh.getTousPrenoms());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ppId);
+			final PersonnePhysique nh = (PersonnePhysique) tiers;
+			Assert.assertEquals("Kamel", nh.getNom());
+			Assert.assertEquals("toto", nh.getPrenomUsuel());
+			Assert.assertEquals("toto titi tata", nh.getTousPrenoms());
+			return null;
 		});
 	}
 }

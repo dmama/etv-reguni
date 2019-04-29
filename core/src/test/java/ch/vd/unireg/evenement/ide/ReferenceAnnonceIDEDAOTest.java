@@ -8,9 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.CoreDAOTest;
 import ch.vd.unireg.tiers.Etablissement;
@@ -42,24 +40,21 @@ public class ReferenceAnnonceIDEDAOTest extends CoreDAOTest {
 		final Long etablissement3Id = 3000003L;
 		final Long etablissement4Id = 3000004L;
 
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+		doInNewTransaction(status -> {
+			final Etablissement etablissement1 = addEtablissement(etablissement1Id);
+			addReferenceAnnonceIDE("testbid101", etablissement1);
+			addReferenceAnnonceIDE("testbid102", etablissement1);
 
-				final Etablissement etablissement1 = addEtablissement(etablissement1Id);
-				addReferenceAnnonceIDE("testbid101", etablissement1);
-				addReferenceAnnonceIDE("testbid102", etablissement1);
+			final Etablissement etablissement2 = addEtablissement(etablissement2Id);
 
-				final Etablissement etablissement2 = addEtablissement(etablissement2Id);
+			final Etablissement etablissement3 = addEtablissement(etablissement3Id);
+			addReferenceAnnonceIDE("testbid301", etablissement3);
 
-				final Etablissement etablissement3 = addEtablissement(etablissement3Id);
-				addReferenceAnnonceIDE("testbid301", etablissement3);
-
-				final Etablissement etablissement4 = addEtablissement(etablissement4Id);
-				addReferenceAnnonceIDE("testbid401", etablissement4);
-				addReferenceAnnonceIDE("testbid402", etablissement4);
-				addReferenceAnnonceIDE("testbid403", etablissement4);
-			}
+			final Etablissement etablissement4 = addEtablissement(etablissement4Id);
+			addReferenceAnnonceIDE("testbid401", etablissement4);
+			addReferenceAnnonceIDE("testbid402", etablissement4);
+			addReferenceAnnonceIDE("testbid403", etablissement4);
+			return null;
 		});
 
 		final List<ReferenceAnnonceIDE> refAnnonceEtablissement1 = dao.getReferencesAnnonceIDE(etablissement1Id);
@@ -92,24 +87,21 @@ public class ReferenceAnnonceIDEDAOTest extends CoreDAOTest {
 		final Long etablissement3Id = 3000003L;
 		final Long etablissement4Id = 3000004L;
 
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+		doInNewTransaction(status -> {
+			final Etablissement etablissement1 = addEtablissement(etablissement1Id);
+			addReferenceAnnonceIDE("testbid101", etablissement1);
+			addReferenceAnnonceIDE("testbid102", etablissement1);
 
-				final Etablissement etablissement1 = addEtablissement(etablissement1Id);
-				addReferenceAnnonceIDE("testbid101", etablissement1);
-				addReferenceAnnonceIDE("testbid102", etablissement1);
+			final Etablissement etablissement2 = addEtablissement(etablissement2Id);
 
-				final Etablissement etablissement2 = addEtablissement(etablissement2Id);
+			final Etablissement etablissement3 = addEtablissement(etablissement3Id);
+			addReferenceAnnonceIDE("testbid301", etablissement3);
 
-				final Etablissement etablissement3 = addEtablissement(etablissement3Id);
-				addReferenceAnnonceIDE("testbid301", etablissement3);
-
-				final Etablissement etablissement4 = addEtablissement(etablissement4Id);
-				addReferenceAnnonceIDE("testbid401", etablissement4);
-				addReferenceAnnonceIDE("testbid402", etablissement4);
-				addReferenceAnnonceIDE("testbid403", etablissement4);
-			}
+			final Etablissement etablissement4 = addEtablissement(etablissement4Id);
+			addReferenceAnnonceIDE("testbid401", etablissement4);
+			addReferenceAnnonceIDE("testbid402", etablissement4);
+			addReferenceAnnonceIDE("testbid403", etablissement4);
+			return null;
 		});
 
 		final ReferenceAnnonceIDE refAnnonceEtablissement = dao.getLastReferenceAnnonceIDE(etablissement4Id);

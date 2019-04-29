@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -211,63 +210,49 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		});
 
 		// mise en place fiscale avant mariage avec ajout d'un droit d'accès sur le contribuable protégé
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique prot = addHabitant(noIndProtege);
-				addForPrincipal(prot, date(2012, 5, 12), MotifFor.INDETERMINE, MockCommune.Lausanne);
-				addDroitAcces("zai1", prot, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2013, 1, 1), null);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique prot = addHabitant(noIndProtege);
+			addForPrincipal(prot, date(2012, 5, 12), MotifFor.INDETERMINE, MockCommune.Lausanne);
+			addDroitAcces("zai1", prot, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2013, 1, 1), null);
 
-				final PersonnePhysique nonProt = addHabitant(noIndNonProtege);
-				addForPrincipal(nonProt, date(2012, 3, 1), MotifFor.INDETERMINE, MockCommune.Bex);
-
-				return prot.getNumero();
-			}
+			final PersonnePhysique nonProt = addHabitant(noIndNonProtege);
+			addForPrincipal(nonProt, date(2012, 3, 1), MotifFor.INDETERMINE, MockCommune.Bex);
+			return prot.getNumero();
 		});
 
 		// vérification que le contribuable est bien protégé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Niveau droits = cache.getDroitAcces("TOTO", ppId);
-				assertNull(droits);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Niveau droits = cache.getDroitAcces("TOTO", ppId);
+			assertNull(droits);
+			return null;
 		});
 
 		// création du ménage commun
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique prot = (PersonnePhysique) tiersDAO.get(ppId);
-				final PersonnePhysique nonProt = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndNonProtege);
-				assertNotNull(prot);
-				assertNotNull(nonProt);
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique prot = (PersonnePhysique) tiersDAO.get(ppId);
+			final PersonnePhysique nonProt = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndNonProtege);
+			assertNotNull(prot);
+			assertNotNull(nonProt);
 
-				final ForFiscalPrincipal ffpProt = prot.getDernierForFiscalPrincipal();
-				ffpProt.setDateFin(dateMariage.getOneDayBefore());
-				ffpProt.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal ffpProt = prot.getDernierForFiscalPrincipal();
+			ffpProt.setDateFin(dateMariage.getOneDayBefore());
+			ffpProt.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
-				final ForFiscalPrincipal ffpNonProt = nonProt.getDernierForFiscalPrincipal();
-				ffpNonProt.setDateFin(dateMariage.getOneDayBefore());
-				ffpNonProt.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal ffpNonProt = nonProt.getDernierForFiscalPrincipal();
+			ffpNonProt.setDateFin(dateMariage.getOneDayBefore());
+			ffpNonProt.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(prot, nonProt, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-
-				return mc.getNumero();
-			}
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(prot, nonProt, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return mc.getNumero();
 		});
 
 		// vérification que le contribuable ménage est bien protégé également
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Niveau droits = cache.getDroitAcces("TOTO", mcId);
-				assertNull(droits);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Niveau droits = cache.getDroitAcces("TOTO", mcId);
+			assertNull(droits);
+			return null;
 		});
 
 	}

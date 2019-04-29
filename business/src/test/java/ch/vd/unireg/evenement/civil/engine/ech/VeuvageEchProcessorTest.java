@@ -5,19 +5,18 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -86,53 +85,46 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563456L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateVeuvage);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noMadame);
-				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
-
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long veuvageId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563456L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateVeuvage);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMadame);
+			evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noMadame);
 
 		// on vérifie que le ménage-commun a bien été fermé suite au veuvage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
-				assertNotNull(madame);
-				final ForFiscalPrincipal ffpMadame = madame.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMadame);
-				assertEquals(dateVeuvage.getOneDayAfter(), ffpMadame.getDateDebut());
-				assertEquals(MotifFor.VEUVAGE_DECES, ffpMadame.getMotifOuverture());
+			final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+			assertNotNull(madame);
+			final ForFiscalPrincipal ffpMadame = madame.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMadame);
+			assertEquals(dateVeuvage.getOneDayAfter(), ffpMadame.getDateDebut());
+			assertEquals(MotifFor.VEUVAGE_DECES, ffpMadame.getMotifOuverture());
 
-				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				assertNotNull(appartenanceMadame);
-				assertEquals(dateMariage, appartenanceMadame.getDateDebut());
-				assertEquals(dateVeuvage, appartenanceMadame.getDateFin());
-				assertNull(tiersService.getEnsembleTiersCouple(madame, dateVeuvage.getOneDayAfter()));
+			final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(appartenanceMadame);
+			assertEquals(dateMariage, appartenanceMadame.getDateDebut());
+			assertEquals(dateVeuvage, appartenanceMadame.getDateFin());
+			assertNull(tiersService.getEnsembleTiersCouple(madame, dateVeuvage.getOneDayAfter()));
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				assertNotNull(mc);
-				final ForFiscalPrincipal ffpMenage = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMenage);
-				assertEquals(dateVeuvage, ffpMenage.getDateFin());
-				assertEquals(MotifFor.VEUVAGE_DECES, ffpMenage.getMotifFermeture());
-				return null;
-			}
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			assertNotNull(mc);
+			final ForFiscalPrincipal ffpMenage = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMenage);
+			assertEquals(dateVeuvage, ffpMenage.getDateFin());
+			assertEquals(MotifFor.VEUVAGE_DECES, ffpMenage.getMotifFermeture());
+			return null;
 		});
 	}
 
@@ -166,7 +158,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final PersonnePhysique madame = addHabitant(noMadame);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addDecisionAci(ensemble.getMenage(),dateVeuvage.addMonths(-6),null,MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				addDecisionAci(ensemble.getMenage(), dateVeuvage.addMonths(-6), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 				return ensemble.getMenage().getNumero();
 			}
 		});
@@ -188,50 +180,43 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563456L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateVeuvage);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noMadame);
-				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
-
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long veuvageId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563456L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateVeuvage);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMadame);
+			evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noMadame);
 
 		// on vérifie que le ménage-commun a bien été fermé suite au veuvage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
-				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
-				assertNotNull(madame);
+			final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+			assertNotNull(madame);
 
-				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				assertNotNull(appartenanceMadame);
+			final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(appartenanceMadame);
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				assertNotNull(mc);
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			assertNotNull(mc);
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()));
-				Assert.assertEquals(message, erreur.getMessage());
-				return null;
-			}
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+			                               FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()));
+			Assert.assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -285,33 +270,26 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563456L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateVeuvage);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noMadame);
-				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
-
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long veuvageId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563456L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateVeuvage);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMadame);
+			evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noMadame);
 
 		// on vérifie que le ménage-commun a bien été fermé suite au veuvage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+			return null;
 		});
 	}
 
@@ -363,53 +341,46 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563456L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateVeuvage);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noPrincipal);
-				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
-
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long veuvageId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563456L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateVeuvage);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noPrincipal);
+			evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noPrincipal);
 
 		// on vérifie que le ménage-commun a bien été fermé suite au veuvage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique survivant = tiersService.getPersonnePhysiqueByNumeroIndividu(noPrincipal);
-				assertNotNull(survivant);
-				final ForFiscalPrincipal ffpSurvivant = survivant.getDernierForFiscalPrincipal();
-				assertNotNull(ffpSurvivant);
-				assertEquals(dateVeuvage.getOneDayAfter(), ffpSurvivant.getDateDebut());
-				assertEquals(MotifFor.VEUVAGE_DECES, ffpSurvivant.getMotifOuverture());
+			final PersonnePhysique survivant = tiersService.getPersonnePhysiqueByNumeroIndividu(noPrincipal);
+			assertNotNull(survivant);
+			final ForFiscalPrincipal ffpSurvivant = survivant.getDernierForFiscalPrincipal();
+			assertNotNull(ffpSurvivant);
+			assertEquals(dateVeuvage.getOneDayAfter(), ffpSurvivant.getDateDebut());
+			assertEquals(MotifFor.VEUVAGE_DECES, ffpSurvivant.getMotifOuverture());
 
-				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) survivant.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				assertNotNull(appartenanceMadame);
-				assertEquals(dateUnion, appartenanceMadame.getDateDebut());
-				assertEquals(dateVeuvage, appartenanceMadame.getDateFin());
-				assertNull(tiersService.getEnsembleTiersCouple(survivant, dateVeuvage.getOneDayAfter()));
+			final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) survivant.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(appartenanceMadame);
+			assertEquals(dateUnion, appartenanceMadame.getDateDebut());
+			assertEquals(dateVeuvage, appartenanceMadame.getDateFin());
+			assertNull(tiersService.getEnsembleTiersCouple(survivant, dateVeuvage.getOneDayAfter()));
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				assertNotNull(mc);
-				final ForFiscalPrincipal ffpMenage = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMenage);
-				assertEquals(dateVeuvage, ffpMenage.getDateFin());
-				assertEquals(MotifFor.VEUVAGE_DECES, ffpMenage.getMotifFermeture());
-				return null;
-			}
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			assertNotNull(mc);
+			final ForFiscalPrincipal ffpMenage = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMenage);
+			assertEquals(dateVeuvage, ffpMenage.getDateFin());
+			assertEquals(MotifFor.VEUVAGE_DECES, ffpMenage.getMotifFermeture());
+			return null;
 		});
 	}
 
@@ -439,55 +410,46 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay);
-				addForPrincipal(pp, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay);
+			addForPrincipal(pp, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(4236783425647852L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateVeuvage);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long veuvageId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(4236783425647852L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateVeuvage);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividu);
 
 		// on vérifie que l'événement est bien en erreur car l'individu n'est pas marié civilement ni cible d'une redondance
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
 
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				assertNotNull(erreurs);
-				assertEquals(String.format("Aucun ménage commun trouvé pour la personne physique %s valide à la date du veuvage (%s)",
-				                           FormatNumeroHelper.numeroCTBToDisplay(ppId), RegDateHelper.dateToDisplayString(dateVeuvage)), erreur.getMessage());
-				return null;
-			}
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			assertNotNull(erreurs);
+			assertEquals(String.format("Aucun ménage commun trouvé pour la personne physique %s valide à la date du veuvage (%s)",
+			                           FormatNumeroHelper.numeroCTBToDisplay(ppId), RegDateHelper.dateToDisplayString(dateVeuvage)), erreur.getMessage());
+			return null;
 		});
 	}
 }

@@ -2,9 +2,7 @@ package ch.vd.unireg.validation.rapport;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationResults;
@@ -36,18 +34,15 @@ public class AppartenanceMenageValidatorTest extends AbstractValidatorTest<Appar
 	@Test
 	public void testAppartenanceMenageInversee() throws Exception {
 		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Toto", "LeHéro", null, Sexe.MASCULIN);
-					final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
-					final AppartenanceMenage am = new AppartenanceMenage();
-					am.setDateDebut(date(2010, 4, 12));
-					am.setObjet(pp);
-					am.setSujet(mc);
-					hibernateTemplate.merge(am);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Toto", "LeHéro", null, Sexe.MASCULIN);
+				final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
+				final AppartenanceMenage am = new AppartenanceMenage();
+				am.setDateDebut(date(2010, 4, 12));
+				am.setObjet(pp);
+				am.setSujet(mc);
+				hibernateTemplate.merge(am);
+				return null;
 			});
 			Assert.fail("Le rapport d'appartenance ménage est pourtant à l'envers...");
 		}

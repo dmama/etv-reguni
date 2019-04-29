@@ -3,8 +3,6 @@ package ch.vd.unireg.tiers.rattrapage.flaghabitant;
 import java.util.List;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -46,12 +44,10 @@ public class CorrectionFlagHabitantProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				//noinspection unchecked
-				return hibernateTemplate.find(hql, null);
-			}
+		return template.execute(status -> {
+			//noinspection unchecked
+
+			return hibernateTemplate.find(hql, null);
 		});
 	}
 

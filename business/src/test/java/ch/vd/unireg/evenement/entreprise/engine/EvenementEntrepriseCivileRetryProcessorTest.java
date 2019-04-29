@@ -12,8 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -46,7 +44,7 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 
 	@Test(timeout = 10000L)
 	public void testBasics() throws Exception {
-		
+
 		final long noEntrepriseSans = 17385423L;
 		final long noEntrepriseAvecAttente = 16745234L;
 		final long noEntrepriseAvecErreur = 2367485247L;
@@ -62,33 +60,28 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				long id = 0L;
+		doInNewTransactionAndSession(status -> {
+			long id = 0L;
 
-				final RegDate date = RegDate.get();
+			final RegDate date = RegDate.get();
 
-				final TypeEvenementEntreprise type = TypeEvenementEntreprise.FOSC_AUTRE_MUTATION;
+			final TypeEvenementEntreprise type = TypeEvenementEntreprise.FOSC_AUTRE_MUTATION;
 
-				addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.A_VERIFIER);
-				addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.FORCE);
-				addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.REDONDANT);
-				addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.TRAITE);
+			addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.A_VERIFIER);
+			addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.FORCE);
+			addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.REDONDANT);
+			addEvent(noEntrepriseSans, ++id, type, date, EtatEvenementEntreprise.TRAITE);
 
-				addEvent(noEntrepriseAvecAttente, ++id, type, date, EtatEvenementEntreprise.A_VERIFIER);
-				addEvent(noEntrepriseAvecAttente, ++id, type, date, EtatEvenementEntreprise.EN_ATTENTE);
+			addEvent(noEntrepriseAvecAttente, ++id, type, date, EtatEvenementEntreprise.A_VERIFIER);
+			addEvent(noEntrepriseAvecAttente, ++id, type, date, EtatEvenementEntreprise.EN_ATTENTE);
 
-				addEvent(noEntrepriseAvecErreur, ++id, type, date, EtatEvenementEntreprise.FORCE);
-				addEvent(noEntrepriseAvecErreur, ++id, type, date, EtatEvenementEntreprise.EN_ERREUR);
+			addEvent(noEntrepriseAvecErreur, ++id, type, date, EtatEvenementEntreprise.FORCE);
+			addEvent(noEntrepriseAvecErreur, ++id, type, date, EtatEvenementEntreprise.EN_ERREUR);
 
-				addEvent(noEntrepriseAvecAttenteEtErreur, ++id, type, date, EtatEvenementEntreprise.TRAITE);
-				addEvent(noEntrepriseAvecAttenteEtErreur, ++id, type, date, EtatEvenementEntreprise.EN_ATTENTE);
-				addEvent(noEntrepriseAvecAttenteEtErreur, ++id, type, date, EtatEvenementEntreprise.EN_ERREUR);
-
-
-				return null;
-			}
+			addEvent(noEntrepriseAvecAttenteEtErreur, ++id, type, date, EtatEvenementEntreprise.TRAITE);
+			addEvent(noEntrepriseAvecAttenteEtErreur, ++id, type, date, EtatEvenementEntreprise.EN_ATTENTE);
+			addEvent(noEntrepriseAvecAttenteEtErreur, ++id, type, date, EtatEvenementEntreprise.EN_ERREUR);
+			return null;
 		});
 
 		final AtomicInteger pointer = new AtomicInteger(0);
@@ -211,9 +204,9 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 		retry.setTransactionManager(transactionManager);
 		retry.setProcessor(queueProcessor);
 		retry.setNotificationQueue(queueProcessor);
-		
+
 		// et maintenant : le test !
-		
+
 		// Ca, c'est pour vérifier que l'on traite les bons individus
 		final Set<Long> remaining = new HashSet<>(Arrays.asList(noEntrepriseSans, noEntrepriseAvecAttente, noEntrepriseAvecErreur, noEntrepriseAvecAttenteEtErreur));
 		final EvenementEntrepriseProcessor.ListenerHandle handleRemaining = queueProcessor.registerListener(new EvenementEntrepriseProcessor.Listener() {
@@ -234,7 +227,7 @@ public class EvenementEntrepriseCivileRetryProcessorTest extends BusinessTest {
 		finally {
 			handleRemaining.unregister();
 		}
-		
+
 		// au final : il ne doit plus rester que le noEntrepriseSans dans la liste remaining, et tous les listeners doivent avoir été dés-enregistrés
 		Assert.assertEquals(1, remaining.size());
 		Assert.assertEquals((Long) noEntrepriseSans, remaining.iterator().next());

@@ -7,7 +7,6 @@ import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -57,12 +56,9 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	public void testSansForNiRT() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -78,13 +74,10 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	@Test
 	public void testOrdinaireSansRT() throws Exception {
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 3), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 3), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -104,14 +97,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(lastYear, 5, 8);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
-				pp.setDateDeces(dateDeces);
-				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
+			pp.setDateDeces(dateDeces);
+			addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -146,18 +136,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(lastYear, 5, 8);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
-				pp.setDateDeces(dateDeces);
-				addForPrincipal(pp, date(yearBeforeLast, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
+			pp.setDateDeces(dateDeces);
+			addForPrincipal(pp, date(yearBeforeLast, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, dateRT, dateDeces, false);
-
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, dateRT, dateDeces, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -190,14 +176,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(lastYear, 5, 8);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
-				pp.setDateDeces(dateDeces);
-				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 4, 2), Sexe.MASCULIN);
+			pp.setDateDeces(dateDeces);
+			addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -221,13 +204,10 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate debutFor = date(firstYear, 6, 15);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -294,22 +274,19 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-					ids.ppMixte1 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+				ids1.ppMixte1 = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -389,32 +366,29 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addRapportPrestationImposable(dpi, pp, debutFor, null, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addRapportPrestationImposable(dpi, pp, debutFor, null, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addRapportPrestationImposable(dpi, pp, debutFor, null, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addRapportPrestationImposable(dpi, pp, debutFor, null, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addRapportPrestationImposable(dpi, pp, debutFor, null, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addRapportPrestationImposable(dpi, pp, debutFor, null, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -497,27 +471,24 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, debutFor, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		// calcul
@@ -563,26 +534,23 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppMixte1 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppMixte1 = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -663,37 +631,35 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -777,33 +743,30 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		// calcul
@@ -851,42 +814,39 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					ids.ppMixte1 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				ids1.ppMixte1 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -970,34 +930,32 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD RT", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD RT", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND RT", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD RT", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD RT", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND RT", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.SOURCE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1070,47 +1028,44 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppMixte1 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppMixte1 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1196,53 +1151,51 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppMixte1 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppMixte1 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1320,32 +1273,29 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1420,13 +1370,10 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = date(lastYear, 6, 15);
 
 		// mise en place fiscale
-		final long ppMixte1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				return pp.getNumero();
-			}
+		final long ppMixte1 = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -1488,15 +1435,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = date(lastYear, 6, 15);
 
 		// mise en place fiscale
-		final long ppMixte1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-				return pp.getNumero();
-			}
+		final long ppMixte1 = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -1565,37 +1509,35 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1671,45 +1613,43 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
-					addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
-					addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
-					addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
-					addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(lastYear - 1, 1, 1), MotifFor.ARRIVEE_HS, dateRole.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateRole, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1790,15 +1730,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = date(lastYear, 6, 15);
 
 		// mise en place fiscale
-		final Long ppMixte1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final Long ppMixte1 = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -1868,40 +1805,37 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -1977,17 +1911,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = date(lastYear, 6, 15);
 
 		// mise en place fiscale
-		final long ppMixte1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-				return pp.getNumero();
-			}
+		final long ppMixte1 = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+			addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2057,45 +1988,43 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppOrdinaire = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppMixte2 = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppDepense = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
-					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
-					ids.ppIndigent = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppOrdinaire = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppMixte2 = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppDepense = pp.getNumero();
+			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
+				ids1.ppIndigent = pp.getNumero();
+			}
+			;
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -2169,25 +2098,22 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		ForFiscalValidator.setFutureBeginDate(date(year, 12, 31));
 		try {
 			// mise en place fiscale
-			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Ids ids = new Ids();
-					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
-						ids.ppSrc = pp.getNumero();
-					}
-					{
-						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
-						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-						addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-						ids.ppOrd = pp.getNumero();
-					}
-					return ids;
+			final Ids ids = doInNewTransactionAndSession(status -> {
+				final Ids ids1 = new Ids();
+				{
+					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
+					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
+					ids1.ppSrc = pp.getNumero();
 				}
+				{
+					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
+					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
+					addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+					ids1.ppOrd = pp.getNumero();
+				}
+				return ids1;
 			});
 
 			final MutableLong testedId = new MutableLong();
@@ -2256,25 +2182,22 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Ids ids = new Ids();
-				{
-					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
-					ids.ppSrc = pp.getNumero();
-				}
-				{
-					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
-					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-					ids.ppOrd = pp.getNumero();
-				}
-				return ids;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			{
+				final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.SOURCE);
+				ids1.ppSrc = pp.getNumero();
 			}
+			{
+				final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+				ids1.ppOrd = pp.getNumero();
+			}
+			return ids1;
 		});
 
 		final MutableLong testedId = new MutableLong();
@@ -2334,14 +2257,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate obtention = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2390,14 +2310,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate obtention = date(year, 5, 1);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2446,14 +2363,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate obtention = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2490,15 +2404,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate achat = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2547,17 +2458,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate achat = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockPays.Danemark);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockPays.Danemark);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, achat, null, false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, achat, null, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2618,14 +2526,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate achat = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockPays.Danemark);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockPays.Danemark);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2648,17 +2553,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate achat = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, achat, null, false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, achat, null, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2719,14 +2621,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate achat = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2749,14 +2648,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate vente = date(year, 5, 14);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bex, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bex, ModeImposition.MIXTE_137_1);
+			addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2793,17 +2689,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate vente = date(year, 5, 14);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+			addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), vente, false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), vente, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2840,14 +2733,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate vente = date(year, 5, 14);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockPays.Allemagne, ModeImposition.ORDINAIRE);
+			addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2870,17 +2760,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate vente = date(year, 5, 14);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Geneve, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Geneve, ModeImposition.ORDINAIRE);
+			addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), vente, false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), vente, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2917,14 +2804,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate vente = date(year, 5, 14);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Geneve, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Geneve, ModeImposition.ORDINAIRE);
+			addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -2953,27 +2837,24 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
-				final PersonnePhysique ord = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, ord, mariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
+			final PersonnePhysique ord = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, ord, mariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
-				addForPrincipal(ord, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
+			addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
+			addForPrincipal(ord, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, ord, date(year, 1, 1), null, false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, ord, date(year, 1, 1), null, false);
 
-				final Ids ids = new Ids();
-				ids.ppSourcier = src.getNumero();
-				ids.ppOrdinaire = ord.getNumero();
-				ids.mc = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppSourcier = src.getNumero();
+			ids1.ppOrdinaire = ord.getNumero();
+			ids1.mc = mc.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3060,24 +2941,21 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
-				final PersonnePhysique ord = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, ord, mariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
+			final PersonnePhysique ord = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, ord, mariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
-				addForPrincipal(ord, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
+			addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
+			addForPrincipal(ord, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
 
-				final Ids ids = new Ids();
-				ids.ppSourcier = src.getNumero();
-				ids.ppOrdinaire = ord.getNumero();
-				ids.mc = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppSourcier = src.getNumero();
+			ids1.ppOrdinaire = ord.getNumero();
+			ids1.mc = mc.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3138,24 +3016,21 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
-				final PersonnePhysique mixte = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, mixte, mariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
+			final PersonnePhysique mixte = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, mixte, mariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
-				addForPrincipal(mixte, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.MIXTE_137_2);
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.MIXTE_137_2);
+			addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
+			addForPrincipal(mixte, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.MIXTE_137_2);
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.MIXTE_137_2);
 
-				final Ids ids = new Ids();
-				ids.ppSourcier = src.getNumero();
-				ids.ppMixte = mixte.getNumero();
-				ids.mc = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppSourcier = src.getNumero();
+			ids1.ppMixte = mixte.getNumero();
+			ids1.mc = mc.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3255,25 +3130,22 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
-				final PersonnePhysique permisc = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, permisc, mariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
+			final PersonnePhysique permisc = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, permisc, mariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(permisc, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Leysin, ModeImposition.SOURCE);
-				addForPrincipal(permisc, obtention, MotifFor.PERMIS_C_SUISSE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
-				addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
+			addForPrincipal(permisc, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Leysin, ModeImposition.SOURCE);
+			addForPrincipal(permisc, obtention, MotifFor.PERMIS_C_SUISSE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+			addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
 
-				final Ids ids = new Ids();
-				ids.ppSourcier = src.getNumero();
-				ids.ppOrdinaire = permisc.getNumero();
-				ids.mc = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppSourcier = src.getNumero();
+			ids1.ppOrdinaire = permisc.getNumero();
+			ids1.mc = mc.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3361,25 +3233,22 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
-				final PersonnePhysique permisc = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, permisc, mariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique src = addNonHabitant("Patrick", "McGregor", date(1980, 7, 15), Sexe.MASCULIN);
+			final PersonnePhysique permisc = addNonHabitant("Mélanie", "Pittet", date(1978, 2, 28), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(src, permisc, mariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(permisc, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.SOURCE);
-				addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.SOURCE);
-				addForPrincipal(mc, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Bex);
+			addForPrincipal(permisc, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.SOURCE);
+			addForPrincipal(src, date(year, 1, 1), MotifFor.INDETERMINE, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex, ModeImposition.SOURCE);
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.SOURCE);
+			addForPrincipal(mc, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Bex);
 
-				final Ids ids = new Ids();
-				ids.ppSourcier = src.getNumero();
-				ids.ppOrdinaire = permisc.getNumero();
-				ids.mc = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppSourcier = src.getNumero();
+			ids1.ppOrdinaire = permisc.getNumero();
+			ids1.mc = mc.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3458,15 +3327,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate demenagement = obtention.getLastDayOfTheMonth().addDays(-5);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfredo", "Garcia", date(1976, 5, 31), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Echallens, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfredo", "Garcia", date(1976, 5, 31), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Echallens, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -3513,18 +3379,15 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate mariage = demenagement.addDays(2);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfredo", "Garcia", date(1976, 5, 31), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Echallens, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfredo", "Garcia", date(1976, 5, 31), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Echallens, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
-				addForPrincipal(couple.getMenage(), mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
+			addForPrincipal(couple.getMenage(), mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -3575,21 +3438,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique decede = addNonHabitant("Gertrud", "Haenkel", date(1967, 9, 23), Sexe.FEMININ);
-				decede.setDateDeces(dateDeces);
-				final PersonnePhysique survivant = addNonHabitant("Alfredo", "Haenkel", date(1965, 4, 12), Sexe.MASCULIN);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(survivant, decede, dateMariage, dateDeces);
-				addForPrincipal(couple.getMenage(), date(year, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
-				addForPrincipal(survivant, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique decede = addNonHabitant("Gertrud", "Haenkel", date(1967, 9, 23), Sexe.FEMININ);
+			decede.setDateDeces(dateDeces);
+			final PersonnePhysique survivant = addNonHabitant("Alfredo", "Haenkel", date(1965, 4, 12), Sexe.MASCULIN);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(survivant, decede, dateMariage, dateDeces);
+			addForPrincipal(couple.getMenage(), date(year, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+			addForPrincipal(survivant, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
 
-				final Ids ids = new Ids();
-				ids.ppDecede = decede.getNumero();
-				ids.ppSurvivant = survivant.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppDecede = decede.getNumero();
+			ids1.ppSurvivant = survivant.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3674,21 +3534,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique decede = addNonHabitant("Gertrud", "Haenkel", date(1967, 9, 23), Sexe.FEMININ);
-				decede.setDateDeces(dateDeces);
-				final PersonnePhysique survivant = addNonHabitant("Alfredo", "Haenkel", date(1965, 4, 12), Sexe.MASCULIN);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(survivant, decede, dateMariage, dateDeces);
-				addForPrincipal(couple.getMenage(), date(year, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.SOURCE);
-				addForPrincipal(survivant, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique decede = addNonHabitant("Gertrud", "Haenkel", date(1967, 9, 23), Sexe.FEMININ);
+			decede.setDateDeces(dateDeces);
+			final PersonnePhysique survivant = addNonHabitant("Alfredo", "Haenkel", date(1965, 4, 12), Sexe.MASCULIN);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(survivant, decede, dateMariage, dateDeces);
+			addForPrincipal(couple.getMenage(), date(year, 1, 1), MotifFor.ARRIVEE_HS, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.SOURCE);
+			addForPrincipal(survivant, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, ModeImposition.SOURCE);
 
-				final Ids ids = new Ids();
-				ids.ppDecede = decede.getNumero();
-				ids.ppSurvivant = survivant.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppDecede = decede.getNumero();
+			ids1.ppSurvivant = survivant.getNumero();
+			return ids1;
 		});
 
 		// calculs
@@ -3771,18 +3628,15 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = obtention.getLastDayOfTheMonth().addDays(-5);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfredo", "Garcia", date(1976, 5, 31), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Echallens);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfredo", "Garcia", date(1976, 5, 31), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Echallens);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), obtention.getLastDayOfTheMonth().addMonths(2), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), obtention.getLastDayOfTheMonth().addMonths(2), false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -3830,14 +3684,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Perceval", "Jackson", date(1987, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, arrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, arrivee, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Perceval", "Jackson", date(1987, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, arrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, arrivee, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -3898,17 +3749,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate demenagement = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Perceval", "Jackson", date(1987, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Perceval", "Jackson", date(1987, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 12, 31), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 12, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -3957,17 +3805,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate demenagement = date(year, 5, 12);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Perceval", "Jackson", date(1987, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.Allemagne, ModeImposition.SOURCE);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, null, null, MockPays.France, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Perceval", "Jackson", date(1987, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.Allemagne, ModeImposition.SOURCE);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, null, null, MockPays.France, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 12, 31), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 12, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -4019,15 +3864,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate finDeuxiemeRT = date(baseYear + 2, 7, 31);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Mamfred", "Dogart", date(1991, 3, 1), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(baseYear, 1, 1), finPremierRT, false);
-				addRapportPrestationImposable(dpi, pp, debutDeuxiemeRT, finDeuxiemeRT, false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Mamfred", "Dogart", date(1991, 3, 1), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(baseYear, 1, 1), finPremierRT, false);
+			addRapportPrestationImposable(dpi, pp, debutDeuxiemeRT, finDeuxiemeRT, false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -4078,15 +3920,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate deces = obtention.getLastDayOfTheMonth().addDays(-5);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
-				pp.setDateDeces(deces);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Cossonay, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, deces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
+			pp.setDateDeces(deces);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Cossonay, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, deces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -4125,15 +3964,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate depart = obtention.getLastDayOfTheMonth().addDays(-5);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Cossonay, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, depart, MotifFor.DEPART_HS, MockCommune.Cossonay);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Cossonay, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, depart, MotifFor.DEPART_HS, MockCommune.Cossonay);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -4184,18 +4020,15 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = obtention.getLastDayOfTheMonth().addDays(-5);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockPays.France, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.France);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockPays.France, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.France);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 10, 31), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 10, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -4246,18 +4079,15 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate demenagement = obtention.getLastDayOfTheMonth().addDays(-5);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockPays.France, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.France);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockPays.Allemagne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Berthe", "BigFoot", date(1934, 2, 12), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockPays.France, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockPays.Allemagne);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 10, 31), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 1, 1), date(year, 10, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -4309,21 +4139,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(2012, 6, 2);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dugenou", date(1978, 5, 21), Sexe.MASCULIN);
-				pp.setDateDeces(dateDeces);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation.getOneDayBefore());
-				final MenageCommun mc = couple.getMenage();
-				addAppartenanceMenage(mc, pp, dateReconciliation, null, false);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dugenou", date(1978, 5, 21), Sexe.MASCULIN);
+			pp.setDateDeces(dateDeces);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation.getOneDayBefore());
+			final MenageCommun mc = couple.getMenage();
+			addAppartenanceMenage(mc, pp, dateReconciliation, null, false);
 
-				addForPrincipal(pp, date(2010, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(mc, dateReconciliation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+			addForPrincipal(pp, date(2010, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(mc, dateReconciliation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calculs
@@ -4381,14 +4208,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate arrivee = date(year, 6, 6);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Massepain", date(1978, 7, 23), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), null, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Bex, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Massepain", date(1978, 7, 23), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), null, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Bex, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calculs
@@ -4451,15 +4275,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate demenagement = date(year, 12, 15);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Rusticule", "de Saint-André", date(1967, 7, 26), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, permis.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, permis, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Rusticule", "de Saint-André", date(1967, 7, 26), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, permis.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, permis, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -4498,15 +4319,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate demenagement = date(year, 12, 15);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Rusticule", "de Saint-André", date(1967, 7, 26), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, permis.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.SOURCE);
-				addForPrincipal(pp, permis, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Rusticule", "de Saint-André", date(1967, 7, 26), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, permis.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Aubonne, ModeImposition.SOURCE);
+			addForPrincipal(pp, permis, MotifFor.PERMIS_C_SUISSE, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			addForPrincipal(pp, demenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -4537,18 +4355,15 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	public void testChevauchementDeFors() throws Exception {
 
 		// mise en place sans validation car ce n'est pas un cas accepté par la validation (pp appartenant à plusieurs mc)
-		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philibert", "Macaroni", date(1984, 3, 1), Sexe.MASCULIN);
-				final EnsembleTiersCouple couple1 = addEnsembleTiersCouple(pp, null, date(2013, 4, 2), null);
-				final EnsembleTiersCouple couple2 = addEnsembleTiersCouple(pp, null, date(2013, 5, 1), null);
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philibert", "Macaroni", date(1984, 3, 1), Sexe.MASCULIN);
+			final EnsembleTiersCouple couple1 = addEnsembleTiersCouple(pp, null, date(2013, 4, 2), null);
+			final EnsembleTiersCouple couple2 = addEnsembleTiersCouple(pp, null, date(2013, 5, 1), null);
 
-				addForPrincipal(pp, date(2012, 3, 1), MotifFor.MAJORITE, date(2013, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(couple1.getMenage(), date(2013, 4, 2), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(couple2.getMenage(), date(2013, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+			addForPrincipal(pp, date(2012, 3, 1), MotifFor.MAJORITE, date(2013, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(couple1.getMenage(), date(2013, 4, 2), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(couple2.getMenage(), date(2013, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calculs
@@ -4602,20 +4417,17 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(year, 2, 16), MotifFor.PERMIS_C_SUISSE, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(pp, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HC, MockCommune.Morges);
-				addForPrincipal(pp, date(year, 4, 23), MotifFor.DEPART_HC, date(year, 5, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
-				addForPrincipal(pp, date(year, 5, 5), MotifFor.DEMENAGEMENT_VD, date(year, 6, 18), MotifFor.DEMENAGEMENT_VD, MockCommune.Peseux);
-				addForPrincipal(pp, date(year, 6, 19), MotifFor.DEMENAGEMENT_VD, date(year, 7, 25), MotifFor.ARRIVEE_HC, MockCommune.Bern);
-				addForPrincipal(pp, date(year, 7, 26), MotifFor.ARRIVEE_HC, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
-				addForPrincipal(pp, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(year, 2, 16), MotifFor.PERMIS_C_SUISSE, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(pp, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HC, MockCommune.Morges);
+			addForPrincipal(pp, date(year, 4, 23), MotifFor.DEPART_HC, date(year, 5, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+			addForPrincipal(pp, date(year, 5, 5), MotifFor.DEMENAGEMENT_VD, date(year, 6, 18), MotifFor.DEMENAGEMENT_VD, MockCommune.Peseux);
+			addForPrincipal(pp, date(year, 6, 19), MotifFor.DEMENAGEMENT_VD, date(year, 7, 25), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+			addForPrincipal(pp, date(year, 7, 26), MotifFor.ARRIVEE_HC, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+			addForPrincipal(pp, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+			return pp.getNumero();
 		});
 
 		// calculs des périodes
@@ -4688,23 +4500,20 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(year, 2, 16), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(year, 2, 16), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(mc, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HC, MockCommune.Morges);
-				addForPrincipal(mc, date(year, 4, 23), MotifFor.DEPART_HC, date(year, 5, 4), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-				addForPrincipal(mc, date(year, 5, 5), MotifFor.DEPART_HC, date(year, 6, 18), MotifFor.DEMENAGEMENT_VD, MockCommune.Peseux);
-				addForPrincipal(mc, date(year, 6, 19), MotifFor.DEMENAGEMENT_VD, date(year, 7, 25), MotifFor.ARRIVEE_HC, MockCommune.Bern);
-				addForPrincipal(mc, date(year, 7, 26), MotifFor.ARRIVEE_HC, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
-				addForPrincipal(mc, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
-				return pp.getNumero();
-			}
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(year, 2, 16), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(year, 2, 16), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(mc, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HC, MockCommune.Morges);
+			addForPrincipal(mc, date(year, 4, 23), MotifFor.DEPART_HC, date(year, 5, 4), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+			addForPrincipal(mc, date(year, 5, 5), MotifFor.DEPART_HC, date(year, 6, 18), MotifFor.DEMENAGEMENT_VD, MockCommune.Peseux);
+			addForPrincipal(mc, date(year, 6, 19), MotifFor.DEMENAGEMENT_VD, date(year, 7, 25), MotifFor.ARRIVEE_HC, MockCommune.Bern);
+			addForPrincipal(mc, date(year, 7, 26), MotifFor.ARRIVEE_HC, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+			addForPrincipal(mc, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+			return pp.getNumero();
 		});
 
 		// calculs des périodes
@@ -4766,18 +4575,15 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(year, 2, 16), MotifFor.PERMIS_C_SUISSE, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(pp, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HS, MockCommune.Morges);
-				addForPrincipal(pp, date(year, 4, 23), MotifFor.DEPART_HS, date(year, 7, 25), MotifFor.ARRIVEE_HS, MockPays.France);
-				addForPrincipal(pp, date(year, 7, 26), MotifFor.ARRIVEE_HS, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
-				addForPrincipal(pp, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gigi", "Jampère", date(1972, 6, 23), Sexe.FEMININ);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, date(year, 2, 15), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(year, 2, 16), MotifFor.PERMIS_C_SUISSE, date(year, 3, 10), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(pp, date(year, 3, 11), MotifFor.DEMENAGEMENT_VD, date(year, 4, 22), MotifFor.DEPART_HS, MockCommune.Morges);
+			addForPrincipal(pp, date(year, 4, 23), MotifFor.DEPART_HS, date(year, 7, 25), MotifFor.ARRIVEE_HS, MockPays.France);
+			addForPrincipal(pp, date(year, 7, 26), MotifFor.ARRIVEE_HS, date(year, 10, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon);
+			addForPrincipal(pp, date(year, 10, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+			return pp.getNumero();
 		});
 
 		// calculs des périodes
@@ -4851,13 +4657,10 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 		final RegDate arrivee = date(year, 6, 1);
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -4906,14 +4709,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 		final RegDate depart = date(year, 5, 31);
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bern, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bern, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -4962,14 +4762,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 		final RegDate depart = date(year, 6, 1);
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bern, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bern, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -5018,17 +4815,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final int year = RegDate.get().year() - 1;
 		final RegDate depart = date(year, 5, 31);
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bern, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philibert", "Taplace", date(1980, 4, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bern, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(year, 2, 1), date(year, 11, 23), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(year, 2, 1), date(year, 11, 23), false);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -5074,14 +4868,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		final RegDate obtention = date(year, 4, 1);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alberto", "Luccini", date(1984, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alberto", "Luccini", date(1984, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		// calcul
@@ -5129,14 +4920,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		ForFiscalValidator.setFutureBeginDate(RegDateHelper.maximum(RegDate.get(), date(year + 1, 1, 1), NullDateBehavior.LATEST));
 		try {
 			// mise en place fiscale
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Alberto", "Luccini", date(1984, 3, 12), Sexe.MASCULIN);
-					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, ModeImposition.SOURCE);
-					addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bussigny);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Alberto", "Luccini", date(1984, 3, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, ModeImposition.SOURCE);
+				addForPrincipal(pp, obtention, MotifFor.PERMIS_C_SUISSE, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bussigny);
+				return pp.getNumero();
 			});
 
 			// calcul
@@ -5198,14 +4986,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -5301,17 +5086,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-				addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.ORDINAIRE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
+			addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.ORDINAIRE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, arrivee, departHC, false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, arrivee, departHC, false);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -5402,24 +5184,20 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, obtentionPermisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(pp, obtentionPermisC, MotifFor.PERMIS_C_SUISSE, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, retourHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale, ModeImposition.SOURCE);
-				addForPrincipal(pp, retourHC, MotifFor.ARRIVEE_HC, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, obtentionPermisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(pp, obtentionPermisC, MotifFor.PERMIS_C_SUISSE, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+			addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, retourHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale, ModeImposition.SOURCE);
+			addForPrincipal(pp, retourHC, MotifFor.ARRIVEE_HC, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, arriveeHSmenage.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.France, ModeImposition.SOURCE);
-				addForPrincipal(mc, arriveeHSmenage, MotifFor.ARRIVEE_HS, departHCmenage, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(mc, departHCmenage.getOneDayAfter(), MotifFor.DEPART_HC, retourHCmenage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(mc, retourHCmenage, MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.ORDINAIRE);
-
-				return pp.getNumero();
-			}
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, arriveeHSmenage.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.France, ModeImposition.SOURCE);
+			addForPrincipal(mc, arriveeHSmenage, MotifFor.ARRIVEE_HS, departHCmenage, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(mc, departHCmenage.getOneDayAfter(), MotifFor.DEPART_HC, retourHCmenage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(mc, retourHCmenage, MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.ORDINAIRE);
+			return pp.getNumero();
 		});
 
 		// calcul des PIIS
@@ -5543,22 +5321,17 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
+			// création du contribuable
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, obtentionNationalite, MotifFor.PERMIS_C_SUISSE, depart, MotifFor.DEPART_HC, MockCommune.Leysin);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
-				// création du contribuable
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, obtentionNationalite, MotifFor.PERMIS_C_SUISSE, depart, MotifFor.DEPART_HC, MockCommune.Leysin);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-
-				// mise en place d'un RT sur l'année dernière pour générer des PIIS sur cette année seulement
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), date(lastYear, 5, 31), false);
-
-				return pp.getNumero();
-			}
+			// mise en place d'un RT sur l'année dernière pour générer des PIIS sur cette année seulement
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), date(lastYear, 5, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul des PIIS
@@ -5608,22 +5381,17 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
+			// création du contribuable
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Leysin, ModeImposition.SOURCE);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
 
-				// création du contribuable
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Leysin, ModeImposition.SOURCE);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-
-				// mise en place d'un RT sur l'année dernière pour générer des PIIS sur cette année seulement
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), date(lastYear, 5, 31), false);
-
-				return pp.getNumero();
-			}
+			// mise en place d'un RT sur l'année dernière pour générer des PIIS sur cette année seulement
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), date(lastYear, 5, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul des PIIS
@@ -5703,24 +5471,19 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
+			// création du contribuable
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, obtentionNationalite, MotifFor.PERMIS_C_SUISSE, depart, MotifFor.DEPART_HC, MockCommune.Leysin);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, departHS, MotifFor.DEPART_HS, MockCommune.Bale);
+			addForPrincipal(pp, departHS.getOneDayAfter(), MotifFor.DEPART_HS, retourHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+			addForPrincipal(pp, retourHS, MotifFor.ARRIVEE_HS, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
-				// création du contribuable
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, obtentionNationalite, MotifFor.PERMIS_C_SUISSE, depart, MotifFor.DEPART_HC, MockCommune.Leysin);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, departHS, MotifFor.DEPART_HS, MockCommune.Bale);
-				addForPrincipal(pp, departHS.getOneDayAfter(), MotifFor.DEPART_HS, retourHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-				addForPrincipal(pp, retourHS, MotifFor.ARRIVEE_HS, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-
-				// mise en place d'un RT sur l'année dernière pour générer des PIIS sur cette année seulement
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), date(lastYear, 5, 31), false);
-
-				return pp.getNumero();
-			}
+			// mise en place d'un RT sur l'année dernière pour générer des PIIS sur cette année seulement
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), date(lastYear, 5, 31), false);
+			return pp.getNumero();
 		});
 
 		// calcul des PIIS
@@ -5792,14 +5555,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -5872,15 +5632,12 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -5968,16 +5725,13 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Grandson, ModeImposition.SOURCE);
-				addForPrincipal(pp, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson, ModeImposition.MIXTE_137_1);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Grandson, ModeImposition.SOURCE);
+			addForPrincipal(pp, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6065,16 +5819,13 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Grandson, ModeImposition.SOURCE);
-				addForPrincipal(pp, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson, ModeImposition.MIXTE_137_2);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Grandson, ModeImposition.SOURCE);
+			addForPrincipal(pp, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson, ModeImposition.MIXTE_137_2);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6162,16 +5913,13 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, permisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Grandson, ModeImposition.SOURCE);
-				addForPrincipal(pp, permisC, MotifFor.PERMIS_C_SUISSE, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, permisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Grandson, ModeImposition.SOURCE);
+			addForPrincipal(pp, permisC, MotifFor.PERMIS_C_SUISSE, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6272,20 +6020,16 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandson, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandson, ModeImposition.SOURCE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson, ModeImposition.MIXTE_137_1);
-
-				return pp.getNumero();
-			}
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6385,20 +6129,16 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
-				addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandson, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, retour.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+			addForPrincipal(pp, retour, MotifFor.ARRIVEE_HC, mariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandson, ModeImposition.SOURCE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson);
-
-				return pp.getNumero();
-			}
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, departFinal, MotifFor.DEPART_HS, MockCommune.Grandson);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6490,16 +6230,13 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale : for sur commune HC qui fusionne à la fin de l'année du dernier rapport de travail
-		final long idPP = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albertine", "Dugeat", date(1984, 5, 30), Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2014, 1, 1), date(2015, 4, 12), false);
-				addForPrincipal(pp, date(2014, 1, 1), MotifFor.ARRIVEE_HS, date(2015, 12, 31), MotifFor.FUSION_COMMUNES, MockCommune.Peseux, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2016, 1, 1), MotifFor.FUSION_COMMUNES, MockCommune.Neuchatel, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long idPP = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albertine", "Dugeat", date(1984, 5, 30), Sexe.FEMININ);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2014, 1, 1), date(2015, 4, 12), false);
+			addForPrincipal(pp, date(2014, 1, 1), MotifFor.ARRIVEE_HS, date(2015, 12, 31), MotifFor.FUSION_COMMUNES, MockCommune.Peseux, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2016, 1, 1), MotifFor.FUSION_COMMUNES, MockCommune.Neuchatel, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul des PIIS
@@ -6562,14 +6299,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departFinal, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, departFinal.getOneDayAfter(), MotifFor.DEPART_HC, null, null, MockCommune.Bern, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departFinal, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, departFinal.getOneDayAfter(), MotifFor.DEPART_HC, null, null, MockCommune.Bern, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6633,22 +6367,18 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, dateDebutRapportTravail, dateDepart, false);
-
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, dateDebutRapportTravail, dateDepart, false);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6732,14 +6462,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6798,13 +6525,10 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6864,14 +6588,11 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -6942,13 +6663,10 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		// calcul des piis
@@ -7019,17 +6737,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArriveeHC.addYears(-2), MotifFor.INDETERMINE, dateArriveeHC.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne, ModeImposition.ORDINAIRE);
-				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, MockPays.Colombie, ModeImposition.ORDINAIRE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArriveeHC.addYears(-2), MotifFor.INDETERMINE, dateArriveeHC.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne, ModeImposition.ORDINAIRE);
+			addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, MockPays.Colombie, ModeImposition.ORDINAIRE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, dateArriveeHC.addMonths(3), dateArriveeHC.addYears(1).getOneDayBefore(), false);
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, dateArriveeHC.addMonths(3), dateArriveeHC.addYears(1).getOneDayBefore(), false);
+			return pp.getNumero();
 		});
 
 		// calcul des piis

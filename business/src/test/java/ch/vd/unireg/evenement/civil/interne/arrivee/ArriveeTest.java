@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -427,69 +425,65 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final ServiceCivil civil = new ServiceCivil();
 		serviceCivil.setUp(new ServiceCivil());
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Nullable
-            @Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique jeanNomPrenomAnnule = addNonHabitant("Jean", "Dupneu", null, null);
-				jeanNomPrenomAnnule.setAnnule(true);
+		doInNewTransaction(status -> {
+			final PersonnePhysique jeanNomPrenomAnnule = addNonHabitant("Jean", "Dupneu", null, null);
+			jeanNomPrenomAnnule.setAnnule(true);
 
-				final PersonnePhysique jeanNomPrenomDesactive = addNonHabitant("Jean", "Dupneu", null, null);
-				addForPrincipal(jeanNomPrenomDesactive, date(1980, 1, 1), MotifFor.MAJORITE, date(2012, 12, 31), MotifFor.ANNULATION, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomDesactive = addNonHabitant("Jean", "Dupneu", null, null);
+			addForPrincipal(jeanNomPrenomDesactive, date(1980, 1, 1), MotifFor.MAJORITE, date(2012, 12, 31), MotifFor.ANNULATION, MockCommune.Renens);
 
-				final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
-				final PersonnePhysique jeanNomPrenomDate = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
-				final PersonnePhysique jeanNomPrenomDateSexe = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
-				final PersonnePhysique jeanNomPrenomSexe = addNonHabitant("Jean", "Dupneu", null, Sexe.MASCULIN);
+			final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
+			final PersonnePhysique jeanNomPrenomDate = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
+			final PersonnePhysique jeanNomPrenomDateSexe = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique jeanNomPrenomSexe = addNonHabitant("Jean", "Dupneu", null, Sexe.MASCULIN);
 
-				final PersonnePhysique jeanNomPrenomAssujetti = addNonHabitant("Jean", "Dupneu", null, null);
-				addForPrincipal(jeanNomPrenomAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
-				final PersonnePhysique jeanNomPrenomDateAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
-				addForPrincipal(jeanNomPrenomDateAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
-				final PersonnePhysique jeanNomPrenomDateSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(jeanNomPrenomDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
-				final PersonnePhysique jeanNomPrenomSexeAssujetti = addNonHabitant("Jean", "Dupneu", null, Sexe.MASCULIN);
-				addForPrincipal(jeanNomPrenomSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomAssujetti = addNonHabitant("Jean", "Dupneu", null, null);
+			addForPrincipal(jeanNomPrenomAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomDateAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
+			addForPrincipal(jeanNomPrenomDateAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomDateSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(jeanNomPrenomDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomSexeAssujetti = addNonHabitant("Jean", "Dupneu", null, Sexe.MASCULIN);
+			addForPrincipal(jeanNomPrenomSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
-				final PersonnePhysique jeanNomPrenomAutreDateSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1965, 5, 17), Sexe.MASCULIN);
-				addForPrincipal(jeanNomPrenomAutreDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomAutreDateSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1965, 5, 17), Sexe.MASCULIN);
+			addForPrincipal(jeanNomPrenomAutreDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
-				final PersonnePhysique jeanNomPrenomDateAutreSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.FEMININ);
-				addForPrincipal(jeanNomPrenomDateAutreSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jeanNomPrenomDateAutreSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.FEMININ);
+			addForPrincipal(jeanNomPrenomDateAutreSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
-				final PersonnePhysique jacquesNomPrenomDateSexeAssujetti = addNonHabitant("Jacques", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(jacquesNomPrenomDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique jacquesNomPrenomDateSexeAssujetti = addNonHabitant("Jacques", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(jacquesNomPrenomDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
-				final PersonnePhysique rogerNomPrenomSexeAssujetti = addNonHabitant("Roger", "Dupneu", null, Sexe.MASCULIN);
-				addForPrincipal(rogerNomPrenomSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique rogerNomPrenomSexeAssujetti = addNonHabitant("Roger", "Dupneu", null, Sexe.MASCULIN);
+			addForPrincipal(rogerNomPrenomSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
-				final PersonnePhysique cedricNonHabitantAvecNoIndividu = addNonHabitant("Cédric", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
-				cedricNonHabitantAvecNoIndividu.setNumeroIndividu(375342L);
-				addForPrincipal(cedricNonHabitantAvecNoIndividu, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			final PersonnePhysique cedricNonHabitantAvecNoIndividu = addNonHabitant("Cédric", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+			cedricNonHabitantAvecNoIndividu.setNumeroIndividu(375342L);
+			addForPrincipal(cedricNonHabitantAvecNoIndividu, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
 
-				ids.jeanNomPrenomAnnule = jeanNomPrenomAnnule.getId();
-				ids.jeanNomPrenomDesactive = jeanNomPrenomDesactive.getId();
-				ids.jeanNomPrenom = jeanNomPrenom.getId();
-				ids.jeanNomPrenomDate = jeanNomPrenomDate.getId();
-				ids.jeanNomPrenomDateSexe = jeanNomPrenomDateSexe.getId();
-				ids.jeanNomPrenomSexe = jeanNomPrenomSexe.getId();
-				ids.jeanNomPrenomAssujetti = jeanNomPrenomAssujetti.getId();
-				ids.jeanNomPrenomDateAssujetti = jeanNomPrenomDateAssujetti.getId();
-				ids.jeanNomPrenomDateSexeAssujetti = jeanNomPrenomDateSexeAssujetti.getId();
-				ids.jeanNomPrenomSexeAssujetti = jeanNomPrenomSexeAssujetti.getId();
-				ids.jeanNomPrenomAutreDateSexeAssujetti = jeanNomPrenomAutreDateSexeAssujetti.getId();
-				ids.jeanNomPrenomDateAutreSexeAssujetti = jeanNomPrenomDateAutreSexeAssujetti.getId();
-				ids.jacquesNomPrenomDateSexeAssujetti = jacquesNomPrenomDateSexeAssujetti.getId();
-				ids.rogerNomPrenomSexeAssujetti = rogerNomPrenomSexeAssujetti.getId();
-				ids.cedricNonHabitantAvecNoIndividu = cedricNonHabitantAvecNoIndividu.getId();
+			ids.jeanNomPrenomAnnule = jeanNomPrenomAnnule.getId();
+			ids.jeanNomPrenomDesactive = jeanNomPrenomDesactive.getId();
+			ids.jeanNomPrenom = jeanNomPrenom.getId();
+			ids.jeanNomPrenomDate = jeanNomPrenomDate.getId();
+			ids.jeanNomPrenomDateSexe = jeanNomPrenomDateSexe.getId();
+			ids.jeanNomPrenomSexe = jeanNomPrenomSexe.getId();
+			ids.jeanNomPrenomAssujetti = jeanNomPrenomAssujetti.getId();
+			ids.jeanNomPrenomDateAssujetti = jeanNomPrenomDateAssujetti.getId();
+			ids.jeanNomPrenomDateSexeAssujetti = jeanNomPrenomDateSexeAssujetti.getId();
+			ids.jeanNomPrenomSexeAssujetti = jeanNomPrenomSexeAssujetti.getId();
+			ids.jeanNomPrenomAutreDateSexeAssujetti = jeanNomPrenomAutreDateSexeAssujetti.getId();
+			ids.jeanNomPrenomDateAutreSexeAssujetti = jeanNomPrenomDateAutreSexeAssujetti.getId();
+			ids.jacquesNomPrenomDateSexeAssujetti = jacquesNomPrenomDateSexeAssujetti.getId();
+			ids.rogerNomPrenomSexeAssujetti = rogerNomPrenomSexeAssujetti.getId();
+			ids.cedricNonHabitantAvecNoIndividu = cedricNonHabitantAvecNoIndividu.getId();
 
-                // ajout de 110 M. Jean Pierre Non Habitant
-                RegDate date = date(1960, 1, 1);
-                for (int i = 0; i < 110; i++) {
-                    addNonHabitant("Jean", "Pierre", date, Sexe.MASCULIN);
-                }
-				return null;
+			// ajout de 110 M. Jean Pierre Non Habitant
+			RegDate date = date(1960, 1, 1);
+			for (int i = 0; i < 110; i++) {
+				addNonHabitant("Jean", "Pierre", date, Sexe.MASCULIN);
 			}
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -572,13 +566,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
@@ -645,13 +636,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
@@ -718,13 +706,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
@@ -782,13 +767,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
@@ -846,13 +828,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Villette);
+			return pp.getNumero();
 		});
 
 		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est

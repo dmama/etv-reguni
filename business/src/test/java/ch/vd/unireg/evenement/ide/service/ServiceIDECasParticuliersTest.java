@@ -3,8 +3,6 @@ package ch.vd.unireg.evenement.ide.service;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -58,49 +56,35 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		 */
 
 		// Création de l'entreprise
-		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+		final Long noEntreprise = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
-				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
+			addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
-				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+			entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
-				adresseSuisse.setNumeroMaison("1");
-
-				return entreprise.getNumero();
-			}
+			final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+			adresseSuisse.setNumeroMaison("1");
+			return entreprise.getNumero();
 		});
 
 		// Création de l'établissement
-		final Long noEtablissement = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
+		final Long noEtablissement = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
-
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
-
-				return etablissement.getNumero();
-			}
+			Etablissement etablissement = addEtablissement();
+			addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
+			addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+			return etablissement.getNumero();
 		});
 
 		// Ajout de la référence d'annonce
-		final Long idReferenceAnnonce = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
+		final Long idReferenceAnnonce = doInNewTransactionAndSession(status -> {
+			Etablissement etablissement = (Etablissement) tiersDAO.get(noEtablissement);
 
-				Etablissement etablissement = (Etablissement) tiersDAO.get(noEtablissement);
-
-				final ReferenceAnnonceIDE refAnnonce = addReferenceAnnonceIDE("fake_business_id", etablissement);
-
-				return refAnnonce.getId();
-			}
+			final ReferenceAnnonceIDE refAnnonce = addReferenceAnnonceIDE("fake_business_id", etablissement);
+			return refAnnonce.getId();
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
@@ -129,23 +113,21 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
-			@Override
-			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
-				try {
-					serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
-				}
-				catch (ServiceIDEException e) {
-					assertEquals(String.format("Entreprise n°%s: une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
-							             "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)),
-					             e.getMessage());
-					return null;
-				} catch (Exception e) {
-					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
-				}
-				fail("L'exception attendue n'est pas survenue.");
+		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(status -> {
+			try {
+				serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
+			}
+			catch (ServiceIDEException e) {
+				assertEquals(String.format("Entreprise n°%s: une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
+						                           "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)),
+				             e.getMessage());
 				return null;
 			}
+			catch (Exception e) {
+				fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
+			}
+			fail("L'exception attendue n'est pas survenue.");
+			return null;
 		});
 	}
 
@@ -156,36 +138,27 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		 */
 
 		// Création de l'entreprise
-		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+		final Long noEntreprise = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Synchrotec SA");
-				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.SA);
+			addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Synchrotec SA");
+			addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.SA);
 
-				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+			entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
-				adresseSuisse.setNumeroMaison("1");
-
-				return entreprise.getNumero();
-			}
+			final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+			adresseSuisse.setNumeroMaison("1");
+			return entreprise.getNumero();
 		});
 
 		// Création de l'établissement
-		final Long noEtablissement = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
+		final Long noEtablissement = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
-
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
-
-				return etablissement.getNumero();
-			}
+			Etablissement etablissement = addEtablissement();
+			addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
+			addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+			return etablissement.getNumero();
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
@@ -201,16 +174,14 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final BaseAnnonceIDE baseAnnonceIDE = doInNewTransactionAndSession(new TransactionCallback<BaseAnnonceIDE>() {
-			@Override
-			public BaseAnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
-				try {
-					return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
-				} catch (Exception e) {
-					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
-				}
-				return null;
+		final BaseAnnonceIDE baseAnnonceIDE = doInNewTransactionAndSession(status -> {
+			try {
+				return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 			}
+			catch (Exception e) {
+				fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
+			}
+			return null;
 		});
 		assertNull(baseAnnonceIDE);
 	}
@@ -226,37 +197,28 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		final Long noEtablissementCivil = noEntrepriseCivile + 100;
 
 		// Création de l'entreprise
-		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+		final Long noEntreprise = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), date(2016, 9, 7), "Synergy Assoc");
-				addFormeJuridique(entreprise, date(2016, 9, 5), date(2016, 9, 7), FormeJuridiqueEntreprise.ASSOCIATION);
+			addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), date(2016, 9, 7), "Synergy Assoc");
+			addFormeJuridique(entreprise, date(2016, 9, 5), date(2016, 9, 7), FormeJuridiqueEntreprise.ASSOCIATION);
 
-				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+			entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
-				adresseSuisse.setNumeroMaison("1"); // On laisse l'adresse ouverte, pas envie de configurer une adresse RCEnt propre car le test ne porte pas dessus.
-
-				return entreprise.getNumero();
-			}
+			final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+			adresseSuisse.setNumeroMaison("1"); // On laisse l'adresse ouverte, pas envie de configurer une adresse RCEnt propre car le test ne porte pas dessus.;
+			return entreprise.getNumero();
 		});
 
 		// Création de l'établissement
-		final Long noEtablissement = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
+		final Long noEtablissement = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
-
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissementCivil);
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), date(2016, 9, 7), MockCommune.Renens);
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
-
-				return etablissement.getNumero();
-			}
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissementCivil);
+			addDomicileEtablissement(etablissement, date(2016, 9, 5), date(2016, 9, 7), MockCommune.Renens);
+			addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+			return etablissement.getNumero();
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
@@ -277,16 +239,14 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final BaseAnnonceIDE baseAnnonceIDE = doInNewTransactionAndSession(new TransactionCallback<BaseAnnonceIDE>() {
-			@Override
-			public BaseAnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
-				try {
-					return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
-				} catch (Exception e) {
-					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
-				}
-				return null;
+		final BaseAnnonceIDE baseAnnonceIDE = doInNewTransactionAndSession(status -> {
+			try {
+				return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 			}
+			catch (Exception e) {
+				fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
+			}
+			return null;
 		});
 		assertNull(baseAnnonceIDE);
 	}

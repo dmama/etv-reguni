@@ -11,15 +11,12 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
@@ -29,6 +26,7 @@ import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -153,22 +151,17 @@ public class ComparerForFiscalEtCommuneProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-
-				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryMessage);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
-				Collections.sort(idsMessage);
-				return idsMessage;
-			}
-
+		final List<Long> ids = template.execute(status -> {
+			final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException {
+					Query queryObject = session.createQuery(queryMessage);
+					//noinspection unchecked
+					return queryObject.list();
+				}
+			});
+			Collections.sort(idsMessage);
+			return idsMessage;
 		});
 		return ids;
 	}

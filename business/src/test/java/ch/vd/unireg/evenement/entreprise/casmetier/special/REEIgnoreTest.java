@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.entreprise.casmetier.special;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -64,12 +62,9 @@ public class REEIgnoreTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 5, 20), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 5, 20), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -77,20 +72,15 @@ public class REEIgnoreTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -118,12 +108,9 @@ public class REEIgnoreTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_MUTATION, RegDate.get(2016, 5, 20), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_MUTATION, RegDate.get(2016, 5, 20), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -131,20 +118,15 @@ public class REEIgnoreTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("Numéro IDE manquant pour l'entreprise Metafun SA (civil: n°%d), domiciliée à Lausanne (VD), pourtant inscrite au RC. Impossible de continuer.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("Numéro IDE manquant pour l'entreprise Metafun SA (civil: n°%d), domiciliée à Lausanne (VD), pourtant inscrite au RC. Impossible de continuer.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	// SIFISC-19766 - Une forme juridique null est possible, dans le cas ou le RC et l'IDE ne sont pas impliqués.
@@ -172,12 +154,9 @@ public class REEIgnoreTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 5, 20), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 5, 20), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -185,20 +164,15 @@ public class REEIgnoreTest extends AbstractEvenementEntrepriseCivileProcessorTes
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(2).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noEntrepriseCivile),
+			                    evt.getErreurs().get(2).getMessage());
+			return null;
+		});
 	}
 
 }

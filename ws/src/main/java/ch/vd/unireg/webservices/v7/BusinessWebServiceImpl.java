@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.ResourceUtils;
 
@@ -370,15 +369,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public void setAutomaticRepaymentBlockingFlag(final int partyNo, final boolean blocked) {
-		doInTransaction(false, new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				if (tiers == null) {
-					throw new TiersNotFoundException(partyNo);
-				}
-				tiers.setBlocageRemboursementAutomatique(blocked);
+		doInTransaction(false, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			if (tiers == null) {
+				throw new TiersNotFoundException(partyNo);
 			}
+			tiers.setBlocageRemboursementAutomatique(blocked);
+			return null;
 		});
 	}
 

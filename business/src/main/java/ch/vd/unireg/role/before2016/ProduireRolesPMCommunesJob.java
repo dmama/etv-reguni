@@ -2,8 +2,6 @@ package ch.vd.unireg.role.before2016;
 
 import java.util.Map;
 
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -57,12 +55,7 @@ public class ProduireRolesPMCommunesJob extends AbstractProduireRolesJob {
 		// Produit le rapport dans une transaction read-write.
 		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setReadOnly(false);
-		final RolesCommunesPMRapport rapport = template.execute(new TransactionCallback<RolesCommunesPMRapport>() {
-			@Override
-			public RolesCommunesPMRapport doInTransaction(TransactionStatus status) {
-				return getRapportService().generateRapport(results, statusManager);
-			}
-		});
+		final RolesCommunesPMRapport rapport = template.execute(status -> getRapportService().generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success("La production des rôles PM (communes) pour l'année " + annee + " est terminée.", rapport);

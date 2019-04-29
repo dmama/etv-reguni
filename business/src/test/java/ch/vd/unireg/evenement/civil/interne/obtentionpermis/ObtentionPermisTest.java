@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -18,9 +20,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.HandleStatus;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.SourcierPur;
@@ -184,13 +183,10 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale : for source depuis l'arrivée
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -277,13 +273,10 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			});
 
 			// mise en place fiscale : for source depuis l'arrivée
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addHabitant(noIndividu);
-					addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
+				return pp.getNumero();
 			});
 
 			doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -362,13 +355,10 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale : for source depuis l'arrivée
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -567,14 +557,11 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
-				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				assertNull(pp.getCategorieEtranger());
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
+			pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+			assertNull(pp.getCategorieEtranger());
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -595,15 +582,12 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertFalse(pp.isHabitantVD());
-				assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertFalse(pp.isHabitantVD());
+			assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
+			return null;
 		});
 	}
 
@@ -625,14 +609,11 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
-				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				assertNull(pp.getCategorieEtranger());
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
+			pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+			assertNull(pp.getCategorieEtranger());
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -653,15 +634,12 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertFalse(pp.isHabitantVD());
-				assertEquals(CategorieEtranger._02_PERMIS_SEJOUR_B, pp.getCategorieEtranger());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertFalse(pp.isHabitantVD());
+			assertEquals(CategorieEtranger._02_PERMIS_SEJOUR_B, pp.getCategorieEtranger());
+			return null;
 		});
 	}
 
@@ -689,16 +667,13 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
-				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-				assertNull(pp.getCategorieEtranger());
-				assertNull(pp.getReindexOn());
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
+			pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			assertNull(pp.getCategorieEtranger());
+			assertNull(pp.getReindexOn());
+			return pp.getNumero();
 		});
 
 		// Traitement de l'événement d'obtention de permis d'établissement
@@ -720,20 +695,17 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertEquals(dateDebutMoisProchain, pp.getReindexOn()); // [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire
-				if (dateObtentionPermis.getOneDayAfter().day() == 1) {
-					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, today));
-				}
-				else {
-					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, today));
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertEquals(dateDebutMoisProchain, pp.getReindexOn()); // [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire
+			if (dateObtentionPermis.getOneDayAfter().day() == 1) {
+				assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, today));
 			}
+			else {
+				assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, today));
+			}
+			return null;
 		});
 	}
 
@@ -761,15 +733,12 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
-				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				assertNull(pp.getCategorieEtranger());
-				assertNull(pp.getReindexOn());
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
+			pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+			assertNull(pp.getCategorieEtranger());
+			assertNull(pp.getReindexOn());
+			return pp.getNumero();
 		});
 
 		// Traitement de l'événement d'obtention de permis d'établissement
@@ -791,22 +760,19 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				// [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire (le calcul de l'assujettissement détermine
-				// que le contribuable était sourcier à cause du mode d'ouverture 'obtention de permis C', même s'il n'y a pas de for principal source explicite)
-				assertEquals(dateDebutMoisProchain, pp.getReindexOn());
-				if (dateObtentionPermis.getOneDayAfter().day() == 1) {
-					assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, today));
-				}
-				else {
-					assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, today));
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			// [SIFISC-1199] date de réindexation dans le futur car il y a une de transition source -> ordinaire (le calcul de l'assujettissement détermine
+			// que le contribuable était sourcier à cause du mode d'ouverture 'obtention de permis C', même s'il n'y a pas de for principal source explicite)
+			assertEquals(dateDebutMoisProchain, pp.getReindexOn());
+			if (dateObtentionPermis.getOneDayAfter().day() == 1) {
+				assertEquals("Imposition ordinaire VD", tiersService.getRoleAssujettissement(pp, today));
 			}
+			else {
+				assertEquals("Imposition à la source", tiersService.getRoleAssujettissement(pp, today));
+			}
+			return null;
 		});
 	}
 
@@ -834,13 +800,10 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 		
 		// mise en place fiscale (juste la création du tiers, qui n'a pas de for vaudois)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 		
 		// obtention du permis C
@@ -871,22 +834,19 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 		
 		// vérification que le for a bougé (= passé à l'ordinaire)
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Geneve.getNoOFS(), (long) ffp.getNumeroOfsAutoriteFiscale());
-				assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+			assertEquals(MockCommune.Geneve.getNoOFS(), (long) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
+			return null;
 		});
 	}
 
@@ -914,12 +874,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (juste la création du tiers)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// obtention du permis C
@@ -950,16 +907,13 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// vérification qu'aucun for n'a été créé
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				assertNull(ffp);
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			assertNull(ffp);
+			return null;
 		});
 	}
 
@@ -988,13 +942,10 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (création du tiers avec for vaudois)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// obtention du permis C
@@ -1025,21 +976,18 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// vérification que le for a bougé (= passé à l'ordinaire)
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Echallens.getNoOFS(), (long) ffp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals(MockCommune.Echallens.getNoOFS(), (long) ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 }

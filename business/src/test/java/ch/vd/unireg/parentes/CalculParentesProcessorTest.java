@@ -9,8 +9,6 @@ import java.util.Set;
 import org.hibernate.FlushMode;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -45,13 +43,10 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// quelques non-habitants quand-même
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
-				addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
+			addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
+			return null;
 		});
 
 		final CalculParentesResults results = processor.run(1, CalculParentesMode.FULL, null);
@@ -79,15 +74,12 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		});
 
 		// les non-habitants basés sur les individus connus
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.createNonHabitantFromIndividu(noIndividuEnfant);
-				tiersService.createNonHabitantFromIndividu(noIndividuParent);
-				addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
-				addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			tiersService.createNonHabitantFromIndividu(noIndividuEnfant);
+			tiersService.createNonHabitantFromIndividu(noIndividuParent);
+			addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
+			addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
+			return null;
 		});
 
 		final CalculParentesResults results = processor.run(1, CalculParentesMode.FULL, null);
@@ -109,51 +101,44 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		}
 
 		// quelques non-habitants quand-même (avec une relation de filiation entre eux...)
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pierre = addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
-				final PersonnePhysique namass = addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
-				final Parente parente = addParente(namass, pierre, date(2010, 6, 23), null);
-				final Ids ids = new Ids();
-				ids.idParent = pierre.getNumero();
-				ids.idEnfant = namass.getNumero();
-				ids.isParente = parente.getId();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pierre = addNonHabitant("Pierre", "Kiroul", null, Sexe.MASCULIN);
+			final PersonnePhysique namass = addNonHabitant("Namass", "Pamouss", null, Sexe.FEMININ);
+			final Parente parente = addParente(namass, pierre, date(2010, 6, 23), null);
+			final Ids ids1 = new Ids();
+			ids1.idParent = pierre.getNumero();
+			ids1.idEnfant = namass.getNumero();
+			ids1.isParente = parente.getId();
+			return ids1;
 		});
 
 		// on vérifie que la relation de filiation est bien là...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final PersonnePhysique parent = (PersonnePhysique) tiersDAO.get(ids.idParent);
-					final Set<RapportEntreTiers> sujetRapports = parent.getRapportsSujet();
-					Assert.assertEquals(0, sujetRapports.size());
-					final Set<RapportEntreTiers> objectRapports = parent.getRapportsObjet();
-					Assert.assertEquals(1, objectRapports.size());
+		doInNewTransactionAndSession(status -> {
+			{
+				final PersonnePhysique parent = (PersonnePhysique) tiersDAO.get(ids.idParent);
+				final Set<RapportEntreTiers> sujetRapports = parent.getRapportsSujet();
+				Assert.assertEquals(0, sujetRapports.size());
+				final Set<RapportEntreTiers> objectRapports = parent.getRapportsObjet();
+				Assert.assertEquals(1, objectRapports.size());
 
-					final RapportEntreTiers rapport = objectRapports.iterator().next();
-					Assert.assertNotNull(rapport);
-					Assert.assertEquals(Parente.class, rapport.getClass());
-					Assert.assertEquals((Long) ids.isParente, rapport.getId());
-				}
-				{
-					final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
-					final Set<RapportEntreTiers> sujetRapports = enfant.getRapportsSujet();
-					Assert.assertEquals(1, sujetRapports.size());
-					final Set<RapportEntreTiers> objectRapports = enfant.getRapportsObjet();
-					Assert.assertEquals(0, objectRapports.size());
-
-					final RapportEntreTiers rapport = sujetRapports.iterator().next();
-					Assert.assertNotNull(rapport);
-					Assert.assertEquals(Parente.class, rapport.getClass());
-					Assert.assertEquals((Long) ids.isParente, rapport.getId());
-				}
-
-				return null;
+				final RapportEntreTiers rapport = objectRapports.iterator().next();
+				Assert.assertNotNull(rapport);
+				Assert.assertEquals(Parente.class, rapport.getClass());
+				Assert.assertEquals((Long) ids.isParente, rapport.getId());
 			}
+			{
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				final Set<RapportEntreTiers> sujetRapports = enfant.getRapportsSujet();
+				Assert.assertEquals(1, sujetRapports.size());
+				final Set<RapportEntreTiers> objectRapports = enfant.getRapportsObjet();
+				Assert.assertEquals(0, objectRapports.size());
+
+				final RapportEntreTiers rapport = sujetRapports.iterator().next();
+				Assert.assertNotNull(rapport);
+				Assert.assertEquals(Parente.class, rapport.getClass());
+				Assert.assertEquals((Long) ids.isParente, rapport.getId());
+			}
+			return null;
 		});
 
 		final CalculParentesResults results = processor.run(1, CalculParentesMode.FULL, null);
@@ -164,30 +149,26 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getUpdates().size());
 
 		// on vérifie que la relation de parenté a bien été enlevée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final PersonnePhysique parent = (PersonnePhysique) tiersDAO.get(ids.idParent);
-					final Set<RapportEntreTiers> objetRapports = parent.getRapportsObjet();
-					Assert.assertEquals(0, objetRapports.size());
-					final Set<RapportEntreTiers> sujetRapports = parent.getRapportsSujet();
-					Assert.assertEquals(0, sujetRapports.size());
-				}
-				{
-					final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
-					final Set<RapportEntreTiers> objetRapports = enfant.getRapportsObjet();
-					Assert.assertEquals(0, objetRapports.size());
-					final Set<RapportEntreTiers> sujetRapports = enfant.getRapportsSujet();
-					Assert.assertEquals(0, sujetRapports.size());
-				}
-				{
-					final Parente parente = hibernateTemplate.get(Parente.class, ids.isParente);
-					Assert.assertNull(parente);
-				}
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final PersonnePhysique parent = (PersonnePhysique) tiersDAO.get(ids.idParent);
+				final Set<RapportEntreTiers> objetRapports = parent.getRapportsObjet();
+				Assert.assertEquals(0, objetRapports.size());
+				final Set<RapportEntreTiers> sujetRapports = parent.getRapportsSujet();
+				Assert.assertEquals(0, sujetRapports.size());
 			}
+			{
+				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+				final Set<RapportEntreTiers> objetRapports = enfant.getRapportsObjet();
+				Assert.assertEquals(0, objetRapports.size());
+				final Set<RapportEntreTiers> sujetRapports = enfant.getRapportsSujet();
+				Assert.assertEquals(0, sujetRapports.size());
+			}
+			{
+				final Parente parente = hibernateTemplate.get(Parente.class, ids.isParente);
+				Assert.assertNull(parente);
+			}
+			return null;
 		});
 	}
 
@@ -226,23 +207,20 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(noIndPapa);
-				final PersonnePhysique maman = addHabitant(noIndMaman);
-				final PersonnePhysique belle = addHabitant(noIndBelle);
-				final PersonnePhysique dur = addHabitant(noIndDur);
-				final PersonnePhysique henri = addHabitant(noIndHenri);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique papa = addHabitant(noIndPapa);
+			final PersonnePhysique maman = addHabitant(noIndMaman);
+			final PersonnePhysique belle = addHabitant(noIndBelle);
+			final PersonnePhysique dur = addHabitant(noIndDur);
+			final PersonnePhysique henri = addHabitant(noIndHenri);
 
-				final Ids ids = new Ids();
-				ids.idPapa = papa.getNumero();
-				ids.idMaman = maman.getNumero();
-				ids.idBelle = belle.getNumero();
-				ids.idDur = dur.getNumero();
-				ids.idHenri = henri.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idPapa = papa.getNumero();
+			ids1.idMaman = maman.getNumero();
+			ids1.idBelle = belle.getNumero();
+			ids1.idDur = dur.getNumero();
+			ids1.idHenri = henri.getNumero();
+			return ids1;
 		});
 
 		// génération des relations
@@ -290,62 +268,59 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		}
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
-				Assert.assertNotNull(parentes);
-				Assert.assertEquals(4, parentes.size());
-				final List<Parente> copyToSort = new ArrayList<>(parentes);
-				Collections.sort(copyToSort, new Comparator<Parente>() {
-					@Override
-					public int compare(Parente o1, Parente o2) {
-						int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
-						if (comp == 0) {
-							comp = Long.compare(o1.getSujetId(), o2.getSujetId());
-						}
-						return comp;
+		doInNewTransactionAndSession(status -> {
+			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
+			Assert.assertNotNull(parentes);
+			Assert.assertEquals(4, parentes.size());
+			final List<Parente> copyToSort = new ArrayList<>(parentes);
+			Collections.sort(copyToSort, new Comparator<Parente>() {
+				@Override
+				public int compare(Parente o1, Parente o2) {
+					int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
+					if (comp == 0) {
+						comp = Long.compare(o1.getSujetId(), o2.getSujetId());
 					}
-				});
+					return comp;
+				}
+			});
 
-				{
-					final Parente parente = copyToSort.get(0);
-					Assert.assertNotNull(parente);
-					Assert.assertFalse(parente.isAnnule());
-					Assert.assertEquals((Long) ids.idPapa, parente.getObjetId());
-					Assert.assertEquals((Long) ids.idBelle, parente.getSujetId());
-					Assert.assertEquals(date(2005, 12, 22), parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-				}
-				{
-					final Parente parente = copyToSort.get(1);
-					Assert.assertNotNull(parente);
-					Assert.assertFalse(parente.isAnnule());
-					Assert.assertEquals((Long) ids.idPapa, parente.getObjetId());
-					Assert.assertEquals((Long) ids.idDur, parente.getSujetId());
-					Assert.assertEquals(date(2005, 12, 21), parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-				}
-				{
-					final Parente parente = copyToSort.get(2);
-					Assert.assertNotNull(parente);
-					Assert.assertFalse(parente.isAnnule());
-					Assert.assertEquals((Long) ids.idMaman, parente.getObjetId());
-					Assert.assertEquals((Long) ids.idBelle, parente.getSujetId());
-					Assert.assertEquals(date(2005, 12, 22), parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-				}
-				{
-					final Parente parente = copyToSort.get(3);
-					Assert.assertNotNull(parente);
-					Assert.assertFalse(parente.isAnnule());
-					Assert.assertEquals((Long) ids.idMaman, parente.getObjetId());
-					Assert.assertEquals((Long) ids.idDur, parente.getSujetId());
-					Assert.assertEquals(date(2005, 12, 21), parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-				}
-				return null;
+			{
+				final Parente parente = copyToSort.get(0);
+				Assert.assertNotNull(parente);
+				Assert.assertFalse(parente.isAnnule());
+				Assert.assertEquals((Long) ids.idPapa, parente.getObjetId());
+				Assert.assertEquals((Long) ids.idBelle, parente.getSujetId());
+				Assert.assertEquals(date(2005, 12, 22), parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
 			}
+			{
+				final Parente parente = copyToSort.get(1);
+				Assert.assertNotNull(parente);
+				Assert.assertFalse(parente.isAnnule());
+				Assert.assertEquals((Long) ids.idPapa, parente.getObjetId());
+				Assert.assertEquals((Long) ids.idDur, parente.getSujetId());
+				Assert.assertEquals(date(2005, 12, 21), parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+			}
+			{
+				final Parente parente = copyToSort.get(2);
+				Assert.assertNotNull(parente);
+				Assert.assertFalse(parente.isAnnule());
+				Assert.assertEquals((Long) ids.idMaman, parente.getObjetId());
+				Assert.assertEquals((Long) ids.idBelle, parente.getSujetId());
+				Assert.assertEquals(date(2005, 12, 22), parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+			}
+			{
+				final Parente parente = copyToSort.get(3);
+				Assert.assertNotNull(parente);
+				Assert.assertFalse(parente.isAnnule());
+				Assert.assertEquals((Long) ids.idMaman, parente.getObjetId());
+				Assert.assertEquals((Long) ids.idDur, parente.getSujetId());
+				Assert.assertEquals(date(2005, 12, 21), parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -381,21 +356,18 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale : tout le contraire de ce qui devrait exister
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique parent1 = addHabitant(noIndParent1);
-				final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
-				final PersonnePhysique parent2 = addHabitant(noIndParent2);
-				final PersonnePhysique enfant2 = addHabitant(noIndEnfant2);
-				addParente(enfant2, parent2, dateNaissanceEnfant2, null);
-				final Ids ids = new Ids();
-				ids.ppParent1 = parent1.getNumero();
-				ids.ppEnfant1 = enfant1.getNumero();
-				ids.ppParent2 = parent2.getNumero();
-				ids.ppEnfant2 = enfant2.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, status -> {
+			final PersonnePhysique parent1 = addHabitant(noIndParent1);
+			final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
+			final PersonnePhysique parent2 = addHabitant(noIndParent2);
+			final PersonnePhysique enfant2 = addHabitant(noIndEnfant2);
+			addParente(enfant2, parent2, dateNaissanceEnfant2, null);
+			final Ids ids1 = new Ids();
+			ids1.ppParent1 = parent1.getNumero();
+			ids1.ppEnfant1 = enfant1.getNumero();
+			ids1.ppParent2 = parent2.getNumero();
+			ids1.ppEnfant2 = enfant2.getNumero();
+			return ids1;
 		});
 
 		final CalculParentesResults result = processor.run(1, CalculParentesMode.REFRESH_ALL, null);
@@ -424,44 +396,41 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		}
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
-				Assert.assertNotNull(parentes);
-				Assert.assertEquals(2, parentes.size());
-				final List<Parente> copyToSort = new ArrayList<>(parentes);
-				Collections.sort(copyToSort, new Comparator<Parente>() {
-					@Override
-					public int compare(Parente o1, Parente o2) {
-						int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
-						if (comp == 0) {
-							comp = Long.compare(o1.getSujetId(), o2.getSujetId());
-						}
-						return comp;
+		doInNewTransactionAndSession(status -> {
+			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
+			Assert.assertNotNull(parentes);
+			Assert.assertEquals(2, parentes.size());
+			final List<Parente> copyToSort = new ArrayList<>(parentes);
+			Collections.sort(copyToSort, new Comparator<Parente>() {
+				@Override
+				public int compare(Parente o1, Parente o2) {
+					int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
+					if (comp == 0) {
+						comp = Long.compare(o1.getSujetId(), o2.getSujetId());
 					}
-				});
+					return comp;
+				}
+			});
 
-				{
-					final Parente parente = copyToSort.get(0);
-					Assert.assertNotNull(parente);
-					Assert.assertEquals((Long) ids.ppParent1, parente.getObjetId());
-					Assert.assertEquals((Long) ids.ppEnfant1, parente.getSujetId());
-					Assert.assertEquals(dateNaissanceEnfant1, parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-					Assert.assertFalse(parente.isAnnule());
-				}
-				{
-					final Parente parente = copyToSort.get(1);
-					Assert.assertNotNull(parente);
-					Assert.assertEquals((Long) ids.ppParent2, parente.getObjetId());
-					Assert.assertEquals((Long) ids.ppEnfant2, parente.getSujetId());
-					Assert.assertEquals(dateNaissanceEnfant2, parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-					Assert.assertTrue(parente.isAnnule());
-				}
-				return null;
+			{
+				final Parente parente = copyToSort.get(0);
+				Assert.assertNotNull(parente);
+				Assert.assertEquals((Long) ids.ppParent1, parente.getObjetId());
+				Assert.assertEquals((Long) ids.ppEnfant1, parente.getSujetId());
+				Assert.assertEquals(dateNaissanceEnfant1, parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+				Assert.assertFalse(parente.isAnnule());
 			}
+			{
+				final Parente parente = copyToSort.get(1);
+				Assert.assertNotNull(parente);
+				Assert.assertEquals((Long) ids.ppParent2, parente.getObjetId());
+				Assert.assertEquals((Long) ids.ppEnfant2, parente.getSujetId());
+				Assert.assertEquals(dateNaissanceEnfant2, parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+				Assert.assertTrue(parente.isAnnule());
+			}
+			return null;
 		});
 	}
 
@@ -490,23 +459,17 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		});
 
 		// on crée juste l'enfant1 en tant que contribuable, sans son parent -> dirty
-		final long ppEnfant1 = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
-				return enfant1.getNumero();
-			}
+		final long ppEnfant1 = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
+			return enfant1.getNumero();
 		});
 
 		// vérifie le flag "dirty"
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
-				Assert.assertNotNull(enfant1);
-				Assert.assertTrue(enfant1.isParenteDirty());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
+			Assert.assertNotNull(enfant1);
+			Assert.assertTrue(enfant1.isParenteDirty());
+			return null;
 		});
 
 		final class Ids {
@@ -516,19 +479,16 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale : tout le contraire de ce qui devrait exister
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique parent1 = addHabitant(noIndParent1);
-				final PersonnePhysique parent2 = addHabitant(noIndParent2);
-				final PersonnePhysique enfant2 = addHabitant(noIndEnfant2);
-				addParente(enfant2, parent2, dateNaissanceEnfant2, null);
-				final Ids ids = new Ids();
-				ids.ppParent1 = parent1.getNumero();
-				ids.ppParent2 = parent2.getNumero();
-				ids.ppEnfant2 = enfant2.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, status -> {
+			final PersonnePhysique parent1 = addHabitant(noIndParent1);
+			final PersonnePhysique parent2 = addHabitant(noIndParent2);
+			final PersonnePhysique enfant2 = addHabitant(noIndEnfant2);
+			addParente(enfant2, parent2, dateNaissanceEnfant2, null);
+			final Ids ids1 = new Ids();
+			ids1.ppParent1 = parent1.getNumero();
+			ids1.ppParent2 = parent2.getNumero();
+			ids1.ppEnfant2 = enfant2.getNumero();
+			return ids1;
 		});
 
 		final CalculParentesResults result = processor.run(1, CalculParentesMode.REFRESH_DIRTY, null);
@@ -546,44 +506,41 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		Assert.assertEquals(ParenteUpdateInfo.Action.CREATION, update.action);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
-				Assert.assertNotNull(parentes);
-				Assert.assertEquals(2, parentes.size());
-				final List<Parente> copyToSort = new ArrayList<>(parentes);
-				Collections.sort(copyToSort, new Comparator<Parente>() {
-					@Override
-					public int compare(Parente o1, Parente o2) {
-						int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
-						if (comp == 0) {
-							comp = Long.compare(o1.getSujetId(), o2.getSujetId());
-						}
-						return comp;
+		doInNewTransactionAndSession(status -> {
+			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
+			Assert.assertNotNull(parentes);
+			Assert.assertEquals(2, parentes.size());
+			final List<Parente> copyToSort = new ArrayList<>(parentes);
+			Collections.sort(copyToSort, new Comparator<Parente>() {
+				@Override
+				public int compare(Parente o1, Parente o2) {
+					int comp = Long.compare(o1.getObjetId(), o2.getObjetId());
+					if (comp == 0) {
+						comp = Long.compare(o1.getSujetId(), o2.getSujetId());
 					}
-				});
+					return comp;
+				}
+			});
 
-				{
-					final Parente parente = copyToSort.get(0);
-					Assert.assertNotNull(parente);
-					Assert.assertEquals((Long) ids.ppParent1, parente.getObjetId());
-					Assert.assertEquals((Long) ppEnfant1, parente.getSujetId());
-					Assert.assertEquals(dateNaissanceEnfant1, parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-					Assert.assertFalse(parente.isAnnule());
-				}
-				{
-					final Parente parente = copyToSort.get(1);
-					Assert.assertNotNull(parente);
-					Assert.assertEquals((Long) ids.ppParent2, parente.getObjetId());
-					Assert.assertEquals((Long) ids.ppEnfant2, parente.getSujetId());
-					Assert.assertEquals(dateNaissanceEnfant2, parente.getDateDebut());
-					Assert.assertNull(parente.getDateFin());
-					Assert.assertFalse(parente.isAnnule());     // pas annulé car pas rafraîchi !
-				}
-				return null;
+			{
+				final Parente parente = copyToSort.get(0);
+				Assert.assertNotNull(parente);
+				Assert.assertEquals((Long) ids.ppParent1, parente.getObjetId());
+				Assert.assertEquals((Long) ppEnfant1, parente.getSujetId());
+				Assert.assertEquals(dateNaissanceEnfant1, parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+				Assert.assertFalse(parente.isAnnule());
 			}
+			{
+				final Parente parente = copyToSort.get(1);
+				Assert.assertNotNull(parente);
+				Assert.assertEquals((Long) ids.ppParent2, parente.getObjetId());
+				Assert.assertEquals((Long) ids.ppEnfant2, parente.getSujetId());
+				Assert.assertEquals(dateNaissanceEnfant2, parente.getDateDebut());
+				Assert.assertNull(parente.getDateFin());
+				Assert.assertFalse(parente.isAnnule());     // pas annulé car pas rafraîchi !
+			}
+			return null;
 		});
 	}
 
@@ -605,23 +562,17 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		});
 
 		// on crée juste l'enfant1 en tant que contribuable, sans son parent -> dirty
-		final long ppEnfant1 = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
-				return enfant1.getNumero();
-			}
+		final long ppEnfant1 = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique enfant1 = addHabitant(noIndEnfant1);
+			return enfant1.getNumero();
 		});
 
 		// vérifie le flag "dirty"
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
-				Assert.assertNotNull(enfant1);
-				Assert.assertTrue(enfant1.isParenteDirty());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
+			Assert.assertNotNull(enfant1);
+			Assert.assertTrue(enfant1.isParenteDirty());
+			return null;
 		});
 
 		// on lance le retraitement

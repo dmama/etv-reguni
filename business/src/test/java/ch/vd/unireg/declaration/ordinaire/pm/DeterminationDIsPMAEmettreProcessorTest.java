@@ -6,10 +6,7 @@ import java.util.List;
 
 import org.hibernate.FlushMode;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -780,27 +777,24 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	@Test
 	public void testChangementDeTypeDocument() throws Exception {
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				addPeriodeFiscale(2014);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+		final long idpm = doInNewTransactionAndSession(status -> {
+			addPeriodeFiscale(2014);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// Un contribuable PM assujetti
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
-				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
-				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			// Un contribuable PM assujetti
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
-				// tâche pour laquelle le type de document n'est pas le bon...
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
-				                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_APM_BATCH, entreprise, CategorieEntreprise.APM, oipm);
-				return entreprise.getNumero();
-			}
+			// tâche pour laquelle le type de document n'est pas le bon...
+			addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
+			                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                  TypeDocument.DECLARATION_IMPOT_APM_BATCH, entreprise, CategorieEntreprise.APM, oipm);
+			return entreprise.getNumero();
 		});
 
 		final DeterminationDIsPMResults rapport = service.run(2014, RegDate.get(), 1, null);
@@ -812,37 +806,35 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		assertEquals(1, rapport.traites.size());
 		assertEquals(DeterminationDIsPMResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushMode.AUTO);
-				assertNotNull(taches);
-				assertEquals(2, taches.size());
-				{
-					final Tache tache = taches.get(0);
-					assertNotNull(tache);
-					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
-					assertTrue(tache.isAnnule());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushMode.AUTO);
+			assertNotNull(taches);
+			assertEquals(2, taches.size());
+			{
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+				assertTrue(tache.isAnnule());
 
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
-					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, tacheEnvoi.getTypeDocument());
-					assertEquals(CategorieEntreprise.APM, tacheEnvoi.getCategorieEntreprise());
-				}
-				{
-					final Tache tache = taches.get(1);
-					assertNotNull(tache);
-					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
-					assertFalse(tache.isAnnule());
-
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
-					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi.getTypeDocument());
-					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
-				}
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
+				assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, tacheEnvoi.getTypeDocument());
+				assertEquals(CategorieEntreprise.APM, tacheEnvoi.getCategorieEntreprise());
 			}
+			{
+				final Tache tache = taches.get(1);
+				assertNotNull(tache);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+				assertFalse(tache.isAnnule());
+
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
+				assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi.getTypeDocument());
+				assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+			}
+			return null;
 		});
 	}
 
@@ -853,27 +845,24 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	@Test
 	public void testChangementDeCategorieEntreprise() throws Exception {
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				addPeriodeFiscale(2014);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+		final long idpm = doInNewTransactionAndSession(status -> {
+			addPeriodeFiscale(2014);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// Un contribuable PM assujetti
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
-				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
-				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			// Un contribuable PM assujetti
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
-				// tâche pour laquelle les dates et le type de document sont bons, mais pas la catégorie d'entreprise
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
-				                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.APM, oipm);
-				return entreprise.getNumero();
-			}
+			// tâche pour laquelle les dates et le type de document sont bons, mais pas la catégorie d'entreprise
+			addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
+			                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.APM, oipm);
+			return entreprise.getNumero();
 		});
 
 		final DeterminationDIsPMResults rapport = service.run(2014, RegDate.get(), 1, null);
@@ -884,25 +873,23 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// la tâche existante doit avoir été marquée comme ignorée
 		assertEquals(1, rapport.ignores.size());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(idpm);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
-				{
-					final Tache tache = taches.get(0);
-					assertNotNull(tache);
-					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
-					assertFalse(tache.isAnnule());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(idpm);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
+			{
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+				assertFalse(tache.isAnnule());
 
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
-					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi.getTypeDocument());
-					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());          // donnée corrigée
-				}
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
+				assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi.getTypeDocument());
+				assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());          // donnée corrigée
 			}
+			return null;
 		});
 	}
 
@@ -914,35 +901,30 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testDeclarationImpotExistanteMaisFinPosterieureADateLimiteBouclement() throws Exception {
 
 		// mise en place fiscale
-		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(2015);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(2015);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// Un contribuable PM assujetti
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
-				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
-				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			// Un contribuable PM assujetti
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
-				// DI migrée (= sans modèle de document) sur 2015
-				addDeclarationImpot(entreprise, pf, date(2015, 1, 1), date(2015, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, null);
-				return entreprise.getNumero();
-			}
+			// DI migrée (= sans modèle de document) sur 2015
+			addDeclarationImpot(entreprise, pf, date(2015, 1, 1), date(2015, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, null);
+			return entreprise.getNumero();
 		});
 
 		// vérification qu'aucune tâche n'est présente pour le moment sur ce contribuable (c'est le but du switch à "false"),,,
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(idpm);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(idpm);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// lancement du job avec une date de traitement avant la fin de la période de la DI existante...
@@ -965,32 +947,27 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testPlusieursDeterminations() throws Exception {
 
 		// mise en place fiscale
-		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(2015);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(2015);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// Un contribuable PM assujetti
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
-				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(entreprise, date(2012, 10, 1), DayMonth.get(10, 31), 12);      // bouclements tous les ans depuis le 31.10.2012
-				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
-				return entreprise.getNumero();
-			}
+			// Un contribuable PM assujetti
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(entreprise, date(2012, 10, 1), DayMonth.get(10, 31), 12);      // bouclements tous les ans depuis le 31.10.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			return entreprise.getNumero();
 		});
 
 		// vérification qu'aucune tâche n'est présente pour le moment sur ce contribuable (c'est le but du switch à "false"),,,
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(idpm);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(idpm);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// lancement du job avec une date de traitement après la date de bouclement correspondante
@@ -1009,18 +986,16 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, traite.typeDocument);
 
 		// vérification en base -> une tâche d'envoi de DI
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(idpm);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(idpm);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
-				assertFalse(tache.isAnnule());
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// nouveau lancement du job avec une date de traitement après la date de bouclement correspondante
@@ -1036,18 +1011,16 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		assertEquals(DeterminationDIsPMResults.IgnoreType.TACHE_ENVOI_DEJA_EXISTANTE, ignore.raison);
 
 		// vérification en base -> toujours une seule tâche d'envoi de DI
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(idpm);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(idpm);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
-				assertFalse(tache.isAnnule());
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 	}
 }

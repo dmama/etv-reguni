@@ -3,12 +3,8 @@ package ch.vd.unireg.declaration.ordinaire.pm;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -20,6 +16,9 @@ import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMResults.Echue;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMResults.Erreur;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMResults.ErreurType;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -438,14 +437,11 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 		assertNotNull(echue);
 		assertEquals(id.longValue(), echue.diId);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
-				assertNotNull(di);
-				assertEquals(TypeEtatDocumentFiscal.ECHU, di.getDernierEtatDeclaration().getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+			assertNotNull(di);
+			assertEquals(TypeEtatDocumentFiscal.ECHU, di.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 

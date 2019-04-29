@@ -14,8 +14,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -143,19 +141,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		// Contribuable invalide mais devant être pris en compte
 		final Long rodolf = newCtbVaudoisOrdinaireEtImmeubleInvalide();
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				/*
-				 * Contribuable devant être ignorés
-				 */
-				final List<Long> expected =
-						Arrays.asList(ids.paul, ids.incognito, ids.raoul, ids.arnold, ids.victor, ids.geo, ids.donald, ids.johnny, ids.tyler, ids.marc, ids.louis, ids.albertine, rodolf);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * Contribuable devant être ignorés
+			 */
+			final List<Long> expected =
+					Arrays.asList(ids.paul, ids.incognito, ids.raoul, ids.arnold, ids.victor, ids.geo, ids.donald, ids.johnny, ids.tyler, ids.marc, ids.louis, ids.albertine, rodolf);
 
-				final List<Long> list = processor.getIdsOfAllContribuablesPP(2007);
-				assertNotNull(list);
-				assertEquals(expected, list);
-			}
+			final List<Long> list = processor.getIdsOfAllContribuablesPP(2007);
+			assertNotNull(list);
+			assertEquals(expected, list);
+			return null;
 		});
 	}
 
@@ -554,14 +550,11 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepartHc, MotifFor.DEPART_HC, MockCommune.Cossonay, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateDepartHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepartHc, MotifFor.DEPART_HC, MockCommune.Cossonay, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateDepartHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(pfRoles, 1, null);
@@ -607,15 +600,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
-				addForPrincipal(pp, dateDemenagement.getOneDayAfter(), MotifFor.DEMENAGEMENT_VD, dateRetour.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
-				addForPrincipal(pp, dateRetour, MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
+			addForPrincipal(pp, dateDemenagement.getOneDayAfter(), MotifFor.DEMENAGEMENT_VD, dateRetour.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+			addForPrincipal(pp, dateRetour, MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(pfRoles, 1, null);
@@ -1370,15 +1360,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	@Test
 	public void testSourcierGrisMarieDepartHS() throws Exception {
 
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(1990, 4, 13), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(1990, 4, 13), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return mc.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
@@ -1397,13 +1384,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	@Test
 	public void testSourcierGrisCelibataireDepartHS() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
-				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+			addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
@@ -1425,14 +1409,11 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	@Test
 	public void testSourcierGrisCelibataireDepartHSAvecForHSRenseigne() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
-				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 9, 11), MotifFor.DEPART_HS, null, null, MockPays.PaysInconnu, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+			addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 9, 11), MotifFor.DEPART_HS, null, null, MockPays.PaysInconnu, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
@@ -1455,15 +1436,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	public void testMixtePasseOrdinaireAnneeApresRoles() throws Exception {
 
 		final RegDate arrivee = date(2006, 1, 1);
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
-				final RegDate obtentionPermisC = date(2009, 9, 11);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, obtentionPermisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
-				addForPrincipal(pp, obtentionPermisC, MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+			final RegDate obtentionPermisC = date(2009, 9, 11);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, obtentionPermisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, obtentionPermisC, MotifFor.PERMIS_C_SUISSE, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
@@ -1494,17 +1472,14 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate achat = date(2006, 1, 1);
 		final RegDate arrivee = date(2007, 1, 1);
 		final RegDate departHc = date(2009, 10, 12);
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
 
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Albanie);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHc, MotifFor.DEPART_HC, MockCommune.Cossonay);
-				addForPrincipal(pp, departHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Albanie);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHc, MotifFor.DEPART_HC, MockCommune.Cossonay);
+			addForPrincipal(pp, departHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
@@ -1541,15 +1516,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
+			addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2011, 1, null);
@@ -1598,14 +1570,11 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, communeAvant.getDateFinValidite(), MotifFor.FUSION_COMMUNES, communeAvant);
-				addForPrincipal(pp, communeApres.getDateDebutValidite(), MotifFor.FUSION_COMMUNES, communeApres);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, communeAvant.getDateFinValidite(), MotifFor.FUSION_COMMUNES, communeAvant);
+			addForPrincipal(pp, communeApres.getDateDebutValidite(), MotifFor.FUSION_COMMUNES, communeApres);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(communeAvant.getDateFinValidite().year(), 1, null);
@@ -1647,14 +1616,11 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2012, 1, null);
@@ -1708,15 +1674,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateAchat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bussigny, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateAchat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bussigny, ModeImposition.MIXTE_137_1);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2012, 1, null);
@@ -1775,22 +1738,19 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HC, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HC, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin, ModeImposition.ORDINAIRE);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.mcId = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.mcId = mc.getNumero();
+			return ids1;
 		});
 
 		// calcul des rôles
@@ -1812,7 +1772,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
-			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Leysin.getNoOFS(), dateMariage, null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Leysin.getNoOFS(), dateMariage, null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF,
+			           null, info);
 		}
 	}
 
@@ -1847,25 +1808,22 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateChangementModeImposition.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Fraction.LeSentier, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateChangementModeImposition, MotifFor.CHGT_MODE_IMPOSITION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LeSentier, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateChangementModeImposition.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Fraction.LeSentier, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateChangementModeImposition, MotifFor.CHGT_MODE_IMPOSITION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LeSentier, ModeImposition.MIXTE_137_1);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LeSentier, ModeImposition.ORDINAIRE);
-				addForPrincipal(mc, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LePont, ModeImposition.ORDINAIRE);
-				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LeSentier, ModeImposition.ORDINAIRE);
+			addForPrincipal(mc, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LePont, ModeImposition.ORDINAIRE);
+			addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.mcId = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.mcId = mc.getNumero();
+			return ids1;
 		});
 
 		// calcul des rôles
@@ -1886,18 +1844,20 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.ppId);
 			assertNotNull(info);
 
-			assertInfo(ids.ppId, TypeContribuable.SOURCE, MockCommune.Fraction.LeSentier.getNoOFS(), date(2000, 1, 1), dateMariage.getOneDayBefore(), MotifAssujettissement.INDETERMINE, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(ids.ppId, TypeContribuable.SOURCE, MockCommune.Fraction.LeSentier.getNoOFS(), date(2000, 1, 1), dateMariage.getOneDayBefore(), MotifAssujettissement.INDETERMINE,
+			           MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 		}
 		{
 			// l'abbaye
 			final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Fraction.LAbbaye.getNoOFS());
 			assertNotNull(infoCommune);
-    		assertEquals(1, infoCommune.getInfosContribuables().size());
+			assertEquals(1, infoCommune.getInfosContribuables().size());
 
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
-			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LAbbaye.getNoOFS(), dateMariage, null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LAbbaye.getNoOFS(), dateMariage, null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null,
+			           InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
 			// le pont
@@ -1932,16 +1892,13 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateVente2 = date(2014, 3, 18);
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alberto", "Tamburini", null, Sexe.MASCULIN);
-				addForPrincipal(pp, dateAchat, null, MockPays.Allemagne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente1, MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente2, MotifFor.VENTE_IMMOBILIER, MockCommune.Prilly, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.VufflensLaVille, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alberto", "Tamburini", null, Sexe.MASCULIN);
+			addForPrincipal(pp, dateAchat, null, MockPays.Allemagne);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente1, MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente2, MotifFor.VENTE_IMMOBILIER, MockCommune.Prilly, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.VufflensLaVille, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// rôles 2014 de l'OID de Lausanne
@@ -1965,19 +1922,16 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateAchat = date(2012, 8, 14);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
-				addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+			addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
+			addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2015,19 +1969,16 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateVente = date(2015, 2, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
-				addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+			addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
+			addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2069,20 +2020,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final String ide = "CHE213456789";
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addIdentificationEntreprise(pm, ide);
-				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addIdentificationEntreprise(pm, ide);
+			addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2140,20 +2088,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final String ide = "CHE213456789";
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addIdentificationEntreprise(pm, ide);
-				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addIdentificationEntreprise(pm, ide);
+			addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2188,18 +2133,15 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateFaillite = date(2014, 12, 6);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Lausanne);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Lausanne);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2234,18 +2176,15 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2015, 5, 10);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut.addYears(1), DayMonth.get(6, 30), 12);      // bouclements depuis 2016 seulement
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut.addYears(1), DayMonth.get(6, 30), 12);      // bouclements depuis 2016 seulement
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois -> rien
@@ -2288,19 +2227,16 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2010, 5, 10);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);              // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
-				addBouclement(pm, date(2015, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);              // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+			addBouclement(pm, date(2015, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2344,19 +2280,16 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2010, 5, 10);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);              // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
-				addBouclement(pm, date(2015, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);              // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+			addBouclement(pm, date(2015, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2411,20 +2344,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDemenagement = date(anneeRoles, 7, 18);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);                    // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
-				addBouclement(pm, date(anneeRoles, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(pm, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);                    // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+			addBouclement(pm, date(anneeRoles, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(pm, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2485,20 +2415,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDemenagement = date(anneeRoles, 7, 18);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);                    // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
-				addBouclement(pm, date(anneeRoles, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(pm, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);                    // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+			addBouclement(pm, date(anneeRoles, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(pm, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois
@@ -2556,19 +2483,16 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final RegDate dateDemenagement = date(anneeRoles, 7, 18);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
-				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(pm, dateDebut, DayMonth.get(12, 31), 12);                    // bouclements tous les 31.12 depuis 2010
-				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEPART_HC, MockCommune.Lausanne);
-				addForPrincipal(pm, dateDemenagement, MotifFor.DEPART_HC, MockCommune.Neuchatel);
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+			addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(pm, dateDebut, DayMonth.get(12, 31), 12);                    // bouclements tous les 31.12 depuis 2010
+			addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEPART_HC, MockCommune.Lausanne);
+			addForPrincipal(pm, dateDemenagement, MotifFor.DEPART_HC, MockCommune.Neuchatel);
+			return pm.getNumero();
 		});
 
 		// rôles 2015 vaudois

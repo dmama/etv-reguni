@@ -1,9 +1,7 @@
 package ch.vd.unireg.validation.rapport;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.validation.ValidationException;
@@ -80,21 +78,18 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 
 		final long idMenage = 10851795;
 		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					// crée un ménage commun
-					final PersonnePhysique jean = addNonHabitant("Jean", "Duchoux", date(1960, 1, 1), Sexe.MASCULIN);
-					final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(idMenage, jean, null, date(1990, 1, 1), null);
+			doInNewTransactionAndSession(status -> {
+				// crée un ménage commun
+				final PersonnePhysique jean = addNonHabitant("Jean", "Duchoux", date(1960, 1, 1), Sexe.MASCULIN);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(idMenage, jean, null, date(1990, 1, 1), null);
 
-					// ajoute une tutelle sur le ménage-commun (devrait être interdit !)
-					final Tutelle tutelle = new Tutelle();
-					tutelle.setDateDebut(date(2000, 1, 1));
-					final PersonnePhysique huguette = addNonHabitant("Huguette", "Dupruneau", date(1960, 2, 3), Sexe.FEMININ);
+				// ajoute une tutelle sur le ménage-commun (devrait être interdit !)
+				final Tutelle tutelle = new Tutelle();
+				tutelle.setDateDebut(date(2000, 1, 1));
+				final PersonnePhysique huguette = addNonHabitant("Huguette", "Dupruneau", date(1960, 2, 3), Sexe.FEMININ);
 
-					tiersService.addRapport(tutelle, ensemble.getMenage(), huguette);
-					return null;
-				}
+				tiersService.addRapport(tutelle, ensemble.getMenage(), huguette);
+				return null;
 			});
 			fail();
 		}
@@ -109,21 +104,18 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 
 		final long idMenage = 10851795;
 		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					// crée un ménage commun
-					final PersonnePhysique jean = addNonHabitant("Jean", "Duchoux", date(1960, 1, 1), Sexe.MASCULIN);
-					final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(idMenage, jean, null, date(1990, 1, 1), null);
+			doInNewTransactionAndSession(status -> {
+				// crée un ménage commun
+				final PersonnePhysique jean = addNonHabitant("Jean", "Duchoux", date(1960, 1, 1), Sexe.MASCULIN);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(idMenage, jean, null, date(1990, 1, 1), null);
 
-					// ajoute un assujettissement par substition (devrait être interdit !)
-					final AssujettissementParSubstitution assujettissement = new AssujettissementParSubstitution();
-					assujettissement.setDateDebut(date(2000, 1, 1));
-					final PersonnePhysique huguette = addNonHabitant("Huguette", "Dupruneau", date(1960, 2, 3), Sexe.FEMININ);
+				// ajoute un assujettissement par substition (devrait être interdit !)
+				final AssujettissementParSubstitution assujettissement = new AssujettissementParSubstitution();
+				assujettissement.setDateDebut(date(2000, 1, 1));
+				final PersonnePhysique huguette = addNonHabitant("Huguette", "Dupruneau", date(1960, 2, 3), Sexe.FEMININ);
 
-					tiersService.addRapport(assujettissement,  huguette,ensemble.getMenage());
-					return null;
-				}
+				tiersService.addRapport(assujettissement, huguette, ensemble.getMenage());
+				return null;
 			});
 			fail();
 		}
@@ -136,17 +128,14 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 	@Test
 	public void testRapportSurMemeTiers() throws Exception {
 		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
-					final RapportEntreTiers ret = new AppartenanceMenage();
-					ret.setDateDebut(date(2000, 1, 1));
-					ret.setObjetId(mc.getNumero());
-					ret.setSujetId(mc.getNumero());
-					hibernateTemplate.merge(ret);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
+				final RapportEntreTiers ret = new AppartenanceMenage();
+				ret.setDateDebut(date(2000, 1, 1));
+				ret.setObjetId(mc.getNumero());
+				ret.setSujetId(mc.getNumero());
+				hibernateTemplate.merge(ret);
+				return null;
 			});
 			fail();
 		}

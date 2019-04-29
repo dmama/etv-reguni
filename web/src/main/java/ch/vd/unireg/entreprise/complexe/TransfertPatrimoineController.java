@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -191,28 +190,26 @@ public class TransfertPatrimoineController extends AbstractProcessusComplexeCont
 		final List<SelectionEntrepriseView> results = new ArrayList<>(searchResults.size());
 		final Set<Long> idsEntreprisesDejaSelectionnees = sessionData.getIdsEntreprisesReceptrices();
 		if (!searchResults.isEmpty()) {
-			doInReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					for (TiersIndexedDataView searchResult : searchResults) {
+			doInReadOnlyTransaction(status -> {
+				for (TiersIndexedDataView searchResult : searchResults) {
 
-						// si l'entreprise est déjà sélectionnée comme entreprise émettrice, on ne peut pas la reprendre dans les réceptrices
-						final String explicationNonSelectionnable;
-						if (sessionData.getIdEntrepriseEmettrice() == searchResult.getNumero()) {
-							explicationNonSelectionnable = messageSource.getMessage("label.transfert.patrimoine.entreprise.deja.utilisee.comme.emettrice", null, WebContextUtils.getDefaultLocale());
-						}
-						// si l'entreprise est déjà sélectionnée dans les entreprises résultantes, on ne peut pas la choisir à nouveau
-						else if (idsEntreprisesDejaSelectionnees.contains(searchResult.getNumero())) {
-							explicationNonSelectionnable = messageSource.getMessage("label.transfert.patrimoine.entreprise.deja.utilisee.comme.receptrice", null, WebContextUtils.getDefaultLocale());
-						}
-						else {
-							explicationNonSelectionnable = null;
-						}
-
-						final SelectionEntrepriseView view = new SelectionEntrepriseView(searchResult, explicationNonSelectionnable);
-						results.add(view);
+					// si l'entreprise est déjà sélectionnée comme entreprise émettrice, on ne peut pas la reprendre dans les réceptrices
+					final String explicationNonSelectionnable;
+					if (sessionData.getIdEntrepriseEmettrice() == searchResult.getNumero()) {
+						explicationNonSelectionnable = messageSource.getMessage("label.transfert.patrimoine.entreprise.deja.utilisee.comme.emettrice", null, WebContextUtils.getDefaultLocale());
 					}
+					// si l'entreprise est déjà sélectionnée dans les entreprises résultantes, on ne peut pas la choisir à nouveau
+					else if (idsEntreprisesDejaSelectionnees.contains(searchResult.getNumero())) {
+						explicationNonSelectionnable = messageSource.getMessage("label.transfert.patrimoine.entreprise.deja.utilisee.comme.receptrice", null, WebContextUtils.getDefaultLocale());
+					}
+					else {
+						explicationNonSelectionnable = null;
+					}
+
+					final SelectionEntrepriseView view = new SelectionEntrepriseView(searchResult, explicationNonSelectionnable);
+					results.add(view);
 				}
+				return null;
 			});
 		}
 		return results;

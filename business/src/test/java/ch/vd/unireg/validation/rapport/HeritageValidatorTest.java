@@ -2,9 +2,7 @@ package ch.vd.unireg.validation.rapport;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationResults;
@@ -67,22 +65,20 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 		});
 
 		// validation manuelle
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Heritage heritage = hibernateTemplate.get(Heritage.class, ids.idHeritage);
-				Assert.assertNotNull(heritage);
+		doInNewTransactionAndSession(status -> {
+			final Heritage heritage = hibernateTemplate.get(Heritage.class, ids.idHeritage);
+			Assert.assertNotNull(heritage);
 
-				final ValidationResults vr = validate(heritage);
-				Assert.assertNotNull(vr);
-				Assert.assertEquals(1, vr.getErrors().size());
-				Assert.assertEquals(0, vr.getWarnings().size());
+			final ValidationResults vr = validate(heritage);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.getErrors().size());
+			Assert.assertEquals(0, vr.getWarnings().size());
 
-				{
-					final String erreur = vr.getErrors().get(0);
-					Assert.assertEquals(String.format("Le tiers défunt %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(ids.idDefunt)), erreur);
-				}
+			{
+				final String erreur = vr.getErrors().get(0);
+				Assert.assertEquals(String.format("Le tiers défunt %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(ids.idDefunt)), erreur);
 			}
+			return null;
 		});
 	}
 
@@ -118,22 +114,20 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 		});
 
 		// validation manuelle
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Heritage heritage = hibernateTemplate.get(Heritage.class, ids.idHeritage);
-				Assert.assertNotNull(heritage);
+		doInNewTransactionAndSession(status -> {
+			final Heritage heritage = hibernateTemplate.get(Heritage.class, ids.idHeritage);
+			Assert.assertNotNull(heritage);
 
-				final ValidationResults vr = validate(heritage);
-				Assert.assertNotNull(vr);
-				Assert.assertEquals(1, vr.getErrors().size());
-				Assert.assertEquals(0, vr.getWarnings().size());
+			final ValidationResults vr = validate(heritage);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.getErrors().size());
+			Assert.assertEquals(0, vr.getWarnings().size());
 
-				{
-					final String erreur = vr.getErrors().get(0);
-					Assert.assertEquals(String.format("Le tiers héritier %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(ids.idHeritier)), erreur);
-				}
+			{
+				final String erreur = vr.getErrors().get(0);
+				Assert.assertEquals(String.format("Le tiers héritier %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(ids.idHeritier)), erreur);
 			}
+			return null;
 		});
 	}
 

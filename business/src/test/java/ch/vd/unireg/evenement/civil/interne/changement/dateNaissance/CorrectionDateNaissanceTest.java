@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationException;
@@ -253,14 +252,12 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 		// Vérifie que la date de naissance à bien été corrigée (= cachée sur la personne physique) et que la personne physique n'est plus
 		// flaggée comme dirty.
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique jean = (PersonnePhysique) tiersDAO.get(ids.jean);
-				assertNotNull(jean);
-				assertFalse(jean.isDirty());
-				assertEquals(dateNaissance, jean.getDateNaissance());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique jean = (PersonnePhysique) tiersDAO.get(ids.jean);
+			assertNotNull(jean);
+			assertFalse(jean.isDirty());
+			assertEquals(dateNaissance, jean.getDateNaissance());
+			return null;
 		});
 	}
 

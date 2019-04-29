@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
@@ -196,16 +195,14 @@ public class CalculParentesProcessor {
 	private Set<Long> getEnfantsAvecDoublonsSurParents() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				final List<Pair<Long, Long>> candidats = rapportDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
-				final Set<Long> enfants = new HashSet<>(candidats.size());
-				for (Pair<Long, Long> couple : candidats) {
-					enfants.add(couple.getLeft());      // (sujet, objet) -> l'enfant, qui est le sujet de la relation, est à gauche
-				}
-				return enfants;
+		return template.execute(status -> {
+			final List<Pair<Long, Long>> candidats = rapportDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
+			final Set<Long> enfants = new HashSet<>(candidats.size());
+			for (Pair<Long, Long> couple : candidats) {
+				enfants.add(couple.getLeft());      // (sujet, objet) -> l'enfant, qui est le sujet de la relation, est à gauche
 			}
+			;
+			return enfants;
 		});
 	}
 }

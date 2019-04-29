@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -329,51 +327,46 @@ public class EnvoiDIsPPEnMasseProcessor {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		
-		final List<Long> i = template.execute(new TransactionCallback<List<Long>>() {
+
+		final List<Long> i = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
+			public List<Long> doInHibernate(Session session) throws HibernateException {
 
-						final StringBuilder builder = new StringBuilder();
-						builder.append("SELECT DISTINCT tache.contribuable.id");
-						builder.append(" FROM TacheEnvoiDeclarationImpotPP AS tache");
-						builder.append(" WHERE");
-						builder.append(" tache.etat = 'EN_INSTANCE'");
-						builder.append(" AND tache.annulationDate IS NULL");
-						builder.append(" AND tache.typeContribuable = :typeContribuable");
-						builder.append(" AND tache.typeDocument = :typeDocument");
-						builder.append(" AND tache.dateDebut >= :debutPeriode");
-						builder.append(" AND tache.dateFin <= :finPeriode");
-						if (noCtbMin != null && noCtbMax != null) {
-							builder.append(" AND tache.contribuable.id BETWEEN :noCtbMin AND :noCtbMax");
-						}
-						else if (noCtbMin != null) {
-							builder.append(" AND tache.contribuable.id >= :noCtbMin");
-						}
-						else if (noCtbMax != null) {
-							builder.append(" AND tache.contribuable.id <= :noCtbMax");
-						}
-						builder.append(" ORDER BY tache.contribuable.id ASC");
+				final StringBuilder builder = new StringBuilder();
+				builder.append("SELECT DISTINCT tache.contribuable.id");
+				builder.append(" FROM TacheEnvoiDeclarationImpotPP AS tache");
+				builder.append(" WHERE");
+				builder.append(" tache.etat = 'EN_INSTANCE'");
+				builder.append(" AND tache.annulationDate IS NULL");
+				builder.append(" AND tache.typeContribuable = :typeContribuable");
+				builder.append(" AND tache.typeDocument = :typeDocument");
+				builder.append(" AND tache.dateDebut >= :debutPeriode");
+				builder.append(" AND tache.dateFin <= :finPeriode");
+				if (noCtbMin != null && noCtbMax != null) {
+					builder.append(" AND tache.contribuable.id BETWEEN :noCtbMin AND :noCtbMax");
+				}
+				else if (noCtbMin != null) {
+					builder.append(" AND tache.contribuable.id >= :noCtbMin");
+				}
+				else if (noCtbMax != null) {
+					builder.append(" AND tache.contribuable.id <= :noCtbMax");
+				}
+				builder.append(" ORDER BY tache.contribuable.id ASC");
 
-						final Query queryObject = session.createQuery(builder.toString());
-						queryObject.setParameter("typeContribuable", typeContribuable);
-						queryObject.setParameter("typeDocument", typeDocument);
-						queryObject.setParameter("debutPeriode", debutAnnee);
-						queryObject.setParameter("finPeriode", finAnnee);
-						if (noCtbMin != null) {
-							queryObject.setParameter("noCtbMin", noCtbMin);
-						}
-						if (noCtbMax != null) {
-							queryObject.setParameter("noCtbMax", noCtbMax);
-						}
-						return queryObject.list();
-					}
-				});
+				final Query queryObject = session.createQuery(builder.toString());
+				queryObject.setParameter("typeContribuable", typeContribuable);
+				queryObject.setParameter("typeDocument", typeDocument);
+				queryObject.setParameter("debutPeriode", debutAnnee);
+				queryObject.setParameter("finPeriode", finAnnee);
+				if (noCtbMin != null) {
+					queryObject.setParameter("noCtbMin", noCtbMin);
+				}
+				if (noCtbMax != null) {
+					queryObject.setParameter("noCtbMax", noCtbMax);
+				}
+				return queryObject.list();
 			}
-		});
+		}));
 
 		return i;
 	}

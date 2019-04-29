@@ -5,8 +5,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
@@ -294,42 +292,37 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		final RegDate dateDebut = date(2000, 7, 1);
 		final int annee = RegDate.get().year();
 
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+			return entreprise.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
-				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
-				view.setTiersId(pmId);
-				view.setPeriodeFiscale(annee);
-				view.setDateDebutPeriodeImposition(date(annee, 1, 1));
-				view.setDateFinPeriodeImposition(date(annee, 8, 31));        // 2 mois de trop
-				view.setDelaiAccorde(date(annee + 1, 4, 30));
-				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+		doInNewTransactionAndSession(status -> {
+			// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+			final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+			view.setTiersId(pmId);
+			view.setPeriodeFiscale(annee);
+			view.setDateDebutPeriodeImposition(date(annee, 1, 1));
+			view.setDateFinPeriodeImposition(date(annee, 8, 31));        // 2 mois de trop
+			view.setDelaiAccorde(date(annee + 1, 4, 30));
+			view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
 
-				final List<ObjectError> allErrors = errors.getAllErrors();
-				assertNotNull(allErrors);
-				assertEquals(1, allErrors.size());
+			final List<ObjectError> allErrors = errors.getAllErrors();
+			assertNotNull(allErrors);
+			assertEquals(1, allErrors.size());
 
-				final ObjectError error = allErrors.get(0);
-				assertEquals("error.declaration.cheval.plusieurs.exercices.commerciaux", error.getCode());
-			}
+			final ObjectError error = allErrors.get(0);
+			assertEquals("error.declaration.cheval.plusieurs.exercices.commerciaux", error.getCode());
+			return null;
 		});
 	}
 
@@ -337,42 +330,37 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 	public void testMauvaisePeriodeFiscale() throws Exception {
 		final RegDate dateDebut = date(2000, 7, 1);
 
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+			return entreprise.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
-				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
-				view.setTiersId(pmId);
-				view.setPeriodeFiscale(2016);
-				view.setDateDebutPeriodeImposition(date(2016, 7, 1));
-				view.setDateFinPeriodeImposition(date(2017, 6, 30));        // pas la bonne année !
-				view.setDelaiAccorde(RegDate.get().addMonths(2));
-				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+		doInNewTransactionAndSession(status -> {
+			// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+			final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+			view.setTiersId(pmId);
+			view.setPeriodeFiscale(2016);
+			view.setDateDebutPeriodeImposition(date(2016, 7, 1));
+			view.setDateFinPeriodeImposition(date(2017, 6, 30));        // pas la bonne année !
+			view.setDelaiAccorde(RegDate.get().addMonths(2));
+			view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
 
-				final List<ObjectError> allErrors = errors.getAllErrors();
-				assertNotNull(allErrors);
-				assertEquals(1, allErrors.size());
+			final List<ObjectError> allErrors = errors.getAllErrors();
+			assertNotNull(allErrors);
+			assertEquals(1, allErrors.size());
 
-				final ObjectError error = allErrors.get(0);
-				assertEquals("error.date.fin.pas.dans.periode.fiscale", error.getCode());
-			}
+			final ObjectError error = allErrors.get(0);
+			assertEquals("error.date.fin.pas.dans.periode.fiscale", error.getCode());
+			return null;
 		});
 	}
 
@@ -380,40 +368,35 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 	public void testNouvelleDeclarationChevalAnneesCiviles() throws Exception {
 		final RegDate dateDebut = date(2000, 7, 1);
 
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+			return entreprise.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on ajoute une nouvelle DI qui s'arrête juste à la fontière du 30.06 (= fin d'exercice commercial)
-				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
-				view.setTiersId(pmId);
-				view.setPeriodeFiscale(2016);
-				view.setDateDebutPeriodeImposition(date(2015, 7, 1));
-				view.setDateFinPeriodeImposition(date(2016, 6, 30));
-				view.setDelaiAccorde(RegDate.get().addMonths(2));
-				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+		doInNewTransactionAndSession(status -> {
+			// on ajoute une nouvelle DI qui s'arrête juste à la fontière du 30.06 (= fin d'exercice commercial)
+			final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+			view.setTiersId(pmId);
+			view.setPeriodeFiscale(2016);
+			view.setDateDebutPeriodeImposition(date(2015, 7, 1));
+			view.setDateFinPeriodeImposition(date(2016, 6, 30));
+			view.setDelaiAccorde(RegDate.get().addMonths(2));
+			view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
 
-				// on ne devrait pas y avoir des erreurs
-				final List<ObjectError> allErrors = errors.getAllErrors();
-				assertNotNull(allErrors);
-				assertEquals(0, allErrors.size());
-			}
+			// on ne devrait pas y avoir des erreurs
+			final List<ObjectError> allErrors = errors.getAllErrors();
+			assertNotNull(allErrors);
+			assertEquals(0, allErrors.size());
+			return null;
 		});
 	}
 
@@ -426,42 +409,37 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		final RegDate today = RegDate.get();
 		final int pf = today.year();
 
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);          // tous les 31.12
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);          // tous les 31.12
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+			return entreprise.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
-				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
-				view.setTiersId(pmId);
-				view.setPeriodeFiscale(pf);
-				view.setDateDebutPeriodeImposition(null);
-				view.setDateFinPeriodeImposition(date(pf, 12, 31));
-				view.setDelaiAccorde(date(pf + 1, 12, 31));
-				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+		doInNewTransactionAndSession(status -> {
+			// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+			final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+			view.setTiersId(pmId);
+			view.setPeriodeFiscale(pf);
+			view.setDateDebutPeriodeImposition(null);
+			view.setDateFinPeriodeImposition(date(pf, 12, 31));
+			view.setDelaiAccorde(date(pf + 1, 12, 31));
+			view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
 
-				final List<ObjectError> allErrors = errors.getAllErrors();
-				assertNotNull(allErrors);
-				assertEquals(1, allErrors.size());
+			final List<ObjectError> allErrors = errors.getAllErrors();
+			assertNotNull(allErrors);
+			assertEquals(1, allErrors.size());
 
-				final ObjectError error = allErrors.get(0);
-				assertEquals("error.date.debut.vide", error.getCode());
-			}
+			final ObjectError error = allErrors.get(0);
+			assertEquals("error.date.debut.vide", error.getCode());
+			return null;
 		});
 	}
 }

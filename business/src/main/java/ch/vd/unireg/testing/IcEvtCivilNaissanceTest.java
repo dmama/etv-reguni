@@ -1,7 +1,5 @@
 package ch.vd.unireg.testing;
 
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -38,32 +36,26 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 
 		TransactionTemplate tmpl = new TransactionTemplate(getTransactionManager());
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-		tmpl.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				EvenementCivilRegPP evt = new EvenementCivilRegPP();
-				evt.setId(9006L);
-				evt.setDateEvenement(RegDate.get(2008, 2, 14));
-				evt.setType(TypeEvenementCivil.NAISSANCE);
-				evt.setNumeroOfsCommuneAnnonce(5516);
-				evt.setNumeroIndividuPrincipal(noInd);
+		tmpl.execute(status -> {
+			EvenementCivilRegPP evt = new EvenementCivilRegPP();
+			evt.setId(9006L);
+			evt.setDateEvenement(RegDate.get(2008, 2, 14));
+			evt.setType(TypeEvenementCivil.NAISSANCE);
+			evt.setNumeroOfsCommuneAnnonce(5516);
+			evt.setNumeroIndividuPrincipal(noInd);
 
-				evenementCivilRegPPDAO.save(evt);
-				return null;
-			}
+			evenementCivilRegPPDAO.save(evt);
+			return null;
 		});
 
 		evenementCivilProcessor.traiteEvenementCivil(9006L);
 
-		tmpl.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique tiers = getTiersDAO().getHabitantByNumeroIndividu(noInd);
-				if (tiers == null) {
-					throw new IllegalArgumentException("Pas de Tiers créé");
-				}
-				return null;
+		tmpl.execute(status -> {
+			PersonnePhysique tiers = getTiersDAO().getHabitantByNumeroIndividu(noInd);
+			if (tiers == null) {
+				throw new IllegalArgumentException("Pas de Tiers créé");
 			}
+			return null;
 		});
 	}
 

@@ -17,7 +17,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -195,13 +194,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 		assertValidInteger(ppId);
 
@@ -308,26 +304,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// création des contribuables avec éventuelle protections
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique protege = addNonHabitant("Jürg", "Bunker", date(1975, 4, 23), Sexe.MASCULIN);
-				final PersonnePhysique conjointDeProtege = addNonHabitant("Adelheid", "Bunker", date(1974, 7, 31), Sexe.FEMININ);
-				final EnsembleTiersCouple coupleProtege = addEnsembleTiersCouple(protege, conjointDeProtege, date(2010, 6, 3), null);
-				addDroitAcces(visaActeur, protege, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2010, 1, 1), null);
-				addDroitAcces(visaVoyeur, protege, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2010, 1, 1), null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique protege = addNonHabitant("Jürg", "Bunker", date(1975, 4, 23), Sexe.MASCULIN);
+			final PersonnePhysique conjointDeProtege = addNonHabitant("Adelheid", "Bunker", date(1974, 7, 31), Sexe.FEMININ);
+			final EnsembleTiersCouple coupleProtege = addEnsembleTiersCouple(protege, conjointDeProtege, date(2010, 6, 3), null);
+			addDroitAcces(visaActeur, protege, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2010, 1, 1), null);
+			addDroitAcces(visaVoyeur, protege, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2010, 1, 1), null);
 
-				final PersonnePhysique normal = addNonHabitant("Emile", "Gardavou", date(1962, 7, 4), Sexe.MASCULIN);
-				final EnsembleTiersCouple coupleNormal = addEnsembleTiersCouple(normal, null, date(1987, 6, 5), null);
+			final PersonnePhysique normal = addNonHabitant("Emile", "Gardavou", date(1962, 7, 4), Sexe.MASCULIN);
+			final EnsembleTiersCouple coupleNormal = addEnsembleTiersCouple(normal, null, date(1987, 6, 5), null);
 
-				final Ids ids = new Ids();
-				ids.idProtege = protege.getNumero();
-				ids.idConjointDeProtege = conjointDeProtege.getNumero();
-				ids.idCoupleProtege = coupleProtege.getMenage().getNumero();
-				ids.idNormal = normal.getNumero();
-				ids.idCoupleNormal = coupleNormal.getMenage().getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idProtege = protege.getNumero();
+			ids1.idConjointDeProtege = conjointDeProtege.getNumero();
+			ids1.idCoupleProtege = coupleProtege.getMenage().getNumero();
+			ids1.idNormal = normal.getNumero();
+			ids1.idCoupleNormal = coupleNormal.getMenage().getNumero();
+			return ids1;
 		});
 		assertValidInteger(ids.idProtege);
 		assertValidInteger(ids.idConjointDeProtege);
@@ -393,29 +386,26 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Data data = doInNewTransactionAndSession(new TransactionCallback<Data>() {
-			@Override
-			public Data doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final RegDate debut = date(annee, 1, 1);
-				final RegDate fin = date(annee, 12, 31);
+		final Data data = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final RegDate debut = date(annee, 1, 1);
+			final RegDate fin = date(annee, 12, 31);
 
-				final PersonnePhysique pp1 = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
-				addForPrincipal(pp1, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
-				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp1, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
+			final PersonnePhysique pp1 = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
+			addForPrincipal(pp1, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp1, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
 
-				final PersonnePhysique pp2 = addNonHabitant("Louise", "Defuneste", date(1943, 5, 12), Sexe.FEMININ);
-				addForPrincipal(pp2, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aubonne);
-				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp2, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di2, date(annee + 1, 1, 22));
+			final PersonnePhysique pp2 = addNonHabitant("Louise", "Defuneste", date(1943, 5, 12), Sexe.FEMININ);
+			addForPrincipal(pp2, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aubonne);
+			final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp2, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di2, date(annee + 1, 1, 22));
 
-				final Data data = new Data();
-				data.pp1 = pp1.getNumero();
-				data.pp2 = pp2.getNumero();
-				return data;
-			}
+			final Data data1 = new Data();
+			data1.pp1 = pp1.getNumero();
+			data1.pp2 = pp2.getNumero();
+			return data1;
 		});
 		assertValidInteger(data.pp1);
 		assertValidInteger(data.pp2);
@@ -485,21 +475,18 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final RegDate debut = date(annee, 1, 1);
-				final RegDate fin = date(annee, 12, 31);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final RegDate debut = date(annee, 1, 1);
+			final RegDate fin = date(annee, 12, 31);
 
-				final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
-				addForPrincipal(pp, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
-				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
-				addDelaiDeclaration(di1, date(annee + 1, 1, 22), delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
+			addForPrincipal(pp, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
+			addDelaiDeclaration(di1, date(annee + 1, 1, 22), delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
 		});
 		assertValidInteger(ppId);
 
@@ -579,17 +566,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// préparation
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative pays = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm());
-				final CollectiviteAdministrative vevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative pays = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm());
+			final CollectiviteAdministrative vevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
 
-				final Ids ids = new Ids();
-				ids.idVevey = vevey.getNumero();
-				ids.idPaysDEnhaut = pays.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idVevey = vevey.getNumero();
+			ids1.idPaysDEnhaut = pays.getNumero();
+			return ids1;
 		});
 
 		// une commune vaudoise
@@ -626,23 +610,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetModifiedTaxPayers() throws Exception {
 
-		final Pair<Long, Date> pp1 = doInNewTransactionAndSession(new TransactionCallback<Pair<Long, Date>>() {
-			@Override
-			public Pair<Long, Date> doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philippe", "Lemol", date(1956, 9, 30), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
-			}
+		final Pair<Long, Date> pp1 = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philippe", "Lemol", date(1956, 9, 30), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
 		});
 
 		Thread.sleep(1000);
-		final Pair<Long, Date> pp2 = doInNewTransactionAndSession(new TransactionCallback<Pair<Long, Date>>() {
-			@Override
-			public Pair<Long, Date> doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Duchmol", date(1941, 5, 4), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
-			}
+		final Pair<Long, Date> pp2 = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Duchmol", date(1941, 5, 4), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
 		});
 
 		final Date start = new Date(pp1.getRight().getTime() - 100);
@@ -679,17 +657,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testDebtorInfo() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
-				final PeriodeFiscale pf = addPeriodeFiscale(2013);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, date(2013, 4, 1), date(2013, 4, 30), md);
-				addListeRecapitulative(dpi, pf, date(2013, 10, 1), date(2013, 10, 31), md);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			final PeriodeFiscale pf = addPeriodeFiscale(2013);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, date(2013, 4, 1), date(2013, 4, 30), md);
+			addListeRecapitulative(dpi, pf, date(2013, 10, 1), date(2013, 10, 31), md);
+			return dpi.getNumero();
 		});
 
 		Assert.assertTrue(dpiId >= Integer.MIN_VALUE && dpiId <= Integer.MAX_VALUE);
@@ -723,18 +698,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", date(1979, 5, 31), Sexe.MASCULIN);
-					final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2013, 1, 1));
-					addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+			ids = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", date(1979, 5, 31), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2013, 1, 1));
+				addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
 
-					final Ids ids = new Ids();
-					ids.pp = pp.getNumero();
-					ids.dpi = dpi.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.pp = pp.getNumero();
+				ids1.dpi = dpi.getNumero();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des deux tiers
@@ -994,27 +966,24 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final PersonnePhysique ppUn = addNonHabitant("Gérard", "AvecUn", null, Sexe.MASCULIN);
-					final IdentificationEntreprise identUn = new IdentificationEntreprise();
-					identUn.setNumeroIde("CHE123456789");
-					ppUn.addIdentificationEntreprise(identUn);
+			ids = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique ppUn = addNonHabitant("Gérard", "AvecUn", null, Sexe.MASCULIN);
+				final IdentificationEntreprise identUn = new IdentificationEntreprise();
+				identUn.setNumeroIde("CHE123456789");
+				ppUn.addIdentificationEntreprise(identUn);
 
-					final PersonnePhysique ppAutre = addNonHabitant("Gérard", "AvecAutre", null, Sexe.MASCULIN);
-					final IdentificationEntreprise identAutre = new IdentificationEntreprise();
-					identAutre.setNumeroIde("CHE987654321");
-					ppAutre.addIdentificationEntreprise(identAutre);
+				final PersonnePhysique ppAutre = addNonHabitant("Gérard", "AvecAutre", null, Sexe.MASCULIN);
+				final IdentificationEntreprise identAutre = new IdentificationEntreprise();
+				identAutre.setNumeroIde("CHE987654321");
+				ppAutre.addIdentificationEntreprise(identAutre);
 
-					final PersonnePhysique ppSans = addNonHabitant("Gérard", "Sans", null, Sexe.MASCULIN);
+				final PersonnePhysique ppSans = addNonHabitant("Gérard", "Sans", null, Sexe.MASCULIN);
 
-					final Ids ids = new Ids();
-					ids.ppAvecUn = ppUn.getNumero().intValue();
-					ids.ppAvecAutre = ppAutre.getNumero().intValue();
-					ids.ppSans = ppSans.getNumero().intValue();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.ppAvecUn = ppUn.getNumero().intValue();
+				ids1.ppAvecAutre = ppAutre.getNumero().intValue();
+				ids1.ppSans = ppSans.getNumero().intValue();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des deux tiers
@@ -1148,20 +1117,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-					final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-					final MenageCommun mc = couple.getMenage();
-					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.ORDINAIRE);
+			ids = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.ORDINAIRE);
 
-					final Ids ids = new Ids();
-					ids.pp = pp.getNumero();
-					ids.mc = mc.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.pp = pp.getNumero();
+				ids1.mc = mc.getNumero();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des deux tiers
@@ -1233,29 +1199,26 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-					addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-					addRaisonSociale(entreprise1, dateDebut, null, "Association pour la protection des petits oiseaux des parcs");
-					addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-					addRegimeFiscalCH(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-					addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			ids = doInNewTransactionAndSession(status -> {
+				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRaisonSociale(entreprise1, dateDebut, null, "Association pour la protection des petits oiseaux des parcs");
+				addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-					final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
-					addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-					addRaisonSociale(entreprise2, dateDebut, null, "Gros-bras protection");
-					addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(entreprise2, dateDebut, null, MockCommune.Geneve);
-					addForSecondaire(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise2, dateDebut, null, "Gros-bras protection");
+				addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise2, dateDebut, null, MockCommune.Geneve);
+				addForSecondaire(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-					final Ids ids = new Ids();
-					ids.entreprise1 = entreprise1.getNumero();
-					ids.entreprise2 = entreprise2.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.entreprise1 = entreprise1.getNumero();
+				ids1.entreprise2 = entreprise2.getNumero();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des tiers
@@ -1352,41 +1315,38 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long ac;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(noEntreprise);
-				addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
+			final Entreprise pm = addEntrepriseConnueAuCivil(noEntreprise);
+			addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
 
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
-				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
-				ac.setFormeJuridique(FormeJuridique.ASS);
-				final IdentificationEntreprise ide = new IdentificationEntreprise();
-				ide.setNumeroIde("CHE999999996");
-				ac.addIdentificationEntreprise(ide);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
+			final AutreCommunaute ac = addAutreCommunaute("Tata!!");
+			ac.setFormeJuridique(FormeJuridique.ASS);
+			final IdentificationEntreprise ide = new IdentificationEntreprise();
+			ide.setNumeroIde("CHE999999996");
+			ac.addIdentificationEntreprise(ide);
 
-				final IdentificationEntreprise idePP = new IdentificationEntreprise();
-				idePP.setNumeroIde("CHE100001000");
-				pp.addIdentificationEntreprise(idePP);
+			final IdentificationEntreprise idePP = new IdentificationEntreprise();
+			idePP.setNumeroIde("CHE100001000");
+			pp.addIdentificationEntreprise(idePP);
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero();
-				ids.mc = mc.getNumero();
-				ids.dpi = dpi.getNumero();
-				ids.pm = pm.getNumero();
-				ids.ca = ca.getNumero();
-				ids.ac = ac.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero();
+			ids1.mc = mc.getNumero();
+			ids1.dpi = dpi.getNumero();
+			ids1.pm = pm.getNumero();
+			ids1.ca = ca.getNumero();
+			ids1.ac = ac.getNumero();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -1499,12 +1459,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -1721,14 +1678,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -1797,18 +1751,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee.addYears(-1), MotifFor.DEBUT_EXPLOITATION, dateArrivee.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockPays.Allemagne);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateArrivee, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee.addYears(-1), MotifFor.DEBUT_EXPLOITATION, dateArrivee.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockPays.Allemagne);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateArrivee, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -1877,14 +1828,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -1941,23 +1889,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2020,23 +1965,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2091,23 +2033,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2128,7 +2067,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpAvec.getTaxationPeriods());
 		Assert.assertEquals(RegDate.get().year() - dateMariage.year() + 1, tpAvec.getTaxationPeriods().size());
 
-		for (int year = dateMariage.year() ; year <= RegDate.get().year() ; ++ year) {
+		for (int year = dateMariage.year(); year <= RegDate.get().year(); ++year) {
 			final TaxationPeriod tp = tpAvec.getTaxationPeriods().get(year - dateMariage.year());
 			Assert.assertNotNull(tp);
 			Assert.assertEquals(date(year, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
@@ -2169,23 +2108,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2210,7 +2146,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(0);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateNaissance.addYears(18).getOneDayBefore(),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(dateNaissance.addYears(18).getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertNull(wtp.getTaxationAuthority());
 			Assert.assertNull(wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2219,7 +2155,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(1);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2008, 12, 31),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2228,7 +2164,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(2);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2009, 12, 31),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2237,7 +2173,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(3);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateMariage.getLastDayOfTheMonth(),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(dateMariage.getLastDayOfTheMonth(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2246,7 +2182,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(4);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(dateMariage.getLastDayOfTheMonth().getOneDayAfter(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2010, 12, 31),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2255,7 +2191,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(5);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2011, 12, 31),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2264,7 +2200,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(6);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2012, 12, 31),  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2273,7 +2209,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(7);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateDeces,  ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(dateDeces, ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2309,27 +2245,24 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int dpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
 
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur lié", mc, dateMariage);
-				addRapportPrestationImposable(dpi, lui, dateDebutRT, dateDeces, true);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur lié", mc, dateMariage);
+			addRapportPrestationImposable(dpi, lui, dateDebutRT, dateDeces, true);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2398,12 +2331,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				return lui.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			return lui.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2486,21 +2416,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(2013);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, dateEmissionDi);
-				addDelaiDeclaration(di, dateEmissionDi, dateDelaiDi, EtatDelaiDocumentFiscal.ACCORDE);
-
-				return pp.getNumero().intValue();
-			}
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(2013);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, dateEmissionDi);
+			addDelaiDeclaration(di, dateEmissionDi, dateDelaiDi, EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2598,15 +2524,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int dpiId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutPeriodiciteInitiale);
-				final Periodicite periodiciteInitiale = dpi.getPeriodicites().iterator().next();
-				periodiciteInitiale.setDateFin(dateDebutPeriodiciteModifiee.getOneDayBefore());
-				dpi.getPeriodicites().add(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, dateDebutPeriodiciteModifiee, null));
-				return dpi.getNumero().intValue();
-			}
+		final int dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutPeriodiciteInitiale);
+			final Periodicite periodiciteInitiale = dpi.getPeriodicites().iterator().next();
+			periodiciteInitiale.setDateFin(dateDebutPeriodiciteModifiee.getOneDayBefore());
+			dpi.getPeriodicites().add(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, dateDebutPeriodiciteModifiee, null));
+			return dpi.getNumero().intValue();
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2675,18 +2598,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int fiston;
 		}
 
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(noIndividuPapa);
-				final PersonnePhysique moi = addHabitant(noIndividu);
-				final PersonnePhysique fiston = addHabitant(noIndividuFiston);
-				final Ids ids = new Ids();
-				ids.papa = papa.getNumero().intValue();
-				ids.moi = moi.getNumero().intValue();
-				ids.fiston = fiston.getNumero().intValue();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique papa = addHabitant(noIndividuPapa);
+			final PersonnePhysique moi = addHabitant(noIndividu);
+			final PersonnePhysique fiston = addHabitant(noIndividuFiston);
+			final Ids ids1 = new Ids();
+			ids1.papa = papa.getNumero().intValue();
+			ids1.moi = moi.getNumero().intValue();
+			ids1.fiston = fiston.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
@@ -2808,39 +2728,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long di;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
-				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
-				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+			addEtatDeclarationEmise(di, dateEmissionDI);
+			addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				dpi.setNom1("MonTestAdoré");
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
-				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
-				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			dpi.setNom1("MonTestAdoré");
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+			addEtatDeclarationEmise(lr, dateEmissionLR);
+			addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(dpi.getNumero());
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(dpi.getNumero());
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				ids.di = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			ids1.di = di.getId();
+			return ids1;
 		});
 
 		efactureService.setUp(new MockEFactureService() {
@@ -3108,39 +3025,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long di;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
-				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
-				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+			addEtatDeclarationEmise(di, dateEmissionDI);
+			addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				dpi.setNom1("MonTestAdoré");
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
-				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
-				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			dpi.setNom1("MonTestAdoré");
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+			addEtatDeclarationEmise(lr, dateEmissionLR);
+			addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(dpi.getNumero());
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(dpi.getNumero());
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				ids.di = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			ids1.di = di.getId();
+			return ids1;
 		});
 
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
@@ -3273,27 +3187,24 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addRaisonSociale(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise");
-				addRaisonSociale(entreprise, date(2013, 5, 13), null, "Ma grande entreprise");
-				addFormeJuridique(entreprise, date(2000, 3, 1), null, FormeJuridiqueEntreprise.SARL);
-				addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
-				addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
-				addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
-				addFlagEntreprise(entreprise, date(2010, 6, 2), RegDate.get(2013, 5, 26), TypeFlagEntreprise.UTILITE_PUBLIQUE);
+			addRaisonSociale(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise");
+			addRaisonSociale(entreprise, date(2013, 5, 13), null, "Ma grande entreprise");
+			addFormeJuridique(entreprise, date(2000, 3, 1), null, FormeJuridiqueEntreprise.SARL);
+			addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
+			addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
+			addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
+			addFlagEntreprise(entreprise, date(2010, 6, 2), RegDate.get(2013, 5, 26), TypeFlagEntreprise.UTILITE_PUBLIQUE);
 
-				addRegimeFiscalVD(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
-				addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addRegimeFiscalVD(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
+			addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);
-				return entreprise.getNumero();
-			}
+			addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);
+			return entreprise.getNumero();
 		});
 		assertValidInteger(idpm);
 
@@ -3501,36 +3412,33 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int ac;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp1 = addNonHabitant("Daubet", "Philibert", null, Sexe.MASCULIN);
-				final PersonnePhysique pp2 = addNonHabitant("Baudet", "Ernestine", null, Sexe.FEMININ);
-				final PersonnePhysique ppProtege = addNonHabitant("Knox", "Fort", null, null);
-				final DroitAcces da = new DroitAcces();
-				da.setDateDebut(date(2000, 1, 1));
-				da.setNiveau(Niveau.LECTURE);
-				da.setVisaOperateur("zai455");
-				da.setType(TypeDroitAcces.AUTORISATION);
-				da.setTiers(ppProtege);
-				hibernateTemplate.merge(da);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp1 = addNonHabitant("Daubet", "Philibert", null, Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Baudet", "Ernestine", null, Sexe.FEMININ);
+			final PersonnePhysique ppProtege = addNonHabitant("Knox", "Fort", null, null);
+			final DroitAcces da = new DroitAcces();
+			da.setDateDebut(date(2000, 1, 1));
+			da.setNiveau(Niveau.LECTURE);
+			da.setVisaOperateur("zai455");
+			da.setType(TypeDroitAcces.AUTORISATION);
+			da.setTiers(ppProtege);
+			hibernateTemplate.merge(da);
 
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntreprise);
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntreprise);
 
-				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
-				ac.setFormeJuridique(FormeJuridique.ASS);
-				final IdentificationEntreprise ide = new IdentificationEntreprise();
-				ide.setNumeroIde("CHE999999996");
-				ac.addIdentificationEntreprise(ide);
+			final AutreCommunaute ac = addAutreCommunaute("Tata!!");
+			ac.setFormeJuridique(FormeJuridique.ASS);
+			final IdentificationEntreprise ide = new IdentificationEntreprise();
+			ide.setNumeroIde("CHE999999996");
+			ac.addIdentificationEntreprise(ide);
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero().intValue();
-				ids.pp2 = pp2.getNumero().intValue();
-				ids.ppProtege = ppProtege.getNumero().intValue();
-				ids.pm = entreprise.getNumero().intValue();
-				ids.ac = ac.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero().intValue();
+			ids1.pp2 = pp2.getNumero().intValue();
+			ids1.ppProtege = ppProtege.getNumero().intValue();
+			ids1.pm = entreprise.getNumero().intValue();
+			ids1.ac = ac.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin user = new UserLogin("TOTO", 22);
@@ -3641,39 +3549,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long di;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
-				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
-				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+			addEtatDeclarationEmise(di, dateEmissionDI);
+			addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				dpi.setNom1("MonTestAdoré");
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
-				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
-				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			dpi.setNom1("MonTestAdoré");
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+			addEtatDeclarationEmise(lr, dateEmissionLR);
+			addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(dpi.getNumero());
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(dpi.getNumero());
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				ids.di = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			ids1.di = di.getId();
+			return ids1;
 		});
 
 		efactureService.setUp(new MockEFactureService() {
@@ -4037,26 +3942,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final PersonnePhysique conjoint = addNonHabitant("Mariam", "Labaffe", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, conjoint, dateMariage, null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final PersonnePhysique conjoint = addNonHabitant("Mariam", "Labaffe", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, conjoint, dateMariage, null);
 
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
-				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
+			addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(conjoint.getNumero());
-				final Ids ids = new Ids();
-				ids.ppHabitant = pp.getNumero().intValue();
-				ids.ppNonHabitant = conjoint.getNumero().intValue();
-				return ids;
-			}
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(conjoint.getNumero());
+			final Ids ids1 = new Ids();
+			ids1.ppHabitant = pp.getNumero().intValue();
+			ids1.ppNonHabitant = conjoint.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
@@ -4123,16 +4025,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique connu = addHabitant(noIndividu);
-				final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
-				final Ids ids = new Ids();
-				ids.ppConnu = connu.getNumero().intValue();
-				ids.ppInconnu = inconnu.getNumero().intValue();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique connu = addHabitant(noIndividu);
+			final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
+			final Ids ids1 = new Ids();
+			ids1.ppConnu = connu.getNumero().intValue();
+			ids1.ppInconnu = inconnu.getNumero().intValue();
+			return ids1;
 		});
 
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
@@ -4187,12 +4086,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
-				return inconnu.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
+			return inconnu.getNumero().intValue();
 		});
 
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
@@ -4217,21 +4113,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpiSans = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			dpiSans.setAciAutreCanton(Boolean.FALSE);
 
-				final DebiteurPrestationImposable dpiSans = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				dpiSans.setAciAutreCanton(Boolean.FALSE);
+			final DebiteurPrestationImposable dpiAvec = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			dpiAvec.setAciAutreCanton(Boolean.TRUE);
 
-				final DebiteurPrestationImposable dpiAvec = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				dpiAvec.setAciAutreCanton(Boolean.TRUE);
-
-				final Ids ids = new Ids();
-				ids.dpiAvecFlag = dpiAvec.getNumero().intValue();
-				ids.dpiSansFlag = dpiSans.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.dpiAvecFlag = dpiAvec.getNumero().intValue();
+			ids1.dpiSansFlag = dpiSans.getNumero().intValue();
+			return ids1;
 		});
 
 		// interrogation

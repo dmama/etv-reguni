@@ -8,8 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -61,14 +59,11 @@ public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 
 		final long noIndividu = 1748265328L;
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvent(null, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, null);
-				addEvent(noIndividu, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, null);
-				addEvent(noIndividu, 3L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvent(null, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, null);
+			addEvent(noIndividu, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, null);
+			addEvent(noIndividu, 3L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE, null);
+			return null;
 		});
 
 		final List<EvenementCivilEch> found = new ArrayList<>();
@@ -122,13 +117,10 @@ public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvent(noIndividu, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE, null);
-				addEvent(null, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, 1L);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvent(noIndividu, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, date(2010, 4, 12), EtatEvenementCivil.TRAITE, null);
+			addEvent(null, 2L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION, date(2010, 4, 12), EtatEvenementCivil.A_TRAITER, 1L);
+			return null;
 		});
 
 		final EvenementCivilEchReceptionHandlerImpl handler = new EvenementCivilEchReceptionHandlerImpl() {
@@ -146,15 +138,12 @@ public class EvenementCivilEchRecuperateurTest extends BusinessTest {
 		recuperateur.recupererEvenementsCivil();
 
 		// vérification du numéro d'individu présent dans l'événement qui n'en avait pas jusqu'ici
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch ech = evtCivilDao.get(2L);
-				Assert.assertNotNull(ech);
-				Assert.assertEquals((Long) noIndividu, ech.getNumeroIndividu());
-				Assert.assertEquals(EtatEvenementCivil.A_TRAITER, ech.getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch ech = evtCivilDao.get(2L);
+			Assert.assertNotNull(ech);
+			Assert.assertEquals((Long) noIndividu, ech.getNumeroIndividu());
+			Assert.assertEquals(EtatEvenementCivil.A_TRAITER, ech.getEtat());
+			return null;
 		});
 	}
 }

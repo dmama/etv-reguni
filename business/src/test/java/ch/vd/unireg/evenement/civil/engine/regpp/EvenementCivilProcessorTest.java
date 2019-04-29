@@ -12,16 +12,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.data.DataEventService;
@@ -32,6 +24,13 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -91,18 +90,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			return null;
 		});
 	}
 
@@ -113,18 +107,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			return null;
 		});
 	}
 
@@ -135,18 +124,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			return null;
 		});
 	}
 
@@ -157,21 +141,16 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.TRAITE, e);
 
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.TRAITE, e);
-
-				PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
-				assertNotNull(tiers);
-
-				return null;
-			}
+			PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
+			assertNotNull(tiers);
+			return null;
 		});
 	}
 
@@ -184,18 +163,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// Lancement du traitement des événements
 		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			return null;
 		});
 	}
 
@@ -207,18 +181,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			return null;
 		});
 	}
 
@@ -234,32 +203,24 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique rufus = addHabitant(NO_INDIVIDU);
-				assertNotNull(rufus);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique rufus = addHabitant(NO_INDIVIDU);
+			assertNotNull(rufus);
+			return null;
 		});
 
 		saveEvenement(124L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), NO_INDIVIDU, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-				assertErreurs(e, "Check completeness erreur", "Again");
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			assertErreurs(e, "Check completeness erreur", "Again");
+			return null;
 		});
 	}
 
@@ -286,19 +247,14 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.A_VERIFIER, e);
-				assertWarnings(1, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.A_VERIFIER, e);
+			assertWarnings(1, e);
+			return null;
 		});
 	}
 
@@ -310,19 +266,14 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-				assertErreurs(1, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			assertErreurs(1, e);
+			return null;
 		});
 	}
 
@@ -345,19 +296,14 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-				assertErreurs(1, e);
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			assertErreurs(1, e);
+			return null;
 		});
 	}
 
@@ -466,16 +412,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
+		doInNewTransaction(status -> {
+			final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
 
-				final EvenementCivilRegPP e = list.get(0);
-				callback.checkEvent(e);
-				return null;
-			}
+			final EvenementCivilRegPP e = list.get(0);
+			callback.checkEvent(e);
+			return null;
 		});
 	}
 
@@ -492,17 +435,13 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 		traiteEvenements();
 
-		doInNewReadOnlyTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilRegPP e = list.get(0);
-				//evenement en erreur car pas d'adresse de départ spécifiée
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-				return null;
-			}
+		doInNewReadOnlyTransaction(status -> {
+			List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, list.size());
+			EvenementCivilRegPP e = list.get(0);
+			//evenement en erreur car pas d'adresse de départ spécifiée
+			assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+			return null;
 		});
 
 	}
@@ -530,29 +469,25 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// indexation en cours...
 		globalTiersIndexer.sync();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Test de l'état des événements;
+			List<EvenementCivilRegPP> listEv = evenementCivilRegPPDAO.getAll();
+			assertEquals(1, listEv.size());
+			EvenementCivilRegPP e = listEv.get(0);
+			assertEvtState(EtatEvenementCivil.TRAITE, e);
 
-				// Test de l'état des événements;
-				List<EvenementCivilRegPP> listEv = evenementCivilRegPPDAO.getAll();
-				assertEquals(1, listEv.size());
-				EvenementCivilRegPP e = listEv.get(0);
-				assertEvtState(EtatEvenementCivil.TRAITE, e);
+			// Nouvelle recherche
+			List<TiersIndexedData> lTiers = searcher.search(criteria);
+			assertEquals("L'indexation n'a pas fonctionné", 1, lTiers.size());
 
-				// Nouvelle recherche
-				List<TiersIndexedData> lTiers = searcher.search(criteria);
-				assertEquals("L'indexation n'a pas fonctionné", 1, lTiers.size());
+			// on verifie que le changement a bien été effectué
+			Individu indi = serviceCivil.getIndividu(34567L, RegDate.get());
+			assertEquals("le nouveau sexe n'a pas été indexé", Sexe.MASCULIN, indi.getSexe());
 
-				// on verifie que le changement a bien été effectué
-				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get());
-				assertEquals("le nouveau sexe n'a pas été indexé", Sexe.MASCULIN, indi.getSexe());
+			// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
+			// assertNotNull(tiers)
 
-				// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
-				// assertNotNull(tiers);
-
-				return null;
-			}
+			return null;
 		});
 
 		setWantIndexationTiers(false);
@@ -570,17 +505,14 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9000L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 24), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 		saveEvenement(9001L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 23), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertNotNull(list);
-				sortEvenements(list);
-				assertEquals(2, list.size());
-				assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(0));
-				assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(1));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertNotNull(list);
+			sortEvenements(list);
+			assertEquals(2, list.size());
+			assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(0));
+			assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(1));
+			return null;
 		});
 
 		// Arrivée de l'événement d'arrivée -> ce dernier doit être traité et provoquer le retraitement des événements de changement de nom
@@ -588,18 +520,15 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
-				assertNotNull(list);
-				sortEvenements(list);
-				assertEquals(3, list.size());
-				assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(0));
-				assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(1));
-				assertEvenement(9002, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, EtatEvenementCivil.TRAITE, list.get(2));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
+			assertNotNull(list);
+			sortEvenements(list);
+			assertEquals(3, list.size());
+			assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(0));
+			assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(1));
+			assertEvenement(9002, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, EtatEvenementCivil.TRAITE, list.get(2));
+			return null;
 		});
 	}
 
@@ -619,23 +548,20 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, @Nullable final Long indSec, final int ofs, final EtatEvenementCivil etat) throws Exception {
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				EvenementCivilRegPP evt = new EvenementCivilRegPP();
-				evt.setId(id);
-				evt.setType(type);
-				evt.setDateEvenement(date);
-				evt.setEtat(etat);
-				evt.setNumeroIndividuPrincipal(indPri);
-				evt.setNumeroIndividuConjoint(indSec);
-				evt.setNumeroOfsCommuneAnnonce(ofs);
-				evt = evenementCivilRegPPDAO.save(evt);
-				if (etat == EtatEvenementCivil.EN_ERREUR) {
-					evt.addErrors(Collections.singletonList(new EvenementCivilRegPPErreur("Erreur de test")));
-				}
-				return evt;
+		doInNewTransaction(status -> {
+			EvenementCivilRegPP evt = new EvenementCivilRegPP();
+			evt.setId(id);
+			evt.setType(type);
+			evt.setDateEvenement(date);
+			evt.setEtat(etat);
+			evt.setNumeroIndividuPrincipal(indPri);
+			evt.setNumeroIndividuConjoint(indSec);
+			evt.setNumeroOfsCommuneAnnonce(ofs);
+			evt = evenementCivilRegPPDAO.save(evt);
+			if (etat == EtatEvenementCivil.EN_ERREUR) {
+				evt.addErrors(Collections.singletonList(new EvenementCivilRegPPErreur("Erreur de test")));
 			}
+			return evt;
 		});
 	}
 
@@ -754,31 +680,26 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique mme = addHabitant(noIndividuMadame);
+			addEnsembleTiersCouple(mme, null, dateMariage, null);
 
-				final PersonnePhysique mme = addHabitant(noIndividuMadame);
-				addEnsembleTiersCouple(mme, null, dateMariage, null);
+			final PersonnePhysique pp = addNonHabitant("Tartempion", "Marcel", dateNaissanceMonsieur, Sexe.MASCULIN);
+			pp.setNumeroIndividu(noIndividuMonsieur);
+			pp.setCategorieEtranger(CategorieEtranger._07_PERMIS_SEJOUR_COURTE_DUREE_L);
 
-				final PersonnePhysique pp = addNonHabitant("Tartempion", "Marcel", dateNaissanceMonsieur, Sexe.MASCULIN);
-				pp.setNumeroIndividu(noIndividuMonsieur);
-				pp.setCategorieEtranger(CategorieEtranger._07_PERMIS_SEJOUR_COURTE_DUREE_L);
+			final SituationFamille celibat = addSituation(pp, dateNaissanceMonsieur, dateMariage.getOneDayBefore(), 0);
+			celibat.setEtatCivil(EtatCivil.CELIBATAIRE);
 
-				final SituationFamille celibat = addSituation(pp, dateNaissanceMonsieur, dateMariage.getOneDayBefore(), 0);
-				celibat.setEtatCivil(EtatCivil.CELIBATAIRE);
+			final SituationFamille mariage = addSituation(pp, dateMariage, null, 0);
+			mariage.setEtatCivil(EtatCivil.MARIE);
 
-				final SituationFamille mariage = addSituation(pp, dateMariage, null, 0);
-				mariage.setEtatCivil(EtatCivil.MARIE);
-
-				// les fors
-				final RegDate dateArrivee = date(2009, 1, 1);
-				final RegDate dateDepart = date(2009, 8, 31);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.RoyaumeUni);
-
-				return pp.getNumero();
-			}
+			// les fors
+			final RegDate dateArrivee = date(2009, 1, 1);
+			final RegDate dateDepart = date(2009, 8, 31);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.RoyaumeUni);
+			return pp.getNumero();
 		});
 
 		// création et traitement de l'événement civil
@@ -835,28 +756,22 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		final Long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividuMonsieur);
-				return pp.getNumero();
-			}
+		final Long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividuMonsieur);
+			return pp.getNumero();
 		});
 		assertNotNull(ppId);
 
 		// création et traitement d'un événement civil qui lève une exception (= suppression d'individu qui doit être traitée manuellement)
-		doInNewTransactionAndSession(new TransactionCallback<EvenementCivilRegPP>() {
-			@Override
-			public EvenementCivilRegPP doInTransaction(TransactionStatus status) {
-				final EvenementCivilRegPP evt = new EvenementCivilRegPP();
-				evt.setId(evtId);
-				evt.setType(TypeEvenementCivil.SUP_INDIVIDU);
-				evt.setDateEvenement(date(2011, 1, 1));
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividuPrincipal(noIndividuMonsieur);
-				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
-				return evenementCivilRegPPDAO.save(evt);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilRegPP evt = new EvenementCivilRegPP();
+			evt.setId(evtId);
+			evt.setType(TypeEvenementCivil.SUP_INDIVIDU);
+			evt.setDateEvenement(date(2011, 1, 1));
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividuPrincipal(noIndividuMonsieur);
+			evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
+			return evenementCivilRegPPDAO.save(evt);
 		});
 		traiteEvenements();
 
@@ -930,13 +845,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// mise en place fiscale, remplissage du cache du service civil sur l'individu
-			final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addHabitant(noIndividu);
-					assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
-					return pp.getNumero();
-				}
+			final long ppid = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
+				return pp.getNumero();
 			});
 
 			// modification dans le service civil, mais pas de notification
@@ -948,44 +860,35 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// création d'un événement en erreur
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilRegPP evt = new EvenementCivilRegPP();
-					evt.setId(evtId);
-					evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
-					evt.setDateEvenement(date(2009, 1, 1));
-					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
-					evt.setNumeroIndividuPrincipal(noIndividu);
-					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
-					evenementCivilRegPPDAO.save(evt);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilRegPP evt = new EvenementCivilRegPP();
+				evt.setId(evtId);
+				evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
+				evt.setDateEvenement(date(2009, 1, 1));
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setNumeroIndividuPrincipal(noIndividu);
+				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
+				evenementCivilRegPPDAO.save(evt);
+				return null;
 			});
 
 			// vérification que le nom contenu dans le cache du service civil est toujours celui qui est pris en compte
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-					final String prenomNom = tiersService.getNomPrenom(pp);
-					assertEquals("Alfredo Hitchcock", prenomNom);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final String prenomNom = tiersService.getNomPrenom(pp);
+				assertEquals("Alfredo Hitchcock", prenomNom);
+				return null;
 			});
 
 			// demande le recyclage de l'événement en erreur
 			evenementCivilProcessor.recycleEvenementCivil(evtId);
 
 			// vérification que le cache du service civil a bien été rafraîchi
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-					final String prenomNom = tiersService.getNomPrenom(pp);
-					assertEquals("Alfred Hitchcock", prenomNom);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final String prenomNom = tiersService.getNomPrenom(pp);
+				assertEquals("Alfred Hitchcock", prenomNom);
+				return null;
 			});
 		}
 		finally {
@@ -1035,13 +938,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// mise en place fiscale, remplissage du cache du service civil sur l'individu
-			final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addHabitant(noIndividu);
-					assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
-					return pp.getNumero();
-				}
+			final long ppid = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
+				return pp.getNumero();
 			});
 
 			// modification dans le service civil, mais pas de notification
@@ -1053,58 +953,45 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// création d'un événement en erreur
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilRegPP evt = new EvenementCivilRegPP();
-					evt.setId(evtId);
-					evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
-					evt.setDateEvenement(date(2009, 1, 1));
-					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
-					evt.setNumeroIndividuPrincipal(noIndividu);
-					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
-					evenementCivilRegPPDAO.save(evt);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilRegPP evt = new EvenementCivilRegPP();
+				evt.setId(evtId);
+				evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
+				evt.setDateEvenement(date(2009, 1, 1));
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setNumeroIndividuPrincipal(noIndividu);
+				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
+				evenementCivilRegPPDAO.save(evt);
+				return null;
 			});
 
 			// vérification que le nom contenu dans le cache du service civil est toujours celui qui est pris en compte
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-					final String prenomNom = tiersService.getNomPrenom(pp);
-					assertEquals("Alfredo Hitchcock", prenomNom);
-					assertTrue(pp.isHabitantVD());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final String prenomNom = tiersService.getNomPrenom(pp);
+				assertEquals("Alfredo Hitchcock", prenomNom);
+				assertTrue(pp.isHabitantVD());
+				return null;
 			});
 
 			// forçage de l'événement en erreur
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
-					evenementCivilProcessor.forceEvenementCivil(evt);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
+				evenementCivilProcessor.forceEvenementCivil(evt);
+				return null;
 			});
 
 			// vérification que le cache du service civil a bien été rafraîchi
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-					final String prenomNom = tiersService.getNomPrenom(pp);
-					assertEquals("Alfred Hitchcock", prenomNom);
-					assertFalse(pp.isHabitantVD()); // [SIFISC-6908] le forçage de l'événement doit recalculer le flag 'habitant'
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final String prenomNom = tiersService.getNomPrenom(pp);
+				assertEquals("Alfred Hitchcock", prenomNom);
+				assertFalse(pp.isHabitantVD()); // [SIFISC-6908] le forçage de l'événement doit recalculer le flag 'habitant'
 
-					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.FORCE, evt.getEtat());
-
-					return null;
-				}
+				final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.FORCE, evt.getEtat());
+				return null;
 			});
 		}
 		finally {
@@ -1154,13 +1041,10 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// mise en place fiscale, remplissage du cache du service civil sur l'individu
-			final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addHabitant(noIndividu);
-					assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
-					return pp.getNumero();
-				}
+			final long ppid = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
+				return pp.getNumero();
 			});
 
 			// modification dans le service civil, mais pas de notification
@@ -1172,48 +1056,38 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 
 			// création d'un événement en erreur
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilRegPP evt = new EvenementCivilRegPP();
-					evt.setId(evtId);
-					evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
-					evt.setDateEvenement(date(2009, 1, 1));
-					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
-					evt.setNumeroIndividuPrincipal(noIndividu);
-					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
-					evenementCivilRegPPDAO.save(evt);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilRegPP evt = new EvenementCivilRegPP();
+				evt.setId(evtId);
+				evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
+				evt.setDateEvenement(date(2009, 1, 1));
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setNumeroIndividuPrincipal(noIndividu);
+				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
+				evenementCivilRegPPDAO.save(evt);
+				return null;
 			});
 
 			// vérification que le nom contenu dans le cache du service civil est toujours celui qui est pris en compte
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-					final String prenomNom = tiersService.getNomPrenom(pp);
-					assertEquals("Alfredo Hitchcock", prenomNom);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final String prenomNom = tiersService.getNomPrenom(pp);
+				assertEquals("Alfredo Hitchcock", prenomNom);
+				return null;
 			});
 
 			traiteEvenements();
 
 			// vérification que le cache du service civil a bien été rafraîchi
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-					final String prenomNom = tiersService.getNomPrenom(pp);
-					assertEquals("Alfred Hitchcock", prenomNom);
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				final String prenomNom = tiersService.getNomPrenom(pp);
+				assertEquals("Alfred Hitchcock", prenomNom);
 
-					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-
-					return null;
-				}
+				final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				return null;
 			});
 		}
 		finally {

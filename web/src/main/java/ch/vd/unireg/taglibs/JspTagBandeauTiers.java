@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
 import org.springframework.web.util.HtmlUtils;
@@ -242,68 +240,63 @@ public class JspTagBandeauTiers extends RequestContextAwareTag {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-
-				if (numero == null) {
-					throw new IllegalArgumentException("Le numéro du tiers à afficher est nul.");
-				}
-
-				final Tiers tiers = tiersDAO.get(numero);
-				if (tiers == null) {
-					return "";
-				}
-
-				EnsembleTiersCouple ensemble = null;
-				if (tiers instanceof PersonnePhysique) {
-					ensemble = tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, null);
-				}
-				else if (tiers instanceof MenageCommun) {
-					ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
-				}
-
-				if (StringUtils.isBlank(titre)) {
-					titre = "caracteristiques.tiers";
-				}
-
-				if (cssClass == null) {
-					cssClass = "information";
-				}
-
-				final StringBuilder s = new StringBuilder();
-				s.append("<fieldset class=\"").append(cssClass).append("\"");
-				if (StringUtils.isNotBlank(id)) {
-					s.append(" id=\"").append(id).append("\"");
-				}
-				s.append(">\n");
-				s.append("<legend><span>").append(HtmlUtils.htmlEscape(message(titre))).append("</span></legend>\n");
-				s.append(buildDebugInfo(tiers));
-
-				if (showAvatar || showLinks) {
-					s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
-					s.append(buildDescriptifTiers(tiers));
-					s.append("</td><td width=\"130 px\">\n");
-					s.append(buildImageTiers(tiers));
-
-					if (showLinks && ensemble != null) {
-						// si on a un tiers appartenant à un ensemble tiers-couple, on affiche des raccourcis vers les autres membres
-						final String others = buildImageOtherTiers(tiers, ensemble);
-						if (others != null) {
-							s.append("</td><td class=\"composition_menage noprint\" valign=\"top\">\n");
-							s.append(others);
-						}
-					}
-					s.append("</td></tr></table>\n");
-				}
-				else {
-					s.append(buildDescriptifTiers(tiers));
-				}
-
-				s.append("</fieldset>");
-
-				return s.toString();
+		return template.execute(status -> {
+			if (numero == null) {
+				throw new IllegalArgumentException("Le numéro du tiers à afficher est nul.");
 			}
+
+			final Tiers tiers = tiersDAO.get(numero);
+			if (tiers == null) {
+				return "";
+			}
+
+			EnsembleTiersCouple ensemble = null;
+			if (tiers instanceof PersonnePhysique) {
+				ensemble = tiersService.getEnsembleTiersCouple((PersonnePhysique) tiers, null);
+			}
+			else if (tiers instanceof MenageCommun) {
+				ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
+			}
+
+			if (StringUtils.isBlank(titre)) {
+				titre = "caracteristiques.tiers";
+			}
+
+			if (cssClass == null) {
+				cssClass = "information";
+			}
+
+			final StringBuilder s = new StringBuilder();
+			s.append("<fieldset class=\"").append(cssClass).append("\"");
+			if (StringUtils.isNotBlank(id)) {
+				s.append(" id=\"").append(id).append("\"");
+			}
+			s.append(">\n");
+			s.append("<legend><span>").append(HtmlUtils.htmlEscape(message(titre))).append("</span></legend>\n");
+			s.append(buildDebugInfo(tiers));
+
+			if (showAvatar || showLinks) {
+				s.append("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td>\n");
+				s.append(buildDescriptifTiers(tiers));
+				s.append("</td><td width=\"130 px\">\n");
+				s.append(buildImageTiers(tiers));
+
+				if (showLinks && ensemble != null) {
+					// si on a un tiers appartenant à un ensemble tiers-couple, on affiche des raccourcis vers les autres membres
+					final String others = buildImageOtherTiers(tiers, ensemble);
+					if (others != null) {
+						s.append("</td><td class=\"composition_menage noprint\" valign=\"top\">\n");
+						s.append(others);
+					}
+				}
+				s.append("</td></tr></table>\n");
+			}
+			else {
+				s.append(buildDescriptifTiers(tiers));
+			}
+
+			s.append("</fieldset>");
+			return s.toString();
 		});
 	}
 

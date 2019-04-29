@@ -4,7 +4,6 @@ package ch.vd.unireg.editique;
 import noNamespace.InfoDocumentDocument1;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -145,37 +144,31 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 		final RegDate dateVenteImmeuble = date(pf, 10, 5);
 
 		// création fiscale d'un non-habitant HC propriétaire d'un immeuble acheté et revendu la même année
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albertine", "Zweisteinen", date(1956, 3, 12), Sexe.FEMININ);
-				addForPrincipal(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bale);
-				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albertine", "Zweisteinen", date(1956, 3, 12), Sexe.FEMININ);
+			addForPrincipal(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bale);
+			addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale periode = addPeriodeFiscale(pf);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
-				addDeclarationImpot(pp, periode, date(pf, 1, 1), date(pf, 12, 31), TypeContribuable.HORS_CANTON, md);
-				return pp.getNumero();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(pf);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+			addDeclarationImpot(pp, periode, date(pf, 1, 1), date(pf, 12, 31), TypeContribuable.HORS_CANTON, md);
+			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActiveAt(dateVenteImmeuble);
-				assertNotNull(di);
-				try {
-					final String commune = editiqueHelper.getCommune(di);
-					assertEquals(MockCommune.Cossonay.getNomCourt(), commune);
-				}
-				catch (EditiqueException e) {
-					throw new RuntimeException(e);
-				}
-				return null;
+			final Declaration di = pp.getDeclarationActiveAt(dateVenteImmeuble);
+			assertNotNull(di);
+			try {
+				final String commune = editiqueHelper.getCommune(di);
+				assertEquals(MockCommune.Cossonay.getNomCourt(), commune);
 			}
+			catch (EditiqueException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 	}
 }

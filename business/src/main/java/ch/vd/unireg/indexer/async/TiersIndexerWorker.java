@@ -15,8 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Pair;
@@ -91,58 +89,55 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				/*
-				 * On crée à la main une nouvelle session hibernate en ayant pris soin de désactiver l'intercepteur. Cela permet de désactiver
-				 * la validation des tiers, et de flagger comme 'dirty' même les tiers qui ne valident pas. Autrement, le premier tiers qui ne valide pas
-				 * fait péter une exception, qui remonte jusqu'à la méthode 'run' du thread et qui provoque l'arrêt immédiat du thread !
-				 */
-				final Switchable interceptorSwitch = (Switchable) sessionFactory.getSessionFactoryOptions().getInterceptor();
-				final boolean enabled = interceptorSwitch.isEnabled();
-				interceptorSwitch.setEnabled(false);
+		template.execute(status -> {
+			/*
+			 * On crée à la main une nouvelle session hibernate en ayant pris soin de désactiver l'intercepteur. Cela permet de désactiver
+			 * la validation des tiers, et de flagger comme 'dirty' même les tiers qui ne valident pas. Autrement, le premier tiers qui ne valide pas
+			 * fait péter une exception, qui remonte jusqu'à la méthode 'run' du thread et qui provoque l'arrêt immédiat du thread !
+			 */
+			final Switchable interceptorSwitch = (Switchable) sessionFactory.getSessionFactoryOptions().getInterceptor();
+			final boolean enabled = interceptorSwitch.isEnabled();
+			interceptorSwitch.setEnabled(false);
+			try {
+				final Session session = sessionFactory.openSession();
 				try {
-					final Session session = sessionFactory.openSession();
-					try {
-						session.setFlushMode(FlushMode.MANUAL);
-						final List<Tiers> list;
+					session.setFlushMode(FlushMode.MANUAL);
+					final List<Tiers> list;
 
-						if (batch.size() == 1) {
-							final Tiers tiers = (Tiers) session.get(Tiers.class, batch.get(0));
-							if (tiers != null) {
-								list = new ArrayList<>(1);
-								list.add(tiers);
-							}
-							else {
-								list = null;
-							}
+					if (batch.size() == 1) {
+						final Tiers tiers = (Tiers) session.get(Tiers.class, batch.get(0));
+						if (tiers != null) {
+							list = new ArrayList<>(1);
+							list.add(tiers);
 						}
 						else {
-							// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
-							warmIndividuCache(session, batch);
-
-							final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
-							query.setParameterList("ids", batch);
-							//noinspection unchecked
-							list = query.list();
+							list = null;
 						}
+					}
+					else {
+						// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
+						warmIndividuCache(session, batch);
 
-						indexTiers(list, session);
-						session.flush();
+						final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
+						query.setParameterList("ids", batch);
+						//noinspection unchecked
+						list = query.list();
 					}
-					catch (Exception e) {
-						LOGGER.error(e.getMessage(), e);
-					}
-					finally {
-						session.close();
-					}
+
+					indexTiers(list, session);
+					session.flush();
+				}
+				catch (Exception e) {
+					LOGGER.error(e.getMessage(), e);
 				}
 				finally {
-					interceptorSwitch.setEnabled(enabled);
+					session.close();
 				}
-				return null;
 			}
+			finally {
+				interceptorSwitch.setEnabled(enabled);
+			}
+			return null;
 		});
 	}
 

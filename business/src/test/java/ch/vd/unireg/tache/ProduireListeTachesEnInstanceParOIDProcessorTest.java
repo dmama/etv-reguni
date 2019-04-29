@@ -8,7 +8,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -61,34 +60,25 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 	public void testDifferenceOidSurTiersDeOidSurTache() throws Exception {
 
 		// construction du tiers associé à l'OID 7 dans la table tiers
-		final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitantAvecFor("Lausanne", null, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppid = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitantAvecFor("Lausanne", null, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		// vérification que l'OID associé au contribuable est bien le 7 (OID Lausanne)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-				Assert.assertNotNull(pp);
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), pp.getOfficeImpotId());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+			Assert.assertNotNull(pp);
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), pp.getOfficeImpotId());
+			return null;
 		});
 
 		// création d'une tâche sur ce contribuable mais associée à la nouvelle entité
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
-				addTacheControle(pp, TypeEtatTache.EN_INSTANCE, ca);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			addTacheControle(pp, TypeEtatTache.EN_INSTANCE, ca);
+			return null;
 		});
 
 		// lancement du processeur

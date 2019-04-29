@@ -8,14 +8,13 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.ContactImpotSource;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
@@ -500,17 +499,14 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	public void testDatesForsVaudois() throws Exception {
 
 		// création d'un DPI
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2010, 1, 1));
-				addForDebiteur(dpi, date(2010, 1, 1), MotifFor.DEBUT_PRESTATION_IS, date(2010, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Lausanne);
-				addForDebiteur(dpi, date(2011, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2011, 10, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.YverdonLesBains);
-				addForDebiteur(dpi, date(2011, 11, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2011, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Bern);
-				addForDebiteur(dpi, date(2012, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2012, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Cossonay);
-				addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, null, null, MockCommune.Echallens);
-				return dpi.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2010, 1, 1));
+			addForDebiteur(dpi, date(2010, 1, 1), MotifFor.DEBUT_PRESTATION_IS, date(2010, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Lausanne);
+			addForDebiteur(dpi, date(2011, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2011, 10, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.YverdonLesBains);
+			addForDebiteur(dpi, date(2011, 11, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2011, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Bern);
+			addForDebiteur(dpi, date(2012, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2012, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Cossonay);
+			addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, null, null, MockCommune.Echallens);
+			return dpi.getNumero();
 		});
 
 		globalTiersIndexer.sync();

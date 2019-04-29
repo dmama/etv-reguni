@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.cache.CacheHelper;
@@ -258,12 +256,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 				template.setReadOnly(true);
 
 				// le tiers n'existe pas dans le cache non-préloadé -> on va chercher cette information dans la base
-				exists = template.execute(new TransactionCallback<Boolean>() {
-					@Override
-					public Boolean doInTransaction(TransactionStatus status) {
-						return tiersDAO.exists(id);
-					}
-				});
+				exists = template.execute(status -> tiersDAO.exists(id));
 				synchronized (tiersExistenceDeltaCache) {
 					tiersExistenceDeltaCache.put(id, exists);
 				}
@@ -467,12 +460,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 			template.setReadOnly(true);
 
 			LOGGER.info("Préchargement du cache des tiers existants...");
-			final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-				@Override
-				public List<Long> doInTransaction(TransactionStatus status) {
-					return tiersDAO.getAllIds();
-				}
-			});
+			final List<Long> ids = template.execute(status -> tiersDAO.getAllIds());
 
 			newCache = new HashSet<>(ids);
 			LOGGER.info("Préchargement du cache des tiers existant terminé.");
@@ -491,12 +479,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		template.setReadOnly(true);
 
 		LOGGER.info("Préchargement du cache des dossiers contrôlés...");
-		final Set<Long> idsControles = template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				return droitAccesDAO.getContribuablesControles();
-			}
-		});
+		final Set<Long> idsControles = template.execute(status -> droitAccesDAO.getContribuablesControles());
 		LOGGER.info("Préchargement du cache des dossiers contrôlés terminé.");
 
 		return idsControles;

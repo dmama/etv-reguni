@@ -7,8 +7,6 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.evd0025.v1.PayerId;
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
@@ -118,23 +116,21 @@ public class EFactureServiceTest extends BusinessTest {
 		efactureService.seteFactureClient(mockEfactureClient);
 		efactureService.seteFactureMessageSender(eFactureMessageSender);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				try {
-					Assert.assertEquals("le contribuable 123 n'existe pas", ResultatQuittancement.contribuableInexistant(), efactureService.quittancer(123L));
-					Assert.assertEquals("le contribuable chollet existe est inscrit", ResultatQuittancement.dejaInscrit(), efactureService.quittancer(ts.idChollet));
-					Assert.assertEquals("le contribuable chollet existe, n'est pas inscrit, et sa demande est en attente de signature", ResultatQuittancement.enCours(BUSINESS_ID), efactureService.quittancer(ts.idChollet));
-					Assert.assertEquals("le contribuable chollet existe, n'est pas inscrit, et sa demande est en attente de contact", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
-					Assert.assertEquals("le contribuable chollet existe n'est pas inscrit et sa demande est validée", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
-					Assert.assertEquals("le contribuable chollet existe n'est pas inscrit et sa demande est refusée", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
-					Assert.assertEquals("le contribuable Jacquier existe, mais est inconnu d'e-facture", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idJacquier));
-					Assert.assertEquals("le contribuable Jacquier n'est pas dans un etat fiscale coherent (pas de for)", ResultatQuittancement.etatFiscalIncoherent(), efactureService.quittancer(ts.idJacquier));
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-				return null;
+		doInNewTransaction(status -> {
+			try {
+				Assert.assertEquals("le contribuable 123 n'existe pas", ResultatQuittancement.contribuableInexistant(), efactureService.quittancer(123L));
+				Assert.assertEquals("le contribuable chollet existe est inscrit", ResultatQuittancement.dejaInscrit(), efactureService.quittancer(ts.idChollet));
+				Assert.assertEquals("le contribuable chollet existe, n'est pas inscrit, et sa demande est en attente de signature", ResultatQuittancement.enCours(BUSINESS_ID), efactureService.quittancer(ts.idChollet));
+				Assert.assertEquals("le contribuable chollet existe, n'est pas inscrit, et sa demande est en attente de contact", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
+				Assert.assertEquals("le contribuable chollet existe n'est pas inscrit et sa demande est validée", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
+				Assert.assertEquals("le contribuable chollet existe n'est pas inscrit et sa demande est refusée", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idChollet));
+				Assert.assertEquals("le contribuable Jacquier existe, mais est inconnu d'e-facture", ResultatQuittancement.aucuneDemandeEnAttenteDeSignature(), efactureService.quittancer(ts.idJacquier));
+				Assert.assertEquals("le contribuable Jacquier n'est pas dans un etat fiscale coherent (pas de for)", ResultatQuittancement.etatFiscalIncoherent(), efactureService.quittancer(ts.idJacquier));
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
 	}
@@ -195,24 +191,21 @@ public class EFactureServiceTest extends BusinessTest {
 				}
 			});
 
-			final Long[] ctbIds = doInNewTransaction(new TransactionCallback<Long[]>() {
-				@Override
-				public Long[] doInTransaction(TransactionStatus status) {
-					PersonnePhysique pp1 = addHabitant(NO_JACQUIER);
-					PersonnePhysique pp2 = addHabitant(NO_CHOLLET);
-					addForPrincipal(pp2,date(1998,1,2), MotifFor.MAJORITE, MockCommune.Moudon);
-					PersonnePhysique pp3 = addHabitant(NO_BERCLAZ);
-					addForPrincipal(pp3,date(1998,1,2), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-					PersonnePhysique pp4 = addHabitant(NO_BOCHUZ);
-					addForPrincipal(pp4,date(1998,1,2), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
-					MenageCommun mc = addEnsembleTiersCouple(pp3,pp4, dateMariage, null).getMenage();
-					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-					PersonnePhysique pp5 = addHabitant(NO_DESSOURCES);
-					addForPrincipal(pp5, date(2006,1,1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-					PersonnePhysique pp6 = addNonHabitant("Nabit", "Plulat", date(1980,1,2), Sexe.MASCULIN);
-					addForPrincipal(pp6, date(1998,1,2), MotifFor.MAJORITE, date(2010,1,1), MotifFor.DEPART_HC, MockCommune.Lausanne);
-					return new Long[] {pp1.getNumero(), pp2.getNumero(), mc.getNumero(), pp5.getNumero(), pp6.getNumero()};
-				}
+			final Long[] ctbIds = doInNewTransaction(status -> {
+				PersonnePhysique pp1 = addHabitant(NO_JACQUIER);
+				PersonnePhysique pp2 = addHabitant(NO_CHOLLET);
+				addForPrincipal(pp2, date(1998, 1, 2), MotifFor.MAJORITE, MockCommune.Moudon);
+				PersonnePhysique pp3 = addHabitant(NO_BERCLAZ);
+				addForPrincipal(pp3, date(1998, 1, 2), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				PersonnePhysique pp4 = addHabitant(NO_BOCHUZ);
+				addForPrincipal(pp4, date(1998, 1, 2), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
+				MenageCommun mc = addEnsembleTiersCouple(pp3, pp4, dateMariage, null).getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				PersonnePhysique pp5 = addHabitant(NO_DESSOURCES);
+				addForPrincipal(pp5, date(2006, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				PersonnePhysique pp6 = addNonHabitant("Nabit", "Plulat", date(1980, 1, 2), Sexe.MASCULIN);
+				addForPrincipal(pp6, date(1998, 1, 2), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
+				return new Long[]{pp1.getNumero(), pp2.getNumero(), mc.getNumero(), pp5.getNumero(), pp6.getNumero()};
 			});
 			idJacquier = ctbIds [0];
 			idChollet = ctbIds [1];

@@ -9,14 +9,13 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -77,11 +76,9 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 		});
 
 		// création du futur principal
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(idPrincipal, noInd);
-			}
+		doInNewTransactionAndSession(status -> {
+			addHabitant(idPrincipal, noInd);
+			return null;
 		});
 
 		// transformation en ménage-commun

@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -83,73 +81,62 @@ public class RaisonSocialeTest extends AbstractEvenementEntrepriseCivileProcesso
 
 		// Création de l'entreprise
 
-		final Map<Long, Long> idMap = doInNewTransactionAndSession(new TransactionCallback<Map<Long, Long>>() {
-			@Override
-			public Map<Long, Long> doInTransaction(TransactionStatus transactionStatus) {
-				Map<Long, Long> idMap = new HashMap<>();
+		final Map<Long, Long> idMap = doInNewTransactionAndSession(status -> {
+			Map<Long, Long> map = new HashMap<>();
 
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
-				idMap.put(noEtablissement, etablissement.getNumero());
+			map.put(noEtablissement, etablissement.getNumero());
 
-				Etablissement etablissementSecondaire = addEtablissement();
-				etablissementSecondaire.setNumeroEtablissement(noEtablissement2);
+			Etablissement etablissementSecondaire = addEtablissement();
+			etablissementSecondaire.setNumeroEtablissement(noEtablissement2);
 
-				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
+			addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-				idMap.put(noEtablissement2, etablissementSecondaire.getNumero());
-				return idMap;
-			}
+			map.put(noEtablissement2, etablissementSecondaire.getNumero());
+			return map;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
+			                                  noEtablissement),
+			                    evt.getErreurs().get(2).getMessage());
 
-				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
-				                                                               FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
-				                                                               noEtablissement),
-				                                                 evt.getErreurs().get(2).getMessage());
-
-				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement secondaire n°%s (civil: %d). Synergy Conception Aubonne SA devient Energol creation Aubonne SA.",
-				                                                 FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement2)),
-				                                                 noEtablissement2),
-				                                                 evt.getErreurs().get(3).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("Changement de raison sociale de l'établissement secondaire n°%s (civil: %d). Synergy Conception Aubonne SA devient Energol creation Aubonne SA.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement2)),
+			                                  noEtablissement2),
+			                    evt.getErreurs().get(3).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -184,79 +171,67 @@ public class RaisonSocialeTest extends AbstractEvenementEntrepriseCivileProcesso
 
 		// Création de l'entreprise
 
-		final Map<Long, Long> idMap = doInNewTransactionAndSession(new TransactionCallback<Map<Long, Long>>() {
-			@Override
-			public Map<Long, Long> doInTransaction(TransactionStatus transactionStatus) {
-				Map<Long, Long> idMap = new HashMap<>();
+		final Map<Long, Long> idMap = doInNewTransactionAndSession(status -> {
+			Map<Long, Long> map = new HashMap<>();
 
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
-				idMap.put(noEtablissement, etablissement.getNumero());
+			map.put(noEtablissement, etablissement.getNumero());
 
-				Etablissement etablissementSecondaire = addEtablissement();
-				etablissementSecondaire.setNumeroEtablissement(noEtablissement2);
-				etablissementSecondaire.setEnseigne("Synergy Conception");
+			Etablissement etablissementSecondaire = addEtablissement();
+			etablissementSecondaire.setNumeroEtablissement(noEtablissement2);
+			etablissementSecondaire.setEnseigne("Synergy Conception");
 
-				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
+			addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-				idMap.put(noEtablissement2, etablissementSecondaire.getNumero());
-				return idMap;
-			}
+			map.put(noEtablissement2, etablissementSecondaire.getNumero());
+			return map;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
+			                                  noEtablissement),
+			                    evt.getErreurs().get(2).getMessage());
 
-				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
-				                                                               FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
-				                                                               noEtablissement),
-				                                                 evt.getErreurs().get(2).getMessage());
+			Assert.assertEquals(String.format("Changement de raison sociale de l'établissement secondaire n°%s (civil: %d). Synergy Conception Aubonne SA devient Energol creation Aubonne SA.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement2)),
+			                                  noEtablissement2),
+			                    evt.getErreurs().get(3).getMessage());
 
-				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement secondaire n°%s (civil: %d). Synergy Conception Aubonne SA devient Energol creation Aubonne SA.",
-				                                                 FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement2)),
-				                                                 noEtablissement2),
-				                                                 evt.getErreurs().get(3).getMessage());
-
-				                             Assert.assertEquals(String.format("Avertissement: l'enseigne Synergy Conception de l'établissement secondaire n°%s ne correspond pas à la nouvelle raison sociale Energol creation Aubonne SA. Veuillez corriger à la main si nécessaire.",
-				                                                 FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement2))),
-				                                                 evt.getErreurs().get(4).getMessage());
-
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("Avertissement: l'enseigne Synergy Conception de l'établissement secondaire n°%s ne correspond pas à la nouvelle raison sociale Energol creation Aubonne SA. Veuillez corriger à la main si nécessaire.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement2))),
+			                    evt.getErreurs().get(4).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -290,71 +265,59 @@ public class RaisonSocialeTest extends AbstractEvenementEntrepriseCivileProcesso
 
 		// Création de l'entreprise
 
-		final Map<Long, Long> idMap = doInNewTransactionAndSession(new TransactionCallback<Map<Long, Long>>() {
-			@Override
-			public Map<Long, Long> doInTransaction(TransactionStatus transactionStatus) {
-				Map<Long, Long> idMap = new HashMap<>();
+		final Map<Long, Long> idMap = doInNewTransactionAndSession(status -> {
+			Map<Long, Long> map = new HashMap<>();
 
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
-				etablissement.setEnseigne("Energol SA");
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
+			etablissement.setEnseigne("Energol SA");
 
-				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
-				idMap.put(noEtablissement, etablissement.getNumero());
+			map.put(noEtablissement, etablissement.getNumero());
 
-				Etablissement etablissementSecondaire = addEtablissement();
-				etablissementSecondaire.setNumeroEtablissement(noEtablissement2);
+			Etablissement etablissementSecondaire = addEtablissement();
+			etablissementSecondaire.setNumeroEtablissement(noEtablissement2);
 
-				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
+			addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-				idMap.put(noEtablissement2, etablissementSecondaire.getNumero());
-				return idMap;
-			}
+			map.put(noEtablissement2, etablissementSecondaire.getNumero());
+			return map;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-
-				                             Assert.assertEquals(3, evt.getErreurs().size());
-				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
-				                                                               FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
-				                                                               noEtablissement),
-				                                                 evt.getErreurs().get(2).getMessage());
-
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(3, evt.getErreurs().size());
+			Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
+			                                  noEtablissement),
+			                    evt.getErreurs().get(2).getMessage());
+			return null;
+		});
 	}
 
 

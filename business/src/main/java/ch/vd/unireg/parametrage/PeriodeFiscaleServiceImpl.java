@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate4.HibernateSystemException;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -266,23 +264,20 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					// [UNIREG-1976] on ajoute à la volée les paramètres pour les diplomates suisses
-					final List<PeriodeFiscale> periodes = dao.getAll();
-					for (PeriodeFiscale p : periodes) {
-						final ParametrePeriodeFiscalePP horsSuissePP = p.getParametrePeriodeFiscalePP(TypeContribuable.HORS_SUISSE);
-						final ParametrePeriodeFiscalePP diplomateSuisse = p.getParametrePeriodeFiscalePP(TypeContribuable.DIPLOMATE_SUISSE);
-						if (diplomateSuisse == null && horsSuissePP != null) {
-							LOGGER.info("Ajout des paramètres spécifiques aux diplomates suisses sur la période fiscale " + p.getAnnee());
-							final ParametrePeriodeFiscalePP newDiplomateSuisse = horsSuissePP.duplicate();
-							newDiplomateSuisse.setTypeContribuable(TypeContribuable.DIPLOMATE_SUISSE);
-							p.addParametrePeriodeFiscale(newDiplomateSuisse);
-						}
+			template.execute(status -> {
+				// [UNIREG-1976] on ajoute à la volée les paramètres pour les diplomates suisses
+				final List<PeriodeFiscale> periodes = dao.getAll();
+				for (PeriodeFiscale p : periodes) {
+					final ParametrePeriodeFiscalePP horsSuissePP = p.getParametrePeriodeFiscalePP(TypeContribuable.HORS_SUISSE);
+					final ParametrePeriodeFiscalePP diplomateSuisse = p.getParametrePeriodeFiscalePP(TypeContribuable.DIPLOMATE_SUISSE);
+					if (diplomateSuisse == null && horsSuissePP != null) {
+						LOGGER.info("Ajout des paramètres spécifiques aux diplomates suisses sur la période fiscale " + p.getAnnee());
+						final ParametrePeriodeFiscalePP newDiplomateSuisse = horsSuissePP.duplicate();
+						newDiplomateSuisse.setTypeContribuable(TypeContribuable.DIPLOMATE_SUISSE);
+						p.addParametrePeriodeFiscale(newDiplomateSuisse);
 					}
-					return null;
 				}
+				return null;
 			});
 		}
 		catch (HibernateSystemException e) {

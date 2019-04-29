@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -636,16 +634,13 @@ public class ProduireRolesProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			template.setReadOnly(true);
-			nosOfsCommunes = template.execute(new TransactionCallback<Set<Integer>>() {
-				@Override
-				public Set<Integer> doInTransaction(TransactionStatus status) {
-					final Set<Integer> nosOfsCommunes = new HashSet<>();
-					final List<Commune> communes = infraService.getListeCommunesByOID(oid);
-					for (Commune c : communes) {
-						nosOfsCommunes.add(c.getNoOFS());
-					}
-					return nosOfsCommunes;
+			nosOfsCommunes = template.execute(st -> {
+				final Set<Integer> nos = new HashSet<>();
+				final List<Commune> communes = infraService.getListeCommunesByOID(oid);
+				for (Commune c : communes) {
+					nos.add(c.getNoOFS());
 				}
+				return nos;
 			});
 		}
 		catch (ServiceInfrastructureException e) {
@@ -1281,25 +1276,20 @@ public class ProduireRolesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
+		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
-						final RegDate debutPeriode = RegDate.get(annee, 1, 1);
-						final RegDate finPeriode = RegDate.get(annee, 12, 31);
+				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
+				final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
-						final Query query = session.createQuery(hql);
-						query.setParameter("debutPeriode", debutPeriode);
-						query.setParameter("finPeriode", finPeriode);
-						//noinspection unchecked
-						return query.list();
-					}
-				});
+				final Query query = session.createQuery(hql);
+				query.setParameter("debutPeriode", debutPeriode);
+				query.setParameter("finPeriode", finPeriode);
+				//noinspection unchecked
+				return query.list();
 			}
-		});
+		}));
 	}
 
 	/**
@@ -1319,19 +1309,14 @@ public class ProduireRolesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
+		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final Query query = session.createQuery(hql);
-						//noinspection unchecked
-						return query.list();
-					}
-				});
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(hql);
+				//noinspection unchecked
+				return query.list();
 			}
-		});
+		}));
 	}
 
 	/**
@@ -1357,26 +1342,21 @@ public class ProduireRolesProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			return template.execute(new TransactionCallback<List<Long>>() {
+			return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 				@Override
-				public List<Long> doInTransaction(TransactionStatus status) {
-					return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-						@Override
-						public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
-							final RegDate debutPeriode = RegDate.get(annee, 1, 1);
-							final RegDate finPeriode = RegDate.get(annee, 12, 31);
+					final RegDate debutPeriode = RegDate.get(annee, 1, 1);
+					final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
-							final Query query = session.createQuery(hql);
-							query.setParameter("debutPeriode", debutPeriode);
-							query.setParameter("finPeriode", finPeriode);
-							query.setParameterList("noOfsCommune", noOfsCommunes);
-							//noinspection unchecked
-							return query.list();
-						}
-					});
+					final Query query = session.createQuery(hql);
+					query.setParameter("debutPeriode", debutPeriode);
+					query.setParameter("finPeriode", finPeriode);
+					query.setParameterList("noOfsCommune", noOfsCommunes);
+					//noinspection unchecked
+					return query.list();
 				}
-			});
+			}));
 		}
 	}
 
@@ -1402,20 +1382,15 @@ public class ProduireRolesProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			return template.execute(new TransactionCallback<List<Long>>() {
+			return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 				@Override
-				public List<Long> doInTransaction(TransactionStatus status) {
-					return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-						@Override
-						public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-							final Query query = session.createQuery(hql);
-							query.setParameterList("noOfsCommune", noOfsCommunes);
-							//noinspection unchecked
-							return query.list();
-						}
-					});
+				public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+					final Query query = session.createQuery(hql);
+					query.setParameterList("noOfsCommune", noOfsCommunes);
+					//noinspection unchecked
+					return query.list();
 				}
-			});
+			}));
 		}
 	}
 }

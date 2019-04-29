@@ -2,16 +2,14 @@ package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.AnnulableHelper;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.Heritage;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -63,22 +61,20 @@ public class AnnulationDecesEchProcessorTest extends AbstractEvenementCivilEchPr
 		traiterEvenements(noIndividu);
 		
 		// vérification
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertNull(pp.getDateDeces());
-				Assert.assertTrue(pp.isHabitantVD());
-				
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertNull(ffp.getDateFin());
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertNull(pp.getDateDeces());
+			Assert.assertTrue(pp.isHabitantVD());
+
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -125,27 +121,25 @@ public class AnnulationDecesEchProcessorTest extends AbstractEvenementCivilEchPr
 		traiterEvenements(noIndividu);
 
 		// vérification
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertNull(pp.getDateDeces());
-				Assert.assertTrue(pp.isHabitantVD());
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertNull(pp.getDateDeces());
+			Assert.assertTrue(pp.isHabitantVD());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertNull(ffp.getDateFin());
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getDateFin());
 
-				pp.getRapportsObjet().stream()
-						.filter(Heritage.class::isInstance)
-						.filter(AnnulableHelper::nonAnnule)
-						.forEach(ret -> Assert.fail("Le rapport " + ret + " n'a pas été annulé !!"));
-			}
+			pp.getRapportsObjet().stream()
+					.filter(Heritage.class::isInstance)
+					.filter(AnnulableHelper::nonAnnule)
+					.forEach(ret -> Assert.fail("Le rapport " + ret + " n'a pas été annulé !!"));
+			return null;
 		});
 	}
 }

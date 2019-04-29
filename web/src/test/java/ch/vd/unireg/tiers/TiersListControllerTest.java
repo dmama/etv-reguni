@@ -10,18 +10,16 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.TestData;
+import ch.vd.unireg.common.WebMockMvcTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.TestData;
-import ch.vd.unireg.common.WebMockMvcTest;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -294,12 +292,9 @@ public class TiersListControllerTest extends WebMockMvcTest {
 
 	private void loadDatabase(boolean fullReindex) throws Exception {
 		globalTiersIndexer.overwriteIndex();
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				TestData.loadTiersBasic(hibernateTemplate, false);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			TestData.loadTiersBasic(hibernateTemplate, false);
+			return null;
 		});
 		if (fullReindex) {
 			globalTiersIndexer.indexAllDatabase();

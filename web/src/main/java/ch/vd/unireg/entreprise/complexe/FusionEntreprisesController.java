@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -196,44 +195,42 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		final Set<Long> idsEntreprisesDejaAbsorbees = sessionData.getIdsEntreprisesAbsorbees();
 		final RegDate dateSeuil = RegDateHelper.minimum(sessionData.getDateBilanFusion(), sessionData.getDateContratFusion(), NullDateBehavior.LATEST);
 		if (!searchResults.isEmpty()) {
-			doInReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					for (TiersIndexedDataView searchResult : searchResults) {
-						final String explicationNonSelectionnable;
+			doInReadOnlyTransaction(status -> {
+				for (TiersIndexedDataView searchResult : searchResults) {
+					final String explicationNonSelectionnable;
 
-						// si l'entreprise est déjà sélectionnée comme entreprise absorbante, on ne peut pas la reprendre dans les absorbées
-						if (sessionData.getIdEntrepriseAbsorbante() == searchResult.getNumero()) {
-							explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.deja.utilisee.comme.absorbante", null, WebContextUtils.getDefaultLocale());
+					// si l'entreprise est déjà sélectionnée comme entreprise absorbante, on ne peut pas la reprendre dans les absorbées
+					if (sessionData.getIdEntrepriseAbsorbante() == searchResult.getNumero()) {
+						explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.deja.utilisee.comme.absorbante", null, WebContextUtils.getDefaultLocale());
+					}
+					// si l'entreprise est déjà sélectionnée dans les entreprises absorbées, on ne peut pas la choisir à nouveau
+					else if (idsEntreprisesDejaAbsorbees.contains(searchResult.getNumero())) {
+						explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.deja.utilisee.comme.absorbee", null, WebContextUtils.getDefaultLocale());
+					}
+					else {
+						final Entreprise entreprise = getTiers(Entreprise.class, searchResult.getNumero());
+						final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
+						final TypeEtatEntreprise etatAvantAbsorption = etats.stream()
+								.filter(etat -> RegDateHelper.isBeforeOrEqual(etat.getDateObtention(), dateSeuil, NullDateBehavior.EARLIEST))
+								.reduce((a, b) -> b)            // on veut le dernier avant la date seuil (pas la peine de re-trier, puisque la liste de départ l'était déjà)
+								.map(EtatEntreprise::getType)
+								.orElse(null);
+
+						if (etatAvantAbsorption == TypeEtatEntreprise.DISSOUTE) {
+							explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.dissoute.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
 						}
-						// si l'entreprise est déjà sélectionnée dans les entreprises absorbées, on ne peut pas la choisir à nouveau
-						else if (idsEntreprisesDejaAbsorbees.contains(searchResult.getNumero())) {
-							explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.deja.utilisee.comme.absorbee", null, WebContextUtils.getDefaultLocale());
+						else if (etatAvantAbsorption == TypeEtatEntreprise.RADIEE_RC) {
+							explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.radiee.rc.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
 						}
 						else {
-							final Entreprise entreprise = getTiers(Entreprise.class, searchResult.getNumero());
-							final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
-							final TypeEtatEntreprise etatAvantAbsorption = etats.stream()
-									.filter(etat -> RegDateHelper.isBeforeOrEqual(etat.getDateObtention(), dateSeuil, NullDateBehavior.EARLIEST))
-									.reduce((a, b) -> b)            // on veut le dernier avant la date seuil (pas la peine de re-trier, puisque la liste de départ l'était déjà)
-									.map(EtatEntreprise::getType)
-									.orElse(null);
-
-							if (etatAvantAbsorption == TypeEtatEntreprise.DISSOUTE) {
-								explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.dissoute.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
-							}
-							else if (etatAvantAbsorption == TypeEtatEntreprise.RADIEE_RC) {
-								explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.radiee.rc.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
-							}
-							else {
-								explicationNonSelectionnable = null;
-							}
+							explicationNonSelectionnable = null;
 						}
-
-						final SelectionEntrepriseView view = new SelectionEntrepriseView(searchResult, explicationNonSelectionnable);
-						results.add(view);
 					}
+
+					final SelectionEntrepriseView view = new SelectionEntrepriseView(searchResult, explicationNonSelectionnable);
+					results.add(view);
 				}
+				return null;
 			});
 		}
 		return results;

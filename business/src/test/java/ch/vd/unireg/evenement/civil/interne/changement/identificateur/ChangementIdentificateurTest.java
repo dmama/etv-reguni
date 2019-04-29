@@ -7,19 +7,17 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
-import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.type.Sexe;
@@ -48,12 +46,9 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// attente d'indexation
@@ -120,12 +115,9 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			return pp.getNumero();
 		});
 
 		// attente d'indexation
@@ -140,17 +132,15 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		Assert.assertEquals("Le numéro du tiers est incorrect", (Long) ppId, tiers.getNumero());
 
 		// vérification que les données en base sont vides
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertNull(pp.getNumeroAssureSocial());
-				Assert.assertNull(pp.getNomMere());
-				Assert.assertNull(pp.getPrenomsMere());
-				Assert.assertNull(pp.getNomPere());
-				Assert.assertNull(pp.getPrenomsPere());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertNull(pp.getNumeroAssureSocial());
+			Assert.assertNull(pp.getNomMere());
+			Assert.assertNull(pp.getPrenomsMere());
+			Assert.assertNull(pp.getNomPere());
+			Assert.assertNull(pp.getPrenomsPere());
+			return null;
 		});
 
 		doModificationIndividu(noIndividu, new IndividuModification() {
@@ -190,17 +180,15 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		Assert.assertEquals("le nouveau NAVS13 n'a pas été indexé", "7561261400563", l.get(0).getNavs13_1());
 
 		// .. et en base aussi
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals("7561261400563", pp.getNumeroAssureSocial());
-				Assert.assertEquals("Popova", pp.getNomMere());
-				Assert.assertEquals("Célestine", pp.getPrenomsMere());
-				Assert.assertEquals("Popov", pp.getNomPere());
-				Assert.assertEquals("Martin", pp.getPrenomsPere());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals("7561261400563", pp.getNumeroAssureSocial());
+			Assert.assertEquals("Popova", pp.getNomMere());
+			Assert.assertEquals("Célestine", pp.getPrenomsMere());
+			Assert.assertEquals("Popov", pp.getNomPere());
+			Assert.assertEquals("Martin", pp.getPrenomsPere());
+			return null;
 		});
 	}
 }

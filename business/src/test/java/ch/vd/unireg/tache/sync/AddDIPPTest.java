@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -98,30 +97,24 @@ public class AddDIPPTest extends BusinessTest {
 		final RegDate dateEnvoiMasseDI = Tache.getDefaultEcheance(date(currentYear + 1, 1, 15)).addDays(-4);    // un mercredi...
 
 		// création d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
-				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
+			pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
+			return pp.getNumero();
 		});
 
 		// on vérifie qu'aucune tâche d'envoi de DI n'a été créée jusqu'ici (c'est pour ça qu'on a mis l'arrivée HS au premier janvier de l'année courante)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 
 		// on se place en tout début d'année suivante
@@ -150,29 +143,26 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// vérification de la tâche créée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
 
-				// la date attendue est le dimanche suivant la limite
-				RegDate echeanceAttendue = dateEnvoiMasseDI;
-				while (echeanceAttendue.getWeekDay() != RegDate.WeekDay.SUNDAY) {
-					echeanceAttendue = echeanceAttendue.getOneDayAfter();
-				}
-
-				Assert.assertEquals(echeanceAttendue, tache.getDateEcheance());
-				return null;
+			// la date attendue est le dimanche suivant la limite
+			RegDate echeanceAttendue = dateEnvoiMasseDI;
+			while (echeanceAttendue.getWeekDay() != RegDate.WeekDay.SUNDAY) {
+				echeanceAttendue = echeanceAttendue.getOneDayAfter();
 			}
+
+			Assert.assertEquals(echeanceAttendue, tache.getDateEcheance());
+			return null;
 		});
 	}
 
@@ -190,30 +180,24 @@ public class AddDIPPTest extends BusinessTest {
 		final RegDate dateEnvoiMasseDI = Tache.getDefaultEcheance(date(currentYear + 1, 1, 15)).addDays(-4);    // un mercredi...
 
 		// création d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
-				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
+			pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
+			return pp.getNumero();
 		});
 
 		// on vérifie qu'aucune tâche d'envoi de DI n'a été créée jusqu'ici (c'est pour ça qu'on a mis l'arrivée HS au premier janvier de l'année courante)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 
 		// on se place en tout début d'année suivante
@@ -242,22 +226,19 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// vérification de la tâche créée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertEquals(dateEnvoiMasseDI, tache.getDateEcheance());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertEquals(dateEnvoiMasseDI, tache.getDateEcheance());
+			return null;
 		});
 	}
 
@@ -276,30 +257,24 @@ public class AddDIPPTest extends BusinessTest {
 		final RegDate dateReference = dateEnvoiMasseDI.addDays(4);
 
 		// création d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
-				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
+			pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
+			return pp.getNumero();
 		});
 
 		// on vérifie qu'aucune tâche d'envoi de DI n'a été créée jusqu'ici (c'est pour ça qu'on a mis l'arrivée HS au premier janvier de l'année courante)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 
 		// on se place en tout début d'année suivante
@@ -325,29 +300,26 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// vérification de la tâche créée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
 
-				// la date attendue est dimanche prochain
-				RegDate echeanceAttendue = dateReference;
-				while (echeanceAttendue.getWeekDay() != RegDate.WeekDay.SUNDAY) {
-					echeanceAttendue = echeanceAttendue.getOneDayAfter();
-				}
-
-				Assert.assertEquals(echeanceAttendue, tache.getDateEcheance());
-				return null;
+			// la date attendue est dimanche prochain
+			RegDate echeanceAttendue = dateReference;
+			while (echeanceAttendue.getWeekDay() != RegDate.WeekDay.SUNDAY) {
+				echeanceAttendue = echeanceAttendue.getOneDayAfter();
 			}
+
+			Assert.assertEquals(echeanceAttendue, tache.getDateEcheance());
+			return null;
 		});
 	}
 
@@ -376,39 +348,31 @@ public class AddDIPPTest extends BusinessTest {
 		}
 
 		// création d'un contribuable
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
+			final Set<ParametrePeriodeFiscale> params = new HashSet<>();
+			params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+			params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+			pf.setParametrePeriodeFiscale(params);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
-				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
-				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
-				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
-				pf.setParametrePeriodeFiscale(params);
+			// contribuable vaudois ordinaire
+			final PersonnePhysique ord = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
+			addForPrincipal(ord, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 
-				// contribuable vaudois ordinaire
-				final PersonnePhysique ord = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
-				addForPrincipal(ord, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-
-				// contribuable vaudois ICCD
-				final PersonnePhysique iccd = addNonHabitant("Michel", "Schummi", null, Sexe.MASCULIN);
-				addForPrincipal(iccd, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.DEPENSE);
-
-				return new Ids(ord.getNumero(), iccd.getNumero());
-			}
+			// contribuable vaudois ICCD
+			final PersonnePhysique iccd = addNonHabitant("Michel", "Schummi", null, Sexe.MASCULIN);
+			addForPrincipal(iccd, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.DEPENSE);
+			return new Ids(ord.getNumero(), iccd.getNumero());
 		});
 
 		// on vérifie qu'aucune tâche d'envoi de DI n'a été créée jusqu'ici (c'est pour ça qu'on a mis les arrivées HS au premier janvier de l'année courante)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 
 		// on se place en tout début d'année suivante
@@ -457,46 +421,41 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// vérification des tâches créées
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			// contribuable ordinaire
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
 
-				// contribuable ordinaire
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
 
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-
-					// la date attendue à la limite "ordinaire"
-					Assert.assertEquals(dateLimiteOrdinaire, tache.getDateEcheance());
-				}
-
-				// contribuable ICCD
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-
-					// la date attendue à la limite "dépense"
-					Assert.assertEquals(dateLimiteICCD, tache.getDateEcheance());
-				}
-
-				return null;
+				// la date attendue à la limite "ordinaire"
+				Assert.assertEquals(dateLimiteOrdinaire, tache.getDateEcheance());
 			}
+
+			// contribuable ICCD
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+
+				// la date attendue à la limite "dépense"
+				Assert.assertEquals(dateLimiteICCD, tache.getDateEcheance());
+			}
+			return null;
 		});
 
 	}
@@ -527,39 +486,31 @@ public class AddDIPPTest extends BusinessTest {
 		}
 
 		// création d'un contribuable
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
+			final Set<ParametrePeriodeFiscale> params = new HashSet<>();
+			params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+			params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+			pf.setParametrePeriodeFiscale(params);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
-				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
-				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
-				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
-				pf.setParametrePeriodeFiscale(params);
+			// contribuable vaudois ordinaire
+			final PersonnePhysique ord = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
+			addForPrincipal(ord, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 
-				// contribuable vaudois ordinaire
-				final PersonnePhysique ord = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
-				addForPrincipal(ord, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-
-				// contribuable vaudois ICCD
-				final PersonnePhysique iccd = addNonHabitant("Michel", "Schummi", null, Sexe.MASCULIN);
-				addForPrincipal(iccd, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.DEPENSE);
-
-				return new Ids(ord.getNumero(), iccd.getNumero());
-			}
+			// contribuable vaudois ICCD
+			final PersonnePhysique iccd = addNonHabitant("Michel", "Schummi", null, Sexe.MASCULIN);
+			addForPrincipal(iccd, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.DEPENSE);
+			return new Ids(ord.getNumero(), iccd.getNumero());
 		});
 
 		// on vérifie qu'aucune tâche d'envoi de DI n'a été créée jusqu'ici (c'est pour ça qu'on a mis les arrivées HS au premier janvier de l'année courante)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-				final List<Tache> taches = tacheDAO.find(criterion);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> taches = tacheDAO.find(criterion);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 
 		// on se place en tout début d'année suivante
@@ -607,46 +558,41 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// vérification des tâches créées
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			// contribuable ordinaire
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
 
-				// contribuable ordinaire
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
 
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-
-					// la date attendue au prochain dimanche, car la limite est dépassée pour les ordinaires
-					Assert.assertEquals(TacheEnvoiDeclarationImpot.getDefaultEcheance(dateReference), tache.getDateEcheance());
-				}
-
-				// contribuable ICCD
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-
-					// la date attendue à la limite "dépense"
-					Assert.assertEquals(dateLimiteICCD, tache.getDateEcheance());
-				}
-
-				return null;
+				// la date attendue au prochain dimanche, car la limite est dépassée pour les ordinaires
+				Assert.assertEquals(TacheEnvoiDeclarationImpot.getDefaultEcheance(dateReference), tache.getDateEcheance());
 			}
+
+			// contribuable ICCD
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+
+				// la date attendue à la limite "dépense"
+				Assert.assertEquals(dateLimiteICCD, tache.getDateEcheance());
+			}
+			return null;
 		});
 	}
 }

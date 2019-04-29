@@ -3,17 +3,8 @@ package ch.vd.unireg.evenement.party;
 import java.util.EnumSet;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.xml.common.v1.Date;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
-import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory;
-import ch.vd.unireg.xml.party.person.v2.Sex;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
@@ -21,6 +12,13 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.Date;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
+import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v2.Sex;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -71,39 +69,34 @@ public class CreateNonresidentRequestHandlerV2Test extends BusinessTest {
 		final CreateNonresidentRequest request = new CreateNonresidentRequest(
 				USER_LOGIN, "Nabit", "Pala", new Date(1980, 1, 2), Sex.MALE, category, 7561111111111L, null
 		);
-		final CreateNonresidentResponse res= doInNewTransaction(new TransactionCallback<CreateNonresidentResponse>() {
-			@Override
-			public CreateNonresidentResponse doInTransaction(TransactionStatus status) {
-				try {
-					return (CreateNonresidentResponse) handler.handle(request).getResponse();
-				}
-				catch (ServiceException e) {
-					throw new RuntimeException(e);
-				}
+		final CreateNonresidentResponse res= doInNewTransaction(status -> {
+			try {
+				return handler.handle(request).getResponse();
+			}
+			catch (ServiceException e) {
+				throw new RuntimeException(e);
 			}
 		});
 
 		assertNotNull(res.getNumber());
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long)res.getNumber());
-				assertNotNull("Le non-habitant n'est pas en base", pp);
-				assertFalse("On est sensé avoir créer un non-habitant !", pp.isHabitantVD());
-				assertNull("le non-habitant ne devrait pas avoir de numéro d'indiv", pp.getNumeroIndividu());
-				assertEquals("Le nom du non-habitant ne correspond pas à celui de la demande de création", "Nabit", pp.getNom());
-				assertEquals("Le prénom du non-habitant ne correspond pas à celui de la demande de création", "Pala", pp.getPrenomUsuel());
-				assertEquals("Le date de naissance du non-habitant ne correspond pas à celui de la demande de création", date(1980, 1, 2), pp.getDateNaissance());
-				assertEquals("Le sexe du non-habitant ne correspond pas à celui de la demande de création", Sexe.MASCULIN, pp.getSexe());
-				if (category == NaturalPersonCategory.SWISS) {
-					assertNull("Le non-habitant crée est suisse, sa catégorie d'étranger doit être null", pp.getCategorieEtranger());
-				} else {
-					assertEquals("Le non-habitant crée n'est pas de la bonne catégorie d'étranger ", category, EnumHelper.coreToXMLv2(pp.getCategorieEtranger()));
-				}
-				assertEquals("Le numéro AVS du non-habitant ne correspond pas à celui de la demande de création", "7561111111111", pp.getNumeroAssureSocial());
-				return null;
+		doInNewTransaction(status -> {
+			PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) res.getNumber());
+			assertNotNull("Le non-habitant n'est pas en base", pp);
+			assertFalse("On est sensé avoir créer un non-habitant !", pp.isHabitantVD());
+			assertNull("le non-habitant ne devrait pas avoir de numéro d'indiv", pp.getNumeroIndividu());
+			assertEquals("Le nom du non-habitant ne correspond pas à celui de la demande de création", "Nabit", pp.getNom());
+			assertEquals("Le prénom du non-habitant ne correspond pas à celui de la demande de création", "Pala", pp.getPrenomUsuel());
+			assertEquals("Le date de naissance du non-habitant ne correspond pas à celui de la demande de création", date(1980, 1, 2), pp.getDateNaissance());
+			assertEquals("Le sexe du non-habitant ne correspond pas à celui de la demande de création", Sexe.MASCULIN, pp.getSexe());
+			if (category == NaturalPersonCategory.SWISS) {
+				assertNull("Le non-habitant crée est suisse, sa catégorie d'étranger doit être null", pp.getCategorieEtranger());
 			}
+			else {
+				assertEquals("Le non-habitant crée n'est pas de la bonne catégorie d'étranger ", category, EnumHelper.coreToXMLv2(pp.getCategorieEtranger()));
+			}
+			assertEquals("Le numéro AVS du non-habitant ne correspond pas à celui de la demande de création", "7561111111111", pp.getNumeroAssureSocial());
+			return null;
 		});
 	}
 

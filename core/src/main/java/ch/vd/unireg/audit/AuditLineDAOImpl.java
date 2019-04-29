@@ -12,8 +12,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -107,23 +105,20 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 	public void insertLineInNewTx(final AuditLine line) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
-				final long id = getNextId();
-				final Query query = getCurrentSession().createSQLQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (:id, :logLevel, :docId, :evtId, :threadId, :msg, :logDate, :logUser)");
-				query.setLong("id", id);
-				query.setParameter("logLevel", line.getLevel().toString());
-				query.setParameter("docId", line.getDocumentId(), StandardBasicTypes.LONG);
-				query.setParameter("evtId", line.getEvenementId(), StandardBasicTypes.LONG);
-				query.setParameter("threadId", line.getThreadId(), StandardBasicTypes.LONG);
-				query.setParameter("msg", line.getMessage());
-				query.setTimestamp("logDate", now);
-				query.setParameter("logUser", AuthenticationHelper.getCurrentPrincipal());
-				query.executeUpdate();
-				return null;
-			}
+		template.execute(status -> {
+			final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
+			final long id = getNextId();
+			final Query query = getCurrentSession().createSQLQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (:id, :logLevel, :docId, :evtId, :threadId, :msg, :logDate, :logUser)");
+			query.setLong("id", id);
+			query.setParameter("logLevel", line.getLevel().toString());
+			query.setParameter("docId", line.getDocumentId(), StandardBasicTypes.LONG);
+			query.setParameter("evtId", line.getEvenementId(), StandardBasicTypes.LONG);
+			query.setParameter("threadId", line.getThreadId(), StandardBasicTypes.LONG);
+			query.setParameter("msg", line.getMessage());
+			query.setTimestamp("logDate", now);
+			query.setParameter("logUser", AuthenticationHelper.getCurrentPrincipal());
+			query.executeUpdate();
+			return null;
 		});
 	}
 

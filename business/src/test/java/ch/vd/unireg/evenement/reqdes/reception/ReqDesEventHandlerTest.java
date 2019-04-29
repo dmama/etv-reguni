@@ -15,7 +15,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
@@ -208,183 +207,181 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(2, idsUnitesTraitement.size());
 
 		// vérification du contenu de la base de données
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// vérification qu'on n'a pas créé d'autres unités de traitement
-				Assert.assertEquals(idsUnitesTraitement.size(), utDao.getAll().size());
+		doInNewTransactionAndSession(status -> {
+			// vérification qu'on n'a pas créé d'autres unités de traitement
+			Assert.assertEquals(idsUnitesTraitement.size(), utDao.getAll().size());
 
-				// récupération de toutes les unités de traitement
-				final List<UniteTraitement> uts = new ArrayList<>(idsUnitesTraitement.size());
-				for (Long id : idsUnitesTraitement) {
-					final UniteTraitement ut = utDao.get(id);
-					Assert.assertNotNull("identifiant " + id, ut);
-					uts.add(ut);
+			// récupération de toutes les unités de traitement
+			final List<UniteTraitement> uts = new ArrayList<>(idsUnitesTraitement.size());
+			for (Long id : idsUnitesTraitement) {
+				final UniteTraitement ut = utDao.get(id);
+				Assert.assertNotNull("identifiant " + id, ut);
+				uts.add(ut);
+			}
+
+			// tri dans l'ordre du nombre de parties prenantes, (1 en a 1, l'autre en a 2)
+			Collections.sort(uts, new Comparator<UniteTraitement>() {
+				@Override
+				public int compare(UniteTraitement o1, UniteTraitement o2) {
+					return o1.getPartiesPrenantes().size() - o2.getPartiesPrenantes().size();
 				}
+			});
 
-				// tri dans l'ordre du nombre de parties prenantes, (1 en a 1, l'autre en a 2)
-				Collections.sort(uts, new Comparator<UniteTraitement>() {
+			// pour vérifier que le lien vers l'événement est bien le même à chaque fois
+			final EvenementReqDes evt;
+
+			{
+				final UniteTraitement ut = uts.get(0);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
+				Assert.assertNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+				evt = ut.getEvenement();
+				Assert.assertNotNull(evt);
+
+				final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Dumbledore", pp.getNom());
+				Assert.assertNull(pp.getConjointPartiePrenante());
+				Assert.assertEquals(date(2012, 5, 24), pp.getDateDeces());
+				Assert.assertNull(pp.getNumeroContribuable());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), pp.getOfsPaysNationalite());
+				Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
+				Assert.assertEquals(1, pp.getRoles().size());
+
+				final RolePartiePrenante rpp = pp.getRoles().iterator().next();
+				Assert.assertNotNull(rpp);
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
+				Assert.assertEquals(TypeRole.ALIENATEUR, rpp.getRole());
+			}
+			{
+				final UniteTraitement ut = uts.get(1);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
+				Assert.assertNull(ut.getDateTraitement());
+				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertEquals(2, ut.getPartiesPrenantes().size());
+
+				final EvenementReqDes evtAutre = ut.getEvenement();
+				Assert.assertNotNull(evtAutre);
+				Assert.assertSame(evt, evtAutre);       // même session hibernate + même entité en base -> même objet en mémoire...
+
+				// tri par la date de naissance -> Harry puis Ginny
+				final List<PartiePrenante> sortedPPs = new ArrayList<>(ut.getPartiesPrenantes());
+				Collections.sort(sortedPPs, new Comparator<PartiePrenante>() {
 					@Override
-					public int compare(UniteTraitement o1, UniteTraitement o2) {
-						return o1.getPartiesPrenantes().size() - o2.getPartiesPrenantes().size();
+					public int compare(PartiePrenante o1, PartiePrenante o2) {
+						return o1.getDateNaissance().compareTo(o2.getDateNaissance());
 					}
 				});
 
-				// pour vérifier que le lien vers l'événement est bien le même à chaque fois
-				final EvenementReqDes evt;
-
 				{
-					final UniteTraitement ut = uts.get(0);
-					Assert.assertNotNull(ut);
-					Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
-					Assert.assertNull(ut.getDateTraitement());
-					Assert.assertEquals(0, ut.getErreurs().size());
-					Assert.assertEquals(1, ut.getPartiesPrenantes().size());
-
-					evt = ut.getEvenement();
-					Assert.assertNotNull(evt);
-
-					final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
+					final PartiePrenante pp = sortedPPs.get(0);
 					Assert.assertNotNull(pp);
-					Assert.assertEquals("Dumbledore", pp.getNom());
-					Assert.assertNull(pp.getConjointPartiePrenante());
-					Assert.assertEquals(date(2012, 5, 24), pp.getDateDeces());
+					Assert.assertEquals("Potter", pp.getNom());
+					Assert.assertSame(sortedPPs.get(1), pp.getConjointPartiePrenante());    // même session hibernate + même entité en base -> même objet en mémoire...
+					Assert.assertNull(pp.getDateDeces());
 					Assert.assertNull(pp.getNumeroContribuable());
-					Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), pp.getOfsPaysNationalite());
+					Assert.assertEquals((Integer) MockPays.Apatridie.getNoOFS(), pp.getOfsPaysNationalite());
 					Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
+					Assert.assertEquals(3, pp.getRoles().size());
+
+					final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
+					Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
+						@Override
+						public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
+							return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
+						}
+					});
+
+					{
+						final RolePartiePrenante rpp = sortedRoles.get(0);
+						Assert.assertNotNull(rpp);
+						Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), rpp.getTransaction().getOfsCommune());
+						Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
+					}
+					{
+						final RolePartiePrenante rpp = sortedRoles.get(1);
+						Assert.assertNotNull(rpp);
+						Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
+						Assert.assertEquals(TypeRole.ACQUEREUR, rpp.getRole());
+					}
+					{
+						final RolePartiePrenante rpp = sortedRoles.get(2);
+						Assert.assertNotNull(rpp);
+						Assert.assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), rpp.getTransaction().getOfsCommune());
+						Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
+					}
+				}
+				{
+					final PartiePrenante pp = sortedPPs.get(1);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Weasley", pp.getNom());
+					Assert.assertSame(sortedPPs.get(0), pp.getConjointPartiePrenante());    // même session hibernate + même entité en base -> même objet en mémoire...
+					Assert.assertNull(pp.getDateDeces());
+					Assert.assertEquals((Long) noCtb, pp.getNumeroContribuable());
+					Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPaysNationalite());
+					Assert.assertNull(pp.getCategorieEtranger());
 					Assert.assertEquals(1, pp.getRoles().size());
 
 					final RolePartiePrenante rpp = pp.getRoles().iterator().next();
 					Assert.assertNotNull(rpp);
 					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
-					Assert.assertEquals(TypeRole.ALIENATEUR, rpp.getRole());
-				}
-				{
-					final UniteTraitement ut = uts.get(1);
-					Assert.assertNotNull(ut);
-					Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
-					Assert.assertNull(ut.getDateTraitement());
-					Assert.assertEquals(0, ut.getErreurs().size());
-					Assert.assertEquals(2, ut.getPartiesPrenantes().size());
-
-					final EvenementReqDes evtAutre = ut.getEvenement();
-					Assert.assertNotNull(evtAutre);
-					Assert.assertSame(evt, evtAutre);       // même session hibernate + même entité en base -> même objet en mémoire...
-
-					// tri par la date de naissance -> Harry puis Ginny
-					final List<PartiePrenante> sortedPPs = new ArrayList<>(ut.getPartiesPrenantes());
-					Collections.sort(sortedPPs, new Comparator<PartiePrenante>() {
-						@Override
-						public int compare(PartiePrenante o1, PartiePrenante o2) {
-							return o1.getDateNaissance().compareTo(o2.getDateNaissance());
-						}
-					});
-
-					{
-						final PartiePrenante pp = sortedPPs.get(0);
-						Assert.assertNotNull(pp);
-						Assert.assertEquals("Potter", pp.getNom());
-						Assert.assertSame(sortedPPs.get(1), pp.getConjointPartiePrenante());    // même session hibernate + même entité en base -> même objet en mémoire...
-						Assert.assertNull(pp.getDateDeces());
-						Assert.assertNull(pp.getNumeroContribuable());
-						Assert.assertEquals((Integer) MockPays.Apatridie.getNoOFS(), pp.getOfsPaysNationalite());
-						Assert.assertEquals(CategorieEtranger._03_ETABLI_C, pp.getCategorieEtranger());
-						Assert.assertEquals(3, pp.getRoles().size());
-
-						final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
-						Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
-							@Override
-							public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-								return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
-							}
-						});
-
-						{
-							final RolePartiePrenante rpp = sortedRoles.get(0);
-							Assert.assertNotNull(rpp);
-							Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), rpp.getTransaction().getOfsCommune());
-							Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
-						}
-						{
-							final RolePartiePrenante rpp = sortedRoles.get(1);
-							Assert.assertNotNull(rpp);
-							Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
-							Assert.assertEquals(TypeRole.ACQUEREUR, rpp.getRole());
-						}
-						{
-							final RolePartiePrenante rpp = sortedRoles.get(2);
-							Assert.assertNotNull(rpp);
-							Assert.assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), rpp.getTransaction().getOfsCommune());
-							Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
-						}
-					}
-					{
-						final PartiePrenante pp = sortedPPs.get(1);
-						Assert.assertNotNull(pp);
-						Assert.assertEquals("Weasley", pp.getNom());
-						Assert.assertSame(sortedPPs.get(0), pp.getConjointPartiePrenante());    // même session hibernate + même entité en base -> même objet en mémoire...
-						Assert.assertNull(pp.getDateDeces());
-						Assert.assertEquals((Long) noCtb, pp.getNumeroContribuable());
-						Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPaysNationalite());
-						Assert.assertNull(pp.getCategorieEtranger());
-						Assert.assertEquals(1, pp.getRoles().size());
-
-						final RolePartiePrenante rpp = pp.getRoles().iterator().next();
-						Assert.assertNotNull(rpp);
-						Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), rpp.getTransaction().getOfsCommune());
-						Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
-					}
-				}
-
-				// vérification du contenu de l'événement lui-même
-				Assert.assertEquals(date(2008, 9, 29), evt.getDateActe());
-				Assert.assertEquals("124846154", evt.getNumeroMinute());
-				Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
-				Assert.assertEquals("<empty/>", evt.getXml());
-				Assert.assertNotNull(evt.getNotaire());
-				Assert.assertEquals("moinotaire", evt.getNotaire().getVisa());
-				Assert.assertEquals("Yesparler", evt.getNotaire().getNom());
-				Assert.assertEquals("Clothaire", evt.getNotaire().getPrenom());
-				Assert.assertNotNull(evt.getOperateur());
-				Assert.assertEquals("secret", evt.getOperateur().getVisa());
-				Assert.assertEquals("Cecrétère", evt.getOperateur().getNom());
-				Assert.assertEquals("Alicia", evt.getOperateur().getPrenom());
-
-				// et finalement vérification des transactions enregistrées
-				final List<TransactionImmobiliere> transactions = new ArrayList<>(evt.getTransactions());
-				Collections.sort(transactions, new Comparator<TransactionImmobiliere>() {
-					@Override
-					public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
-						return o1.getOfsCommune() - o2.getOfsCommune();
-					}
-				});
-				Assert.assertEquals(3, transactions.size());
-
-				{
-					final TransactionImmobiliere t = transactions.get(0);
-					Assert.assertNotNull(t);
-					Assert.assertEquals("Droit de passage", t.getDescription());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
-					Assert.assertEquals(TypeInscription.SERVITUDE, t.getTypeInscription());
-					Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), t.getOfsCommune());
-				}
-				{
-					final TransactionImmobiliere t = transactions.get(1);
-					Assert.assertNotNull(t);
-					Assert.assertEquals("Donation", t.getDescription());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, t.getTypeInscription());
-					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), t.getOfsCommune());
-				}
-				{
-					final TransactionImmobiliere t = transactions.get(2);
-					Assert.assertNotNull(t);
-					Assert.assertEquals("Droit de passage", t.getDescription());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
-					Assert.assertEquals(TypeInscription.SERVITUDE, t.getTypeInscription());
-					Assert.assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), t.getOfsCommune());
+					Assert.assertEquals(TypeRole.AUTRE, rpp.getRole());
 				}
 			}
+
+			// vérification du contenu de l'événement lui-même
+			Assert.assertEquals(date(2008, 9, 29), evt.getDateActe());
+			Assert.assertEquals("124846154", evt.getNumeroMinute());
+			Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
+			Assert.assertEquals("<empty/>", evt.getXml());
+			Assert.assertNotNull(evt.getNotaire());
+			Assert.assertEquals("moinotaire", evt.getNotaire().getVisa());
+			Assert.assertEquals("Yesparler", evt.getNotaire().getNom());
+			Assert.assertEquals("Clothaire", evt.getNotaire().getPrenom());
+			Assert.assertNotNull(evt.getOperateur());
+			Assert.assertEquals("secret", evt.getOperateur().getVisa());
+			Assert.assertEquals("Cecrétère", evt.getOperateur().getNom());
+			Assert.assertEquals("Alicia", evt.getOperateur().getPrenom());
+
+			// et finalement vérification des transactions enregistrées
+			final List<TransactionImmobiliere> transactions = new ArrayList<>(evt.getTransactions());
+			Collections.sort(transactions, new Comparator<TransactionImmobiliere>() {
+				@Override
+				public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
+					return o1.getOfsCommune() - o2.getOfsCommune();
+				}
+			});
+			Assert.assertEquals(3, transactions.size());
+
+			{
+				final TransactionImmobiliere t = transactions.get(0);
+				Assert.assertNotNull(t);
+				Assert.assertEquals("Droit de passage", t.getDescription());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
+				Assert.assertEquals(TypeInscription.SERVITUDE, t.getTypeInscription());
+				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), t.getOfsCommune());
+			}
+			{
+				final TransactionImmobiliere t = transactions.get(1);
+				Assert.assertNotNull(t);
+				Assert.assertEquals("Donation", t.getDescription());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, t.getTypeInscription());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), t.getOfsCommune());
+			}
+			{
+				final TransactionImmobiliere t = transactions.get(2);
+				Assert.assertNotNull(t);
+				Assert.assertEquals("Droit de passage", t.getDescription());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, t.getModeInscription());
+				Assert.assertEquals(TypeInscription.SERVITUDE, t.getTypeInscription());
+				Assert.assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), t.getOfsCommune());
+			}
+			return null;
 		});
 	}
 }

@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.util.HtmlUtils;
 
@@ -102,60 +100,56 @@ public class JspTagAdresseMandataire extends BodyTagSupport {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final AdresseMandataire am = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
-				if (am == null) {
-					return StringUtils.EMPTY;
-				}
-
-				final String[] lignes;
-				try {
-					final AdresseGenerique generique = new AdresseMandataireAdapter(am, infraService);
-					final AdresseEnvoiDetaillee envoi = adresseService.buildAdresseEnvoi(generique.getSource().getTiers(), generique, am.getDateFin());
-					lignes = envoi.getLignes();
-				}
-				catch (AdresseException e) {
-					LOGGER.error("Erreur à la constitution de l'adresse mandataire " + idAdresse, e);
-					return StringUtils.EMPTY;
-				}
-
-				final List<String> actualLines = new ArrayList<>(lignes.length);
-				for (String line : lignes) {
-					final String stripped = StringUtils.trimToNull(line);
-					if (stripped != null) {
-						actualLines.add(stripped);
-					}
-				}
-				if (actualLines.isEmpty()) {
-					return StringUtils.EMPTY;
-				}
-
-				final StringBuilder b = new StringBuilder();
-				int rowindex = 0;
-				if (displayMode == DisplayMode.TABLE) {
-					b.append("<table border='0'>");
-				}
-				for (String line : actualLines) {
-					if (displayMode == DisplayMode.TABLE) {
-						b.append("<tr class='").append(rowindex % 2 == 1 ? "even" : "odd").append("'><td>");
-					}
-					else if (b.length() > 0) {
-						b.append("<br/>");
-					}
-					b.append(HtmlUtils.htmlEscape(line));
-					if (displayMode == DisplayMode.TABLE) {
-						b.append("</td></tr>");
-					}
-					++ rowindex;
-				}
-				if (displayMode == DisplayMode.TABLE) {
-					b.append("</table>");
-				}
-
-				return b.toString();
+		return template.execute(status -> {
+			final AdresseMandataire am = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
+			if (am == null) {
+				return StringUtils.EMPTY;
 			}
+
+			final String[] lignes;
+			try {
+				final AdresseGenerique generique = new AdresseMandataireAdapter(am, infraService);
+				final AdresseEnvoiDetaillee envoi = adresseService.buildAdresseEnvoi(generique.getSource().getTiers(), generique, am.getDateFin());
+				lignes = envoi.getLignes();
+			}
+			catch (AdresseException e) {
+				LOGGER.error("Erreur à la constitution de l'adresse mandataire " + idAdresse, e);
+				return StringUtils.EMPTY;
+			}
+
+			final List<String> actualLines = new ArrayList<>(lignes.length);
+			for (String line : lignes) {
+				final String stripped = StringUtils.trimToNull(line);
+				if (stripped != null) {
+					actualLines.add(stripped);
+				}
+			}
+			if (actualLines.isEmpty()) {
+				return StringUtils.EMPTY;
+			}
+
+			final StringBuilder b = new StringBuilder();
+			int rowindex = 0;
+			if (displayMode == DisplayMode.TABLE) {
+				b.append("<table border='0'>");
+			}
+			for (String line : actualLines) {
+				if (displayMode == DisplayMode.TABLE) {
+					b.append("<tr class='").append(rowindex % 2 == 1 ? "even" : "odd").append("'><td>");
+				}
+				else if (b.length() > 0) {
+					b.append("<br/>");
+				}
+				b.append(HtmlUtils.htmlEscape(line));
+				if (displayMode == DisplayMode.TABLE) {
+					b.append("</td></tr>");
+				}
+				++rowindex;
+			}
+			if (displayMode == DisplayMode.TABLE) {
+				b.append("</table>");
+			}
+			return b.toString();
 		});
 	}
 }

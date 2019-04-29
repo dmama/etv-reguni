@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -24,7 +22,6 @@ import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
@@ -75,24 +72,15 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -100,20 +88,15 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
-
-				                             Assert.assertEquals("Une vérification est requise pour cause de Dissolution de l'entreprise.",
-				                                                 evt.getErreurs().get(2).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals("Une vérification est requise pour cause de Dissolution de l'entreprise.",
+			                    evt.getErreurs().get(2).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -133,7 +116,7 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 						                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) entreprise.getEtablissements().get(0);
 				etablissementPrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, "123456", date(2015, 7, 5),
-				                                                             "Blah blah publication FOSC", null, null, null, null));
+				                                                                      "Blah blah publication FOSC", null, null, null, null));
 				addEntreprise(entreprise);
 
 			}
@@ -141,24 +124,15 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -166,17 +140,11 @@ public class DissolutionTest extends AbstractEvenementEntrepriseCivileProcessorT
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			return null;
+		});
 	}
 }

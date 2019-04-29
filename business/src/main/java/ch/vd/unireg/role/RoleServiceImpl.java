@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -191,20 +189,15 @@ public class RoleServiceImpl implements RoleService {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);
-		final Map<Integer, Integer> officeParCommune = template.execute(new TransactionCallback<Map<Integer, Integer>>() {
-			@Override
-			public Map<Integer, Integer> doInTransaction(TransactionStatus status) {
-				return oids.stream()
-						.filter(OfficeImpot::isValide)
-						.filter(OfficeImpot::isOID)
-						.map(OfficeImpot::getNoColAdm)
-						.filter(colAdmId -> oid == null || oid.equals(colAdmId))
-						.map(colAdmId -> infraService.getListeCommunesByOID(colAdmId).stream().map(commune -> Pair.of(commune.getNoOFS(), colAdmId)))
-						.flatMap(Function.identity())
-						.distinct()
-						.collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
-			}
-		});
+		final Map<Integer, Integer> officeParCommune = template.execute(status -> oids.stream()
+				.filter(OfficeImpot::isValide)
+				.filter(OfficeImpot::isOID)
+				.map(OfficeImpot::getNoColAdm)
+				.filter(colAdmId -> oid == null || oid.equals(colAdmId))
+				.map(colAdmId -> infraService.getListeCommunesByOID(colAdmId).stream().map(commune -> Pair.of(commune.getNoOFS(), colAdmId)))
+				.flatMap(Function.identity())
+				.distinct()
+				.collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
 		// quelles sont les communes intéressantes, au final ?
 		final Set<Integer> ofsCommunes;

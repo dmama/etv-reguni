@@ -2,17 +2,15 @@ package ch.vd.unireg.fors;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.manager.AutorisationManager;
 import ch.vd.unireg.type.ModeImposition;
@@ -48,13 +46,10 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 			}
 		});
 
-		final long noCtb = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Bidule", "Tartempion", date(1965, 6, 1), Sexe.MASCULIN);
-				pp.setNumeroOfsNationalite(MockPays.France.getNoOFS());
-				return pp.getNumero();
-			}
+		final long noCtb = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Bidule", "Tartempion", date(1965, 6, 1), Sexe.MASCULIN);
+			pp.setNumeroOfsNationalite(MockPays.France.getNoOFS());
+			return pp.getNumero();
 		});
 
 		final AddForPrincipalView view = new AddForPrincipalView();
@@ -95,14 +90,11 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		}
 
 		// maintenant, on ouvre un for
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noCtb);
-				assertNotNull(pp);
-				addForPrincipal(pp, date(2001, 1, 2), null, MockCommune.Bale);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noCtb);
+			assertNotNull(pp);
+			addForPrincipal(pp, date(2001, 1, 2), null, MockCommune.Bale);
+			return null;
 		});
 
 		// motif d'ouverture absent pour for HS qui n'est pas le premier -> nok
@@ -188,12 +180,9 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 	@Test
 	public void testMotifFermetureSiDateFermetureDonnee() throws Exception {
 
-		final long noCtb = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Tartempion", "Bidule", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long noCtb = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Tartempion", "Bidule", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		final AddForPrincipalView view = new AddForPrincipalView();
@@ -268,13 +257,10 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 	 * @return binding results
 	 */
 	private Errors validate(final AddForPrincipalView view) throws Exception {
-		return doInNewTransactionAndSession(new TransactionCallback<Errors>() {
-			@Override
-			public Errors doInTransaction(TransactionStatus status) {
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
-				return errors;
-			}
+		return doInNewTransactionAndSession(status -> {
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
+			return errors;
 		});
 	}
 }

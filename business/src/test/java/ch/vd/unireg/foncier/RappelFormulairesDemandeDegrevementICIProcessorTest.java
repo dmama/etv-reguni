@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -262,79 +260,77 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		}
 
 		// et en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
-						.sorted(Comparator.comparingLong(DemandeDegrevementICI::getId))
-						.collect(Collectors.toList());
-				Assert.assertEquals(5, demandes.size());
-				{
-					// la retournée
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
-					Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
-					Assert.assertEquals(date(2009, 4, 24), demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());
-					Assert.assertEquals((Integer) 2010, demande.getPeriodeFiscale());
-				}
-				{
-					// la échue sauf délai administratif
-					final DemandeDegrevementICI demande = demandes.get(1);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(dateTraitement.addDays(-33), demande.getDateEnvoi());
-					Assert.assertEquals(dateTraitement.addDays(-3), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());
-					Assert.assertEquals((Integer) 2011, demande.getPeriodeFiscale());
-				}
-				{
-					// la échue avec délai admimistratif : celle-ci doit être modifiée !!!
-					final DemandeDegrevementICI demande = demandes.get(2);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(dateTraitement.addDays(-50), demande.getDateEnvoi());
-					Assert.assertEquals(dateTraitement.addDays(-20), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertEquals(dateTraitement, demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());                 // c'est la partie Editique qui assigne cette valeur, mais elle est mockée dans les tests UT
-					Assert.assertEquals((Integer) 2012, demande.getPeriodeFiscale());
-
-					// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
-					final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) demande.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
-					assertNotNull(rappel);
-					assertEquals(dateTraitement, rappel.getDateObtention());
-					assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), rappel.getDateEnvoiCourrier());
-
-				}
-				{
-					// la déjà rappelée
-					final DemandeDegrevementICI demande = demandes.get(3);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(dateTraitement.addDays(-60), demande.getDateEnvoi());
-					Assert.assertEquals(dateTraitement.addDays(-30), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertEquals(dateTraitement.addDays(-10), demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());
-					Assert.assertEquals((Integer) 2013, demande.getPeriodeFiscale());
-				}
-				{
-					// la non-échue
-					final DemandeDegrevementICI demande = demandes.get(4);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(dateTraitement.addDays(-15), demande.getDateEnvoi());
-					Assert.assertEquals(dateTraitement.addDays(15), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());
-					Assert.assertEquals((Integer) 2014, demande.getPeriodeFiscale());
-				}
+			final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
+					.sorted(Comparator.comparingLong(DemandeDegrevementICI::getId))
+					.collect(Collectors.toList());
+			Assert.assertEquals(5, demandes.size());
+			{
+				// la retournée
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
+				Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
+				Assert.assertEquals(date(2009, 4, 24), demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());
+				Assert.assertEquals((Integer) 2010, demande.getPeriodeFiscale());
 			}
+			{
+				// la échue sauf délai administratif
+				final DemandeDegrevementICI demande = demandes.get(1);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(dateTraitement.addDays(-33), demande.getDateEnvoi());
+				Assert.assertEquals(dateTraitement.addDays(-3), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());
+				Assert.assertEquals((Integer) 2011, demande.getPeriodeFiscale());
+			}
+			{
+				// la échue avec délai admimistratif : celle-ci doit être modifiée !!!
+				final DemandeDegrevementICI demande = demandes.get(2);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(dateTraitement.addDays(-50), demande.getDateEnvoi());
+				Assert.assertEquals(dateTraitement.addDays(-20), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertEquals(dateTraitement, demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());                 // c'est la partie Editique qui assigne cette valeur, mais elle est mockée dans les tests UT
+				Assert.assertEquals((Integer) 2012, demande.getPeriodeFiscale());
+
+				// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
+				final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) demande.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+				assertNotNull(rappel);
+				assertEquals(dateTraitement, rappel.getDateObtention());
+				assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), rappel.getDateEnvoiCourrier());
+
+			}
+			{
+				// la déjà rappelée
+				final DemandeDegrevementICI demande = demandes.get(3);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(dateTraitement.addDays(-60), demande.getDateEnvoi());
+				Assert.assertEquals(dateTraitement.addDays(-30), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertEquals(dateTraitement.addDays(-10), demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());
+				Assert.assertEquals((Integer) 2013, demande.getPeriodeFiscale());
+			}
+			{
+				// la non-échue
+				final DemandeDegrevementICI demande = demandes.get(4);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(dateTraitement.addDays(-15), demande.getDateEnvoi());
+				Assert.assertEquals(dateTraitement.addDays(15), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());
+				Assert.assertEquals((Integer) 2014, demande.getPeriodeFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -420,28 +416,26 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		}
 
 		// et en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
-						.sorted(Comparator.comparingLong(DemandeDegrevementICI::getId))
-						.collect(Collectors.toList());
-				Assert.assertEquals(1, demandes.size());
-				{
-					// la demande émise mais toujours pas rappelée
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
-					Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());
-					Assert.assertEquals((Integer) 2017, demande.getPeriodeFiscale());
-				}
+			final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
+					.sorted(Comparator.comparingLong(DemandeDegrevementICI::getId))
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, demandes.size());
+			{
+				// la demande émise mais toujours pas rappelée
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
+				Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());
+				Assert.assertEquals((Integer) 2017, demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -526,34 +520,32 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		}
 
 		// et en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
-						.sorted(Comparator.comparingLong(DemandeDegrevementICI::getId))
-						.collect(Collectors.toList());
-				Assert.assertEquals(1, demandes.size());
-				{
-					// la demande émise est maintenant rappelée
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
-					Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertEquals(dateTraitement, demande.getDateRappel());
-					Assert.assertNull(demande.getCleArchivageRappel());
-					Assert.assertEquals((Integer) 2017, demande.getPeriodeFiscale());
+			final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
+					.sorted(Comparator.comparingLong(DemandeDegrevementICI::getId))
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, demandes.size());
+			{
+				// la demande émise est maintenant rappelée
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
+				Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertEquals(dateTraitement, demande.getDateRappel());
+				Assert.assertNull(demande.getCleArchivageRappel());
+				Assert.assertEquals((Integer) 2017, demande.getPeriodeFiscale());
 
-					// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
-					final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) demande.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
-					assertNotNull(rappel);
-					assertEquals(dateTraitement, rappel.getDateObtention());
-					assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), rappel.getDateEnvoiCourrier());
-				}
+				// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
+				final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) demande.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+				assertNotNull(rappel);
+				assertEquals(dateTraitement, rappel.getDateObtention());
+				assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), rappel.getDateEnvoiCourrier());
 			}
+			return null;
 		});
 	}
 }

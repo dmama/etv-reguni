@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -149,16 +147,13 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		});
 
 		doInNewTransactionAndSession(
-				new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				status -> {
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-						final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+					final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(entreprise, date(2015, 6, 27));
 
-						final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(entreprise, date(2015, 6, 27));
-
-						Assert.assertEquals(CategorieEntreprise.INDET, currentCategorie);
-					}
+					Assert.assertEquals(CategorieEntreprise.INDET, currentCategorie);
+					return null;
 				}
 		);
 	}
@@ -198,16 +193,13 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		});
 
 		doInNewTransactionAndSession(
-				new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				status -> {
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-						final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+					final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(entreprise, date(2015, 6, 27));
 
-						final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(entreprise, date(2015, 6, 27));
-
-						Assert.assertEquals(CategorieEntreprise.APM, currentCategorie);
-					}
+					Assert.assertEquals(CategorieEntreprise.APM, currentCategorie);
+					return null;
 				}
 		);
 	}
@@ -246,16 +238,13 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		});
 
 		doInNewTransactionAndSession(
-				new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				status -> {
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-						final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+					final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(entreprise, date(2015, 6, 27));
 
-						final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(entreprise, date(2015, 6, 27));
-
-						Assert.assertEquals(CategorieEntreprise.PM, currentCategorie);
-					}
+					Assert.assertEquals(CategorieEntreprise.PM, currentCategorie);
+					return null;
 				}
 		);
 	}
@@ -291,76 +280,74 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		});
 
 		// test du service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				// null -> vide
+			// null -> vide
+			{
+				final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, null);
+				Assert.assertNotNull(exonerations);
+				Assert.assertEquals(0, exonerations.size());
+			}
+
+			// IBC
+			{
+				final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IBC);
+				Assert.assertNotNull(exonerations);
+				Assert.assertEquals(2, exonerations.size());
 				{
-					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, null);
-					Assert.assertNotNull(exonerations);
-					Assert.assertEquals(0, exonerations.size());
+					final ModeExonerationHisto exo = exonerations.get(0);
+					Assert.assertEquals(dateDebut, exo.getDateDebut());
+					Assert.assertEquals(dateDebut.addYears(1).getOneDayBefore(), exo.getDateFin());
+					Assert.assertEquals(ModeExoneration.DE_FAIT, exo.getModeExoneration());
 				}
-
-				// IBC
 				{
-					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IBC);
-					Assert.assertNotNull(exonerations);
-					Assert.assertEquals(2, exonerations.size());
-					{
-						final ModeExonerationHisto exo = exonerations.get(0);
-						Assert.assertEquals(dateDebut, exo.getDateDebut());
-						Assert.assertEquals(dateDebut.addYears(1).getOneDayBefore(), exo.getDateFin());
-						Assert.assertEquals(ModeExoneration.DE_FAIT, exo.getModeExoneration());
-					}
-					{
-						final ModeExonerationHisto exo = exonerations.get(1);
-						Assert.assertEquals(dateDebut.addYears(1), exo.getDateDebut());
-						Assert.assertEquals(dateDebut.addYears(3).getOneDayBefore(), exo.getDateFin());
-						Assert.assertEquals(ModeExoneration.TOTALE, exo.getModeExoneration());
-					}
-				}
-
-				// ICI
-				{
-					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.ICI);
-					Assert.assertNotNull(exonerations);
-					Assert.assertEquals(2, exonerations.size());
-					{
-						final ModeExonerationHisto exo = exonerations.get(0);
-						Assert.assertEquals(dateDebut.addYears(3), exo.getDateDebut());
-						Assert.assertEquals(dateDebut.addYears(4).getOneDayBefore(), exo.getDateFin());
-						Assert.assertEquals(ModeExoneration.DE_FAIT, exo.getModeExoneration());
-					}
-					{
-						final ModeExonerationHisto exo = exonerations.get(1);
-						Assert.assertEquals(dateDebut.addYears(4), exo.getDateDebut());
-						Assert.assertEquals(dateDebut.addYears(5).getOneDayBefore(), exo.getDateFin());
-						Assert.assertEquals(ModeExoneration.TOTALE, exo.getModeExoneration());
-					}
-				}
-
-				// IFONC
-				{
-					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IFONC);
-					Assert.assertNotNull(exonerations);
-					Assert.assertEquals(2, exonerations.size());
-					{
-						final ModeExonerationHisto exo = exonerations.get(0);
-						Assert.assertEquals(dateDebut.addYears(5), exo.getDateDebut());
-						Assert.assertEquals(dateDebut.addYears(6).getOneDayBefore(), exo.getDateFin());
-						Assert.assertEquals(ModeExoneration.DE_FAIT, exo.getModeExoneration());
-					}
-					{
-						final ModeExonerationHisto exo = exonerations.get(1);
-						Assert.assertEquals(dateDebut.addYears(6), exo.getDateDebut());
-						Assert.assertEquals(dateDebut.addYears(7).getOneDayBefore(), exo.getDateFin());
-						Assert.assertEquals(ModeExoneration.TOTALE, exo.getModeExoneration());
-					}
+					final ModeExonerationHisto exo = exonerations.get(1);
+					Assert.assertEquals(dateDebut.addYears(1), exo.getDateDebut());
+					Assert.assertEquals(dateDebut.addYears(3).getOneDayBefore(), exo.getDateFin());
+					Assert.assertEquals(ModeExoneration.TOTALE, exo.getModeExoneration());
 				}
 			}
+
+			// ICI
+			{
+				final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.ICI);
+				Assert.assertNotNull(exonerations);
+				Assert.assertEquals(2, exonerations.size());
+				{
+					final ModeExonerationHisto exo = exonerations.get(0);
+					Assert.assertEquals(dateDebut.addYears(3), exo.getDateDebut());
+					Assert.assertEquals(dateDebut.addYears(4).getOneDayBefore(), exo.getDateFin());
+					Assert.assertEquals(ModeExoneration.DE_FAIT, exo.getModeExoneration());
+				}
+				{
+					final ModeExonerationHisto exo = exonerations.get(1);
+					Assert.assertEquals(dateDebut.addYears(4), exo.getDateDebut());
+					Assert.assertEquals(dateDebut.addYears(5).getOneDayBefore(), exo.getDateFin());
+					Assert.assertEquals(ModeExoneration.TOTALE, exo.getModeExoneration());
+				}
+			}
+
+			// IFONC
+			{
+				final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IFONC);
+				Assert.assertNotNull(exonerations);
+				Assert.assertEquals(2, exonerations.size());
+				{
+					final ModeExonerationHisto exo = exonerations.get(0);
+					Assert.assertEquals(dateDebut.addYears(5), exo.getDateDebut());
+					Assert.assertEquals(dateDebut.addYears(6).getOneDayBefore(), exo.getDateFin());
+					Assert.assertEquals(ModeExoneration.DE_FAIT, exo.getModeExoneration());
+				}
+				{
+					final ModeExonerationHisto exo = exonerations.get(1);
+					Assert.assertEquals(dateDebut.addYears(6), exo.getDateDebut());
+					Assert.assertEquals(dateDebut.addYears(7).getOneDayBefore(), exo.getDateFin());
+					Assert.assertEquals(ModeExoneration.TOTALE, exo.getModeExoneration());
+				}
+			}
+			return null;
 		});
 	}
 }

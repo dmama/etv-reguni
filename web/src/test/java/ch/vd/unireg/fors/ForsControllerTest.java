@@ -12,8 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
@@ -699,18 +697,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 	public void testAddForDebiteurDateDebutVide() throws Exception {
 
 		// mise en place fiscale
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
-
-				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
-				addRapportPrestationImposable(dpi, pp1, date(2009, 1, 1), null, false);
-
-				return dpi.getNumero();
-			}
+			final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+			addRapportPrestationImposable(dpi, pp1, date(2009, 1, 1), null, false);
+			return dpi.getNumero();
 		});
 
 		// ouverture d'un nouveau for sur une autre commune
@@ -762,18 +755,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final RegDate dateDepart = dateOuvertureNouveauFor.getOneDayBefore();
 
 		// mise en place fiscale
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
-
-				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
-				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
-
-				return dpi.getNumero();
-			}
+			final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+			addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+			return dpi.getNumero();
 		});
 
 		// ouverture d'un nouveau for sur une autre commune
@@ -795,37 +783,34 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals(0, result.getErrorCount());
 
 		// vérification que le for est bien fermé, qu'un autre est bien ouvert et que le rapport de travail n'a pas été fermé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDepart);
-				assertNotNull(forFerme);
-				assertFalse(forFerme.isAnnule());
-				assertEquals(dateDebut, forFerme.getDateDebut());
-				assertEquals(dateDepart, forFerme.getDateFin());
-				assertEquals(MockCommune.Bex.getNoOFS(), (int) forFerme.getNumeroOfsAutoriteFiscale());
+			final ForDebiteurPrestationImposable forFerme = dpi.getForDebiteurPrestationImposableAt(dateDepart);
+			assertNotNull(forFerme);
+			assertFalse(forFerme.isAnnule());
+			assertEquals(dateDebut, forFerme.getDateDebut());
+			assertEquals(dateDepart, forFerme.getDateFin());
+			assertEquals(MockCommune.Bex.getNoOFS(), (int) forFerme.getNumeroOfsAutoriteFiscale());
 
-				final ForDebiteurPrestationImposable forOuvert = dpi.getForDebiteurPrestationImposableAt(null);
-				assertNotNull(forOuvert);
-				assertFalse(forOuvert.isAnnule());
-				assertEquals(dateOuvertureNouveauFor, forOuvert.getDateDebut());
-				assertEquals(MockCommune.Vevey.getNoOFS(), (int) forOuvert.getNumeroOfsAutoriteFiscale());
+			final ForDebiteurPrestationImposable forOuvert = dpi.getForDebiteurPrestationImposableAt(null);
+			assertNotNull(forOuvert);
+			assertFalse(forOuvert.isAnnule());
+			assertEquals(dateOuvertureNouveauFor, forOuvert.getDateDebut());
+			assertEquals(MockCommune.Vevey.getNoOFS(), (int) forOuvert.getNumeroOfsAutoriteFiscale());
 
-				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RapportEntreTiers r = rapports.iterator().next();
-				assertNotNull(r);
-				assertInstanceOf(RapportPrestationImposable.class, r);
-				assertEquals(dateDebut, r.getDateDebut());
-				assertNull(r.getDateFin());
-				assertFalse(r.isAnnule());
-				return null;
-			}
+			final RapportEntreTiers r = rapports.iterator().next();
+			assertNotNull(r);
+			assertInstanceOf(RapportPrestationImposable.class, r);
+			assertEquals(dateDebut, r.getDateDebut());
+			assertNull(r.getDateFin());
+			assertFalse(r.isAnnule());
+			return null;
 		});
 	}
 
@@ -836,14 +821,11 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final RegDate dateFermeture = date(2010, 12, 31);
 
 		// mise en place fiscale
-		final Long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
-				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
-				return dpi.getId();
-			}
+		final Long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+			addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+			return dpi.getId();
 		});
 
 		// Ajoute un nouveau for fiscal sur le débiteur
@@ -867,30 +849,27 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals(0, result.getErrorCount());
 
 		// vérification que le for fermé est ajouté correctement et que le rapport de travail est fermé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
-				assertNotNull(ff);
-				assertFalse(ff.isAnnule());
-				assertEquals(dateDebut, ff.getDateDebut());
-				assertEquals(dateFermeture, ff.getDateFin());
+			final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
+			assertNotNull(ff);
+			assertFalse(ff.isAnnule());
+			assertEquals(dateDebut, ff.getDateDebut());
+			assertEquals(dateFermeture, ff.getDateFin());
 
-				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RapportEntreTiers r = rapports.iterator().next();
-				assertNotNull(r);
-				assertInstanceOf(RapportPrestationImposable.class, r);
-				assertEquals(dateDebut, r.getDateDebut());
-				assertEquals(dateFermeture, r.getDateFin());
-				assertFalse(r.isAnnule());
-				return null;
-			}
+			final RapportEntreTiers r = rapports.iterator().next();
+			assertNotNull(r);
+			assertInstanceOf(RapportPrestationImposable.class, r);
+			assertEquals(dateDebut, r.getDateDebut());
+			assertEquals(dateFermeture, r.getDateFin());
+			assertFalse(r.isAnnule());
+			return null;
 		});
 	}
 
@@ -1001,30 +980,27 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals(0, result.getErrorCount());
 
 		// vérification que le for est bien fermé et que le rapport de travail aussi
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.debiteur);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.debiteur);
+			assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
-				assertNotNull(ff);
-				assertFalse(ff.isAnnule());
-				assertEquals(dateDebut, ff.getDateDebut());
-				assertEquals(dateFermeture, ff.getDateFin());
+			final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
+			assertNotNull(ff);
+			assertFalse(ff.isAnnule());
+			assertEquals(dateDebut, ff.getDateDebut());
+			assertEquals(dateFermeture, ff.getDateFin());
 
-				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RapportEntreTiers r = rapports.iterator().next();
-				assertNotNull(r);
-				assertInstanceOf(RapportPrestationImposable.class, r);
-				assertEquals(dateDebut, r.getDateDebut());
-				assertEquals(dateFermeture, r.getDateFin());
-				assertFalse(r.isAnnule());
-				return null;
-			}
+			final RapportEntreTiers r = rapports.iterator().next();
+			assertNotNull(r);
+			assertInstanceOf(RapportPrestationImposable.class, r);
+			assertEquals(dateDebut, r.getDateDebut());
+			assertEquals(dateFermeture, r.getDateFin());
+			assertFalse(r.isAnnule());
+			return null;
 		});
 	}
 
@@ -1737,37 +1713,32 @@ public class ForsControllerTest extends WebTestSpring3 {
 			long idForSecondaire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Marc", "Grau", date(1967, 7, 23), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2003, 5, 8), null, MockRue.Geneve.AvenueGuiseppeMotta);
-				pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Marc", "Grau", date(1967, 7, 23), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2003, 5, 8), null, MockRue.Geneve.AvenueGuiseppeMotta);
+			pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
 
-				final ForFiscalPrincipal ffpAnnule = addForPrincipal(pp, date(2006, 4, 28), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				ffpAnnule.setAnnule(true);
+			final ForFiscalPrincipal ffpAnnule = addForPrincipal(pp, date(2006, 4, 28), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			ffpAnnule.setAnnule(true);
 
-				addForPrincipal(pp, date(2003, 5, 8), null, MockCommune.Geneve);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			addForPrincipal(pp, date(2003, 5, 8), null, MockCommune.Geneve);
+			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final Ids ids = new Ids();
-				ids.idCtb = pp.getNumero();
-				ids.idForSecondaire = ffs.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idCtb = pp.getNumero();
+			ids1.idForSecondaire = ffs.getId();
+			return ids1;
 		});
 
 		// on vérifie que le calcul de l'OID a bien été fait
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
-				Assert.assertNotNull(pp);
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), pp.getOfficeImpotId());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
+			Assert.assertNotNull(pp);
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), pp.getOfficeImpotId());
+			return null;
 		});
 
 		// maintenant, on ouvre un for secondaire (depuis 2008) sur Yverdon
@@ -1792,35 +1763,33 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 
 		// vérification du nouveau for et du cache OID sur le tiers
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
-				Assert.assertNotNull(pp);
+		doInNewReadOnlyTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
+			Assert.assertNotNull(pp);
 
-				final Optional<ForFiscalSecondaire> ffsYverdon = pp.getForsFiscaux().stream()
-						.filter(AnnulableHelper::nonAnnule)
-						.filter(ForFiscalSecondaire.class::isInstance)
-						.map(ForFiscalSecondaire.class::cast)
-						.filter(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && f.getNumeroOfsAutoriteFiscale() == MockCommune.YverdonLesBains.getNoOFS())
-						.findAny();
-				Assert.assertTrue(ffsYverdon.isPresent());
-				final ForFiscalSecondaire ffs = ffsYverdon.get();
+			final Optional<ForFiscalSecondaire> ffsYverdon = pp.getForsFiscaux().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(ForFiscalSecondaire.class::isInstance)
+					.map(ForFiscalSecondaire.class::cast)
+					.filter(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && f.getNumeroOfsAutoriteFiscale() == MockCommune.YverdonLesBains.getNoOFS())
+					.findAny();
+			Assert.assertTrue(ffsYverdon.isPresent());
+			final ForFiscalSecondaire ffs = ffsYverdon.get();
 
-				Assert.assertFalse(ffs.isAnnule());
-				Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
-				Assert.assertEquals(date(2008, 2, 5), ffs.getDateDebut());
-				Assert.assertNull(ffs.getDateFin());
-				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
-				Assert.assertNull(ffs.getMotifFermeture());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.YverdonLesBains.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
-				Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+			Assert.assertFalse(ffs.isAnnule());
+			Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
+			Assert.assertEquals(date(2008, 2, 5), ffs.getDateDebut());
+			Assert.assertNull(ffs.getDateFin());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+			Assert.assertNull(ffs.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.YverdonLesBains.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
 
-				// vérification que l'OID n'a pas bougé (car il existe un for fiscal encore ouvert (à Lausanne) dont la date de début est antérieure à 2008...)
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
-			}
+			// vérification que l'OID n'a pas bougé (car il existe un for fiscal encore ouvert (à Lausanne) dont la date de début est antérieure à 2008...)
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
+			return null;
 		});
 
 		// maintenant, on ferme le for secondaire à Lausanne (à la date du jour !!!)
@@ -1850,25 +1819,23 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 
 		// vérification que le for secondaire est bien fermé
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, ids.idForSecondaire);
-				Assert.assertNotNull(ffs);
-				Assert.assertFalse(ffs.isAnnule());
-				Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
-				Assert.assertEquals(date(2006, 4, 28), ffs.getDateDebut());
-				Assert.assertEquals(RegDate.get(), ffs.getDateFin());
-				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
-				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
-				Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+		doInNewReadOnlyTransaction(status -> {
+			final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, ids.idForSecondaire);
+			Assert.assertNotNull(ffs);
+			Assert.assertFalse(ffs.isAnnule());
+			Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
+			Assert.assertEquals(date(2006, 4, 28), ffs.getDateDebut());
+			Assert.assertEquals(RegDate.get(), ffs.getDateFin());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+			Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
 
-				// ... et que l'OID n'a pas bougé (parce que le for est fermé A LA DATE DU JOUR)
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
-			}
+			// ... et que l'OID n'a pas bougé (parce que le for est fermé A LA DATE DU JOUR)
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
+			return null;
 		});
 	}
 
@@ -1880,37 +1847,32 @@ public class ForsControllerTest extends WebTestSpring3 {
 			long idForSecondaire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Marc", "Grau", date(1967, 7, 23), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2003, 5, 8), null, MockRue.Geneve.AvenueGuiseppeMotta);
-				pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Marc", "Grau", date(1967, 7, 23), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2003, 5, 8), null, MockRue.Geneve.AvenueGuiseppeMotta);
+			pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
 
-				final ForFiscalPrincipal ffpAnnule = addForPrincipal(pp, date(2006, 4, 28), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				ffpAnnule.setAnnule(true);
+			final ForFiscalPrincipal ffpAnnule = addForPrincipal(pp, date(2006, 4, 28), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			ffpAnnule.setAnnule(true);
 
-				addForPrincipal(pp, date(2003, 5, 8), null, MockCommune.Geneve);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			addForPrincipal(pp, date(2003, 5, 8), null, MockCommune.Geneve);
+			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final Ids ids = new Ids();
-				ids.idCtb = pp.getNumero();
-				ids.idForSecondaire = ffs.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idCtb = pp.getNumero();
+			ids1.idForSecondaire = ffs.getId();
+			return ids1;
 		});
 
 		// on vérifie que le calcul de l'OID a bien été fait
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
-				Assert.assertNotNull(pp);
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), pp.getOfficeImpotId());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
+			Assert.assertNotNull(pp);
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), pp.getOfficeImpotId());
+			return null;
 		});
 
 		// maintenant, on ouvre un for secondaire (depuis 2008) sur Yverdon
@@ -1935,35 +1897,33 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 
 		// vérification du nouveau for et du cache OID sur le tiers
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
-				Assert.assertNotNull(pp);
+		doInNewReadOnlyTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idCtb);
+			Assert.assertNotNull(pp);
 
-				final Optional<ForFiscalSecondaire> ffsYverdon = pp.getForsFiscaux().stream()
-						.filter(AnnulableHelper::nonAnnule)
-						.filter(ForFiscalSecondaire.class::isInstance)
-						.map(ForFiscalSecondaire.class::cast)
-						.filter(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && f.getNumeroOfsAutoriteFiscale() == MockCommune.YverdonLesBains.getNoOFS())
-						.findAny();
-				Assert.assertTrue(ffsYverdon.isPresent());
-				final ForFiscalSecondaire ffs = ffsYverdon.get();
+			final Optional<ForFiscalSecondaire> ffsYverdon = pp.getForsFiscaux().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(ForFiscalSecondaire.class::isInstance)
+					.map(ForFiscalSecondaire.class::cast)
+					.filter(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && f.getNumeroOfsAutoriteFiscale() == MockCommune.YverdonLesBains.getNoOFS())
+					.findAny();
+			Assert.assertTrue(ffsYverdon.isPresent());
+			final ForFiscalSecondaire ffs = ffsYverdon.get();
 
-				Assert.assertFalse(ffs.isAnnule());
-				Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
-				Assert.assertEquals(date(2008, 2, 5), ffs.getDateDebut());
-				Assert.assertNull(ffs.getDateFin());
-				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
-				Assert.assertNull(ffs.getMotifFermeture());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.YverdonLesBains.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
-				Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+			Assert.assertFalse(ffs.isAnnule());
+			Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
+			Assert.assertEquals(date(2008, 2, 5), ffs.getDateDebut());
+			Assert.assertNull(ffs.getDateFin());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+			Assert.assertNull(ffs.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.YverdonLesBains.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
 
-				// vérification que l'OID n'a pas bougé (car il existe un for fiscal encore ouvert (à Lausanne) dont la date de début est antérieure à 2008...)
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
-			}
+			// vérification que l'OID n'a pas bougé (car il existe un for fiscal encore ouvert (à Lausanne) dont la date de début est antérieure à 2008...)
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
+			return null;
 		});
 
 		// maintenant, on ferme le for secondaire à Lausanne dans le passé de la date du jour
@@ -1993,25 +1953,23 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 
 		// vérification que le for secondaire est bien fermé
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, ids.idForSecondaire);
-				Assert.assertNotNull(ffs);
-				Assert.assertFalse(ffs.isAnnule());
-				Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
-				Assert.assertEquals(date(2006, 4, 28), ffs.getDateDebut());
-				Assert.assertEquals(date(2016, 11, 28), ffs.getDateFin());
-				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
-				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
-				Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+		doInNewReadOnlyTransaction(status -> {
+			final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, ids.idForSecondaire);
+			Assert.assertNotNull(ffs);
+			Assert.assertFalse(ffs.isAnnule());
+			Assert.assertEquals((Long) ids.idCtb, ffs.getTiers().getNumero());
+			Assert.assertEquals(date(2006, 4, 28), ffs.getDateDebut());
+			Assert.assertEquals(date(2016, 11, 28), ffs.getDateFin());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+			Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffs.getGenreImpot());
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
 
-				// ... et que l'OID a bougé
-				Assert.assertEquals((Integer) MockOfficeImpot.OID_YVERDON.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
-			}
+			// ... et que l'OID a bougé
+			Assert.assertEquals((Integer) MockOfficeImpot.OID_YVERDON.getNoColAdm(), ffs.getTiers().getOfficeImpotId());
+			return null;
 		});
 	}
 }

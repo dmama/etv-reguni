@@ -18,8 +18,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -70,18 +68,12 @@ public class SuppressionOIDJob extends JobDefinition {
 	private long getOfficeImpotId(final int oid) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<Long>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-
-				final CollectiviteAdministrative officeImpot = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(oid, true);
-				if (officeImpot == null) {
-					throw new IllegalArgumentException("L'office d'impôt n°" + oid + " est introuvable dans la base de donnée !");
-				}
-
-				return officeImpot.getId();
+		return template.execute(status -> {
+			final CollectiviteAdministrative officeImpot = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(oid, true);
+			if (officeImpot == null) {
+				throw new IllegalArgumentException("L'office d'impôt n°" + oid + " est introuvable dans la base de donnée !");
 			}
+			return officeImpot.getId();
 		});
 	}
 
@@ -97,15 +89,12 @@ public class SuppressionOIDJob extends JobDefinition {
 
 		// Exécution du rapport dans une transaction.
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final SuppressionOIDRapport rapport = template.execute(new TransactionCallback<SuppressionOIDRapport>() {
-			@Override
-			public SuppressionOIDRapport doInTransaction(TransactionStatus s) {
-				try {
-					return rapportService.generateRapport(results, status);
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+		final SuppressionOIDRapport rapport = template.execute(s -> {
+			try {
+				return rapportService.generateRapport(results, status);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 
@@ -176,36 +165,30 @@ public class SuppressionOIDJob extends JobDefinition {
 	private Set<Long> getIdsOfTiersLinkedTo(final int oid, final long officeImpotId) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<Set<Long>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
+		return template.execute(status -> {
+			final Map<String, Integer> oidParam = new HashMap<>(1);
+			oidParam.put("oid", oid);
 
-				final Map<String, Integer> oidParam = new HashMap<>(1);
-				oidParam.put("oid", oid);
+			final Map<String, Long> officeImpotIdParam = new HashMap<>(1);
+			officeImpotIdParam.put("officeImpotId", officeImpotId);
 
-				final Map<String, Long> officeImpotIdParam = new HashMap<>(1);
-				officeImpotIdParam.put("officeImpotId", officeImpotId);
+			final Set<Long> ids = new TreeSet<>();
 
-				final Set<Long> ids = new TreeSet<>();
+			// sur le tiers lui-même
+			ids.addAll(hibernateTemplate.find("select tiers.id from Tiers tiers where tiers.officeImpotId=:oid", oidParam, null));
 
-				// sur le tiers lui-même
-				ids.addAll(hibernateTemplate.find("select tiers.id from Tiers tiers where tiers.officeImpotId=:oid", oidParam, null));
+			// sur ces déclarations
+			ids.addAll(hibernateTemplate.find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId=:officeImpotId", officeImpotIdParam, null));
 
-				// sur ces déclarations
-				ids.addAll(hibernateTemplate.find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId=:officeImpotId", officeImpotIdParam, null));
+			// sur les mouvements de dossier
+			ids.addAll(hibernateTemplate.find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice.id=:officeImpotId", officeImpotIdParam, null));
+			ids.addAll(hibernateTemplate.find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire.id=:officeImpotId",
+			                                  officeImpotIdParam, null));
+			ids.addAll(hibernateTemplate.find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice.id=:officeImpotId", officeImpotIdParam, null));
 
-				// sur les mouvements de dossier
-				ids.addAll(hibernateTemplate.find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice.id=:officeImpotId", officeImpotIdParam, null));
-				ids.addAll(hibernateTemplate.find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire.id=:officeImpotId",
-				                                  officeImpotIdParam, null));
-				ids.addAll(hibernateTemplate.find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice.id=:officeImpotId", officeImpotIdParam, null));
-
-				// sur les tâches
-				ids.addAll(hibernateTemplate.find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee.id=:officeImpotId", officeImpotIdParam, null));
-
-				return ids;
-			}
+			// sur les tâches
+			ids.addAll(hibernateTemplate.find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee.id=:officeImpotId", officeImpotIdParam, null));
+			return ids;
 		});
 	}
 

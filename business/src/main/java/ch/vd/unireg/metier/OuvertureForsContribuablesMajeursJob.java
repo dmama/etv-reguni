@@ -3,8 +3,6 @@ package ch.vd.unireg.metier;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -63,15 +61,12 @@ public class OuvertureForsContribuablesMajeursJob extends JobDefinition {
 
 		// Exécution du rapport dans une transaction.
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		MajoriteRapport rapport = template.execute(new TransactionCallback<MajoriteRapport>() {
-			@Override
-			public MajoriteRapport doInTransaction(TransactionStatus status) {
-				try {
-					return rapportService.generateRapport(results, getStatusManager());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+		MajoriteRapport rapport = template.execute(status -> {
+			try {
+				return rapportService.generateRapport(results, getStatusManager());
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 

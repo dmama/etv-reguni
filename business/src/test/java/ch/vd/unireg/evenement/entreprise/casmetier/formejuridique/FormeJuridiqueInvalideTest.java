@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -68,12 +66,9 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -81,20 +76,15 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -117,24 +107,18 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 			}
 		});
 
-		final long entrepriseId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long entrepriseId = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -142,21 +126,16 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle est pourtant associée à l'entreprise n°%s. Ce cas doit être corrigé.",
-				                                                               noEntrepriseCivile, FormatNumeroHelper.numeroCTBToDisplay(entrepriseId)),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle est pourtant associée à l'entreprise n°%s. Ce cas doit être corrigé.",
+			                                  noEntrepriseCivile, FormatNumeroHelper.numeroCTBToDisplay(entrepriseId)),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -183,12 +162,9 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -196,20 +172,15 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -236,12 +207,9 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -249,20 +217,15 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -289,12 +252,9 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -302,19 +262,14 @@ public class FormeJuridiqueInvalideTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%s, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 }

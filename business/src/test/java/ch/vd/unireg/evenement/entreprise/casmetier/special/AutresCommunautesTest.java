@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -60,19 +58,16 @@ public class AutresCommunautesTest extends AbstractEvenementEntrepriseCivileProc
 						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
 						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                       StatusRegistreIDE.DEFINITIF,
-						                                       TypeEntrepriseRegistreIDE.ENTREPRISE_INDIVIDUELLE, "CHE999999996" , null, null);
+						                                       TypeEntrepriseRegistreIDE.ENTREPRISE_INDIVIDUELLE, "CHE999999996", null, null);
 				addEntreprise(entreprise);
 
 			}
 		});
 
 		// L'autre communauté
-		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final AutreCommunaute autreCommunaute = addAutreCommunaute("Correia Pinto, Jardinage et Paysagisme");
-				return autreCommunaute.getNumero();
-			}
+		final Long tiersId = doInNewTransactionAndSession(status -> {
+			final AutreCommunaute autreCommunaute = addAutreCommunaute("Correia Pinto, Jardinage et Paysagisme");
+			return autreCommunaute.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -82,12 +77,9 @@ public class AutresCommunautesTest extends AbstractEvenementEntrepriseCivileProc
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -95,34 +87,29 @@ public class AutresCommunautesTest extends AbstractEvenementEntrepriseCivileProc
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(2, erreurs.size());
 
-				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
-				                             Assert.assertNotNull(erreurs);
-				                             Assert.assertEquals(2, erreurs.size());
+			final EvenementEntrepriseErreur evtErreur0 = erreurs.get(0);
+			Assert.assertEquals(String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme, IDE: CHE-999.999.996] n'est pas une entreprise (%s) et sera ignoré. " +
+					                                  "Si nécessaire, un tiers Entreprise sera créé pour l'entreprise civile n°%d, en doublon du tiers n°%s (%s).",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(tiersId),
+			                                  TypeTiers.AUTRE_COMMUNAUTE.getDescription(),
+			                                  noEntrepriseCivile,
+			                                  FormatNumeroHelper.numeroCTBToDisplay(tiersId),
+			                                  TypeTiers.AUTRE_COMMUNAUTE.getDescription()),
+			                    evtErreur0.getMessage());
 
-				                             final EvenementEntrepriseErreur evtErreur0 = erreurs.get(0);
-				                             Assert.assertEquals(String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme, IDE: CHE-999.999.996] n'est pas une entreprise (%s) et sera ignoré. " +
-						                                                               "Si nécessaire, un tiers Entreprise sera créé pour l'entreprise civile n°%d, en doublon du tiers n°%s (%s).",
-				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
-				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription(),
-				                                                               noEntrepriseCivile,
-				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
-				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription()),
-				                                                 evtErreur0.getMessage());
-
-				                             final EvenementEntrepriseErreur evtErreur1 = evt.getErreurs().get(1);
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%d est une entreprise individuelle vaudoise. Pas de création.", noEntrepriseCivile),
-				                                                 evtErreur1.getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			final EvenementEntrepriseErreur evtErreur1 = evt.getErreurs().get(1);
+			Assert.assertEquals(String.format("L'entreprise civile n°%d est une entreprise individuelle vaudoise. Pas de création.", noEntrepriseCivile),
+			                    evtErreur1.getMessage());
+			return null;
+		});
 	}
 }

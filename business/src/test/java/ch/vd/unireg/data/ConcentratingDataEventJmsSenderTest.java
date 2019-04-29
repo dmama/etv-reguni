@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
@@ -133,16 +132,14 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 			Assert.assertEquals(FiscalEventSendRequestEvent.class, events.get(1).getClass());
 			final FiscalEventSendRequestEvent evt = (FiscalEventSendRequestEvent) events.get(1);
 			Assert.assertEquals(Collections.singletonList(idEvtFiscal), evt.getId());
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-					final EvenementFiscalFor evtFiscal = hibernateTemplate.get(EvenementFiscalFor.class, idEvtFiscal);
-					Assert.assertNotNull(evtFiscal);
-					Assert.assertFalse(evtFiscal.isAnnule());
-					Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, evtFiscal.getType());
-					Assert.assertEquals(date(1995, 1, 1), evtFiscal.getDateValeur());
-					Assert.assertEquals((Long) ppId, evtFiscal.getForFiscal().getTiers().getNumero());
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementFiscalFor evtFiscal = hibernateTemplate.get(EvenementFiscalFor.class, idEvtFiscal);
+				Assert.assertNotNull(evtFiscal);
+				Assert.assertFalse(evtFiscal.isAnnule());
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, evtFiscal.getType());
+				Assert.assertEquals(date(1995, 1, 1), evtFiscal.getDateValeur());
+				Assert.assertEquals((Long) ppId, evtFiscal.getForFiscal().getTiers().getNumero());
+				return null;
 			});
 		}
 	}

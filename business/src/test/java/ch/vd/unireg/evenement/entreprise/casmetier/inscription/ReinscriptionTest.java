@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -94,62 +92,51 @@ public class ReinscriptionTest extends AbstractEvenementEntrepriseCivileProcesso
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addEtatEntreprise(entreprise, date(2012, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addEtatEntreprise(entreprise, date(2013, 2, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 26), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addEtatEntreprise(entreprise, date(2012, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addEtatEntreprise(entreprise, date(2013, 2, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 26), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 
-				final Etablissement etablissement = addEtablissement(3000001L);
-				addActiviteEconomique(entreprise,  etablissement, date(2010, 6, 25), null, true);
-				return entreprise;
-			}
+			final Etablissement etablissement = addEtablissement(3000001L);
+			addActiviteEconomique(entreprise, etablissement, date(2010, 6, 25), null, true);
+			return entreprise;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
+			Assert.assertEquals(0, entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).size());
 
-				                             Assert.assertEquals(0, entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).size());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(0, evtsFiscaux.size());
-
-				                             Assert.assertEquals("Réinscription de l'entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.",
-				                                                 evt.getErreurs().get(2).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals("Réinscription de l'entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.",
+			                    evt.getErreurs().get(2).getMessage());
+			return null;
+		});
 	}
 }

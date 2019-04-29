@@ -4,17 +4,15 @@ import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
@@ -41,16 +39,13 @@ public class ChangementNationaliteEtrangereEchProcessorTest extends AbstractEven
 				addNationalite(ind, MockPays.Liechtenstein, dateNaissance, null);
 			}
 		});
-		
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, null, null, MockCommune.Renens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, null, null, MockCommune.Renens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
-		
+
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
@@ -59,41 +54,35 @@ public class ChangementNationaliteEtrangereEchProcessorTest extends AbstractEven
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(135566L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateChangement);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(135566L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateChangement);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noIndividu);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				Assert.assertNotNull(pp);
-				Assert.assertEquals((Long) ppId, pp.getNumero());
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			Assert.assertNotNull(pp);
+			Assert.assertEquals((Long) ppId, pp.getNumero());
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
-				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+			Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+			return null;
 		});
 	}
 }

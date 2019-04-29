@@ -2,16 +2,14 @@ package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -46,69 +44,60 @@ public class AnnulationReconciliationEchProcessorTest extends AbstractEvenementC
 				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissanceElle, "Nette", "Jeu", false);
 				addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateNaissanceElle, null);
 				addNationalite(elle, MockPays.Suisse, dateNaissanceElle, null);
-				
+
 				marieIndividus(lui, elle, dateMariage);
 				separeIndividus(lui, elle, dateSeparation);
 			}
 		});
 
 		// mise en place fiscale avec mariage, séparation et réconciliation
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(lui, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(lui, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForPrincipal(elle, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addForPrincipal(elle, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				addAppartenanceMenage(mc, lui, dateReconcialiation, null, false);
-				addAppartenanceMenage(mc, elle, dateReconcialiation, null, false);
-				addForPrincipal(mc, dateReconcialiation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return mc.getNumero();
-			}
+			addAppartenanceMenage(mc, lui, dateReconcialiation, null, false);
+			addAppartenanceMenage(mc, elle, dateReconcialiation, null, false);
+			addForPrincipal(mc, dateReconcialiation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return mc.getNumero();
 		});
 
 		// création de l'événement civil d'annulation de mariage
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3478256623526867L);
-				evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
-				evt.setAction(ActionEvenementCivilEch.ANNULATION);
-				evt.setDateEvenement(dateReconcialiation);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3478256623526867L);
+			evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
+			evt.setAction(ActionEvenementCivilEch.ANNULATION);
+			evt.setDateEvenement(dateReconcialiation);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				Assert.assertNotNull(mc);
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			Assert.assertNotNull(mc);
 
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -141,98 +130,83 @@ public class AnnulationReconciliationEchProcessorTest extends AbstractEvenementC
 		});
 
 		// mise en place fiscale avec mariage, séparation et réconciliation
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(lui, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(lui, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForPrincipal(elle, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addForPrincipal(elle, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconcialiation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				addAppartenanceMenage(mc, lui, dateReconcialiation, null, false);
-				addAppartenanceMenage(mc, elle, dateReconcialiation, null, false);
-				addForPrincipal(mc, dateReconcialiation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return mc.getNumero();
-			}
+			addAppartenanceMenage(mc, lui, dateReconcialiation, null, false);
+			addAppartenanceMenage(mc, elle, dateReconcialiation, null, false);
+			addForPrincipal(mc, dateReconcialiation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return mc.getNumero();
 		});
 
 		// création de l'événement civil d'annulation de mariage
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3478256623526867L);
-				evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
-				evt.setAction(ActionEvenementCivilEch.ANNULATION);
-				evt.setDateEvenement(dateReconcialiation);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3478256623526867L);
+			evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
+			evt.setAction(ActionEvenementCivilEch.ANNULATION);
+			evt.setDateEvenement(dateReconcialiation);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				Assert.assertNotNull(mc);
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			Assert.assertNotNull(mc);
 
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
+			return null;
 		});
 
 		// création de l'événement civil d'annulation de mariage pour elle
-		final long evtIdElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3478256793526867L);
-				evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
-				evt.setAction(ActionEvenementCivilEch.ANNULATION);
-				evt.setDateEvenement(dateReconcialiation);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuElle);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtIdElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3478256793526867L);
+			evt.setType(TypeEvenementCivilEch.CESSATION_SEPARATION);
+			evt.setAction(ActionEvenementCivilEch.ANNULATION);
+			evt.setDateEvenement(dateReconcialiation);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuElle);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuElle);
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtIdElle);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtIdElle);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				Assert.assertNotNull(mc);
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			Assert.assertNotNull(mc);
 
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
+			return null;
 		});
 	}
 }

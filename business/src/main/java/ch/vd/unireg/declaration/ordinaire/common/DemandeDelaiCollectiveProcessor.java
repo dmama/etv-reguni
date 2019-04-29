@@ -5,8 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -100,12 +98,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 	private void checkParams(final int annee) {
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final PeriodeFiscale periodeFiscale = t.execute(new TransactionCallback<PeriodeFiscale>() {
-			@Override
-			public PeriodeFiscale doInTransaction(TransactionStatus status) {
-				return periodeFiscaleDAO.getPeriodeFiscaleByYear(annee);
-			}
-		});
+		final PeriodeFiscale periodeFiscale = t.execute(status -> periodeFiscaleDAO.getPeriodeFiscaleByYear(annee));
 		if (periodeFiscale == null) {
 			throw new ObjectNotFoundException("Impossible de retrouver la période fiscale pour l'année " + annee);
 		}

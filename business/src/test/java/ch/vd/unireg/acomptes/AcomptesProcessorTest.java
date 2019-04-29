@@ -12,9 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -68,74 +66,69 @@ public class AcomptesProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateIteratorOnIDsOfCtbs() throws Exception {
 
-		 class Ids {
-			 final long idOrdinaire;
-			 final long idDepense;
-			 final long idHcImmeuble;
-			 final long idHsActiviteIndependante;
-			 final long idSourcierPur;
-			 final long idOrdinaireParti2009;
-			 final long idOrdinaireParti2008;
-			 final long idDiplomateEtranger;
-			 final long idSourcierMixte1;
-			 final long idSourcierMixte2;
+		class Ids {
+			final long idOrdinaire;
+			final long idDepense;
+			final long idHcImmeuble;
+			final long idHsActiviteIndependante;
+			final long idSourcierPur;
+			final long idOrdinaireParti2009;
+			final long idOrdinaireParti2008;
+			final long idDiplomateEtranger;
+			final long idSourcierMixte1;
+			final long idSourcierMixte2;
 
-			 private Ids(long idOrdinaire, long idDepense, long idHcImmeuble, long idHsActiviteIndependante, long idSourcierPur,
-			             long idOrdinaireParti2009, long idOrdinaireParti2008, long idDiplomateEtranger, long idSourcierMixte1, long idSourcierMixte2) {
-				 this.idOrdinaire = idOrdinaire;
-				 this.idDepense = idDepense;
-				 this.idHcImmeuble = idHcImmeuble;
-				 this.idHsActiviteIndependante = idHsActiviteIndependante;
-				 this.idSourcierPur = idSourcierPur;
-				 this.idOrdinaireParti2009 = idOrdinaireParti2009;
-				 this.idOrdinaireParti2008 = idOrdinaireParti2008;
-				 this.idDiplomateEtranger = idDiplomateEtranger;
-				 this.idSourcierMixte1 = idSourcierMixte1;
-				 this.idSourcierMixte2 = idSourcierMixte2;
-			 }
-		 }
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-
-				final PersonnePhysique ordinaire = addNonHabitant("Vaudois", "Ordinaire", null, Sexe.MASCULIN);
-				addForPrincipal(ordinaire, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-
-				final PersonnePhysique depense = addNonHabitant("Vaudois", "Dépense", null, Sexe.FEMININ);
-				addForPrincipal(depense, date(2001, 4, 26), MotifFor.ARRIVEE_HS, null, null, MockCommune.VufflensLaVille, MotifRattachement.DOMICILE, ModeImposition.DEPENSE);
-
-				final PersonnePhysique hcImmeuble = addNonHabitant("Bernois", "Immeuble", null, Sexe.MASCULIN);
-				addForPrincipal(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final PersonnePhysique hsActiviteIndependante = addNonHabitant("Allemand", "Activité Indépendante", null, Sexe.FEMININ);
-				addForPrincipal(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
-				addForSecondaire(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
-
-				final PersonnePhysique sourcier = addNonHabitant("Vaudois", "Sourcier Pur", null, Sexe.MASCULIN);
-				addForPrincipal(sourcier, date(2004, 11, 24), MotifFor.ARRIVEE_HS, null, null, MockCommune.Renens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-
-				final PersonnePhysique ordinaireParti2009 = addNonHabitant("Vaudois", "Ordinaire Parti 2009", null, Sexe.FEMININ);
-				addForPrincipal(ordinaireParti2009, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2009, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
-
-				final PersonnePhysique ordinaireParti2008 = addNonHabitant("Vaudois", "Ordinaire Parti 2008", null, Sexe.FEMININ);
-				addForPrincipal(ordinaireParti2008, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
-
-				final PersonnePhysique diplomateEtranger = addNonHabitant("Diplomate", "Etranger", null, Sexe.MASCULIN);
-				addForPrincipal(diplomateEtranger, date(2006, 6, 13), MotifFor.INDETERMINE, null, null, MockPays.Colombie, MotifRattachement.DIPLOMATE_ETRANGER);
-
-				final PersonnePhysique sourcierMixte1 = addNonHabitant("Vaudois", "Mixte 1", null, Sexe.FEMININ);
-				addForPrincipal(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
-				addForSecondaire(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final PersonnePhysique sourcierMixte2 = addNonHabitant("Vaudois", "Mixte 2", null, Sexe.MASCULIN);
-				addForPrincipal(sourcierMixte2, date(2008, 5, 23), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
-
-				return new Ids(ordinaire.getNumero(), depense.getNumero(), hcImmeuble.getNumero(), hsActiviteIndependante.getNumero(),
-				               sourcier.getNumero(), ordinaireParti2009.getNumero(), ordinaireParti2008.getNumero(), diplomateEtranger.getNumero(),
-				               sourcierMixte1.getNumero(), sourcierMixte2.getNumero());
+			private Ids(long idOrdinaire, long idDepense, long idHcImmeuble, long idHsActiviteIndependante, long idSourcierPur,
+			            long idOrdinaireParti2009, long idOrdinaireParti2008, long idDiplomateEtranger, long idSourcierMixte1, long idSourcierMixte2) {
+				this.idOrdinaire = idOrdinaire;
+				this.idDepense = idDepense;
+				this.idHcImmeuble = idHcImmeuble;
+				this.idHsActiviteIndependante = idHsActiviteIndependante;
+				this.idSourcierPur = idSourcierPur;
+				this.idOrdinaireParti2009 = idOrdinaireParti2009;
+				this.idOrdinaireParti2008 = idOrdinaireParti2008;
+				this.idDiplomateEtranger = idDiplomateEtranger;
+				this.idSourcierMixte1 = idSourcierMixte1;
+				this.idSourcierMixte2 = idSourcierMixte2;
 			}
+		}
+
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ordinaire = addNonHabitant("Vaudois", "Ordinaire", null, Sexe.MASCULIN);
+			addForPrincipal(ordinaire, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+			final PersonnePhysique depense = addNonHabitant("Vaudois", "Dépense", null, Sexe.FEMININ);
+			addForPrincipal(depense, date(2001, 4, 26), MotifFor.ARRIVEE_HS, null, null, MockCommune.VufflensLaVille, MotifRattachement.DOMICILE, ModeImposition.DEPENSE);
+
+			final PersonnePhysique hcImmeuble = addNonHabitant("Bernois", "Immeuble", null, Sexe.MASCULIN);
+			addForPrincipal(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+
+			final PersonnePhysique hsActiviteIndependante = addNonHabitant("Allemand", "Activité Indépendante", null, Sexe.FEMININ);
+			addForPrincipal(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
+			addForSecondaire(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+			final PersonnePhysique sourcier = addNonHabitant("Vaudois", "Sourcier Pur", null, Sexe.MASCULIN);
+			addForPrincipal(sourcier, date(2004, 11, 24), MotifFor.ARRIVEE_HS, null, null, MockCommune.Renens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+
+			final PersonnePhysique ordinaireParti2009 = addNonHabitant("Vaudois", "Ordinaire Parti 2009", null, Sexe.FEMININ);
+			addForPrincipal(ordinaireParti2009, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2009, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
+
+			final PersonnePhysique ordinaireParti2008 = addNonHabitant("Vaudois", "Ordinaire Parti 2008", null, Sexe.FEMININ);
+			addForPrincipal(ordinaireParti2008, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
+
+			final PersonnePhysique diplomateEtranger = addNonHabitant("Diplomate", "Etranger", null, Sexe.MASCULIN);
+			addForPrincipal(diplomateEtranger, date(2006, 6, 13), MotifFor.INDETERMINE, null, null, MockPays.Colombie, MotifRattachement.DIPLOMATE_ETRANGER);
+
+			final PersonnePhysique sourcierMixte1 = addNonHabitant("Vaudois", "Mixte 1", null, Sexe.FEMININ);
+			addForPrincipal(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
+			addForSecondaire(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+
+			final PersonnePhysique sourcierMixte2 = addNonHabitant("Vaudois", "Mixte 2", null, Sexe.MASCULIN);
+			addForPrincipal(sourcierMixte2, date(2008, 5, 23), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+			return new Ids(ordinaire.getNumero(), depense.getNumero(), hcImmeuble.getNumero(), hsActiviteIndependante.getNumero(),
+			               sourcier.getNumero(), ordinaireParti2009.getNumero(), ordinaireParti2008.getNumero(), diplomateEtranger.getNumero(),
+			               sourcierMixte1.getNumero(), sourcierMixte2.getNumero());
 		});
 
 		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
@@ -201,43 +194,36 @@ public class AcomptesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique m = addNonHabitant("Jules", "César", date(1945, 3, 1), Sexe.MASCULIN);
-				final PersonnePhysique mme = addNonHabitant("Julie", "César", date(1945, 3, 1), Sexe.FEMININ);
+		doInNewTransaction(status -> {
+			final PersonnePhysique m = addNonHabitant("Jules", "César", date(1945, 3, 1), Sexe.MASCULIN);
+			final PersonnePhysique mme = addNonHabitant("Julie", "César", date(1945, 3, 1), Sexe.FEMININ);
 
-				final RegDate dateClotureMenage = RegDate.get(anneeReference - 1, 12, 5);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, date(1968, 5, 5), dateClotureMenage);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(1980, 8, 12), MotifFor.ARRIVEE_HC, dateClotureMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
-				addForPrincipal(m, dateClotureMenage.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bex);
-				addForPrincipal(mme, dateClotureMenage.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
+			final RegDate dateClotureMenage = RegDate.get(anneeReference - 1, 12, 5);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, date(1968, 5, 5), dateClotureMenage);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(1980, 8, 12), MotifFor.ARRIVEE_HC, dateClotureMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
+			addForPrincipal(m, dateClotureMenage.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bex);
+			addForPrincipal(mme, dateClotureMenage.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
 
-				ids.idMonsieur = m.getNumero();
-				ids.idMadame= mme.getNumero();
-				ids.idMenage= mc.getNumero();
-
-				return null;
-			}
+			ids.idMonsieur = m.getNumero();
+			ids.idMadame = mme.getNumero();
+			ids.idMenage = mc.getNumero();
+			return null;
 		});
 
 		// le contribuable ménage avait un for l'année dernière, donc il sera pris dans la requête initiale ...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final Iterator<Long> iterator = processor.createIteratorOnIDsOfCtbs(getCurrentSession(), anneeReference);
-				final List<Long> ctbs = new ArrayList<>(10);
-				while (iterator.hasNext()) {
-					ctbs.add(iterator.next());
-				}
-				Assert.assertEquals(2, ctbs.size());        // le ménage et monsieur, madame n'ayant pas de for vaudois en propre
-
-				Assert.assertTrue(ctbs.contains(ids.idMonsieur));
-				Assert.assertTrue(ctbs.contains(ids.idMenage));
-				Assert.assertFalse(ctbs.contains(ids.idMadame));
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final Iterator<Long> iterator = processor.createIteratorOnIDsOfCtbs(getCurrentSession(), anneeReference);
+			final List<Long> ctbs = new ArrayList<>(10);
+			while (iterator.hasNext()) {
+				ctbs.add(iterator.next());
 			}
+			Assert.assertEquals(2, ctbs.size());        // le ménage et monsieur, madame n'ayant pas de for vaudois en propre
+
+			Assert.assertTrue(ctbs.contains(ids.idMonsieur));
+			Assert.assertTrue(ctbs.contains(ids.idMenage));
+			Assert.assertFalse(ctbs.contains(ids.idMadame));
+			return null;
 		});
 
 		// ... mais il doit finir en "ignoré non assujetti", pas en "manque les liens d'appartenance ménage" (les liens sont effectivement inactifs au 31.12.2009)
@@ -303,51 +289,47 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 		final int anneeAcomptes = 2011;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			// vaudois sans for secondaire (en fait, il en a un, mais celui-ci n'est pas valide au moment du calcul des acomptes)
+			final PersonnePhysique vdSans = addHabitant(idIndividuVaudoisSansForSecondaire);
+			addForPrincipal(vdSans, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+			addForSecondaire(vdSans, date(2005, 12, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeAcomptes - 1, 12, 25), MotifFor.VENTE_IMMOBILIER, MockCommune.Lonay, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// vaudois sans for secondaire (en fait, il en a un, mais celui-ci n'est pas valide au moment du calcul des acomptes)
-				final PersonnePhysique vdSans = addHabitant(idIndividuVaudoisSansForSecondaire);
-				addForPrincipal(vdSans, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdSans, date(2005, 12, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeAcomptes - 1, 12, 25), MotifFor.VENTE_IMMOBILIER, MockCommune.Lonay, MotifRattachement.IMMEUBLE_PRIVE);
+			// vaudois avec un for secondaire sur la même commune que celle du for principal
+			final PersonnePhysique vdAvecMeme = addHabitant(idIndividuVaudoisAvecForSecondaireMemeCommune);
+			addForPrincipal(vdAvecMeme, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+			addForSecondaire(vdAvecMeme, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// vaudois avec un for secondaire sur la même commune que celle du for principal
-				final PersonnePhysique vdAvecMeme = addHabitant(idIndividuVaudoisAvecForSecondaireMemeCommune);
-				addForPrincipal(vdAvecMeme, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdAvecMeme, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			// vaudois avec un for secondaire sur une autre commune que celle du for principal
+			final PersonnePhysique vdAvecAutre = addHabitant(idIndividuVaudoisAvecForSecondaireCommuneDifferente);
+			addForPrincipal(vdAvecAutre, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+			addForSecondaire(vdAvecAutre, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// vaudois avec un for secondaire sur une autre commune que celle du for principal
-				final PersonnePhysique vdAvecAutre = addHabitant(idIndividuVaudoisAvecForSecondaireCommuneDifferente);
-				addForPrincipal(vdAvecAutre, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdAvecAutre, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			// vaudois avec deux fors secondaires
+			final PersonnePhysique vdAvecDeux = addHabitant(idIndividuVaudoisAvecDeuxForsSecondaires);
+			addForPrincipal(vdAvecDeux, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+			addForSecondaire(vdAvecDeux, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(vdAvecDeux, date(2008, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// vaudois avec deux fors secondaires
-				final PersonnePhysique vdAvecDeux = addHabitant(idIndividuVaudoisAvecDeuxForsSecondaires);
-				addForPrincipal(vdAvecDeux, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdAvecDeux, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(vdAvecDeux, date(2008, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			// hors-canton
+			final PersonnePhysique hc = addNonHabitant("Gaspard", "Lekanar", date(1980, 10, 25), Sexe.MASCULIN);
+			addForPrincipal(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// hors-canton
-				final PersonnePhysique hc = addNonHabitant("Gaspard", "Lekanar", date(1980, 10, 25), Sexe.MASCULIN);
-				addForPrincipal(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			// hors-Suisse
+			final PersonnePhysique hs = addNonHabitant("Lucie", "Lafourmi", date(1985, 8, 1), Sexe.FEMININ);
+			addForPrincipal(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+			addForSecondaire(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lonay, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(hs, date(2008, 12, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// hors-Suisse
-				final PersonnePhysique hs = addNonHabitant("Lucie", "Lafourmi", date(1985, 8, 1), Sexe.FEMININ);
-				addForPrincipal(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lonay, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(hs, date(2008, 12, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final Ids ids = new Ids();
-				ids.idVaudoisSansForSecondaire = vdSans.getNumero();
-				ids.idVaudoisAvecForSecondaireMemeCommune = vdAvecMeme.getNumero();
-				ids.idVaudoisAvecForSecondaireCommuneDifferente = vdAvecAutre.getNumero();
-				ids.idVaudoisAvecDeuxForsSecondaires = vdAvecDeux.getNumero();
-				ids.idHorsCanton = hc.getNumero();
-				ids.idHorsSuisse = hs.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idVaudoisSansForSecondaire = vdSans.getNumero();
+			ids1.idVaudoisAvecForSecondaireMemeCommune = vdAvecMeme.getNumero();
+			ids1.idVaudoisAvecForSecondaireCommuneDifferente = vdAvecAutre.getNumero();
+			ids1.idVaudoisAvecDeuxForsSecondaires = vdAvecDeux.getNumero();
+			ids1.idHorsCanton = hc.getNumero();
+			ids1.idHorsSuisse = hs.getNumero();
+			return ids1;
 		});
 
 		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
@@ -448,13 +430,10 @@ public class AcomptesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
-				return pp.getId();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
+			return pp.getId();
 		});
 
 		final AcomptesResults results = processor.run(RegDate.get(), 1, 2010, null);
@@ -516,15 +495,12 @@ public class AcomptesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// déménagement au 31.12 de l'année précédent les acomptes
-				final PersonnePhysique pp = addNonHabitant("Carole", "Luciole", date(1985, 8, 1), Sexe.FEMININ);
-				addForPrincipal(pp, date(2005, 5, 12), MotifFor.ARRIVEE_HS, date(anneeAcomptes - 1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
-				addForPrincipal(pp, date(anneeAcomptes, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			// déménagement au 31.12 de l'année précédent les acomptes
+			final PersonnePhysique pp = addNonHabitant("Carole", "Luciole", date(1985, 8, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2005, 5, 12), MotifFor.ARRIVEE_HS, date(anneeAcomptes - 1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+			addForPrincipal(pp, date(anneeAcomptes, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
@@ -561,15 +537,12 @@ public class AcomptesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// départ HS dans l'année n-1
-				final PersonnePhysique pp = addNonHabitant("Carole", "Luciole", date(1985, 8, 1), Sexe.FEMININ);
-				addForPrincipal(pp, date(2005, 5, 12), MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Aigle);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			// départ HS dans l'année n-1
+			final PersonnePhysique pp = addNonHabitant("Carole", "Luciole", date(1985, 8, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2005, 5, 12), MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
+			return pp.getNumero();
 		});
 
 		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
@@ -624,13 +597,10 @@ public class AcomptesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE);
-				return pp.getId();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE);
+			return pp.getId();
 		});
 
 		// calcul des acomptes
@@ -675,13 +645,10 @@ public class AcomptesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
-				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE);
-				return pp.getId();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastair", "Rogers", null, Sexe.MASCULIN);
+			addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE);
+			return pp.getId();
 		});
 
 		// calcul des acomptes

@@ -1,8 +1,6 @@
 package ch.vd.unireg.common;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -44,15 +42,12 @@ public class CheckedTransactionTemplate {
 	 */
 	public <T> T execute(final CheckedTransactionCallback<T> action) throws Exception {
 		try {
-			return template.execute(new TransactionCallback<T>() {
-				@Override
-				public T doInTransaction(TransactionStatus status) {
-					try {
-						return action.doInTransaction(status);
-					}
-					catch (Exception e) {
-						throw new InternalException(e);
-					}
+			return template.execute(status -> {
+				try {
+					return action.doInTransaction(status);
+				}
+				catch (Exception e) {
+					throw new InternalException(e);
 				}
 			});
 		}

@@ -14,8 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -163,29 +162,25 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 
 	private void refreshParentes(final Set<Long> nosIndividus) {
 		// on ré-ouvre une transaction pour effectuer les modifications nécessaires
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				for (Long noIndividu : nosIndividus) {
-					tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
-				}
+		doInNewTransaction(status -> {
+			for (Long noIndividu : nosIndividus) {
+				tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
 			}
+			return null;
 		});
 	}
 
 	private void markParentesDirty(final Set<Long> nosIndividus) {
 		// nouvelle transaction
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				for (Long noIndividu : nosIndividus) {
-					tiersService.markParentesDirtyDepuisNumeroIndividu(noIndividu);
-				}
+		doInNewTransaction(status -> {
+			for (Long noIndividu : nosIndividus) {
+				tiersService.markParentesDirtyDepuisNumeroIndividu(noIndividu);
 			}
+			return null;
 		});
 	}
 
-	private void doInNewTransaction(TransactionCallbackWithoutResult callback) {
+	private void doInNewTransaction(TransactionCallback<Object> callback) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.execute(callback);

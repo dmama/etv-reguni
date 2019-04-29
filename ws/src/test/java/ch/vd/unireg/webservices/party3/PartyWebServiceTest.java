@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -376,17 +375,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final Ids ids = new Ids();
 
 		// pas de validation : pour permettre l'ajout d'une curatelle avec date de début nulle
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				ch.vd.unireg.tiers.PersonnePhysique tiia = addHabitant(noIndividuTiia);
-				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
-				ids.tiia = tiia.getId();
-				ch.vd.unireg.tiers.PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
-				ids.sylvie = sylvie.getId();
-				addCuratelle(tiia, sylvie, null, null);
-				return null;
-			}
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			PersonnePhysique tiia = addHabitant(noIndividuTiia);
+			addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+			ids.tiia = tiia.getId();
+			PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+			ids.sylvie = sylvie.getId();
+			addCuratelle(tiia, sylvie, null, null);
+			return null;
 		});
 
 		{
@@ -495,15 +491,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals(2009, retour.getKey().getTaxPeriod());
 		assertEquals(TaxDeclarationAcknowledgeCode.OK, retour.getCode());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
-				assertNotNull(di);
-				assertNotNull(di.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, di.getDernierEtatDeclaration().getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+			assertNotNull(di);
+			assertNotNull(di.getDernierEtatDeclaration());
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, di.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
@@ -520,40 +513,35 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final int annee = 2010;
 
 		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			final RegDate debutAnnee = date(annee, 1, 1);
+			final RegDate finAnnee = date(annee, 12, 31);
+			final RegDate venteImmeuble = finAnnee.addMonths(-3);
 
-				final RegDate debutAnnee = date(annee, 1, 1);
-				final RegDate finAnnee = date(annee, 12, 31);
-				final RegDate venteImmeuble = finAnnee.addMonths(-3);
+			final PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), Sexe.MASCULIN);
+			pp.setNom(null);        // <-- c'est là le problème de validation
 
-				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), ch.vd.unireg.type.Sexe.MASCULIN);
-				pp.setNom(null);        // <-- c'est là le problème de validation
+			addForPrincipal(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+			addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, venteImmeuble, MotifFor.VENTE_IMMOBILIER,
+			                 MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 
-				addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
-						MockCommune.Aigle, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, venteImmeuble, TypeContribuable.HORS_SUISSE, md);
+			final RegDate dateEmission = date(annee + 1, 1, 11);
+			di.addEtat(new EtatDeclarationEmise(dateEmission));
 
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, venteImmeuble, TypeContribuable.HORS_SUISSE, md);
-				final RegDate dateEmission = date(annee + 1, 1, 11);
-				di.addEtat(new EtatDeclarationEmise(dateEmission));
+			final DelaiDeclaration delai = new DelaiDeclaration();
+			delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+			delai.setDateTraitement(dateEmission);
+			delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+			delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
+			di.addDelai(delai);
 
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-				delai.setDateTraitement(dateEmission);
-				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
-				delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
-				di.addDelai(delai);
-
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-
-				return null;
-			}
+			ids.ppId = pp.getNumero();
+			ids.diId = di.getId();
+			return null;
 		});
 
 		// quittancement de la DI
@@ -588,18 +576,35 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 avertissement(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
 		assertEquals(expectedMessage, exceptionInfo.getMessage());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
-				assertNotNull(di);
-				assertNotNull(di.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.EMIS, di.getDernierEtatDeclaration().getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+			assertNotNull(di);
+			assertNotNull(di.getDernierEtatDeclaration());
+			assertEquals(TypeEtatDocumentFiscal.EMIS, di.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
+	private ch.vd.unireg.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.unireg.type.Sexe sexe, RegDate debutAnnee, RegDate venteImmeuble) {
+		final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
+		addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+		addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
+		                 MockCommune.Aigle, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
+		return pp;
+	}
+
+	private DeclarationImpotOrdinairePP addDi(ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md, int annee) {
+		final DeclarationImpotOrdinairePP di = addDeclarationImpot(ctb, pf, dateDebut, dateFin, TypeContribuable.HORS_SUISSE, md);
+		final RegDate dateEmission = date(annee + 1, 1, 11);
+		di.addEtat(new EtatDeclarationEmise(dateEmission));
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setDateTraitement(dateEmission);
+		delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
+		delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
+		di.addDelai(delai);
+		return di;
+	}
 	@Test
 	public void testMultipleTaxDeclarationReturnWithOneTaxpayerWithoutSentStatus() throws Exception {
 
@@ -620,44 +625,19 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final List<Ids> liste = new ArrayList<>();
 
 		// on désactive la validation pour pouvoir sauver un tiers au moins qui ne valide pas...
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), Sexe.MASCULIN, debutAnnee, venteImmeuble);
+			final PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), Sexe.FEMININ, debutAnnee, venteImmeuble);
 
-				final ch.vd.unireg.tiers.PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), ch.vd.unireg.type.Sexe.MASCULIN);
-				final ch.vd.unireg.tiers.PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), ch.vd.unireg.type.Sexe.FEMININ);
+			final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, venteImmeuble, pf, md, annee);
+			final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, venteImmeuble, pf, md, annee);
 
-				final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, venteImmeuble, pf, md);
-				final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, venteImmeuble, pf, md);
-
-				liste.add(new Ids(validePP.getNumero(), valideDi.getId()));
-				liste.add(new Ids(invalidePP.getNumero(), invalideDi.getId()));
-				return null;
-			}
-
-			private ch.vd.unireg.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.unireg.type.Sexe sexe) {
-				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
-				addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
-						MockCommune.Aigle, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
-				return pp;
-			}
-
-			private DeclarationImpotOrdinairePP addDi(ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md) {
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(ctb, pf, dateDebut, dateFin, TypeContribuable.HORS_SUISSE, md);
-				final RegDate dateEmission = date(annee + 1, 1, 11);
-				di.addEtat(new EtatDeclarationEmise(dateEmission));
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-				delai.setDateTraitement(dateEmission);
-				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
-				delai.setTypeDelai(TypeDelaiDeclaration.IMPLICITE);
-				di.addDelai(delai);
-				return di;
-			}
+			liste.add(new Ids(validePP.getNumero(), valideDi.getId()));
+			liste.add(new Ids(invalidePP.getNumero(), invalideDi.getId()));
+			return null;
 		});
 
 		// quittancement des DI
@@ -673,7 +653,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			demande.getKey().setTaxPeriod(annee);
 			quittances.getRequests().add(demande);
 		}
-		
+
 		final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(quittances);
 		assertNotNull(reponse);
 
@@ -701,20 +681,17 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 avertissement(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
 		assertEquals(expectedMessage, exceptionInfo.getMessage());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire diValide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
-				assertNotNull(diValide);
-				assertNotNull(diValide.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, diValide.getDernierEtatDeclaration().getEtat());
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire diValide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
+			assertNotNull(diValide);
+			assertNotNull(diValide.getDernierEtatDeclaration());
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, diValide.getDernierEtatDeclaration().getEtat());
 
-				final DeclarationImpotOrdinaire diInvalide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
-				assertNotNull(diInvalide);
-				assertNotNull(diInvalide.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.EMIS, diInvalide.getDernierEtatDeclaration().getEtat());
-				return null;
-			}
+			final DeclarationImpotOrdinaire diInvalide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
+			assertNotNull(diInvalide);
+			assertNotNull(diInvalide.getDernierEtatDeclaration());
+			assertEquals(TypeEtatDocumentFiscal.EMIS, diInvalide.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
@@ -728,45 +705,36 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final RegDate veilleMariage = date(1995, 7, 30);
 		final RegDate dateMariage = date(1995, 8, 1);
 
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique arnold = addNonHabitant("Arnold", "Lokker", date(1971, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(arnold, date(1991, 3, 12), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Bussigny);
 
+			final PersonnePhysique lucette = addNonHabitant("Lucette", "Tartare", date(1973, 5, 12), Sexe.FEMININ);
+			addForPrincipal(lucette, date(1993, 5, 12), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Cossonay);
 
-				final ch.vd.unireg.tiers.PersonnePhysique arnold = addNonHabitant("Arnold", "Lokker", date(1971, 3, 12), ch.vd.unireg.type.Sexe.MASCULIN);
-				addForPrincipal(arnold, date(1991, 3, 12), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Bussigny);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(arnold, lucette, dateMariage, null);
+			final ch.vd.unireg.tiers.MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
 
-				final ch.vd.unireg.tiers.PersonnePhysique lucette = addNonHabitant("Lucette", "Tartare", date(1973, 5, 12), ch.vd.unireg.type.Sexe.FEMININ);
-				addForPrincipal(lucette, date(1993, 5, 12), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Cossonay);
-
-				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(arnold, lucette, dateMariage, null);
-				final ch.vd.unireg.tiers.MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-
-				// on clone les liens d'appartenance ménage et on les annule (de cette manière, l'ensemble reste valide mais avec des rapports annulés)
-				for (ch.vd.unireg.tiers.RapportEntreTiers r : menage.getRapportsObjet()) {
-					ch.vd.unireg.tiers.RapportEntreTiers clone = r.duplicate();
-					clone.setAnnule(true);
-					hibernateTemplate.merge(clone);
-				}
-
-				return arnold.getNumero();
+			// on clone les liens d'appartenance ménage et on les annule (de cette manière, l'ensemble reste valide mais avec des rapports annulés)
+			for (ch.vd.unireg.tiers.RapportEntreTiers r : menage.getRapportsObjet()) {
+				ch.vd.unireg.tiers.RapportEntreTiers clone = r.duplicate();
+				clone.setAnnule(true);
+				hibernateTemplate.merge(clone);
 			}
+			return arnold.getNumero();
 		});
 
 		// on vérifie que les données en base sont bien comme on pense
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final ch.vd.unireg.tiers.PersonnePhysique arnold = hibernateTemplate.get(ch.vd.unireg.tiers.PersonnePhysique.class, id);
-				assertNotNull(arnold);
-				final Set<ch.vd.unireg.tiers.RapportEntreTiers> rapports = arnold.getRapportsSujet();
-				assertNotNull(rapports);
-				assertEquals(2, rapports.size()); // 2 rapports d'appartenance ménage identiques, mais un est annulé
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique arnold = hibernateTemplate.get(PersonnePhysique.class, id);
+			assertNotNull(arnold);
+			final Set<ch.vd.unireg.tiers.RapportEntreTiers> rapports = arnold.getRapportsSujet();
+			assertNotNull(rapports);
+			assertEquals(2, rapports.size()); // 2 rapports d'appartenance ménage identiques, mais un est annulé;
+			return null;
 		});
 
 		{
@@ -783,7 +751,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(2, forsFiscauxPrincipaux.size());
 
 			assertTaxResidence(date(1991, 3, 12), LiabilityChangeReason.MAJORITY, veilleMariage, LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION, MockCommune.Bussigny, false,
-					forsFiscauxPrincipaux.get(0));
+			                   forsFiscauxPrincipaux.get(0));
 			assertTaxResidence(date(1995, 8, 1), LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION, null, null, MockCommune.Bussigny, true, forsFiscauxPrincipaux.get(1));
 		}
 	}
@@ -842,27 +810,24 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), ch.vd.unireg.type.Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				diAnnulee.setAnnule(true);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			diAnnulee.setAnnule(true);
 
-				final DeclarationImpotOrdinaire diNonAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				diNonAnnulee.setNumero(diAnnulee.getNumero());
+			final DeclarationImpotOrdinaire diNonAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			diNonAnnulee.setNumero(diAnnulee.getNumero());
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diAnnuleeId = diAnnulee.getId();
-				ids.diNonAnnuleeId = diNonAnnulee.getId();
-				ids.noSequence = diAnnulee.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diAnnuleeId = diAnnulee.getId();
+			ids1.diNonAnnuleeId = diNonAnnulee.getId();
+			ids1.noSequence = diAnnulee.getNumero();
+			return ids1;
 		});
 
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
@@ -902,22 +867,19 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		// On quittance la DI en précisant la source
@@ -983,29 +945,26 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				di.setCodeSegment(2);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			di.setCodeSegment(2);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		{
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
-			params.setPartyNumber((int)ids.ppId);
+			params.setPartyNumber((int) ids.ppId);
 			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
@@ -1030,25 +989,22 @@ public class PartyWebServiceTest extends WebserviceTest {
 			long diId;
 		}
 
-		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny,
-						MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1),
-				                                                           date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 12, 31), TypeContribuable.HORS_CANTON, md);
-				di.setCodeSegment(null);
+			final PeriodeFiscale pf = addPeriodeFiscale(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1),
+			                                                           date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 12, 31), TypeContribuable.HORS_CANTON, md);
+			di.setCodeSegment(null);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		{
@@ -1568,17 +1524,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 		removeTiersIndexData();
 		setWantIndexationTiers(true);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				marcel.setAncienNumeroSourcier(333111L);
-				ids.marcel = marcel.getId();
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			marcel.setAncienNumeroSourcier(333111L);
+			ids.marcel = marcel.getId();
 
-				final PersonnePhysique jules = addNonHabitant("Jules", "Espol", date(1936, 8, 22), Sexe.MASCULIN);
-				ids.jules = jules.getId();
-				return null;
-			}
+			final PersonnePhysique jules = addNonHabitant("Jules", "Espol", date(1936, 8, 22), Sexe.MASCULIN);
+			ids.jules = jules.getId();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1640,55 +1593,51 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			ids.menageVide = addMenageCommun(null).getId();
 
-				ids.menageVide = addMenageCommun(null).getId();
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			final PersonnePhysique julie = addNonHabitant("Julie", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			final EnsembleTiersCouple menageActif = addEnsembleTiersCouple(marcel, julie, date(1970, 5, 1), null);
+			ids.menageActif = menageActif.getMenage().getId();
 
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				final PersonnePhysique julie = addNonHabitant("Julie", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				final EnsembleTiersCouple menageActif = addEnsembleTiersCouple(marcel, julie, date(1970, 5, 1), null);
-				ids.menageActif = menageActif.getMenage().getId();
+			final PersonnePhysique john = addNonHabitant("John", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			final PersonnePhysique selene = addNonHabitant("Sélène", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			final EnsembleTiersCouple menageSepare = addEnsembleTiersCouple(john, selene, date(1970, 5, 1), dateFin);
+			ids.menageSepare = menageSepare.getMenage().getId();
 
-				final PersonnePhysique john = addNonHabitant("John", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				final PersonnePhysique selene = addNonHabitant("Sélène", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				final EnsembleTiersCouple menageSepare = addEnsembleTiersCouple(john, selene, date(1970, 5, 1), dateFin);
-				ids.menageSepare = menageSepare.getMenage().getId();
+			final PersonnePhysique olivier = addNonHabitant("Olivier", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			olivier.setDateDeces(date(2000, 3, 1));
+			final PersonnePhysique sabrina = addNonHabitant("Sabrina", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			final EnsembleTiersCouple menageSepareDecesApres = addEnsembleTiersCouple(olivier, sabrina, date(1970, 5, 1), dateFin);
+			ids.menageSepareDecesApres = menageSepareDecesApres.getMenage().getId();
 
-				final PersonnePhysique olivier = addNonHabitant("Olivier", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				olivier.setDateDeces(date(2000, 3, 1));
-				final PersonnePhysique sabrina = addNonHabitant("Sabrina", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				final EnsembleTiersCouple menageSepareDecesApres = addEnsembleTiersCouple(olivier, sabrina, date(1970, 5, 1), dateFin);
-				ids.menageSepareDecesApres = menageSepareDecesApres.getMenage().getId();
+			final PersonnePhysique hughes = addNonHabitant("Hughes", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			hughes.setDateDeces(dateFin);
+			final PersonnePhysique juliette = addNonHabitant("Juliette", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			final EnsembleTiersCouple decesPrincipal = addEnsembleTiersCouple(hughes, juliette, date(1970, 5, 1), dateFin);
+			ids.menageTermineCauseDecesPrincipal = decesPrincipal.getMenage().getId();
 
-				final PersonnePhysique hughes = addNonHabitant("Hughes", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				hughes.setDateDeces(dateFin);
-				final PersonnePhysique juliette = addNonHabitant("Juliette", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				final EnsembleTiersCouple decesPrincipal = addEnsembleTiersCouple(hughes, juliette, date(1970, 5, 1), dateFin);
-				ids.menageTermineCauseDecesPrincipal = decesPrincipal.getMenage().getId();
+			final PersonnePhysique ramon = addNonHabitant("Ramon", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			final PersonnePhysique eva = addNonHabitant("Eva", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			eva.setDateDeces(dateFin);
+			final EnsembleTiersCouple decesConjoint = addEnsembleTiersCouple(ramon, eva, date(1970, 5, 1), dateFin);
+			ids.menageTermineCauseDecesConjoint = decesConjoint.getMenage().getId();
 
-				final PersonnePhysique ramon = addNonHabitant("Ramon", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				final PersonnePhysique eva = addNonHabitant("Eva", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				eva.setDateDeces(dateFin);
-				final EnsembleTiersCouple decesConjoint = addEnsembleTiersCouple(ramon, eva, date(1970, 5, 1), dateFin);
-				ids.menageTermineCauseDecesConjoint = decesConjoint.getMenage().getId();
+			final PersonnePhysique samson = addNonHabitant("Samson", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			samson.setDateDeces(dateFin);
+			final PersonnePhysique dalila = addNonHabitant("Dalila", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			dalila.setDateDeces(dateFin);
+			final EnsembleTiersCouple comourant = addEnsembleTiersCouple(samson, dalila, date(1970, 5, 1), dateFin);
+			ids.menageTermineCauseDecesComourants = comourant.getMenage().getId();
 
-				final PersonnePhysique samson = addNonHabitant("Samson", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				samson.setDateDeces(dateFin);
-				final PersonnePhysique dalila = addNonHabitant("Dalila", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				dalila.setDateDeces(dateFin);
-				final EnsembleTiersCouple comourant = addEnsembleTiersCouple(samson, dalila, date(1970, 5, 1), dateFin);
-				ids.menageTermineCauseDecesComourants = comourant.getMenage().getId();
-
-				final PersonnePhysique patrick = addNonHabitant("Patrick", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				final PersonnePhysique monique = addNonHabitant("Monique", "Espol", date(1936, 8, 22), Sexe.FEMININ);
-				final EnsembleTiersCouple menageSeparePuisReconcilie = addEnsembleTiersCouple(patrick, monique, date(1970, 5, 1), dateFin);
-				addAppartenanceMenage(menageSeparePuisReconcilie.getMenage(), patrick, dateFin.addMonths(3), null, false);
-				addAppartenanceMenage(menageSeparePuisReconcilie.getMenage(), monique, dateFin.addMonths(3), null, false);
-				ids.menageSeparePuisReconcilie = menageSeparePuisReconcilie.getMenage().getId();
-				return null;
-			}
+			final PersonnePhysique patrick = addNonHabitant("Patrick", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			final PersonnePhysique monique = addNonHabitant("Monique", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+			final EnsembleTiersCouple menageSeparePuisReconcilie = addEnsembleTiersCouple(patrick, monique, date(1970, 5, 1), dateFin);
+			addAppartenanceMenage(menageSeparePuisReconcilie.getMenage(), patrick, dateFin.addMonths(3), null, false);
+			addAppartenanceMenage(menageSeparePuisReconcilie.getMenage(), monique, dateFin.addMonths(3), null, false);
+			ids.menageSeparePuisReconcilie = menageSeparePuisReconcilie.getMenage().getId();
+			return null;
 		});
 
 		// ménage vide
@@ -1878,23 +1827,20 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		// sans la part qui va bien
@@ -1954,25 +1900,22 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 15));
-				addEtatDeclarationRetournee(di, date(annee + 1, 4, 23), "TEST");
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 15));
+			addEtatDeclarationRetournee(di, date(annee + 1, 4, 23), "TEST");
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		// sans la part qui va bien
@@ -2037,24 +1980,21 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		// sans la part qui va bien
@@ -2121,26 +2061,23 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int annee = 2009;
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 7));
-				addEtatDeclarationRetournee(di, date(annee + 1, 7, 31));
-				addEtatDeclarationSommee(di, date(annee + 1, 7, 20), date(annee + 1, 7, 18), null);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 7));
+			addEtatDeclarationRetournee(di, date(annee + 1, 7, 31));
+			addEtatDeclarationSommee(di, date(annee + 1, 7, 20), date(annee + 1, 7, 18), null);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		// sans la part qui va bien
@@ -2195,6 +2132,15 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 	}
 
+	private DeclarationImpotOrdinaire addDI(PersonnePhysique pp, int annee) {
+		final PeriodeFiscale pf = addPeriodeFiscale(annee);
+		final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+		addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+		addEtatDeclarationEmise(di, date(annee, 1, 30));
+		return di;
+	}
+
 	/**
 	 * [SIFISC-6228]
 	 */
@@ -2209,45 +2155,33 @@ public class PartyWebServiceTest extends WebserviceTest {
 			long di2011;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				// 2008 : échue
-				final DeclarationImpotOrdinaire di2008 = addDI(pp, 2008);
-				addEtatDeclarationEchue(di2008, date(2009, 7, 1));
+			// 2008 : échue
+			final DeclarationImpotOrdinaire di2008 = addDI(pp, 2008);
+			addEtatDeclarationEchue(di2008, date(2009, 7, 1));
 
-				// 2009 : retournée
-				final DeclarationImpotOrdinaire di2009 = addDI(pp, 2009);
-				addEtatDeclarationRetournee(di2009, date(2010, 4, 2));
+			// 2009 : retournée
+			final DeclarationImpotOrdinaire di2009 = addDI(pp, 2009);
+			addEtatDeclarationRetournee(di2009, date(2010, 4, 2));
 
-				// 2010 : sommée
-				final DeclarationImpotOrdinaire di2010 = addDI(pp, 2010);
-				addEtatDeclarationSommee(di2010, date(2011, 9, 1), date(2011, 9, 3), null);
+			// 2010 : sommée
+			final DeclarationImpotOrdinaire di2010 = addDI(pp, 2010);
+			addEtatDeclarationSommee(di2010, date(2011, 9, 1), date(2011, 9, 3), null);
 
-				// 2010 : émise
-				final DeclarationImpotOrdinaire di2011 = addDI(pp, 2011);
+			// 2010 : émise
+			final DeclarationImpotOrdinaire di2011 = addDI(pp, 2011);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.di2008 = di2008.getId();
-				ids.di2009 = di2009.getId();
-				ids.di2010 = di2010.getId();
-				ids.di2011 = di2011.getId();
-				return ids;
-			}
-
-			private DeclarationImpotOrdinaire addDI(PersonnePhysique pp, int annee) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationEmise(di, date(annee, 1, 30));
-				return di;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.di2008 = di2008.getId();
+			ids1.di2009 = di2009.getId();
+			ids1.di2010 = di2010.getId();
+			ids1.di2011 = di2011.getId();
+			return ids1;
 		});
 
 		final Date today = ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get());
@@ -2310,7 +2244,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertNotNull(results);
 			assertEquals(ExtendDeadlineCode.ERROR_INVALID_APPLICATION_DATE, results.getCode());
 			assertEquals("La date de demande spécifiée [" + RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)) +
-					"] est postérieure à la date du jour [" + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", results.getExceptionInfo().getMessage());
+					             "] est postérieure à la date du jour [" + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", results.getExceptionInfo().getMessage());
 		}
 
 		// nouveau délai dans le passé
@@ -2372,7 +2306,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertNotNull(results);
 			assertEquals(ExtendDeadlineCode.ERROR_INVALID_DEADLINE, results.getCode());
 			assertEquals("Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur ou égal au délai existant [" +
-					RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)) + "].", results.getExceptionInfo().getMessage());
+					             RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)) + "].", results.getExceptionInfo().getMessage());
 		}
 	}
 
@@ -2500,15 +2434,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final int year = RegDate.get().year();
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Ava", "Gardner", date(1922, 12, 24), Sexe.FEMININ);
-				pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
-				addForPrincipal(pp, date(year - 3, 1, 1), MotifFor.ARRIVEE_HS, date(year - 2, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForPrincipal(pp, date(year - 2, 5, 13), MotifFor.DEPART_HS, null, null, MockPays.EtatsUnis, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Ava", "Gardner", date(1922, 12, 24), Sexe.FEMININ);
+			pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+			addForPrincipal(pp, date(year - 3, 1, 1), MotifFor.ARRIVEE_HS, date(year - 2, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
+			addForPrincipal(pp, date(year - 2, 5, 13), MotifFor.DEPART_HS, null, null, MockPays.EtatsUnis, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2547,12 +2478,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetDebiteurParticipationsHorsSuisse() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+			return dpi.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2575,12 +2503,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetDebiteurEffeuilleuses() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+			return dpi.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2616,24 +2541,21 @@ public class PartyWebServiceTest extends WebserviceTest {
 		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
 			// mise en place des débiteurs
-			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final DebiteurPrestationImposable reg = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-					reg.setNom1("Toto");        // pour la recherche
+			final Ids ids = doInNewTransactionAndSession(status -> {
+				final DebiteurPrestationImposable reg = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				reg.setNom1("Toto");        // pour la recherche
 
-					final DebiteurPrestationImposable eff = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-					eff.setNom1("Toto");        // pour la recherche
+				final DebiteurPrestationImposable eff = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				eff.setNom1("Toto");        // pour la recherche
 
-					final DebiteurPrestationImposable phs = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-					phs.setNom1("Toto");        // pour la recherche
+				final DebiteurPrestationImposable phs = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+				phs.setNom1("Toto");        // pour la recherche
 
-					final Ids ids = new Ids();
-					ids.phs = phs.getNumero();
-					ids.eff = eff.getNumero();
-					ids.reg = reg.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.phs = phs.getNumero();
+				ids1.eff = eff.getNumero();
+				ids1.reg = reg.getNumero();
+				return ids1;
 			});
 
 			// on attend que l'indexation des trois nouveaux débiteurs soit terminée
@@ -2673,12 +2595,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2721,17 +2640,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 			long idPapa;
 			long idFiston;
 		}
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(noIndPapa);
-				final PersonnePhysique fiston = addHabitant(noIndFiston);
-				addParente(fiston, papa, dateNaissanceFiston, null);
-				final Ids ids = new Ids();
-				ids.idPapa = papa.getNumero();
-				ids.idFiston = fiston.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique papa = addHabitant(noIndPapa);
+			final PersonnePhysique fiston = addHabitant(noIndFiston);
+			addParente(fiston, papa, dateNaissanceFiston, null);
+			final Ids ids1 = new Ids();
+			ids1.idPapa = papa.getNumero();
+			ids1.idFiston = fiston.getNumero();
+			return ids1;
 		});
 
 		// vue depuis le père, en ne demandant que les relations -> pas d'enfants

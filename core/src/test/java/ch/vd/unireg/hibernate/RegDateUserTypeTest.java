@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
@@ -91,24 +90,18 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 	@Test
 	public void testBasicSaveReload() throws Exception {
 
-		final long id = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				final TestData data = new TestData(RegDate.get(2003, 3), RegDate.get(2008, 4, 8));
-				return (Long) session.save(data);
-			}
+		final long id = doInNewTransaction(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			final TestData data = new TestData(RegDate.get(2003, 3), RegDate.get(2008, 4, 8));
+			return (Long) session.save(data);
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				final TestData data = (TestData) session.get(TestData.class, id);
-				assertEquals(RegDate.get(2003, 3), data.getPartialDate());
-				assertEquals(RegDate.get(2008, 4, 8), data.getFullDate());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			final TestData data = (TestData) session.get(TestData.class, id);
+			assertEquals(RegDate.get(2003, 3), data.getPartialDate());
+			assertEquals(RegDate.get(2008, 4, 8), data.getFullDate());
+			return null;
 		});
 	}
 
@@ -162,14 +155,11 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 	@Test
 	public void testSaveToDatabase() throws Exception {
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				session.createSQLQuery("delete from TEST_DATA").executeUpdate();
-				assertEquals(0L, ((Number) session.createQuery("select count(*) from TEST_DATA").uniqueResult()).longValue());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			session.createSQLQuery("delete from TEST_DATA").executeUpdate();
+			assertEquals(0L, ((Number) session.createQuery("select count(*) from TEST_DATA").uniqueResult()).longValue());
+			return null;
 		});
 
 		class Ids {
@@ -203,34 +193,31 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 		 * Relis les données sauvées en pure SQL et compare les valeurs
 		 */
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				final SQLQuery query = session.createSQLQuery("select ID, FULLDATE, PARTIALDATE from TEST_DATA order by ID asc");
-				query.addScalar("ID", StandardBasicTypes.LONG);
-				query.addScalar("FULLDATE", StandardBasicTypes.INTEGER);
-				query.addScalar("PARTIALDATE", StandardBasicTypes.INTEGER);
+		doInNewTransaction(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			final SQLQuery query = session.createSQLQuery("select ID, FULLDATE, PARTIALDATE from TEST_DATA order by ID asc");
+			query.addScalar("ID", StandardBasicTypes.LONG);
+			query.addScalar("FULLDATE", StandardBasicTypes.INTEGER);
+			query.addScalar("PARTIALDATE", StandardBasicTypes.INTEGER);
 
-				final List<?> list = query.list();
-				assertEquals(3, list.size());
+			final List<?> list = query.list();
+			assertEquals(3, list.size());
 
-				final Object[] line1 = (Object[]) list.get(0);
-				assertEquals(ids.id1, line1[0]); // id
-				assertEquals(new Integer(20120118), line1[1]); // full date
-				assertEquals(new Integer(20001130), line1[2]); // partial date
+			final Object[] line1 = (Object[]) list.get(0);
+			assertEquals(ids.id1, line1[0]); // id
+			assertEquals(new Integer(20120118), line1[1]); // full date
+			assertEquals(new Integer(20001130), line1[2]); // partial date
 
-				final Object[] line2 = (Object[]) list.get(1);
-				assertEquals(ids.id2, line2[0]); // id
-				assertEquals(new Integer(19910801), line2[1]); // full date
-				assertEquals(new Integer(20001100), line2[2]); // partial date
+			final Object[] line2 = (Object[]) list.get(1);
+			assertEquals(ids.id2, line2[0]); // id
+			assertEquals(new Integer(19910801), line2[1]); // full date
+			assertEquals(new Integer(20001100), line2[2]); // partial date
 
-				final Object[] line3 = (Object[]) list.get(2);
-				assertEquals(ids.id3, line3[0]); // id
-				assertEquals(new Integer(23451130), line3[1]); // full date
-				assertEquals(new Integer(20000000), line3[2]); // partial date
-				return null;
-			}
+			final Object[] line3 = (Object[]) list.get(2);
+			assertEquals(ids.id3, line3[0]); // id
+			assertEquals(new Integer(23451130), line3[1]); // full date
+			assertEquals(new Integer(20000000), line3[2]); // partial date;
+			return null;
 		});
 	}
 

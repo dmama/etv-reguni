@@ -5,17 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -310,7 +309,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateDivorce);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Echallens);
+				                MockCommune.Echallens);
 				return null;
 			}
 		});
@@ -338,28 +337,25 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// on s'assure que rien n'a changé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				assertNotNull(monsieur);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			assertNotNull(monsieur);
 
-				final AppartenanceMenage appartenanceMonsieur = (AppartenanceMenage) monsieur.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				assertNotNull(appartenanceMonsieur);
-				assertEquals(dateMariage, appartenanceMonsieur.getDateDebut());
-				assertEquals(dateDivorce, appartenanceMonsieur.getDateFin());
+			final AppartenanceMenage appartenanceMonsieur = (AppartenanceMenage) monsieur.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(appartenanceMonsieur);
+			assertEquals(dateMariage, appartenanceMonsieur.getDateDebut());
+			assertEquals(dateDivorce, appartenanceMonsieur.getDateFin());
 
-				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
-				assertNotNull(madame);
+			final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+			assertNotNull(madame);
 
-				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				assertNotNull(appartenanceMadame);
-				assertEquals(dateMariage, appartenanceMadame.getDateDebut());
-				assertEquals(dateDivorce, appartenanceMadame.getDateFin());
+			final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(appartenanceMadame);
+			assertEquals(dateMariage, appartenanceMadame.getDateDebut());
+			assertEquals(dateDivorce, appartenanceMadame.getDateFin());
 
-				assertNull(tiersService.getEnsembleTiersCouple(madame, dateDivorce.getOneDayAfter()));
-				return null;
-			}
+			assertNull(tiersService.getEnsembleTiersCouple(madame, dateDivorce.getOneDayAfter()));
+			return null;
 		});
 	}
 }

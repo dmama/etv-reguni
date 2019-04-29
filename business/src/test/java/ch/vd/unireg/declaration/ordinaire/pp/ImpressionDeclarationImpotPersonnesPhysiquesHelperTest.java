@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -715,28 +714,25 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final int annee = 2005;
 
 		// mise en place fiscale
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addNonHabitant("Alain", "Dupont", date(1977, 2, 12), Sexe.MASCULIN);
-				final PersonnePhysique elle = addNonHabitant("Maria", "Dupont", date(1953, 12, 18), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 7, 3), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(1990, 7, 3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
-				addSituation(mc, date(1990, 7, 3), null, 0, null, EtatCivil.MARIE);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addNonHabitant("Alain", "Dupont", date(1977, 2, 12), Sexe.MASCULIN);
+			final PersonnePhysique elle = addNonHabitant("Maria", "Dupont", date(1953, 12, 18), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 7, 3), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(1990, 7, 3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
+			addSituation(mc, date(1990, 7, 3), null, 0, null, EtatCivil.MARIE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, md);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, md);
 
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
-				di.setDelaiRetourImprime(date(annee + 1, 7, 31));
-				return di.getId();
-			}
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
+			di.setDelaiRetourImprime(date(annee + 1, 7, 31));
+			return di.getId();
 		});
 
 		// test de composition
@@ -788,30 +784,27 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final int annee = 2005;
 
 		// mise en place fiscale
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addNonHabitant("Alain", "Dupont", date(1977, 2, 12), Sexe.MASCULIN);
-				final PersonnePhysique elle = addNonHabitant("Maria", "Dupont", date(1953, 12, 18), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 7, 3), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(1990, 7, 3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
-				addSituation(mc, date(1990, 7, 3), null, 0, null, EtatCivil.MARIE);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addNonHabitant("Alain", "Dupont", date(1977, 2, 12), Sexe.MASCULIN);
+			final PersonnePhysique elle = addNonHabitant("Maria", "Dupont", date(1953, 12, 18), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 7, 3), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(1990, 7, 3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
+			addSituation(mc, date(1990, 7, 3), null, 0, null, EtatCivil.MARIE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_320, md);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_330, md);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_320, md);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_330, md);
 
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
-				di.setDelaiRetourImprime(date(annee + 1, 7, 31));
-				return di.getId();
-			}
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
+			di.setDelaiRetourImprime(date(annee + 1, 7, 31));
+			return di.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -834,22 +827,19 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testCtbSansEnfant() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une personne physique décédé
-				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+			// Crée une personne physique décédé
+			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
-				return declaration2011.getId();
-			}
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+			declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2011.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -943,22 +933,19 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testZoneAffranchissement() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une personne physique
-				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+			// Crée une personne physique
+			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-				final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
-				return declaration2010.getId();
-			}
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+			declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2010.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -977,22 +964,19 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testInfosSurDI2011() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une personne physique décédé
-				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+			// Crée une personne physique décédé
+			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
-				return declaration2011.getId();
-			}
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+			declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2011.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1011,22 +995,19 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testInfosSurDI2010() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une personne physique
-				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+			// Crée une personne physique
+			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-				final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
-				return declaration2010.getId();
-			}
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+			declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2010.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1117,22 +1098,19 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testRemplitDiAvecCodeRegion() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureRaw.noCEDI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			CollectiviteAdministrative cedi = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureRaw.noCEDI);
 
-				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
-				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé début 2008 de Vallorbe à Bex
+			final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2011);
-				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-				declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
-				declaration2011.setRetourCollectiviteAdministrativeId(cedi.getId());
-				return declaration2011.getId();
-			}
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
+			declaration2011.setRetourCollectiviteAdministrativeId(cedi.getId());
+			return declaration2011.getId();
 		});
 
 		// L'expéditeur de la déclaration 2007 doit être Aigle (= OID responsable de Bex)
@@ -1557,25 +1535,22 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testIDEnvoiHorsSuisseRueOuLocaliteInconnue() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
-				final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
-				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null, MockPays.Danemark);
+			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+			final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+			addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(2010, 7, 1), null, null, null, MockPays.Danemark);
 
-				final String numCtb = String.format("%09d", pp.getNumero());
+			final String numCtb = String.format("%09d", pp.getNumero());
 
-				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
-				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
-				declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
-				return declaration2012.getId();
-			}
+			final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+			final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+			final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+			declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+			declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2012.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1595,23 +1570,20 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	public void testIDEnvoiHorsSuissePaysInconnu() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testIDEnvoiHorsSuissePaysInconnue SIFISC-4146");
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
-				final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
-				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
+			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+			final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+			addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(2010, 7, 1), null, null, null, MockPays.PaysInconnu);
 
-				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
-				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
-				declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
-				return declaration2012.getId();
-			}
+			final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+			final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+			final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+			declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+			declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2012.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1630,30 +1602,26 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	@Test
 	public void testAvecEtiquette() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				assertNotNull(cedi);
+		final long diId = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			assertNotNull(cedi);
 
-				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
-				final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
-				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
+			// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+			final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+			addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(2010, 7, 1), null, null, null, MockPays.PaysInconnu);
 
-				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
-				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
-				declaration2012.setRetourCollectiviteAdministrativeId(cedi.getId());
+			final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+			final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+			final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+			declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+			declaration2012.setRetourCollectiviteAdministrativeId(cedi.getId());
 
-				// étiquette qui va bien
-				final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
-				assertNotNull(collaborateur);
-				addEtiquetteTiers(collaborateur, pp, date(RegDate.get().year(), 1, 1), null);
-
-				return declaration2012.getId();
-			}
+			// étiquette qui va bien
+			final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
+			assertNotNull(collaborateur);
+			addEtiquetteTiers(collaborateur, pp, date(RegDate.get().year(), 1, 1), null);
+			return declaration2012.getId();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {

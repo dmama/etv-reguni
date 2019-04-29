@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import java.util.EnumSet;
 
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -62,20 +61,17 @@ public abstract class AnnulationRevocationFailliteController extends AbstractPro
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(idEntreprise);
 
-		return doInReadOnlyTransaction(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
-				final EtatEntreprise etat = entreprise.getEtatActuel();
-				if (etat == null || etat.getType() != TypeEtatEntreprise.EN_FAILLITE) {
-					Flash.error("L'entreprise sélectionnée n'est pas/plus dans l'état 'En faillite'.", 4000);
-					return "redirect:list.do";
-				}
-
-				final FailliteView view = new FailliteView(idEntreprise);
-				view.setDatePrononceFaillite(etat.getDateObtention());
-				return showStart(model, view);
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
+			final EtatEntreprise etat = entreprise.getEtatActuel();
+			if (etat == null || etat.getType() != TypeEtatEntreprise.EN_FAILLITE) {
+				Flash.error("L'entreprise sélectionnée n'est pas/plus dans l'état 'En faillite'.", 4000);
+				return "redirect:list.do";
 			}
+
+			final FailliteView view = new FailliteView(idEntreprise);
+			view.setDatePrononceFaillite(etat.getDateObtention());
+			return showStart(model, view);
 		});
 	}
 

@@ -7,8 +7,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.StatusManager;
@@ -47,12 +45,7 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 		template.setReadOnly(true);
 
 		// Charge les ids des tiers existants dans la base de données
-		final Set<Long> existingIds = template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				return new HashSet<>(tiersDAO.getAllIds());
-			}
-		});
+		final Set<Long> existingIds = template.execute(status -> new HashSet<>(tiersDAO.getAllIds()));
 
 		if (statusManager.isInterrupted()) {
 			LOGGER.warn("Traitement interrompu.");
@@ -88,7 +81,7 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 		// Affiche le résultat
 		if (counts.errors > 0 || counts.warnings > 0) {
 			audit.error("Les données de l'indexer sont incohérentes : " + counts.errors + " erreur(s) et " + counts.warnings
-					+ " avertissement(s) ont été trouvés. Voir le log technique pour les détails.");
+					            + " avertissement(s) ont été trouvés. Voir le log technique pour les détails.");
 		}
 		else {
 			audit.info("Les données de l'indexer sont cohérentes.");

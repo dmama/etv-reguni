@@ -2,8 +2,6 @@ package ch.vd.unireg.regimefiscal.extraction;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -27,11 +25,10 @@ public class ExtractionRegimesFiscauxProcessorTest extends BusinessTest {
 	@Test
 	public void testBaseVide() throws Exception {
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on ne fait rien...
-			}
+		doInNewTransactionAndSession(status -> {
+			// on ne fait rien...
+
+			return null;
 		});
 
 		// lancement du processeur (avec historique)
@@ -52,12 +49,10 @@ public class ExtractionRegimesFiscauxProcessorTest extends BusinessTest {
 	@Test
 	public void testBaseSansEntreprise() throws Exception {
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on va juste créer une personne physique
-				addNonHabitant("Alfred", "Balthazar", date(1943, 2, 1), Sexe.MASCULIN);
-			}
+		doInNewTransactionAndSession(status -> {
+			// on va juste créer une personne physique
+			addNonHabitant("Alfred", "Balthazar", date(1943, 2, 1), Sexe.MASCULIN);
+			return null;
 		});
 
 		// lancement du processeur (avec historique)

@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -133,14 +132,12 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification que la clé de visualisation externe du document est vide
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
-				Assert.assertNotNull(lb);
-				Assert.assertNull(lb.getCleDocument());
-				Assert.assertNull(lb.getCleDocumentRappel());
-			}
+		doInNewTransactionAndSession(status -> {
+			final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
+			Assert.assertNotNull(lb);
+			Assert.assertNull(lb.getCleDocument());
+			Assert.assertNull(lb.getCleDocumentRappel());
+			return null;
 		});
 
 		// génération de la quittance
@@ -160,14 +157,12 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		}
 
 		// vérification du résultat en base -> rien
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
-				Assert.assertNotNull(lb);
-				Assert.assertNull(lb.getCleDocument());
-				Assert.assertNull(lb.getCleDocumentRappel());
-			}
+		doInNewTransactionAndSession(status -> {
+			final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
+			Assert.assertNotNull(lb);
+			Assert.assertNull(lb.getCleDocument());
+			Assert.assertNull(lb.getCleDocumentRappel());
+			return null;
 		});
 	}
 
@@ -211,14 +206,12 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification que la clé de visualisation externe du document est vide
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
-				Assert.assertNotNull(lb);
-				Assert.assertNull(lb.getCleDocument());
-				Assert.assertNull(lb.getCleDocumentRappel());
-			}
+		doInNewTransactionAndSession(status -> {
+			final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
+			Assert.assertNotNull(lb);
+			Assert.assertNull(lb.getCleDocument());
+			Assert.assertNull(lb.getCleDocumentRappel());
+			return null;
 		});
 
 		// génération de la quittance
@@ -231,14 +224,12 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
-				Assert.assertNotNull(lb);
-				Assert.assertEquals("Mon identifiant bien senti", lb.getCleDocument());
-				Assert.assertNull(lb.getCleDocumentRappel());
-			}
+		doInNewTransactionAndSession(status -> {
+			final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
+			Assert.assertNotNull(lb);
+			Assert.assertEquals("Mon identifiant bien senti", lb.getCleDocument());
+			Assert.assertNull(lb.getCleDocumentRappel());
+			return null;
 		});
 	}
 
@@ -285,14 +276,12 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification que la clé de visualisation externe du document est vide
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
-				Assert.assertNotNull(lb);
-				Assert.assertNull(lb.getCleDocument());
-				Assert.assertNull(lb.getCleDocumentRappel());
-			}
+		doInNewTransactionAndSession(status -> {
+			final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
+			Assert.assertNotNull(lb);
+			Assert.assertNull(lb.getCleDocument());
+			Assert.assertNull(lb.getCleDocumentRappel());
+			return null;
 		});
 
 		// génération de la quittance
@@ -305,14 +294,12 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
-				Assert.assertNotNull(lb);
-				Assert.assertNull(lb.getCleDocument());
-				Assert.assertEquals("Mon identifiant bien senti qui fait mal", lb.getCleDocumentRappel());
-			}
+		doInNewTransactionAndSession(status -> {
+			final LettreBienvenue lb = hibernateTemplate.get(LettreBienvenue.class, ids.idDocument);
+			Assert.assertNotNull(lb);
+			Assert.assertNull(lb.getCleDocument());
+			Assert.assertEquals("Mon identifiant bien senti qui fait mal", lb.getCleDocumentRappel());
+			return null;
 		});
 	}
 
@@ -384,13 +371,11 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EtatDeclarationSommee etatSomme = hibernateTemplate.get(EtatDeclarationSommee.class, idEtatSomme);
-				Assert.assertNotNull(etatSomme);
-				Assert.assertEquals("IdentificationSommation", etatSomme.getCleDocument());
-			}
+		doInNewTransactionAndSession(status -> {
+			final EtatDeclarationSommee etatSomme = hibernateTemplate.get(EtatDeclarationSommee.class, idEtatSomme);
+			Assert.assertNotNull(etatSomme);
+			Assert.assertEquals("IdentificationSommation", etatSomme.getCleDocument());
+			return null;
 		});
 	}
 
@@ -460,13 +445,11 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
-				Assert.assertNotNull(delai);
-				Assert.assertEquals("IdentificationDélai", delai.getCleDocument());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+			Assert.assertNotNull(delai);
+			Assert.assertEquals("IdentificationDélai", delai.getCleDocument());
+			return null;
 		});
 	}
 
@@ -537,13 +520,11 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
-				Assert.assertNotNull(delai);
-				Assert.assertEquals("IdentificationRefusDélai", delai.getCleDocument());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+			Assert.assertNotNull(delai);
+			Assert.assertEquals("IdentificationRefusDélai", delai.getCleDocument());
+			return null;
 		});
 	}
 
@@ -609,13 +590,11 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
-				Assert.assertNotNull(delai);
-				Assert.assertEquals("IdentificationRefusDélai", delai.getCleDocument());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+			Assert.assertNotNull(delai);
+			Assert.assertEquals("IdentificationRefusDélai", delai.getCleDocument());
+			return null;
 		});
 	}
 
@@ -655,16 +634,14 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		});
 
 		// vérification du résultat en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final DocumentEFacture doc = hibernateTemplate.get(DocumentEFacture.class, idDocumentEFacture);
-				Assert.assertNotNull(doc);
-				Assert.assertFalse(doc.isAnnule());
-				Assert.assertEquals((Long) idContribuable, doc.getTiers().getNumero());
-				Assert.assertEquals(cleArchivage, doc.getCleArchivage());
-				Assert.assertEquals("IdentificationDocEFact", doc.getCleDocument());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DocumentEFacture doc = hibernateTemplate.get(DocumentEFacture.class, idDocumentEFacture);
+			Assert.assertNotNull(doc);
+			Assert.assertFalse(doc.isAnnule());
+			Assert.assertEquals((Long) idContribuable, doc.getTiers().getNumero());
+			Assert.assertEquals(cleArchivage, doc.getCleArchivage());
+			Assert.assertEquals("IdentificationDocEFact", doc.getCleDocument());
+			return null;
 		});
 	}
 }

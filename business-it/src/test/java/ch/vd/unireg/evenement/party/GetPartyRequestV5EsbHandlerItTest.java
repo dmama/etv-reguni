@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -85,17 +83,13 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, majorite, MotifFor.MAJORITE, MockCommune.Echallens);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, majorite, MotifFor.MAJORITE, MockCommune.Echallens);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2006, 5, 12), date(2006, 9, 21), false);
-
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2006, 5, 12), date(2006, 9, 21), false);
+			return pp.getNumero();
 		});
 
 		final PartyRequest request = new PartyRequest();
@@ -197,17 +191,13 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, majorite, MotifFor.MAJORITE, MockCommune.Echallens);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, majorite, MotifFor.MAJORITE, MockCommune.Echallens);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2006, 5, 12), date(2006, 9, 21), false);
-
-				return pp.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2006, 5, 12), date(2006, 9, 21), false);
+			return pp.getNumero();
 		});
 
 		final PartyRequest request = new PartyRequest();

@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchResults;
@@ -126,28 +124,24 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// On vérifie que les batchs ont bien été processés et committés
+			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
+			Collections.sort(lines, new Comparator<Tiers>() {
+				@Override
+				public int compare(Tiers o1, Tiers o2) {
+					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+				}
+			});
+			assertEquals(3, lines.size());
 
-				// On vérifie que les batchs ont bien été processés et committés
-				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-				Collections.sort(lines, new Comparator<Tiers>() {
-					@Override
-					public int compare(Tiers o1, Tiers o2) {
-						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-					}
-				});
-				assertEquals(3, lines.size());
-
-				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch A B", tiers0.getNom());
-				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch C D", tiers1.getNom());
-				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-				assertEquals("Traitement du batch E", tiers2.getNom());
-				return null;
-			}
+			final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+			assertEquals("Traitement du batch A B", tiers0.getNom());
+			final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+			assertEquals("Traitement du batch C D", tiers1.getNom());
+			final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
+			assertEquals("Traitement du batch E", tiers2.getNom());
+			return null;
 		});
 	}
 
@@ -190,26 +184,22 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				
-				// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
-				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-				Collections.sort(lines, new Comparator<Tiers>() {
-					@Override
-					public int compare(Tiers o1, Tiers o2) {
-						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-					}
-				});
-				assertEquals(2, lines.size());
+		doInNewTransaction(status -> {
+			// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
+			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
+			Collections.sort(lines, new Comparator<Tiers>() {
+				@Override
+				public int compare(Tiers o1, Tiers o2) {
+					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+				}
+			});
+			assertEquals(2, lines.size());
 
-				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch A B", tiers0.getNom());
-				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch E", tiers1.getNom());
-				return null;
-			}
+			final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+			assertEquals("Traitement du batch A B", tiers0.getNom());
+			final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+			assertEquals("Traitement du batch E", tiers1.getNom());
+			return null;
 		});
 	}
 
@@ -247,28 +237,24 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// On vérifie que les batchs ont bien été processés et committés
+			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
+			Collections.sort(lines, new Comparator<Tiers>() {
+				@Override
+				public int compare(Tiers o1, Tiers o2) {
+					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+				}
+			});
+			assertEquals(3, lines.size());
 
-				// On vérifie que les batchs ont bien été processés et committés
-				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-				Collections.sort(lines, new Comparator<Tiers>() {
-					@Override
-					public int compare(Tiers o1, Tiers o2) {
-						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-					}
-				});
-				assertEquals(3, lines.size());
-
-				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch A B", tiers0.getNom());
-				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch C D", tiers1.getNom());
-				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-				assertEquals("Traitement du batch E", tiers2.getNom());
-				return null;
-			}
+			final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+			assertEquals("Traitement du batch A B", tiers0.getNom());
+			final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+			assertEquals("Traitement du batch C D", tiers1.getNom());
+			final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
+			assertEquals("Traitement du batch E", tiers2.getNom());
+			return null;
 		});
 	}
 
@@ -319,36 +305,31 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			/**
+			 * On vérifie que :
+			 * <ul>
+			 * <li>le premier batch est committé complétement</li>
+			 * <li>le deuxième batch est committé partiellement (reprise automatique)</li>
+			 * <li>le troisième batch est committé complétement</li>
+			 * </ul>
+			 */
+			final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
+			Collections.sort(lines, new Comparator<Tiers>() {
+				@Override
+				public int compare(Tiers o1, Tiers o2) {
+					return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+				}
+			});
+			assertEquals(3, lines.size());
 
-				/**
-				 * On vérifie que :
-				 * <ul>
-				 * <li>le premier batch est committé complétement</li>
-				 * <li>le deuxième batch est committé partiellement (reprise automatique)</li>
-				 * <li>le troisième batch est committé complétement</li>
-				 * </ul>
-				 */
-				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
-				Collections.sort(lines, new Comparator<Tiers>() {
-					@Override
-					public int compare(Tiers o1, Tiers o2) {
-						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
-					}
-				});
-				assertEquals(3, lines.size());
-
-				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch A B", tiers0.getNom());
-				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch D", tiers1.getNom());
-				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-				assertEquals("Traitement du batch E", tiers2.getNom());
-
-				return null;
-			}
+			final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+			assertEquals("Traitement du batch A B", tiers0.getNom());
+			final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+			assertEquals("Traitement du batch D", tiers1.getNom());
+			final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
+			assertEquals("Traitement du batch E", tiers2.getNom());
+			return null;
 		});
 	}
 
@@ -409,32 +390,26 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				/*
-				 * On vérifie que la base est toujours vide
-				 */
-				assertEquals(0, tiersDAO.getCount(DebiteurPrestationImposable.class));
-				assertEquals(0, tiersDAO.getCount(PersonnePhysique.class));
-				assertEquals(0, tiersDAO.getCount(MenageCommun.class));
-				assertEquals(0, tiersDAO.getCount(DeclarationImpotSource.class));
-				assertEquals(0, tiersDAO.getCount(EtatDeclaration.class));
-				assertEquals(0, tiersDAO.getCount(DelaiDeclaration.class));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			/*
+			 * On vérifie que la base est toujours vide
+			 */
+			assertEquals(0, tiersDAO.getCount(DebiteurPrestationImposable.class));
+			assertEquals(0, tiersDAO.getCount(PersonnePhysique.class));
+			assertEquals(0, tiersDAO.getCount(MenageCommun.class));
+			assertEquals(0, tiersDAO.getCount(DeclarationImpotSource.class));
+			assertEquals(0, tiersDAO.getCount(EtatDeclaration.class));
+			assertEquals(0, tiersDAO.getCount(DelaiDeclaration.class));
+			return null;
 		});
 
 	}
 
 	private void assertTiersCountHorsTransaction(final int count) throws Exception {
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> all = allTiersOfType(PersonnePhysique.class, MenageCommun.class, DebiteurPrestationImposable.class);
-				assertEquals(count, all.size());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final List<Tiers> all = allTiersOfType(PersonnePhysique.class, MenageCommun.class, DebiteurPrestationImposable.class);
+			assertEquals(count, all.size());
+			return null;
 		});
 	}
 

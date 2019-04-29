@@ -15,7 +15,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -176,24 +175,21 @@ public class IdentificationContribuableRequestV3ListenerItTest extends Identific
 			int ppTrois;
 		}
 
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
-				final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
-				final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+			final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
+			final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
 
-				// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
-				for (int i = 0; i < 150; ++i) {
-					addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
-				}
-
-				final Ids ids = new Ids();
-				ids.ppUn = ppUn.getNumero().intValue();
-				ids.ppDeux = ppDeux.getNumero().intValue();
-				ids.ppTrois = ppTrois.getNumero().intValue();
-				return ids;
+			// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
+			for (int i = 0; i < 150; ++i) {
+				addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
 			}
+
+			final Ids ids1 = new Ids();
+			ids1.ppUn = ppUn.getNumero().intValue();
+			ids1.ppDeux = ppDeux.getNumero().intValue();
+			ids1.ppTrois = ppTrois.getNumero().intValue();
+			return ids1;
 		});
 
 		globalTiersIndexer.sync();

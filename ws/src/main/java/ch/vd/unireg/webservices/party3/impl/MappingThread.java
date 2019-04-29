@@ -13,16 +13,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 
 /**
  * Ce thread reçoit une liste d'ids de tiers à charger de la base et à retourner sous forme des tiers du web-service.
@@ -59,19 +57,13 @@ public class MappingThread implements Runnable {
 			final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
 			template.setReadOnly(true); // on ne veut pas modifier la base
 
-			template.execute(new TransactionCallback<Object>() {
+			template.execute(status -> context.hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Object>() {
 				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					// on ne veut vraiment pas modifier la base
-					return context.hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Object>() {
-						@Override
-						public Object doInHibernate(Session session) throws HibernateException, SQLException {
-							mapParties();
-							return null;
-						}
-					});
+				public Object doInHibernate(Session session) throws HibernateException, SQLException {
+					mapParties();
+					return null;
 				}
-			});
+			}));
 		}
 		catch (RuntimeException e) {
 			LOGGER.warn(e.getMessage(), e);

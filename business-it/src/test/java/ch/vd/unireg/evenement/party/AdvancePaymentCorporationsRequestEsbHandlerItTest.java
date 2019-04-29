@@ -9,8 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -61,18 +59,15 @@ public class AdvancePaymentCorporationsRequestEsbHandlerItTest extends PartyRequ
 		handler.setSecurityProvider(new MockSecurityProvider(Role.VISU_ALL));
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, date(2000, 1, 12), null, "Les joueurs de Belotte du préau");
-				addFormeJuridique(e, date(2000, 1, 12), null, FormeJuridiqueEntreprise.ASSOCIATION);
-				addRegimeFiscalVD(e, date(2000, 1, 12), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(e, date(2000, 1, 12), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addForPrincipal(e, date(2000, 1, 12), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens);
-				addBouclement(e, date(2001, 1, 1), DayMonth.get(12, 31), 12);
-				return e.getId();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, date(2000, 1, 12), null, "Les joueurs de Belotte du préau");
+			addFormeJuridique(e, date(2000, 1, 12), null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalVD(e, date(2000, 1, 12), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(e, date(2000, 1, 12), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addForPrincipal(e, date(2000, 1, 12), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens);
+			addBouclement(e, date(2001, 1, 1), DayMonth.get(12, 31), 12);
+			return e.getId();
 		});
 
 		final AdvancePaymentPopulationRequest request = new AdvancePaymentPopulationRequest();

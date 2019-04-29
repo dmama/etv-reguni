@@ -2,8 +2,6 @@ package ch.vd.unireg.documentfiscal;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -64,25 +62,21 @@ public class ImpressionRappelHelperTest extends BusinessTest {
 
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER,dateDebut, null, MockRue.Lausanne.AvenueJolimont, new CasePostale(TexteCasePostale.CASE_POSTALE ,1007));
-				addAdresseSuisse(entreprise, TypeAdresseTiers.REPRESENTATION,dateDebut, null, MockRue.Lausanne.AvenueJolimont, new CasePostale(TexteCasePostale.CASE_POSTALE ,1007));
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				lbEncapsulation.lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
-				addDelaiAutreDocumentFiscal(lbEncapsulation.lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lbEncapsulation.lb, dateEnvoiLettre);
-				// La date d'envoi du rappel est calculée à partir du 'delaisService'
-				lbEncapsulation.dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionLettreBienvenue(dateTraitementRappel);
-				addEtatAutreDocumentFiscalRappele(lbEncapsulation.lb, lbEncapsulation.dateEnvoiRappel);
-
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebut, null, MockRue.Lausanne.AvenueJolimont, new CasePostale(TexteCasePostale.CASE_POSTALE, 1007));
+			addAdresseSuisse(entreprise, TypeAdresseTiers.REPRESENTATION, dateDebut, null, MockRue.Lausanne.AvenueJolimont, new CasePostale(TexteCasePostale.CASE_POSTALE, 1007));
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			lbEncapsulation.lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lbEncapsulation.lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lbEncapsulation.lb, dateEnvoiLettre);
+			// La date d'envoi du rappel est calculée à partir du 'delaisService'
+			lbEncapsulation.dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionLettreBienvenue(dateTraitementRappel);
+			addEtatAutreDocumentFiscalRappele(lbEncapsulation.lb, lbEncapsulation.dateEnvoiRappel);
+			return entreprise.getNumero();
 		});
 
 

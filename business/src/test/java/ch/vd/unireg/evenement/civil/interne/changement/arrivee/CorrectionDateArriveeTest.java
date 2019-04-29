@@ -7,15 +7,14 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -73,12 +72,9 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMineur() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_MINEUR);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_MINEUR);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -91,15 +87,12 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		});
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				final Set<ForFiscal> ff = pp.getForsFiscaux();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(0, ff.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			final Set<ForFiscal> ff = pp.getForsFiscaux();
+			Assert.assertNotNull(ff);
+			Assert.assertEquals(0, ff.size());
+			return null;
 		});
 	}
 
@@ -107,12 +100,9 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMajeurSansFor() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_MAJEUR_SANS_FOR);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_MAJEUR_SANS_FOR);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -129,13 +119,10 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testHorsSuisse() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_HS);
-				addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.DEMENAGEMENT_VD, MockPays.France);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_HS);
+			addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -152,13 +139,10 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMauvaiseCommuneAnnonce() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_MAUVAISE_COMMUNE);
-				addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_MAUVAISE_COMMUNE);
+			addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -175,14 +159,11 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testMauvaisMotifOuverture() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_PAS_ARRIVEE);
-				addForPrincipal(pp, DATE_EVT.addYears(-4), MotifFor.ARRIVEE_HC, DATE_EVT.addDays(9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Cossonay);
-				addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_PAS_ARRIVEE);
+			addForPrincipal(pp, DATE_EVT.addYears(-4), MotifFor.ARRIVEE_HC, DATE_EVT.addDays(9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Cossonay);
+			addForPrincipal(pp, DATE_EVT.addDays(10), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -201,13 +182,10 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testChangementAnnee() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_PAS_ARRIVEE);
-				addForPrincipal(pp, DATE_EVT.addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_PAS_ARRIVEE);
+			addForPrincipal(pp, DATE_EVT.addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -224,13 +202,10 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testDejaBonneDate() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_DEJA_BONNE_DATE);
-				addForPrincipal(pp, DATE_EVT, MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_DEJA_BONNE_DATE);
+			addForPrincipal(pp, DATE_EVT, MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -243,15 +218,12 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		});
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				final Set<ForFiscal> ff = pp.getForsFiscaux();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(1, ff.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			final Set<ForFiscal> ff = pp.getForsFiscaux();
+			Assert.assertNotNull(ff);
+			Assert.assertEquals(1, ff.size());
+			return null;
 		});
 	}
 
@@ -259,13 +231,10 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testCasSimpleCelibataire() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_CELIBATAIRE);
-				addForPrincipal(pp, DATE_EVT.addDays(-10), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_CELIBATAIRE);
+			addForPrincipal(pp, DATE_EVT.addDays(-10), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -278,27 +247,24 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		});
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				final List<ForFiscal> ff = pp.getForsFiscauxSorted();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(2, ff.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			final List<ForFiscal> ff = pp.getForsFiscauxSorted();
+			Assert.assertNotNull(ff);
+			Assert.assertEquals(2, ff.size());
 
-				// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
+			// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
 
-				final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(0);
-				Assert.assertTrue(ffAnnule.isAnnule());
-				Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
-				Assert.assertNull(ffAnnule.getDateFin());
+			final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(0);
+			Assert.assertTrue(ffAnnule.isAnnule());
+			Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
+			Assert.assertNull(ffAnnule.getDateFin());
 
-				final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(1);
-				Assert.assertFalse(ffRestant.isAnnule());
-				Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
-				Assert.assertNull(ffRestant.getDateFin());
-				return null;
-			}
+			final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(1);
+			Assert.assertFalse(ffRestant.isAnnule());
+			Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
+			Assert.assertNull(ffRestant.getDateFin());
+			return null;
 		});
 	}
 
@@ -312,19 +278,16 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(NO_IND_MARIE);
-				final PersonnePhysique mme = addNonHabitant("Célestine", "Dupont", date(1985, 6, 12), Sexe.FEMININ);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, DATE_EVT.addYears(-1), null);
-				final MenageCommun mc = ensemble.getMenage();
-				addForPrincipal(mc, DATE_EVT.addDays(-10), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(NO_IND_MARIE);
+			final PersonnePhysique mme = addNonHabitant("Célestine", "Dupont", date(1985, 6, 12), Sexe.FEMININ);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, DATE_EVT.addYears(-1), null);
+			final MenageCommun mc = ensemble.getMenage();
+			addForPrincipal(mc, DATE_EVT.addDays(-10), MotifFor.ARRIVEE_HS, MockCommune.Cossonay);
 
-				ids.ppal = m.getId();
-				ids.menage = mc.getNumero();
-				return null;
-			}
+			ids.ppal = m.getId();
+			ids.menage = mc.getNumero();
+			return null;
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -337,27 +300,24 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		});
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.menage);
-				final List<ForFiscal> ff = mc.getForsFiscauxSorted();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(2, ff.size());
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.menage);
+			final List<ForFiscal> ff = mc.getForsFiscauxSorted();
+			Assert.assertNotNull(ff);
+			Assert.assertEquals(2, ff.size());
 
-				// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
+			// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
 
-				final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(0);
-				Assert.assertTrue(ffAnnule.isAnnule());
-				Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
-				Assert.assertNull(ffAnnule.getDateFin());
+			final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(0);
+			Assert.assertTrue(ffAnnule.isAnnule());
+			Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
+			Assert.assertNull(ffAnnule.getDateFin());
 
-				final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(1);
-				Assert.assertFalse(ffRestant.isAnnule());
-				Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
-				Assert.assertNull(ffRestant.getDateFin());
-				return null;
-			}
+			final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(1);
+			Assert.assertFalse(ffRestant.isAnnule());
+			Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
+			Assert.assertNull(ffRestant.getDateFin());
+			return null;
 		});
 	}
 
@@ -365,14 +325,11 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 	public void testModificationForPrecedent() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(NO_IND_CELIBATAIRE);
-				addForPrincipal(pp, DATE_EVT.addYears(-4), MotifFor.ARRIVEE_HC, DATE_EVT.addDays(-11), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
-				addForPrincipal(pp, DATE_EVT.addDays(-10), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(NO_IND_CELIBATAIRE);
+			addForPrincipal(pp, DATE_EVT.addYears(-4), MotifFor.ARRIVEE_HC, DATE_EVT.addDays(-11), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
+			addForPrincipal(pp, DATE_EVT.addDays(-10), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -385,41 +342,38 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 		});
 
 		// check des fors
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				final List<ForFiscal> ff = pp.getForsFiscauxSorted();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(4, ff.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			final List<ForFiscal> ff = pp.getForsFiscauxSorted();
+			Assert.assertNotNull(ff);
+			Assert.assertEquals(4, ff.size());
 
-				// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
+			// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
 
-				final ForFiscalPrincipal ffPrecedentAnnule = (ForFiscalPrincipal) ff.get(0);
-				Assert.assertTrue(ffPrecedentAnnule.isAnnule());
-				Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedentAnnule.getDateDebut());
-				Assert.assertEquals(DATE_EVT.addDays(-11), ffPrecedentAnnule.getDateFin());
-				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedentAnnule.getNumeroOfsAutoriteFiscale());
+			final ForFiscalPrincipal ffPrecedentAnnule = (ForFiscalPrincipal) ff.get(0);
+			Assert.assertTrue(ffPrecedentAnnule.isAnnule());
+			Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedentAnnule.getDateDebut());
+			Assert.assertEquals(DATE_EVT.addDays(-11), ffPrecedentAnnule.getDateFin());
+			Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedentAnnule.getNumeroOfsAutoriteFiscale());
 
-				final ForFiscalPrincipal ffPrecedent = (ForFiscalPrincipal) ff.get(1);
-				Assert.assertFalse(ffPrecedent.isAnnule());
-				Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedent.getDateDebut());
-				Assert.assertEquals(DATE_EVT.getOneDayBefore(), ffPrecedent.getDateFin());
-				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedent.getNumeroOfsAutoriteFiscale());
+			final ForFiscalPrincipal ffPrecedent = (ForFiscalPrincipal) ff.get(1);
+			Assert.assertFalse(ffPrecedent.isAnnule());
+			Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedent.getDateDebut());
+			Assert.assertEquals(DATE_EVT.getOneDayBefore(), ffPrecedent.getDateFin());
+			Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedent.getNumeroOfsAutoriteFiscale());
 
-				final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(2);
-				Assert.assertTrue(ffAnnule.isAnnule());
-				Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
-				Assert.assertNull(ffAnnule.getDateFin());
-				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffAnnule.getNumeroOfsAutoriteFiscale());
+			final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(2);
+			Assert.assertTrue(ffAnnule.isAnnule());
+			Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
+			Assert.assertNull(ffAnnule.getDateFin());
+			Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffAnnule.getNumeroOfsAutoriteFiscale());
 
-				final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(3);
-				Assert.assertFalse(ffRestant.isAnnule());
-				Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
-				Assert.assertNull(ffRestant.getDateFin());
-				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffRestant.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(3);
+			Assert.assertFalse(ffRestant.isAnnule());
+			Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
+			Assert.assertNull(ffRestant.getDateFin());
+			Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffRestant.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 

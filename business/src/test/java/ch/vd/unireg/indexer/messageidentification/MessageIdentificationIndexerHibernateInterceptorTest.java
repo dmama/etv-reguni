@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.BusinessTest;
@@ -67,16 +64,13 @@ public class MessageIdentificationIndexerHibernateInterceptorTest extends Busine
 		Assert.assertEquals(0, countAvant);
 
 		// on le crée
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setDateNaissance(date(1971, 10));
-				criteres.setNom("Dumoulin");
-				criteres.setPrenoms("Alexandre");
-				final IdentificationContribuable identCtb = addIdentificationContribuable(criteres);
-				return identCtb.getId();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setDateNaissance(date(1971, 10));
+			criteres.setNom("Dumoulin");
+			criteres.setPrenoms("Alexandre");
+			final IdentificationContribuable identCtb = addIdentificationContribuable(criteres);
+			return identCtb.getId();
 		});
 
 		final int countApres = index.getExactDocCount();
@@ -110,16 +104,13 @@ public class MessageIdentificationIndexerHibernateInterceptorTest extends Busine
 		Assert.assertEquals(0, countAvant);
 
 		// on le crée
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setDateNaissance(date(1971, 10));
-				criteres.setNom("Dumoulin");
-				criteres.setPrenoms("Alexandre");
-				final IdentificationContribuable identCtb = addIdentificationContribuable(criteres);
-				return identCtb.getId();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setDateNaissance(date(1971, 10));
+			criteres.setNom("Dumoulin");
+			criteres.setPrenoms("Alexandre");
+			final IdentificationContribuable identCtb = addIdentificationContribuable(criteres);
+			return identCtb.getId();
 		});
 
 		final int countApresCreation = index.getExactDocCount();
@@ -146,13 +137,11 @@ public class MessageIdentificationIndexerHibernateInterceptorTest extends Busine
 		}
 
 		// si maintenant on change l'état en base, il doit être ré-indexé
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final IdentificationContribuable ident = hibernateTemplate.get(IdentificationContribuable.class, id);
-				Assert.assertNotNull(ident);
-				ident.setEtat(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT);
-			}
+		doInNewTransactionAndSession(status -> {
+			final IdentificationContribuable ident = hibernateTemplate.get(IdentificationContribuable.class, id);
+			Assert.assertNotNull(ident);
+			ident.setEtat(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT);
+			return null;
 		});
 
 		// toujours un seul document dans l'indexeur, hein ?

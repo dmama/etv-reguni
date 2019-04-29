@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
@@ -661,24 +660,20 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		final RegDate finAnneeDerniere = debutAnneeCourante.getOneDayBefore();
 		final RegDate finAnneeCourante = date(anneeCourante, 12, 31);
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Duchemin", date(1970, 4, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, debutAnneeDerniere, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Duchemin", date(1970, 4, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, debutAnneeDerniere, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
-				final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
-				final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
-				di.setCodeSegment(6);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
+			final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
+			final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
+			di.setCodeSegment(6);
 
-				// pour la DI que l'on créera à la main plus bas
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, pfAnneeCourante);
-
-				return pp.getNumero();
-			}
+			// pour la DI que l'on créera à la main plus bas
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, pfAnneeCourante);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -690,14 +685,11 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		});
 
 		// le code segment doit avoir été transmis à la nouvelle DI
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(finAnneeCourante);
-				assertEquals(Integer.valueOf(6), di.getCodeSegment());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(finAnneeCourante);
+			assertEquals(Integer.valueOf(6), di.getCodeSegment());
+			return null;
 		});
 	}
 
@@ -771,30 +763,24 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		final RegDate dateArrivee = date(pf, 1, 1);
 		final RegDate dateDepart = date(pf, 10, 31);
 
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Pierre", "Ponce", null, Sexe.MASCULIN);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bale, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Pierre", "Ponce", null, Sexe.MASCULIN);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bale, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<PeriodeImposition> pis = manager.calculateRangesProchainesDIs(pp);
-				assertNotNull(pis);
-				assertEquals(1, pis.size());
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<PeriodeImposition> pis = manager.calculateRangesProchainesDIs(pp);
+			assertNotNull(pis);
+			assertEquals(1, pis.size());
 
-				final PeriodeImposition pi = pis.get(0);
-				assertNotNull(pi);
-				assertTrue(pi.isDeclarationRemplaceeParNote());
-				assertTrue(pi.isDeclarationOptionnelle());
-				return null;
-			}
+			final PeriodeImposition pi = pis.get(0);
+			assertNotNull(pi);
+			assertTrue(pi.isDeclarationRemplaceeParNote());
+			assertTrue(pi.isDeclarationOptionnelle());
+			return null;
 		});
 	}
 

@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -63,23 +60,19 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 	@Test
 	public void testDiRetournee() throws Exception {
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-
-				final RegDate dateEmission = RegDate.get(2009, 1, 15);
-				final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
-				final PeriodeFiscale periode = addPeriodeFiscale(2008);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final RegDate dateEmission = RegDate.get(2009, 1, 15);
+			final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
+			final PeriodeFiscale periode = addPeriodeFiscale(2008);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+			addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
@@ -100,24 +93,20 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 	@Test
 	public void testDiRetourneePlusieursFois() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-
-				final RegDate dateEmission = RegDate.get(2009, 1, 15);
-				final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
-				final PeriodeFiscale periode = addPeriodeFiscale(2008);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
-				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");    // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final RegDate dateEmission = RegDate.get(2009, 1, 15);
+			final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
+			final PeriodeFiscale periode = addPeriodeFiscale(2008);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
+			addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");    // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+			addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
@@ -139,20 +128,16 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addDays(5);
@@ -174,20 +159,16 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -209,37 +190,30 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 18);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
-				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
+			final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
 
-				Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
+			Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
 
-				final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
-				Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
-				return null;
-			}
+			final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
+			Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
+			return null;
 		});
 	}
 
@@ -249,20 +223,16 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -283,21 +253,17 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			ffp.setAnnule(true);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				ffp.setAnnule(true);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -319,21 +285,17 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+			addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -355,22 +317,18 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
+			addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
-				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -396,22 +354,18 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2010, 6, 30);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("arben Jakupi", "Cartier", RegDate.get(1982, 10, 15), Sexe.MASCULIN);
 
-				final PersonnePhysique pp = addNonHabitant("arben Jakupi", "Cartier", RegDate.get(1982, 10, 15), Sexe.MASCULIN);
+			addForPrincipalSource(pp, RegDate.get(2002, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2009, 3, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne.getNoOFS());
+			addForPrincipal(pp, RegDate.get(anneePf, 4, 1), MotifFor.INDETERMINE, MockCommune.Aubonne);
 
-				addForPrincipalSource(pp, RegDate.get(2002, 1, 1), MotifFor.ARRIVEE_HS,RegDate.get(2009, 3, 31),MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne.getNoOFS());
-				addForPrincipal(pp, RegDate.get(anneePf, 4, 1), MotifFor.INDETERMINE, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService) {
@@ -426,16 +380,13 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final List<EnvoiSommationsDIsPPResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
 		Assert.assertEquals(1, infoListErreur.size());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire declaration = diDao.get(diId);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire declaration = diDao.get(diId);
 
-				final EnvoiSommationsDIsPPResults.ErrorInfo error = infoListErreur.get(0);
-				Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
-				Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
-				return null;
-			}
+			final EnvoiSommationsDIsPPResults.ErrorInfo error = infoListErreur.get(0);
+			Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
+			Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
+			return null;
 		});
 
 		Assert.assertEquals(1, results.getTotalDisTraitees());
@@ -444,7 +395,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
 		Assert.assertEquals(0, results.getTotalSourcierPur());
-		Assert.assertEquals(0, results.getTotalNonAssujettissement());	
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 	}
 
@@ -454,21 +405,17 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipalSource(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Aubonne.getNoOFS());
 
-				addForPrincipalSource(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS,null,null, MockCommune.Aubonne.getNoOFS());
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -494,23 +441,19 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
+			addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
-				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
@@ -532,23 +475,19 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+			addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
+			addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
-				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
@@ -577,22 +516,18 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		}
 
 		// pas de validation : nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
-		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(status -> {
+			final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
+			addForPrincipal(mc, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.ANNULATION, MockCommune.Aubonne);
 
-				final MenageCommun mc = hibernateTemplate.merge(new MenageCommun());
-				addForPrincipal(mc, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.ANNULATION, MockCommune.Aubonne);
-
-				final RegDate dateEmission = RegDate.get(2009, 1, 15);
-				final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
-				final PeriodeFiscale periode = addPeriodeFiscale(2008);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return new Ids(mc.getId(), declaration.getId());
-			}
+			final RegDate dateEmission = RegDate.get(2009, 1, 15);
+			final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
+			final PeriodeFiscale periode = addPeriodeFiscale(2008);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return new Ids(mc.getId(), declaration.getId());
 		});
 
 		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
@@ -622,38 +557,33 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		final int emolument2 = 50;
 
 		// mise en place
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@SuppressWarnings("ConstantConditions")
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Aristolius", "Flamingo", date(1954, 7, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Aristolius", "Flamingo", date(1954, 7, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pfSans = addPeriodeFiscale(pfSansEmolument);
-				pfSans.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(null);
-				final PeriodeFiscale pfAvec1 = addPeriodeFiscale(pfAvecEmolument1);
-				pfAvec1.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(emolument1);
-				final PeriodeFiscale pfAvec2 = addPeriodeFiscale(pfAvecEmolument2);
-				pfAvec2.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(emolument2);
+			final PeriodeFiscale pfSans = addPeriodeFiscale(pfSansEmolument);
+			pfSans.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(null);
+			final PeriodeFiscale pfAvec1 = addPeriodeFiscale(pfAvecEmolument1);
+			pfAvec1.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(emolument1);
+			final PeriodeFiscale pfAvec2 = addPeriodeFiscale(pfAvecEmolument2);
+			pfAvec2.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(emolument2);
 
-				final ModeleDocument mdSans = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfSans);
-				final ModeleDocument mdAvec1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec1);
-				final ModeleDocument mdAvec2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec2);
+			final ModeleDocument mdSans = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfSans);
+			final ModeleDocument mdAvec1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec1);
+			final ModeleDocument mdAvec2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec2);
 
-				final DeclarationImpotOrdinairePP diSans = addDeclarationImpot(pp, pfSans, date(pfSansEmolument, 1, 1), date(pfSansEmolument, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdSans);
-				addEtatDeclarationEmise(diSans, date(pfSansEmolument + 1, 1, 7));
-				addDelaiDeclaration(diSans, date(pfSansEmolument + 1, 1, 7), date(pfSansEmolument + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			final DeclarationImpotOrdinairePP diSans = addDeclarationImpot(pp, pfSans, date(pfSansEmolument, 1, 1), date(pfSansEmolument, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdSans);
+			addEtatDeclarationEmise(diSans, date(pfSansEmolument + 1, 1, 7));
+			addDelaiDeclaration(diSans, date(pfSansEmolument + 1, 1, 7), date(pfSansEmolument + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DeclarationImpotOrdinairePP diAvec1 = addDeclarationImpot(pp, pfAvec1, date(pfAvecEmolument1, 1, 1), date(pfAvecEmolument1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec1);
-				addEtatDeclarationEmise(diAvec1, date(pfAvecEmolument1 + 1, 1, 7));
-				addDelaiDeclaration(diAvec1, date(pfAvecEmolument1 + 1, 1, 7), date(pfAvecEmolument1 + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			final DeclarationImpotOrdinairePP diAvec1 = addDeclarationImpot(pp, pfAvec1, date(pfAvecEmolument1, 1, 1), date(pfAvecEmolument1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec1);
+			addEtatDeclarationEmise(diAvec1, date(pfAvecEmolument1 + 1, 1, 7));
+			addDelaiDeclaration(diAvec1, date(pfAvecEmolument1 + 1, 1, 7), date(pfAvecEmolument1 + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DeclarationImpotOrdinairePP diAvec2 = addDeclarationImpot(pp, pfAvec2, date(pfAvecEmolument2, 1, 1), date(pfAvecEmolument2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec2);
-				addEtatDeclarationEmise(diAvec2, date(pfAvecEmolument2 + 1, 1, 7));
-				addDelaiDeclaration(diAvec2, date(pfAvecEmolument2 + 1, 1, 7), date(pfAvecEmolument2 + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
-
-				return pp.getNumero();
-			}
+			final DeclarationImpotOrdinairePP diAvec2 = addDeclarationImpot(pp, pfAvec2, date(pfAvecEmolument2, 1, 1), date(pfAvecEmolument2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec2);
+			addEtatDeclarationEmise(diAvec2, date(pfAvecEmolument2 + 1, 1, 7));
+			addDelaiDeclaration(diAvec2, date(pfAvecEmolument2 + 1, 1, 7), date(pfAvecEmolument2 + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
 		});
 
 		// lancement des sommations
@@ -663,43 +593,41 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		Assert.assertEquals(3, results.getSommations().size());     // les trois DI sont sommées
 
 		// vérification des émoluments associés aux états "sommée"
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
 
-				{
-					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfSansEmolument, 1, 1));
-					Assert.assertNotNull(di);
-					final EtatDeclaration etat = di.getDernierEtatDeclaration();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
-					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
-					Assert.assertNull(sommation.getEmolument());
-				}
-				{
-					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument1, 1, 1));
-					Assert.assertNotNull(di);
-					final EtatDeclaration etat = di.getDernierEtatDeclaration();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
-					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
-					Assert.assertEquals((Integer) emolument1, sommation.getEmolument());
-				}
-				{
-					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument2, 1, 1));
-					Assert.assertNotNull(di);
-					final EtatDeclaration etat = di.getDernierEtatDeclaration();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
-					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
-					Assert.assertEquals((Integer) emolument2, sommation.getEmolument());
-				}
+			{
+				final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfSansEmolument, 1, 1));
+				Assert.assertNotNull(di);
+				final EtatDeclaration etat = di.getDernierEtatDeclaration();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
+				final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+				Assert.assertNull(sommation.getEmolument());
 			}
+			{
+				final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument1, 1, 1));
+				Assert.assertNotNull(di);
+				final EtatDeclaration etat = di.getDernierEtatDeclaration();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
+				final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+				Assert.assertEquals((Integer) emolument1, sommation.getEmolument());
+			}
+			{
+				final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument2, 1, 1));
+				Assert.assertNotNull(di);
+				final EtatDeclaration etat = di.getDernierEtatDeclaration();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
+				final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+				Assert.assertEquals((Integer) emolument2, sommation.getEmolument());
+			}
+			return null;
 		});
 	}
 }

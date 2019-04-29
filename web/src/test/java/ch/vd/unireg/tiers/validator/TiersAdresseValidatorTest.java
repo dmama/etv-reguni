@@ -6,8 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -109,16 +107,13 @@ public class TiersAdresseValidatorTest extends WebTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique fred = addHabitant(noIndFred);
-				final PersonnePhysique olivia = addHabitant(noIndOlivia);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fred, olivia, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
-				return new Ids(olivia.getNumero(), fred.getNumero(), mc.getNumero());
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fred = addHabitant(noIndFred);
+			final PersonnePhysique olivia = addHabitant(noIndOlivia);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(fred, olivia, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+			return new Ids(olivia.getNumero(), fred.getNumero(), mc.getNumero());
 		});
 
 		final AdresseView view = new AdresseView();
@@ -129,23 +124,20 @@ public class TiersAdresseValidatorTest extends WebTest {
 		view.setNumCTB(ids.idFred);
 		view.setUsage(TypeAdresseTiers.COURRIER);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
-				Assert.assertNotNull(errors);
-				Assert.assertEquals(1, errors.getErrorCount());
+		doInNewTransactionAndSession(status -> {
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getErrorCount());
 
-				final List<?> errorList = errors.getAllErrors();
-				Assert.assertEquals(1, errorList.size());
+			final List<?> errorList = errors.getAllErrors();
+			Assert.assertEquals(1, errorList.size());
 
-				final FieldError error = (FieldError) errorList.get(0);
-				Assert.assertNotNull(error);
-				Assert.assertEquals("usage", error.getField());
-				Assert.assertEquals("error.usage.interdit", error.getCode());
-				return null;
-			}
+			final FieldError error = (FieldError) errorList.get(0);
+			Assert.assertNotNull(error);
+			Assert.assertEquals("usage", error.getField());
+			Assert.assertEquals("error.usage.interdit", error.getCode());
+			return null;
 		});
 	}
 
@@ -187,16 +179,13 @@ public class TiersAdresseValidatorTest extends WebTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique fred = addHabitant(noIndFred);
-				final PersonnePhysique olivia = addHabitant(noIndOlivia);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fred, olivia, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
-				return new Ids(olivia.getNumero(), fred.getNumero(), mc.getNumero());
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fred = addHabitant(noIndFred);
+			final PersonnePhysique olivia = addHabitant(noIndOlivia);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(fred, olivia, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+			return new Ids(olivia.getNumero(), fred.getNumero(), mc.getNumero());
 		});
 
 		final AdresseView view = new AdresseView();
@@ -207,15 +196,12 @@ public class TiersAdresseValidatorTest extends WebTest {
 		view.setNumCTB(ids.idFred);
 		view.setUsage(TypeAdresseTiers.COURRIER);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
-				Assert.assertNotNull(errors);
-				Assert.assertEquals(0, errors.getErrorCount());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(0, errors.getErrorCount());
+			return null;
 		});
 	}
 
@@ -243,23 +229,20 @@ public class TiersAdresseValidatorTest extends WebTest {
 		view.setNumeroMaison("0123456789012345");   // <--- numéro trop long
 
 		// on vérifie que l'erreur est bien détectée
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
-				Assert.assertNotNull(errors);
-				Assert.assertEquals(1, errors.getErrorCount());
+		doInNewTransaction(status -> {
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(1, errors.getErrorCount());
 
-				final List<?> errorList = errors.getAllErrors();
-				Assert.assertEquals(1, errorList.size());
+			final List<?> errorList = errors.getAllErrors();
+			Assert.assertEquals(1, errorList.size());
 
-				final FieldError error = (FieldError) errorList.get(0);
-				Assert.assertNotNull(error);
-				Assert.assertEquals("numeroMaison", error.getField());
-				Assert.assertEquals("error.numero.maison.trop.long", error.getCode());
-				return null;
-			}
+			final FieldError error = (FieldError) errorList.get(0);
+			Assert.assertNotNull(error);
+			Assert.assertEquals("numeroMaison", error.getField());
+			Assert.assertEquals("error.numero.maison.trop.long", error.getCode());
+			return null;
 		});
 	}
 }

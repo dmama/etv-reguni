@@ -8,8 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CoreDAOTest;
@@ -288,24 +286,21 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Francis", "D'aquitaine", date(1953, 7, 31), Sexe.MASCULIN);
-				final PersonnePhysique fiston = addNonHabitant("Kevin", "D'aquitaine", date(1980, 10, 25), Sexe.MASCULIN);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, null, date(1973, 5, 1), null);
-				final MenageCommun mc = couple.getMenage();
-				final PersonnePhysique gdpa = addNonHabitant("Alphonse", "D'aquitaine", date(1920, 8, 4), Sexe.MASCULIN);
-				addParente(m, gdpa, date(1953, 7, 31), null);
-				addParente(fiston, m, date(1980, 10, 25), null);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique m = addNonHabitant("Francis", "D'aquitaine", date(1953, 7, 31), Sexe.MASCULIN);
+			final PersonnePhysique fiston = addNonHabitant("Kevin", "D'aquitaine", date(1980, 10, 25), Sexe.MASCULIN);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, null, date(1973, 5, 1), null);
+			final MenageCommun mc = couple.getMenage();
+			final PersonnePhysique gdpa = addNonHabitant("Alphonse", "D'aquitaine", date(1920, 8, 4), Sexe.MASCULIN);
+			addParente(m, gdpa, date(1953, 7, 31), null);
+			addParente(fiston, m, date(1980, 10, 25), null);
 
-				final Ids ids = new Ids();
-				ids.m = m.getNumero();
-				ids.mc = mc.getNumero();
-				ids.fiston = fiston.getNumero();
-				ids.gdpa = gdpa.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.m = m.getNumero();
+			ids1.mc = mc.getNumero();
+			ids1.fiston = fiston.getNumero();
+			ids1.gdpa = gdpa.getNumero();
+			return ids1;
 		});
 
 		final Set<RapportEntreTiersKey> allKeys = new HashSet<>(RapportEntreTiersKey.maxCardinality());
@@ -316,59 +311,58 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 		}
 
 		// tri des relations par "tiersId"
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final ParamPagination paginationAsc = new ParamPagination(1, 25, "tiersId", true);
-				final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationAsc);
-				Assert.assertEquals(3, asc.size());
-				{
-					final RapportEntreTiers ret = asc.get(0);
-					Assert.assertNotNull(ret);
-					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
-					Assert.assertEquals((Long) ids.m, ret.getObjetId());
-					Assert.assertEquals((Long) ids.fiston, ret.getSujetId());
-				}
-				{
-					final RapportEntreTiers ret = asc.get(1);
-					Assert.assertNotNull(ret);
-					Assert.assertEquals(TypeRapportEntreTiers.APPARTENANCE_MENAGE, ret.getType());
-					Assert.assertEquals((Long) ids.m, ret.getSujetId());
-					Assert.assertEquals((Long) ids.mc, ret.getObjetId());
-				}
-				{
-					final RapportEntreTiers ret = asc.get(2);
-					Assert.assertNotNull(ret);
-					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
-					Assert.assertEquals((Long) ids.m, ret.getSujetId());
-					Assert.assertEquals((Long) ids.gdpa, ret.getObjetId());
-				}
-
-				final ParamPagination paginationDesc = new ParamPagination(1, 25, "tiersId", false);
-				final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationDesc);
-				Assert.assertEquals(3, desc.size());
-				{
-					final RapportEntreTiers ret = desc.get(2);
-					Assert.assertNotNull(ret);
-					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
-					Assert.assertEquals((Long) ids.m, ret.getObjetId());
-					Assert.assertEquals((Long) ids.fiston, ret.getSujetId());
-				}
-				{
-					final RapportEntreTiers ret = desc.get(1);
-					Assert.assertNotNull(ret);
-					Assert.assertEquals(TypeRapportEntreTiers.APPARTENANCE_MENAGE, ret.getType());
-					Assert.assertEquals((Long) ids.m, ret.getSujetId());
-					Assert.assertEquals((Long) ids.mc, ret.getObjetId());
-				}
-				{
-					final RapportEntreTiers ret = desc.get(0);
-					Assert.assertNotNull(ret);
-					Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
-					Assert.assertEquals((Long) ids.m, ret.getSujetId());
-					Assert.assertEquals((Long) ids.gdpa, ret.getObjetId());
-				}
+		doInNewReadOnlyTransaction(status -> {
+			final ParamPagination paginationAsc = new ParamPagination(1, 25, "tiersId", true);
+			final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationAsc);
+			Assert.assertEquals(3, asc.size());
+			{
+				final RapportEntreTiers ret = asc.get(0);
+				Assert.assertNotNull(ret);
+				Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+				Assert.assertEquals((Long) ids.m, ret.getObjetId());
+				Assert.assertEquals((Long) ids.fiston, ret.getSujetId());
 			}
+			{
+				final RapportEntreTiers ret = asc.get(1);
+				Assert.assertNotNull(ret);
+				Assert.assertEquals(TypeRapportEntreTiers.APPARTENANCE_MENAGE, ret.getType());
+				Assert.assertEquals((Long) ids.m, ret.getSujetId());
+				Assert.assertEquals((Long) ids.mc, ret.getObjetId());
+			}
+			{
+				final RapportEntreTiers ret = asc.get(2);
+				Assert.assertNotNull(ret);
+				Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+				Assert.assertEquals((Long) ids.m, ret.getSujetId());
+				Assert.assertEquals((Long) ids.gdpa, ret.getObjetId());
+			}
+
+			final ParamPagination paginationDesc = new ParamPagination(1, 25, "tiersId", false);
+			final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationDesc);
+			Assert.assertEquals(3, desc.size());
+			{
+				final RapportEntreTiers ret = desc.get(2);
+				Assert.assertNotNull(ret);
+				Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+				Assert.assertEquals((Long) ids.m, ret.getObjetId());
+				Assert.assertEquals((Long) ids.fiston, ret.getSujetId());
+			}
+			{
+				final RapportEntreTiers ret = desc.get(1);
+				Assert.assertNotNull(ret);
+				Assert.assertEquals(TypeRapportEntreTiers.APPARTENANCE_MENAGE, ret.getType());
+				Assert.assertEquals((Long) ids.m, ret.getSujetId());
+				Assert.assertEquals((Long) ids.mc, ret.getObjetId());
+			}
+			{
+				final RapportEntreTiers ret = desc.get(0);
+				Assert.assertNotNull(ret);
+				Assert.assertEquals(TypeRapportEntreTiers.PARENTE, ret.getType());
+				Assert.assertEquals((Long) ids.m, ret.getSujetId());
+				Assert.assertEquals((Long) ids.gdpa, ret.getObjetId());
+			}
+			;
+			return null;
 		});
 	}
 }

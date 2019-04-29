@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -250,55 +249,38 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale (avant traitement du mariage)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		// création de l'événement civil de correction mariage (en erreur pour le moment) pour y mettre la bonne date
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				return createEvent(dateMariage, noIndividu, 32673627L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ERREUR, null);
-			}
-		});
+		final long evtId = doInNewTransactionAndSession(status -> createEvent(dateMariage, noIndividu, 32673627L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ERREUR, null));
 
 		// vérification de l'état actuel du flag "habitant" du contribuable
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertTrue(pp.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertTrue(pp.isHabitantVD());
+			return null;
 		});
 
 		final EvenementCivilEchServiceImpl service = buildService();
 
 		// forçage de l'événement civil de correction de mariage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				service.forceEvenement(evtId);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			service.forceEvenement(evtId);
+			return null;
 		});
 
 		// vérification de l'état du flag "habitant" du contribuable après forçage
 		// (le contribuable était certes non-habitant au moment de son mariage, mais actuellement, il est bien habitant)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertTrue("Pourquoi le flag habitant a-t-il changé?", pp.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertTrue("Pourquoi le flag habitant a-t-il changé?", pp.isHabitantVD());
+			return null;
 		});
 	}
 
@@ -343,12 +325,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(0, infos.size());
 	}
@@ -373,23 +350,15 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// mise en place des données
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
-				createEvent(dateArriveeCorrigee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 1L);
-				createEvent(dateMariage, noIndividu, 3L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			createEvent(dateArriveeCorrigee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 1L);
+			createEvent(dateMariage, noIndividu, 3L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE, null);
+			return null;
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(2, infos.size());
 
@@ -438,46 +407,38 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// mise en place des données
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				// cas simple de l'événement traité
-				createEvent(dateNaissance, noIndividu, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+		doInNewTransactionAndSession(status -> {
+			// cas simple de l'événement traité
+			createEvent(dateNaissance, noIndividu, 1L, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
 
-				// cas de l'arrivée en erreur
-				createEvent(dateNaissance, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			// cas de l'arrivée en erreur
+			createEvent(dateNaissance, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
 
-				// cas d'une naturalisation corrigée en erreur
-				createEvent(dateNaturalisation, noIndividu, 3L, TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
-				createEvent(dateNaturalisation, noIndividu, 4L, TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 3L);
+			// cas d'une naturalisation corrigée en erreur
+			createEvent(dateNaturalisation, noIndividu, 3L, TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			createEvent(dateNaturalisation, noIndividu, 4L, TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 3L);
 
-				// cas d'un mariage traité avec correction en erreur
-				createEvent(dateMariage, noIndividu, 5L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(dateMariage, noIndividu, 6L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 5L);
+			// cas d'un mariage traité avec correction en erreur
+			createEvent(dateMariage, noIndividu, 5L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(dateMariage, noIndividu, 6L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ATTENTE, 5L);
 
-				// cas d'un changement de relation d'annonce dont la correction n'a pas de numéro d'individu
-				createEvent(dateMariage, noIndividu, 7L, TypeEvenementCivilEch.CHGT_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(dateMariage, null, 8L, TypeEvenementCivilEch.CHGT_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 7L);
-				createEvent(dateMariage, null, 9L, TypeEvenementCivilEch.CHGT_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 8L);
+			// cas d'un changement de relation d'annonce dont la correction n'a pas de numéro d'individu
+			createEvent(dateMariage, noIndividu, 7L, TypeEvenementCivilEch.CHGT_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(dateMariage, null, 8L, TypeEvenementCivilEch.CHGT_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 7L);
+			createEvent(dateMariage, null, 9L, TypeEvenementCivilEch.CHGT_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 8L);
 
-				// cas d'une correction de relations dont une correction est traitée mais pas la suivante
-				createEvent(dateMariage, noIndividu, 10L, TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
-				createEvent(dateMariage, noIndividu, 11L, TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.TRAITE, 10L);
-				createEvent(dateMariage, noIndividu, 12L, TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ERREUR, 11L);
+			// cas d'une correction de relations dont une correction est traitée mais pas la suivante
+			createEvent(dateMariage, noIndividu, 10L, TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			createEvent(dateMariage, noIndividu, 11L, TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.TRAITE, 10L);
+			createEvent(dateMariage, noIndividu, 12L, TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ERREUR, 11L);
 
-				// cas de la correction d'arrivée (= événement de migration) en erreur
-				createEvent(dateMariage, noIndividu, 13L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ERREUR, -1L);
-				return null;
-			}
+			// cas de la correction d'arrivée (= événement de migration) en erreur
+			createEvent(dateMariage, noIndividu, 13L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.EN_ERREUR, -1L);
+			return null;
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(6, infos.size());
 
@@ -579,47 +540,37 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			// annulation d'arrivée déjà traitée
+			createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.TRAITE, -1L);
 
-				// annulation d'arrivée déjà traitée
-				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.TRAITE, -1L);
+			// arrivée traitée annulée
+			createEvent(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(dateArrivee, noIndividu, 3L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 2L);
 
-				// arrivée traitée annulée
-				createEvent(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(dateArrivee, noIndividu, 3L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 2L);
+			// arrivée en erreur annulée (= annulation totale)
+			createEvent(dateArrivee.addDays(1), noIndividu, 4L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			createEvent(dateArrivee.addDays(1), noIndividu, 5L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 4L);
 
-				// arrivée en erreur annulée (= annulation totale)
-				createEvent(dateArrivee.addDays(1), noIndividu, 4L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
-				createEvent(dateArrivee.addDays(1), noIndividu, 5L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 4L);
+			// arrivée corrigée et annulée (correction et annulation seront séparées)
+			createEvent(dateArrivee.addDays(2), noIndividu, 6L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			createEvent(dateArrivee.addDays(2), noIndividu, 7L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 6L);
+			createEvent(dateArrivee.addDays(2), noIndividu, 8L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 6L);
 
-				// arrivée corrigée et annulée (correction et annulation seront séparées)
-				createEvent(dateArrivee.addDays(2), noIndividu, 6L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
-				createEvent(dateArrivee.addDays(2), noIndividu, 7L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 6L);
-				createEvent(dateArrivee.addDays(2), noIndividu, 8L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 6L);
+			// arrivée corrigée, correction annulée (correction et annulation seront séparées)
+			createEvent(dateArrivee.addDays(3), noIndividu, 9L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
+			createEvent(dateArrivee.addDays(3), noIndividu, 10L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 9L);
+			createEvent(dateArrivee.addDays(3), noIndividu, 11L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 10L);
 
-				// arrivée corrigée, correction annulée (correction et annulation seront séparées)
-				createEvent(dateArrivee.addDays(3), noIndividu, 9L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR, null);
-				createEvent(dateArrivee.addDays(3), noIndividu, 10L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 9L);
-				createEvent(dateArrivee.addDays(3), noIndividu, 11L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 10L);
-
-				// arrivée traitée, correction et annulation de l'arrivée en erreur (correction et annulation seront séparées)
-				createEvent(dateArrivee.addDays(4), noIndividu, 12L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(dateArrivee.addDays(4), noIndividu, 13L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 12L);
-				createEvent(dateArrivee.addDays(4), noIndividu, 14L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 12L);
-
-				return null;
-			}
+			// arrivée traitée, correction et annulation de l'arrivée en erreur (correction et annulation seront séparées)
+			createEvent(dateArrivee.addDays(4), noIndividu, 12L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(dateArrivee.addDays(4), noIndividu, 13L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 12L);
+			createEvent(dateArrivee.addDays(4), noIndividu, 14L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION, EtatEvenementCivil.A_TRAITER, 12L);
+			return null;
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(8, infos.size());
 
@@ -735,24 +686,16 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				createEventFromEch99(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
-				createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
-				createEvent(dateArrivee.addDays(1), noIndividu, 3L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 2L);
-				createEventFromEch99(dateArrivee.addDays(1), noIndividu, 4L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 3L);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			createEventFromEch99(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
+			createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
+			createEvent(dateArrivee.addDays(1), noIndividu, 3L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 2L);
+			createEventFromEch99(dateArrivee.addDays(1), noIndividu, 4L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 3L);
+			return null;
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(3, infos.size());
 
@@ -812,22 +755,14 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
-				createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
+			createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
+			return null;
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(2, infos.size());
 
@@ -873,22 +808,14 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
-				createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.TRAITE, 1L);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			createEvent(dateArrivee, noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, -1L);
+			createEventFromEch99(dateArrivee, noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.TRAITE, 1L);
+			return null;
 		});
 
 		// vérification du comportement du service
-		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return service.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(status -> service.buildLotEvenementsCivilsNonTraites(noIndividu));
 		Assert.assertNotNull(infos);
 		Assert.assertEquals(1, infos.size());
 
@@ -928,27 +855,23 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		// 5 (tout seul)
 		// 3 <- 7 (3 traité, pas 7)
 		// 4 <- 8 <- 9 (8 traité, pas les autres)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				// 1 <- 2
-				createEvent(date(2000, 4, 3), noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER, null);
-				createEvent(date(2000, 4, 1), noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
+		doInNewTransactionAndSession(status -> {
+			// 1 <- 2
+			createEvent(date(2000, 4, 3), noIndividu, 1L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER, null);
+			createEvent(date(2000, 4, 1), noIndividu, 2L, TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 1L);
 
-				// 5
-				createEvent(date(2000, 5, 1), noIndividu, 5L, TypeEvenementCivilEch.CHGT_NOM, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			// 5
+			createEvent(date(2000, 5, 1), noIndividu, 5L, TypeEvenementCivilEch.CHGT_NOM, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
 
-				// 3 <- 7
-				createEvent(date(2000, 6, 3), noIndividu, 3L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(date(2000, 6, 8), noIndividu, 7L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 3L);
+			// 3 <- 7
+			createEvent(date(2000, 6, 3), noIndividu, 3L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(date(2000, 6, 8), noIndividu, 7L, TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 3L);
 
-				// 4 <- 8 <- 9
-				createEvent(date(2000, 7, 3), noIndividu, 4L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER, null);
-				createEvent(date(2000, 7, 12), noIndividu, 8L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.FORCE, 4L);
-				createEvent(date(2000, 7, 2), noIndividu, 9L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 8L);
-
-				return null;
-			}
+			// 4 <- 8 <- 9
+			createEvent(date(2000, 7, 3), noIndividu, 4L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER, null);
+			createEvent(date(2000, 7, 12), noIndividu, 8L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.FORCE, 4L);
+			createEvent(date(2000, 7, 2), noIndividu, 9L, TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, 8L);
+			return null;
 		});
 
 		// vérifications de ce que renvoie la méthode d'extraction des grappes
@@ -1096,13 +1019,10 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// création des événements civils en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				createEvent(RegDate.get(), noIndividu, noEvtTraite, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(RegDate.get(), null, noEvtATraiter, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, noEvtTraite);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			createEvent(RegDate.get(), noIndividu, noEvtTraite, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(RegDate.get(), null, noEvtATraiter, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, noEvtTraite);
+			return null;
 		});
 
 		final long noIndividuRetrouve = doInNewTransactionAndSession(new TxCallback<Long>() {
@@ -1148,13 +1068,10 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		});
 
 		// création des événements civils en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				createEvent(RegDate.get(), noIndividu, noEvtTraite, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
-				createEvent(RegDate.get(), null, noEvtATraiter, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, noEvtTraite);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			createEvent(RegDate.get(), noIndividu, noEvtTraite, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE, null);
+			createEvent(RegDate.get(), null, noEvtATraiter, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, EtatEvenementCivil.A_TRAITER, noEvtTraite);
+			return null;
 		});
 
 		final long noIndividuRetrouve = doInNewTransactionAndSession(new TxCallback<Long>() {

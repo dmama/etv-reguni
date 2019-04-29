@@ -9,8 +9,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -82,15 +80,12 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 
 		// Exécution du rapport dans une transaction.
 		final TransactionTemplate rapportTemplate = new TransactionTemplate(transactionManager);
-		final DumpPeriodesImpositionImpotSourceRapport rapport = rapportTemplate.execute(new TransactionCallback<DumpPeriodesImpositionImpotSourceRapport>() {
-			@Override
-			public DumpPeriodesImpositionImpotSourceRapport doInTransaction(TransactionStatus status) {
-				try {
-					return rapportService.generateRapport(results, sm);
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+		final DumpPeriodesImpositionImpotSourceRapport rapport = rapportTemplate.execute(status -> {
+			try {
+				return rapportService.generateRapport(results, sm);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 
@@ -107,12 +102,7 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 		sm.setMessage("Récupération des identifiants des personnes physiques de la base de données");
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return getIdsPersonnesPhysiques();
-			}
-		});
+		return template.execute(status -> getIdsPersonnesPhysiques());
 	}
 
 	private List<Long> getIdsPersonnesPhysiques() {

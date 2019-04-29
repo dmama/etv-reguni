@@ -2,14 +2,13 @@ package ch.vd.unireg.evenement.civil.engine.ech;
 
 
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.SituationFamille;
@@ -52,7 +51,7 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 				addNationalite(monsieur, MockPays.Suisse, dateNaissance, null);
 				addNationalite(monsieur, MockPays.Suisse, dateNaissance, null);
 				marieIndividus(monsieur, monsieurDame, dateMariage);
-            }
+			}
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -61,99 +60,90 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 
 				final PersonnePhysique monsieur = addHabitant(noMonsieur);
 				addForPrincipal(monsieur,
-						dateNaissance.addYears(18), MotifFor.MAJORITE,
-						dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Echallens);
+				                dateNaissance.addYears(18), MotifFor.MAJORITE,
+				                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				                MockCommune.Echallens);
 				addForPrincipal(monsieur,
-						dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Echallens);
+				                dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				                MockCommune.Echallens);
 
 				final PersonnePhysique monsieurDame = addHabitant(noMonsieurDame);
 				addForPrincipal(monsieurDame,
-						dateNaissance.addYears(18), MotifFor.MAJORITE,
-						dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Lausanne);
+				                dateNaissance.addYears(18), MotifFor.MAJORITE,
+				                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				                MockCommune.Lausanne);
 				addForPrincipal(monsieurDame,
-						dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Echallens);
+				                dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				                MockCommune.Echallens);
 
 
 				final MenageCommun menage = addEnsembleTiersCouple(monsieur, monsieurDame, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
 				addForPrincipal(menage,
-						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Echallens);
+				                dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				                dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				                MockCommune.Echallens);
 
-				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
-				addSituation(monsieurDame, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
+				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore(), 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
+				addSituation(monsieurDame, dateNaissance, dateMariage.getOneDayBefore(), 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
 				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
-				addSituation(monsieur, dateSeparation,null, 0, etatCivilSepare);
-				addSituation(monsieurDame, dateSeparation,null, 0, etatCivilSepare);
+				addSituation(monsieur, dateSeparation, null, 0, etatCivilSepare);
+				addSituation(monsieurDame, dateSeparation, null, 0, etatCivilSepare);
 				return null;
 			}
 		});
 
-		final RegDate dateEvenement = typeEvenement == TypeEvenementCivilEch.CESSATION_SEPARATION ? dateReconciliation :dateSeparation;
+		final RegDate dateEvenement = typeEvenement == TypeEvenementCivilEch.CESSATION_SEPARATION ? dateReconciliation : dateSeparation;
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long evtMonsieurId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563457L);
-				evt.setAction(typeAction);
-				evt.setDateEvenement(dateEvenement);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noMonsieur);
-				evt.setType(typeEvenement);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtMonsieurId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563457L);
+			evt.setAction(typeAction);
+			evt.setDateEvenement(dateEvenement);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMonsieur);
+			evt.setType(typeEvenement);
+			return hibernateTemplate.merge(evt).getId();
 		});
 		// traitement synchrone de l'événement
 		traiterEvenements(noMonsieur);
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long evtMonsieurDameId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563458L);
-				evt.setAction(typeAction);
-				evt.setDateEvenement(dateEvenement);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noMonsieurDame);
-				evt.setType(typeEvenement);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtMonsieurDameId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563458L);
+			evt.setAction(typeAction);
+			evt.setDateEvenement(dateEvenement);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMonsieurDame);
+			evt.setType(typeEvenement);
+			return hibernateTemplate.merge(evt).getId();
 		});
 		// traitement synchrone de l'événement
 		traiterEvenements(noMonsieurDame);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtMonsieurId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				final EvenementCivilEch evt2 = evtCivilDAO.get(evtMonsieurDameId);
-				assertNotNull(evt2);
-				assertEquals(EtatEvenementCivil.REDONDANT, evt2.getEtat());
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				assertNotNull(monsieur);
-				final SituationFamille situationDeFamillePersonnelle = monsieur.getSituationFamilleActive();
-				assertNull(situationDeFamillePersonnelle);
-				final PersonnePhysique monsieurDame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieurDame);
-				assertNotNull(monsieurDame);
-				final SituationFamille situationDeFamillePersonnelle2 = monsieur.getSituationFamilleActive();
-				assertNull(situationDeFamillePersonnelle2);
-				final MenageCommun menage = tiersService.getEnsembleTiersCouple(monsieur, null).getMenage();
-				assertNotNull(menage);
-				final SituationFamilleMenageCommun situationDeFamilleMenage = (SituationFamilleMenageCommun) menage.getSituationFamilleActive();
-				assertNotNull(situationDeFamilleMenage);
-				assertNull(situationDeFamilleMenage.getDateFin());
-				assertEquals(etatCivilEnMenage, situationDeFamilleMenage.getEtatCivil());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtMonsieurId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			final EvenementCivilEch evt2 = evtCivilDAO.get(evtMonsieurDameId);
+			assertNotNull(evt2);
+			assertEquals(EtatEvenementCivil.REDONDANT, evt2.getEtat());
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			assertNotNull(monsieur);
+			final SituationFamille situationDeFamillePersonnelle = monsieur.getSituationFamilleActive();
+			assertNull(situationDeFamillePersonnelle);
+			final PersonnePhysique monsieurDame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieurDame);
+			assertNotNull(monsieurDame);
+			final SituationFamille situationDeFamillePersonnelle2 = monsieur.getSituationFamilleActive();
+			assertNull(situationDeFamillePersonnelle2);
+			final MenageCommun menage = tiersService.getEnsembleTiersCouple(monsieur, null).getMenage();
+			assertNotNull(menage);
+			final SituationFamilleMenageCommun situationDeFamilleMenage = (SituationFamilleMenageCommun) menage.getSituationFamilleActive();
+			assertNotNull(situationDeFamilleMenage);
+			assertNull(situationDeFamilleMenage.getDateFin());
+			assertEquals(etatCivilEnMenage, situationDeFamilleMenage.getEtatCivil());
+			return null;
 		});
 	}
 
@@ -178,9 +168,10 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissance, "Lambert", "Christophe", true);
 				addNationalite(monsieur, MockPays.Suisse, dateNaissance, null);
 				if (isPacs(etatCivilEnMenage)) {
-					pacseIndividu(monsieur,dateMariage);
-				} else {
-					marieIndividu(monsieur,dateMariage);
+					pacseIndividu(monsieur, dateMariage);
+				}
+				else {
+					marieIndividu(monsieur, dateMariage);
 				}
 			}
 		});
@@ -191,56 +182,50 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 				final PersonnePhysique monsieur = addHabitant(noMonsieur);
 				final MenageCommun menage = addEnsembleTiersCouple(monsieur, null, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
 				addForPrincipal(monsieur,
-						dateNaissance.addYears(18), MotifFor.MAJORITE,
-						dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Echallens);
+				                dateNaissance.addYears(18), MotifFor.MAJORITE,
+				                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				                MockCommune.Echallens);
 				addForPrincipal(menage,
-						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Echallens);
-				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
+				                dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				                dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				                MockCommune.Echallens);
+				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore(), 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
 				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
-				addSituation(monsieur, dateSeparation,null, 0, etatCivilSepare);
+				addSituation(monsieur, dateSeparation, null, 0, etatCivilSepare);
 				return null;
 			}
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
-		final long annulationSeparationId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(454563457L);
-				evt.setAction(typeAction);
-				evt.setDateEvenement(dateSeparation);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noMonsieur);
-				evt.setType(typeEvenement);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long annulationSeparationId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(454563457L);
+			evt.setAction(typeAction);
+			evt.setDateEvenement(dateSeparation);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMonsieur);
+			evt.setType(typeEvenement);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noMonsieur);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(annulationSeparationId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				assertNotNull(monsieur);
-				final SituationFamille situationDeFamillePersonnelle = monsieur.getSituationFamilleActive();
-				assertNull(situationDeFamillePersonnelle);
-				final MenageCommun menage = tiersService.getEnsembleTiersCouple(monsieur, null).getMenage();
-				assertNotNull(menage);
-				final SituationFamilleMenageCommun situationDeFamilleMenage = (SituationFamilleMenageCommun) menage.getSituationFamilleActive();
-				assertNotNull(situationDeFamilleMenage);
-				assertNull(situationDeFamilleMenage.getDateFin());
-				assertEquals(etatCivilEnMenage, situationDeFamilleMenage.getEtatCivil());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(annulationSeparationId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			assertNotNull(monsieur);
+			final SituationFamille situationDeFamillePersonnelle = monsieur.getSituationFamilleActive();
+			assertNull(situationDeFamillePersonnelle);
+			final MenageCommun menage = tiersService.getEnsembleTiersCouple(monsieur, null).getMenage();
+			assertNotNull(menage);
+			final SituationFamilleMenageCommun situationDeFamilleMenage = (SituationFamilleMenageCommun) menage.getSituationFamilleActive();
+			assertNotNull(situationDeFamilleMenage);
+			assertNull(situationDeFamilleMenage.getDateFin());
+			assertEquals(etatCivilEnMenage, situationDeFamilleMenage.getEtatCivil());
+			return null;
 		});
 	}
 

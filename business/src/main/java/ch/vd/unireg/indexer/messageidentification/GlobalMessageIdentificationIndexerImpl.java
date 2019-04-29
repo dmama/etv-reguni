@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchResults;
@@ -154,14 +152,12 @@ public class GlobalMessageIdentificationIndexerImpl implements GlobalMessageIden
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				final Query query = session.createQuery("SELECT i.id FROM IdentificationContribuable i ORDER BY id ASC");
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			final Query query = session.createQuery("SELECT i.id FROM IdentificationContribuable i ORDER BY id ASC");
+			//noinspection unchecked
+
+			return query.list();
 		});
 	}
 }

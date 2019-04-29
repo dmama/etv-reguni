@@ -3,8 +3,6 @@ package ch.vd.unireg.declaration.source;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -82,12 +80,7 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final DeterminerLRsEchuesRapport rapport = template.execute(new TransactionCallback<DeterminerLRsEchuesRapport>() {
-			@Override
-			public DeterminerLRsEchuesRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final DeterminerLRsEchuesRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success(String.format("La détermination des LR échues pour la période fiscale %d à la date du %s est terminée.", periodeFiscale, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);

@@ -6,8 +6,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationService;
@@ -653,12 +651,9 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// majorisation  !
@@ -674,21 +669,18 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEquals(ModeImposition.SOURCE, traite.modeImposition);
 
 		// vérification du for créé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateMajorite, ffp.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
-				assertNull(ffp.getDateFin());
-				assertNull(ffp.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateMajorite, ffp.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+			assertNull(ffp.getDateFin());
+			assertNull(ffp.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 
@@ -715,12 +707,9 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// majorisation  !
@@ -736,21 +725,18 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEquals(ModeImposition.ORDINAIRE, traite.modeImposition);
 
 		// vérification du for créé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateMajorite, ffp.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
-				assertNull(ffp.getDateFin());
-				assertNull(ffp.getMotifFermeture());
-				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());    // <-- il était à Echallens pour son anniversaire, même s'il est parti juste après
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateMajorite, ffp.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+			assertNull(ffp.getDateFin());
+			assertNull(ffp.getMotifFermeture());
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());    // <-- il était à Echallens pour son anniversaire, même s'il est parti juste après;
+			return null;
 		});
 	}
 
@@ -799,23 +785,21 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEquals(MotifFor.ARRIVEE_HS, traite.motifOuverture);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertFalse(ffp.isAnnule());
-				assertEquals(dateArriveeHorsSuisse, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
-				assertNull(ffp.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
-			}
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertFalse(ffp.isAnnule());
+			assertEquals(dateArriveeHorsSuisse, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			assertNull(ffp.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+			return null;
 		});
 	}
 
@@ -864,23 +848,21 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEquals(MotifFor.MAJORITE, traite.motifOuverture);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertFalse(ffp.isAnnule());
-				assertEquals(dateMajorite, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
-				assertNull(ffp.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
-			}
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertFalse(ffp.isAnnule());
+			assertEquals(dateMajorite, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+			assertNull(ffp.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+			return null;
 		});
 	}
 }

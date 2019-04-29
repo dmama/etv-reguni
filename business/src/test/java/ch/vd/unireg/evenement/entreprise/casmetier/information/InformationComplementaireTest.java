@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -28,7 +26,6 @@ import ch.vd.unireg.interfaces.entreprise.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
@@ -75,64 +72,50 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(1, evtsFiscaux.size());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size());
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
-
-					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.AVIS_PREALABLE_OUVERTURE_FAILLITE, efrf.getType());
-				                             }
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.AVIS_PREALABLE_OUVERTURE_FAILLITE, efrf.getType());
+			}
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -155,64 +138,50 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, RegDate.get(2015, 6, 24), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(1, evtsFiscaux.size());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size());
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
-
-					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS, efrf.getType());
-				                             }
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS, efrf.getType());
+			}
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -239,64 +208,50 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(1, evtsFiscaux.size());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size());
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
+				Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
-
-					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.MODIFICATION_CAPITAL, efrf.getType());
-				                             }
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.MODIFICATION_CAPITAL, efrf.getType());
+			}
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -323,64 +278,50 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(1, evtsFiscaux.size());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size());
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
+				Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
-
-					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.MODIFICATION_BUT, efrf.getType());
-				                             }
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.MODIFICATION_BUT, efrf.getType());
+			}
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -407,63 +348,49 @@ public class InformationComplementaireTest extends AbstractEvenementEntrepriseCi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(1, evtsFiscaux.size());
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size());
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
+				Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
-
-					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
-					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.MODIFICATION_STATUTS, efrf.getType());
-				                             }
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.MODIFICATION_STATUTS, efrf.getType());
+			}
+			return null;
+		});
 	}
 }

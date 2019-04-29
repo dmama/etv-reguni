@@ -6,9 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
@@ -16,8 +17,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -313,14 +312,11 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
-				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				Assert.assertNull(pp.getNumeroOfsNationalite());
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
+			pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+			Assert.assertNull(pp.getNumeroOfsNationalite());
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -341,15 +337,12 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(Integer.valueOf(ServiceInfrastructureService.noOfsSuisse), pp.getNumeroOfsNationalite());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(Integer.valueOf(ServiceInfrastructureService.noOfsSuisse), pp.getNumeroOfsNationalite());
+			return null;
 		});
 	}
 
@@ -369,14 +362,11 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
-				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				Assert.assertNull(pp.getNumeroOfsNationalite());
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
+			pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+			Assert.assertNull(pp.getNumeroOfsNationalite());
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
@@ -397,15 +387,12 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(Integer.valueOf(MockPays.Allemagne.getNoOFS()), pp.getNumeroOfsNationalite());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(Integer.valueOf(MockPays.Allemagne.getNoOFS()), pp.getNumeroOfsNationalite());
+			return null;
 		});
 	}
 

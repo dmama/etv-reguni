@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.scheduler.JobCategory;
@@ -38,12 +36,7 @@ public class RamasseDocumentJob extends JobDefinition {
 
 		// Exécution du job dans une transaction.
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final Collection<Document> docs = template.execute(new TransactionCallback<Collection<Document>>() {
-			@Override
-			public Collection<Document> doInTransaction(TransactionStatus status) {
-				return docService.ramasseDocs();
-			}
-		});
+		final Collection<Document> docs = template.execute(status -> docService.ramasseDocs());
 
 		for (Document doc : docs) {
 			audit.info("Le fichier " + doc.getFileName() + " a été récupéré et inséré dans la base de données", doc);

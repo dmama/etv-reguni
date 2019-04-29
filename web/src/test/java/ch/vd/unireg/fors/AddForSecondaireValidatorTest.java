@@ -1,14 +1,12 @@
 package ch.vd.unireg.fors;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifRattachement;
@@ -39,14 +37,11 @@ public class AddForSecondaireValidatorTest extends WebTestSpring3 {
 			}
 		});
 
-		final long noCtb = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Bidule", "Tartempion", date(1965, 6, 1), Sexe.MASCULIN);
+		final long noCtb = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Bidule", "Tartempion", date(1965, 6, 1), Sexe.MASCULIN);
 
-				pp.setNumeroOfsNationalite(MockPays.France.getNoOFS());
-				return pp.getNumero();
-			}
+			pp.setNumeroOfsNationalite(MockPays.France.getNoOFS());
+			return pp.getNumero();
 		});
 
 		final AddForSecondaireView view = new AddForSecondaireView();
@@ -73,13 +68,10 @@ public class AddForSecondaireValidatorTest extends WebTestSpring3 {
 	 * @return binding results
 	 */
 	private Errors validate(final AddForSecondaireView view) throws Exception {
-		return doInNewTransactionAndSession(new TransactionCallback<Errors>() {
-			@Override
-			public Errors doInTransaction(TransactionStatus status) {
-				final Errors errors = new BeanPropertyBindingResult(view, "view");
-				validator.validate(view, errors);
-				return errors;
-			}
+		return doInNewTransactionAndSession(status -> {
+			final Errors errors = new BeanPropertyBindingResult(view, "view");
+			validator.validate(view, errors);
+			return errors;
 		});
 	}
 }

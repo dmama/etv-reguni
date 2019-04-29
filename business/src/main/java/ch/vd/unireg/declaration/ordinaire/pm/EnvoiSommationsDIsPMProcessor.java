@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -240,36 +238,34 @@ public class EnvoiSommationsDIsPMProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
-			@Override
-			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-					@Override
-					public List<Object[]> doInHibernate(Session session) throws HibernateException {
+		return template.execute(status -> {
+			final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+				@Override
+				public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
-						final StringBuilder b = new StringBuilder();
-						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinairePM AS di");
-						b.append(" WHERE di.annulationDate IS NULL");
-						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee))");
-						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
-						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
-						final String sql = b.toString();
-						final Query query = session.createQuery(sql);
-						query.setParameter("dateLimite", dateLimite);
-						return query.list();
-					}
-				});
-				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>(declarationsASommer.size());
-				for (Object[] objects : declarationsASommer) {
-					final Number numeroDi = (Number) objects[0];
-					final Number numeroTiers = (Number) objects[1];
-					final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(numeroDi.longValue(), numeroTiers.longValue());
-					identifiantDi.add(identifiantDeclaration);
+					final StringBuilder b = new StringBuilder();
+					b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinairePM AS di");
+					b.append(" WHERE di.annulationDate IS NULL");
+					b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+					b.append(
+							" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee))");
+					b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
+					b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+					final String sql = b.toString();
+					final Query query = session.createQuery(sql);
+					query.setParameter("dateLimite", dateLimite);
+					return query.list();
 				}
-
-				return identifiantDi;
+			});
+			final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>(declarationsASommer.size());
+			for (Object[] objects : declarationsASommer) {
+				final Number numeroDi = (Number) objects[0];
+				final Number numeroTiers = (Number) objects[1];
+				final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(numeroDi.longValue(), numeroTiers.longValue());
+				identifiantDi.add(identifiantDeclaration);
 			}
+			;
+			return identifiantDi;
 		});
 	}
 

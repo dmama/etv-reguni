@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -636,12 +634,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<E>>() {
-			@Override
-			public List<E> doInTransaction(TransactionStatus status) {
-				return extractor.buildElementList();
-			}
-		});
+		return template.execute(status -> extractor.buildElementList());
 	}
 
 	@Override

@@ -6,10 +6,12 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -18,10 +20,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
@@ -56,86 +54,76 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		// réception des événements civils de mariage, de correction de mariage et d'annulation
 		final long noEvtMariage = 23673256L;
 		final long noEvtAnnulation = 26726222324L;
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtMariage);
-					evt.setType(TypeEvenementCivilEch.MARIAGE);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateMariage);
-					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtMariage);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
 
-					final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
-					erreur.setMessage("Toto");
-					erreur.setType(TypeEvenementErreur.ERROR);
-					evt.setErreurs(new HashSet<>(Collections.singletonList(erreur)));
+				final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
+				erreur.setMessage("Toto");
+				erreur.setType(TypeEvenementErreur.ERROR);
+				evt.setErreurs(new HashSet<>(Collections.singletonList(erreur)));
 
-					hibernateTemplate.merge(evt);
-				}
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtAnnulation);
-					evt.setType(TypeEvenementCivilEch.MARIAGE);
-					evt.setAction(ActionEvenementCivilEch.ANNULATION);
-					evt.setDateEvenement(dateMariage);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtMariage);
-					hibernateTemplate.merge(evt);
-				}
-				return null;
+				hibernateTemplate.merge(evt);
 			}
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtAnnulation);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.ANNULATION);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtMariage);
+				hibernateTemplate.merge(evt);
+			}
+			return null;
 		});
 
 		// traitement des événements de l'individu
 		traiterEvenements(noIndividu);
 
 		// vérification que les événements ont bien été marqués comme redondant sans traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtMariage);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
-					Assert.assertEquals("Groupe d'événements annulés alors qu'ils étaient encore en attente.", evt.getCommentaireTraitement());
-					Assert.assertEquals(0, evt.getErreurs().size());
-				}
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulation);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
-					Assert.assertEquals("Groupe d'événements annulés alors qu'ils étaient encore en attente.", evt.getCommentaireTraitement());
-					Assert.assertEquals(0, evt.getErreurs().size());
-				}
-
-				// et fiscalement, rien ne doit avoir changé
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtMariage);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+				Assert.assertEquals("Groupe d'événements annulés alors qu'ils étaient encore en attente.", evt.getCommentaireTraitement());
+				Assert.assertEquals(0, evt.getErreurs().size());
 			}
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulation);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+				Assert.assertEquals("Groupe d'événements annulés alors qu'ils étaient encore en attente.", evt.getCommentaireTraitement());
+				Assert.assertEquals(0, evt.getErreurs().size());
+			}
+
+			// et fiscalement, rien ne doit avoir changé
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -158,13 +146,10 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		// réception des événements civils de mariage, de correction de mariage et d'annulation
@@ -172,114 +157,107 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final long noEvtCorrection = 32536263L;
 		final long noEvtCorrectionSurCorrection = 451454512L;
 		final long noEvtAnnulation = 26726222324L;
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtMariage);
-					evt.setType(TypeEvenementCivilEch.MARIAGE);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateMariage);
-					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtMariage);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
 
-					final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
-					erreur.setMessage("Toto");
-					erreur.setType(TypeEvenementErreur.ERROR);
-					evt.setErreurs(new HashSet<>(Collections.singletonList(erreur)));
+				final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
+				erreur.setMessage("Toto");
+				erreur.setType(TypeEvenementErreur.ERROR);
+				evt.setErreurs(new HashSet<>(Collections.singletonList(erreur)));
 
-					hibernateTemplate.merge(evt);
-				}
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtCorrection);
-					evt.setType(TypeEvenementCivilEch.MARIAGE);
-					evt.setAction(ActionEvenementCivilEch.CORRECTION);
-					evt.setDateEvenement(dateMariage.addDays(-10));
-					evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtMariage);
-					hibernateTemplate.merge(evt);
-				}
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtCorrectionSurCorrection);
-					evt.setType(TypeEvenementCivilEch.MARIAGE);
-					evt.setAction(ActionEvenementCivilEch.CORRECTION);
-					evt.setDateEvenement(dateMariage.addDays(-10));
-					evt.setEtat(EtatEvenementCivil.TRAITE);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtCorrection);
-					evt.setCommentaireTraitement("Tralala");
-					hibernateTemplate.merge(evt);
-				}
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtAnnulation);
-					evt.setType(TypeEvenementCivilEch.MARIAGE);
-					evt.setAction(ActionEvenementCivilEch.ANNULATION);
-					evt.setDateEvenement(dateMariage);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtCorrectionSurCorrection);
-					hibernateTemplate.merge(evt);
-				}
-				return null;
+				hibernateTemplate.merge(evt);
 			}
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtCorrection);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateMariage.addDays(-10));
+				evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtMariage);
+				hibernateTemplate.merge(evt);
+			}
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtCorrectionSurCorrection);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateMariage.addDays(-10));
+				evt.setEtat(EtatEvenementCivil.TRAITE);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtCorrection);
+				evt.setCommentaireTraitement("Tralala");
+				hibernateTemplate.merge(evt);
+			}
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtAnnulation);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.ANNULATION);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtCorrectionSurCorrection);
+				hibernateTemplate.merge(evt);
+			}
+			return null;
 		});
 
 		// traitement des événements de l'individu
 		traiterEvenements(noIndividu);
 
 		// vérification que les événements ont bien été marqués comme redondant sans traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtMariage);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-					Assert.assertEquals(1, evt.getErreurs().size());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtMariage);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertEquals(1, evt.getErreurs().size());
 
-					final EvenementCivilEchErreur erreur = evt.getErreurs().iterator().next();
-					Assert.assertNotNull(erreur);
-					Assert.assertEquals("L'individu principal n'est ni marié ni pacsé dans le civil", erreur.getMessage());
-				}
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtCorrection);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evt.getEtat());
-					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", evt.getCommentaireTraitement());
-					Assert.assertEquals(0, evt.getErreurs().size());
-				}
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtCorrectionSurCorrection);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					Assert.assertEquals("Tralala", evt.getCommentaireTraitement());
-					Assert.assertEquals(0, evt.getErreurs().size());
-				}
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulation);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evt.getEtat());
-					Assert.assertNull(evt.getCommentaireTraitement());
-					Assert.assertEquals(0, evt.getErreurs().size());
-				}
-
-				// et fiscalement, rien ne doit avoir changé
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
-
-				return null;
+				final EvenementCivilEchErreur erreur = evt.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("L'individu principal n'est ni marié ni pacsé dans le civil", erreur.getMessage());
 			}
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evt.getEtat());
+				Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", evt.getCommentaireTraitement());
+				Assert.assertEquals(0, evt.getErreurs().size());
+			}
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtCorrectionSurCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Tralala", evt.getCommentaireTraitement());
+				Assert.assertEquals(0, evt.getErreurs().size());
+			}
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulation);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, evt.getEtat());
+				Assert.assertNull(evt.getCommentaireTraitement());
+				Assert.assertEquals(0, evt.getErreurs().size());
+			}
+
+			// et fiscalement, rien ne doit avoir changé
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -306,104 +284,90 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		// réception des événements civils de mariage, de correction de mariage et d'annulation
 		final long noEvtPremierDeces = 23673256L;
 		final long noEvtAnnulationPremierDeces = 32536200L;
 		final long noEvtSecondDeces = 32536263L;
-				doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtPremierDeces);
-					evt.setType(TypeEvenementCivilEch.DECES);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateDeces);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtPremierDeces);
+				evt.setType(TypeEvenementCivilEch.DECES);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDeces);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
 
-					hibernateTemplate.merge(evt);
-				}
-
-				return null;
+				hibernateTemplate.merge(evt);
 			}
+			return null;
 		});
 
 		// traitement des événements de l'individu
 		traiterEvenements(noIndividu);
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtSecondDeces);
-					evt.setType(TypeEvenementCivilEch.DECES);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateDeces);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
-					hibernateTemplate.merge(evt);
-				}
-
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtAnnulationPremierDeces);
-					evt.setType(TypeEvenementCivilEch.DECES);
-					evt.setAction(ActionEvenementCivilEch.ANNULATION);
-					evt.setDateEvenement(dateDeces);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
-					hibernateTemplate.merge(evt);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtSecondDeces);
+				evt.setType(TypeEvenementCivilEch.DECES);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDeces);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
+				hibernateTemplate.merge(evt);
 			}
+
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtAnnulationPremierDeces);
+				evt.setType(TypeEvenementCivilEch.DECES);
+				evt.setAction(ActionEvenementCivilEch.ANNULATION);
+				evt.setDateEvenement(dateDeces);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
+				hibernateTemplate.merge(evt);
+			}
+			return null;
 		});
 
 
 		// traitement des événements de l'individu
 		traiterEvenements(noIndividu);
 		// vérification que les événements ont bien été marqués comme redondant sans traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtPremierDeces);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtPremierDeces);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				}
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtSecondDeces);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-
-				}
-				{
-					final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulationPremierDeces);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-
-				}
-
-				// et fiscalement, rien ne doit avoir changé
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertEquals(dateDeces,pp.getDateDeces());
-				return null;
 			}
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtSecondDeces);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+			}
+			{
+				final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulationPremierDeces);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+			}
+
+			// et fiscalement, rien ne doit avoir changé
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertEquals(dateDeces, pp.getDateDeces());
+			return null;
 		});
 	}
 
@@ -433,13 +397,10 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 
 		final long noEvtDepartOriginel = 8181513L;
@@ -447,136 +408,123 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final long noEvtArrivee = 454121L;
 
 		// création des événements civils (sans correction pour le moment)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtDepartOriginel);
-					evt.setType(TypeEvenementCivilEch.DEPART);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateDepartOriginelle);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
-					hibernateTemplate.merge(evt);
-				}
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtArrivee);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
-					hibernateTemplate.merge(evt);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtDepartOriginel);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepartOriginelle);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
+				hibernateTemplate.merge(evt);
 			}
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtArrivee);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
+				hibernateTemplate.merge(evt);
+			}
+			return null;
 		});
 
 		// on traite les événements civils -> le départ doit partir en erreur (pas d'adresse qui se termine à la bonne date) et l'arrivée doit passer en attente
 		traiterEvenements(noIndividu);
 
 		// vérification de la première étape
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
 
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(1, erreurs.size());
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
 
-					final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-					Assert.assertNotNull(erreur);
-					Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtArrivee);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, ech.getEtat());
-				}
-				return null;
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
 			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtArrivee);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, ech.getEtat());
+			}
+			return null;
 		});
 
 		// arrivée d'un nouvel événement civil (la correction du départ)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtCorrectionDepart);
-					evt.setType(TypeEvenementCivilEch.DEPART);
-					evt.setAction(ActionEvenementCivilEch.CORRECTION);
-					evt.setDateEvenement(dateDepartCorrecte);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtDepartOriginel);
-					hibernateTemplate.merge(evt);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtCorrectionDepart);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateDepartCorrecte);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtDepartOriginel);
+				hibernateTemplate.merge(evt);
 			}
+			return null;
 		});
 
 		// relance des événements civils
 		traiterEvenements(noIndividu);
 
 		// maintenant, tout doit avoir été traité, reste à le vérifier
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertEquals("Ignoré car départ vaudois : la nouvelle commune de résidence Aubonne est toujours dans le canton. Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+				Assert.assertEquals("Ignoré car départ vaudois : la nouvelle commune de résidence Aubonne est toujours dans le canton. Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
 
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(0, erreurs.size());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
-
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(0, erreurs.size());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtArrivee);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertNull(ech.getCommentaireTraitement());
-
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(0, erreurs.size());
-				}
-
-				// et on vérifie aussi que les fors de la personne physique ont été modifiés correctement
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertNull(ffp.getMotifFermeture());
-
-				return null;
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
 			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+				Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtArrivee);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+				Assert.assertNull(ech.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+			}
+
+			// et on vérifie aussi que les fors de la personne physique ont été modifiés correctement
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+			Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertNull(ffp.getMotifFermeture());
+			return null;
 		});
 	}
 
@@ -614,89 +562,81 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final long idCorrectionForcee = 423637252L;
 
 		// mise en place fiscale -> les événements civils
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idArriveeInitiale);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					ech.setDateEvenement(dateArriveeInitiale);
-					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(null);
-					hibernateTemplate.merge(ech);
-				}
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idPremiereCorrection);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(datePremiereCorrection);
-					ech.setEtat(EtatEvenementCivil.EN_ATTENTE);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idArriveeInitiale);
-					hibernateTemplate.merge(ech);
-				}
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idCorrectionForcee);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateCorrectionForcee);
-					ech.setEtat(EtatEvenementCivil.FORCE);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idPremiereCorrection);
-					hibernateTemplate.merge(ech);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idArriveeInitiale);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				ech.setDateEvenement(dateArriveeInitiale);
+				ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(null);
+				hibernateTemplate.merge(ech);
 			}
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idPremiereCorrection);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(datePremiereCorrection);
+				ech.setEtat(EtatEvenementCivil.EN_ATTENTE);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idArriveeInitiale);
+				hibernateTemplate.merge(ech);
+			}
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idCorrectionForcee);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateCorrectionForcee);
+				ech.setEtat(EtatEvenementCivil.FORCE);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idPremiereCorrection);
+				hibernateTemplate.merge(ech);
+			}
+			return null;
 		});
 
 		// traitement des événements civils
 		traiterEvenements(noIndividu);
 
 		// vérification du for créé pour le nouveau contribuable
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// d'abord on vérifie l'état des événements civils (TRAITE, sauf pour le FORCE qui le reste)
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(idArriveeInitiale);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(idPremiereCorrection);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(idCorrectionForcee);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.FORCE, ech.getEtat());
-					Assert.assertNull(ech.getCommentaireTraitement());
-				}
-
-				// le contribuable ?
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				Assert.assertNotNull(pp);
-
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateCorrectionForcee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertNull(ffp.getMotifFermeture());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			// d'abord on vérifie l'état des événements civils (TRAITE, sauf pour le FORCE qui le reste)
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(idArriveeInitiale);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+				Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
 			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(idPremiereCorrection);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+				Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
+			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(idCorrectionForcee);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.FORCE, ech.getEtat());
+				Assert.assertNull(ech.getCommentaireTraitement());
+			}
+
+			// le contribuable ?
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			Assert.assertNotNull(pp);
+
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCorrectionForcee, ffp.getDateDebut());
+			Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertNull(ffp.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 
@@ -720,86 +660,77 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		// création de l'évément fiscal corrigé de séparation
 		final long idEvtAnnonce = 43843672L;
 		final long idEvtCorrection = 44582645L;
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idEvtAnnonce);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(null);
-					hibernateTemplate.merge(ech);
-				}
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idEvtCorrection);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idEvtAnnonce);
-					hibernateTemplate.merge(ech);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idEvtAnnonce);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(null);
+				hibernateTemplate.merge(ech);
 			}
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idEvtCorrection);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idEvtAnnonce);
+				hibernateTemplate.merge(ech);
+			}
+			return null;
 		});
 
 		// traitement de l'événement civil d'arrivée
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état des événements civils après traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(idEvtAnnonce);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, ech.getEtat());
-					Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(idEvtAnnonce);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, ech.getEtat());
+				Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
 
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(1, erreurs.size());
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
 
-					final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-					Assert.assertNotNull(erreur);
-					Assert.assertEquals(TypeEvenementErreur.WARNING, erreur.getType());
-					Assert.assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.", erreur.getMessage());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(idEvtCorrection);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, ech.getEtat());
-					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
-
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(0, erreurs.size());
-				}
-				return null;
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(TypeEvenementErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.", erreur.getMessage());
 			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(idEvtCorrection);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, ech.getEtat());
+				Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+			}
+			return null;
 		});
 
 		// vérification de la création de la personne physique arrivée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			Assert.assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertNull(ffp.getMotifFermeture());
-				Assert.assertNull(ffp.getDateFin());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+			Assert.assertNull(ffp.getMotifFermeture());
+			Assert.assertNull(ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -825,69 +756,63 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final long noEvtDepartOriginel = 8181513L;
 		final long noEvtCorrectionDepart = 4215152L;
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtDepartOriginel);
-					evt.setType(TypeEvenementCivilEch.DEPART);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateDepartOriginelle);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
-					hibernateTemplate.merge(evt);
-				}
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtCorrectionDepart);
-					evt.setType(TypeEvenementCivilEch.DEPART);
-					evt.setAction(ActionEvenementCivilEch.CORRECTION);
-					evt.setDateEvenement(dateDepartOriginelle);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtDepartOriginel);
-					hibernateTemplate.merge(evt);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtDepartOriginel);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepartOriginelle);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
+				hibernateTemplate.merge(evt);
 			}
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtCorrectionDepart);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateDepartOriginelle);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtDepartOriginel);
+				hibernateTemplate.merge(evt);
+			}
+			return null;
 		});
 
 		// traitement de l'événement civil d'arrivée
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état des événements civils après traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
-					Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
+				Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
 
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(1, erreurs.size());
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
 
-					final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-					Assert.assertNotNull(erreur);
-					Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-					Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, ech.getEtat());
-					Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
-
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(0, erreurs.size());
-				}
-				return null;
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
 			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, ech.getEtat());
+				Assert.assertEquals("Evénement directement pris en compte dans le traitement de l'événement référencé.", ech.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+			}
+			return null;
 		});
 	}
 
@@ -913,74 +838,68 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final long noEvtDepartOriginel = 8181513L;
 		final long noEvtCorrectionDepart = 4215152L;
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtDepartOriginel);
-					evt.setType(TypeEvenementCivilEch.DEPART);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateDepartOriginelle);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(null);
-					hibernateTemplate.merge(evt);
-				}
-
-				AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
-				try {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(noEvtCorrectionDepart);
-					evt.setType(TypeEvenementCivilEch.DEPART);
-					evt.setAction(ActionEvenementCivilEch.CORRECTION);
-					evt.setDateEvenement(dateDepartOriginelle);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setRefMessageId(noEvtDepartOriginel);
-					hibernateTemplate.merge(evt);
-				}
-				finally {
-					AuthenticationHelper.popPrincipal();
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtDepartOriginel);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepartOriginelle);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(null);
+				hibernateTemplate.merge(evt);
 			}
+
+			AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
+			try {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(noEvtCorrectionDepart);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateDepartOriginelle);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setRefMessageId(noEvtDepartOriginel);
+				hibernateTemplate.merge(evt);
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+			return null;
 		});
 
 		// traitement de l'événement civil d'arrivée et de sa correction issue de eCH-99
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état des événements civils après traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
-					Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
+		doInNewTransactionAndSession(status -> {
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtDepartOriginel);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, ech.getEtat());
+				Assert.assertEquals("Evénement et correction(s) pris en compte ensemble.", ech.getCommentaireTraitement());
 
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(1, erreurs.size());
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
 
-					final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-					Assert.assertNotNull(erreur);
-					Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-					Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
-				}
-				{
-					final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
-					Assert.assertNotNull(ech);
-					Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
-					Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événement traité sans modification Unireg.", ech.getCommentaireTraitement());
-
-					final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
-					Assert.assertNotNull(erreurs);
-					Assert.assertEquals(0, erreurs.size());
-				}
-				return null;
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
 			}
+			{
+				final EvenementCivilEch ech = evtCivilDAO.get(noEvtCorrectionDepart);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+				Assert.assertEquals("Evénement civil issu d'un eCH-0099 de commune. Événement traité sans modification Unireg.", ech.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = ech.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+			}
+			return null;
 		});
 	}
 
@@ -1007,13 +926,10 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+			return pp.getNumero();
 		});
 
 		// changement de nom
@@ -1030,62 +946,55 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		}
 
 		// événement civil d'arrivée
-		final Ids evtIds = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(ancienNom, pp.getNom());
+		final Ids evtIds = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(ancienNom, pp.getNom());
 
-				final Ids ids = new Ids();
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(4378423L);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ids.idAnnonce = hibernateTemplate.merge(ech).getId();
-				}
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(4524734323L);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(ids.idAnnonce);
-					ids.idCorrection= hibernateTemplate.merge(ech).getId();
-				}
-
-				return ids;
+			final Ids ids = new Ids();
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(4378423L);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ids.idAnnonce = hibernateTemplate.merge(ech).getId();
 			}
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(4524734323L);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(ids.idAnnonce);
+				ids.idCorrection = hibernateTemplate.merge(ech).getId();
+			}
+			return ids;
 		});
 
 		// traitement des événements civils de l'individu
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état après traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(ancienNom, pp.getNom());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(ancienNom, pp.getNom());
 
-				final EvenementCivilEch annonce = evtCivilDAO.get(evtIds.idAnnonce);
-				Assert.assertNotNull(annonce);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, annonce.getEtat());
+			final EvenementCivilEch annonce = evtCivilDAO.get(evtIds.idAnnonce);
+			Assert.assertNotNull(annonce);
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, annonce.getEtat());
 
-				final EvenementCivilEch correction = evtCivilDAO.get(evtIds.idCorrection);
-				Assert.assertNotNull(correction);
-				Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, correction.getEtat());
-				return null;
-			}
+			final EvenementCivilEch correction = evtCivilDAO.get(evtIds.idCorrection);
+			Assert.assertNotNull(correction);
+			Assert.assertEquals(EtatEvenementCivil.EN_ATTENTE, correction.getEtat());
+			return null;
 		});
 	}
 
@@ -1112,13 +1021,10 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+			return pp.getNumero();
 		});
 
 		// changement de nom
@@ -1135,67 +1041,60 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		}
 
 		// événement civil d'arrivée
-		final Ids evtIds = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(ancienNom, pp.getNom());
+		final Ids evtIds = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(ancienNom, pp.getNom());
 
-				final Ids ids = new Ids();
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(4378423L);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ids.idAnnonce = hibernateTemplate.merge(ech).getId();
-				}
-
-				AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
-				try {
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(4524734323L);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(ids.idAnnonce);
-					ids.idCorrection= hibernateTemplate.merge(ech).getId();
-				}
-				finally {
-					AuthenticationHelper.popPrincipal();
-				}
-
-				return ids;
+			final Ids ids = new Ids();
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(4378423L);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ids.idAnnonce = hibernateTemplate.merge(ech).getId();
 			}
+
+			AuthenticationHelper.pushPrincipal(EvenementCivilEchSourceHelper.getVisaForEch99());
+			try {
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(4524734323L);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(ids.idAnnonce);
+				ids.idCorrection = hibernateTemplate.merge(ech).getId();
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+			return ids;
 		});
 
 		// traitement des événements civils de l'individu
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état après traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(nouveauNom, pp.getNom());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(nouveauNom, pp.getNom());
 
-				final EvenementCivilEch annonce = evtCivilDAO.get(evtIds.idAnnonce);
-				Assert.assertNotNull(annonce);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, annonce.getEtat());
+			final EvenementCivilEch annonce = evtCivilDAO.get(evtIds.idAnnonce);
+			Assert.assertNotNull(annonce);
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, annonce.getEtat());
 
-				final EvenementCivilEch correction = evtCivilDAO.get(evtIds.idCorrection);
-				Assert.assertNotNull(correction);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, correction.getEtat());
-				return null;
-			}
+			final EvenementCivilEch correction = evtCivilDAO.get(evtIds.idCorrection);
+			Assert.assertNotNull(correction);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, correction.getEtat());
+			return null;
 		});
 	}
 
@@ -1216,13 +1115,10 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+			return pp.getNumero();
 		});
 
 		final long idAnnonceArrivee = 367432436L;
@@ -1233,83 +1129,79 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		final long idCorrectionDepart = 4567432L;
 
 		// événements civils
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				// arivée à mettre en erreur
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idAnnonceArrivee);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
-					ech.setNumeroIndividu(noIndividu);
-					hibernateTemplate.merge(ech);
-				}
-				// correction de l'arrivée déjà traitée
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idCorrectionArriveeDejaTraitee);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idAnnonceArrivee);
-					hibernateTemplate.merge(ech);
-				}
-				// correction de l'arrivée à mettre en attente
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idCorrectionArrivee);
-					ech.setType(TypeEvenementCivilEch.ARRIVEE);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateArrivee);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idCorrectionArriveeDejaTraitee);
-					hibernateTemplate.merge(ech);
-				}
-
-				// départ en erreur
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idAnnonceDepart);
-					ech.setType(TypeEvenementCivilEch.DEPART);
-					ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					ech.setDateEvenement(dateDepart);
-					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
-					ech.setNumeroIndividu(noIndividu);
-					hibernateTemplate.merge(ech);
-				}
-				// correction de départ déjà traitée
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idCorrectionDepartDejaTraitee);
-					ech.setType(TypeEvenementCivilEch.DEPART);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateDepart);
-					ech.setEtat(EtatEvenementCivil.EN_ERREUR);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idAnnonceDepart);
-					hibernateTemplate.merge(ech);
-				}
-				// correction de départ à mettre en attente
-				{
-					final EvenementCivilEch ech = new EvenementCivilEch();
-					ech.setId(idCorrectionDepart);
-					ech.setType(TypeEvenementCivilEch.DEPART);
-					ech.setAction(ActionEvenementCivilEch.CORRECTION);
-					ech.setDateEvenement(dateDepart);
-					ech.setEtat(EtatEvenementCivil.A_TRAITER);
-					ech.setNumeroIndividu(noIndividu);
-					ech.setRefMessageId(idCorrectionDepartDejaTraitee);
-					hibernateTemplate.merge(ech);
-				}
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			// arivée à mettre en erreur
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idAnnonceArrivee);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+				ech.setNumeroIndividu(noIndividu);
+				hibernateTemplate.merge(ech);
 			}
+			// correction de l'arrivée déjà traitée
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idCorrectionArriveeDejaTraitee);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idAnnonceArrivee);
+				hibernateTemplate.merge(ech);
+			}
+			// correction de l'arrivée à mettre en attente
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idCorrectionArrivee);
+				ech.setType(TypeEvenementCivilEch.ARRIVEE);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateArrivee);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idCorrectionArriveeDejaTraitee);
+				hibernateTemplate.merge(ech);
+			}
+
+			// départ en erreur
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idAnnonceDepart);
+				ech.setType(TypeEvenementCivilEch.DEPART);
+				ech.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				ech.setDateEvenement(dateDepart);
+				ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+				ech.setNumeroIndividu(noIndividu);
+				hibernateTemplate.merge(ech);
+			}
+			// correction de départ déjà traitée
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idCorrectionDepartDejaTraitee);
+				ech.setType(TypeEvenementCivilEch.DEPART);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateDepart);
+				ech.setEtat(EtatEvenementCivil.EN_ERREUR);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idAnnonceDepart);
+				hibernateTemplate.merge(ech);
+			}
+			// correction de départ à mettre en attente
+			{
+				final EvenementCivilEch ech = new EvenementCivilEch();
+				ech.setId(idCorrectionDepart);
+				ech.setType(TypeEvenementCivilEch.DEPART);
+				ech.setAction(ActionEvenementCivilEch.CORRECTION);
+				ech.setDateEvenement(dateDepart);
+				ech.setEtat(EtatEvenementCivil.A_TRAITER);
+				ech.setNumeroIndividu(noIndividu);
+				ech.setRefMessageId(idCorrectionDepartDejaTraitee);
+				hibernateTemplate.merge(ech);
+			}
+			return null;
 		});
 
 		// traitement des événements civils de l'individu
@@ -1324,18 +1216,15 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		}
 
 		// vérification de l'état après traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Checker checker = new Checker();
-				checker.check(idAnnonceArrivee, EtatEvenementCivil.EN_ERREUR);
-				checker.check(idCorrectionArriveeDejaTraitee, EtatEvenementCivil.EN_ERREUR);
-				checker.check(idCorrectionArrivee, EtatEvenementCivil.EN_ATTENTE);
-				checker.check(idAnnonceDepart, EtatEvenementCivil.EN_ERREUR);
-				checker.check(idCorrectionDepartDejaTraitee, EtatEvenementCivil.EN_ERREUR);
-				checker.check(idCorrectionDepart, EtatEvenementCivil.EN_ATTENTE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Checker checker = new Checker();
+			checker.check(idAnnonceArrivee, EtatEvenementCivil.EN_ERREUR);
+			checker.check(idCorrectionArriveeDejaTraitee, EtatEvenementCivil.EN_ERREUR);
+			checker.check(idCorrectionArrivee, EtatEvenementCivil.EN_ATTENTE);
+			checker.check(idAnnonceDepart, EtatEvenementCivil.EN_ERREUR);
+			checker.check(idCorrectionDepartDejaTraitee, EtatEvenementCivil.EN_ERREUR);
+			checker.check(idCorrectionDepart, EtatEvenementCivil.EN_ATTENTE);
+			return null;
 		});
 	}
 }

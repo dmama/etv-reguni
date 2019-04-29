@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.entreprise.casmetier.formejuridique;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
@@ -63,12 +61,9 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementEntrepriseCivil
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -76,20 +71,15 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%d est une entreprise individuelle vaudoise. Pas de création.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%d est une entreprise individuelle vaudoise. Pas de création.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -116,12 +106,9 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementEntrepriseCivil
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2010, 6, 26), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -129,19 +116,14 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementEntrepriseCivil
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("L'entreprise civile n°%d est une société simple vaudoise. Pas de création.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("L'entreprise civile n°%d est une société simple vaudoise. Pas de création.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 }

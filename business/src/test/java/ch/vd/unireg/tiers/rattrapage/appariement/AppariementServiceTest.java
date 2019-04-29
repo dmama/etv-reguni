@@ -7,9 +7,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -64,38 +61,32 @@ public class AppariementServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Toto et compagnie");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Toto et compagnie");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto Lausanne");
-
-				return e.getNumero();
-			}
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto Lausanne");
+			return e.getNumero();
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(pmId);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(0, candidats.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(pmId);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(0, candidats.size());
+			return null;
 		});
 	}
 
@@ -138,51 +129,47 @@ public class AppariementServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto et compagnie Lausanne");
-				addIdentificationEntreprise(sec, ide);
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto et compagnie Lausanne");
+			addIdentificationEntreprise(sec, ide);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(1, candidats.size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(1, candidats.size());
 
-				{
-					final CandidatAppariement candidat = candidats.get(0);
-					Assert.assertNotNull(candidat);
-					Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getEtablissementCivil().getNumeroEtablissement());
-					Assert.assertEquals((Long) ids.idEtablissementSecondaire, candidat.getEtablissement().getNumero());
-					Assert.assertEquals(CandidatAppariement.CritereDecisif.IDE, candidat.getCritere());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
-				}
+			{
+				final CandidatAppariement candidat = candidats.get(0);
+				Assert.assertNotNull(candidat);
+				Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getEtablissementCivil().getNumeroEtablissement());
+				Assert.assertEquals((Long) ids.idEtablissementSecondaire, candidat.getEtablissement().getNumero());
+				Assert.assertEquals(CandidatAppariement.CritereDecisif.IDE, candidat.getCritere());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
 			}
+			;
+			return null;
 		});
 	}
 
@@ -225,41 +212,36 @@ public class AppariementServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Prilly);     // dans le civil, l'établissement avec ce numéro IDE est à Lausanne
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto et compagnie Lausanne");
-				addIdentificationEntreprise(sec, ide);
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Prilly);     // dans le civil, l'établissement avec ce numéro IDE est à Lausanne
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto et compagnie Lausanne");
+			addIdentificationEntreprise(sec, ide);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(0, candidats.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(0, candidats.size());
+			return null;
 		});
 	}
 
@@ -301,50 +283,46 @@ public class AppariementServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto Lausanne");      // même avec une raison sociale différente, comme c'est le seul établissement sur Lausanne
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto Lausanne");      // même avec une raison sociale différente, comme c'est le seul établissement sur Lausanne
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(1, candidats.size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(1, candidats.size());
 
-				{
-					final CandidatAppariement candidat = candidats.get(0);
-					Assert.assertNotNull(candidat);
-					Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getEtablissementCivil().getNumeroEtablissement());
-					Assert.assertEquals((Long) ids.idEtablissementSecondaire, candidat.getEtablissement().getNumero());
-					Assert.assertEquals(CandidatAppariement.CritereDecisif.LOCALISATION, candidat.getCritere());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
-				}
+			{
+				final CandidatAppariement candidat = candidats.get(0);
+				Assert.assertNotNull(candidat);
+				Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getEtablissementCivil().getNumeroEtablissement());
+				Assert.assertEquals((Long) ids.idEtablissementSecondaire, candidat.getEtablissement().getNumero());
+				Assert.assertEquals(CandidatAppariement.CritereDecisif.LOCALISATION, candidat.getCritere());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
 			}
+			;
+			return null;
 		});
 	}
 
@@ -387,73 +365,69 @@ public class AppariementServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec1 = addEtablissement();
-				addDomicileEtablissement(sec1, dateDebut, null, MockCommune.Prilly);
-				addActiviteEconomique(e, sec1, dateDebut, null, false);
-				sec1.setRaisonSociale("Toto Prilly");      // même avec une raison sociale différente, comme c'est le seul établissement sur Prilly
+			final Etablissement sec1 = addEtablissement();
+			addDomicileEtablissement(sec1, dateDebut, null, MockCommune.Prilly);
+			addActiviteEconomique(e, sec1, dateDebut, null, false);
+			sec1.setRaisonSociale("Toto Prilly");      // même avec une raison sociale différente, comme c'est le seul établissement sur Prilly
 
-				final Etablissement sec2 = addEtablissement();
-				addDomicileEtablissement(sec2, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec2, dateDebut, null, false);
-				sec2.setRaisonSociale("Toto Lausanne");      // même avec une raison sociale différente, comme c'est le seul établissement sur Lausanne
+			final Etablissement sec2 = addEtablissement();
+			addDomicileEtablissement(sec2, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec2, dateDebut, null, false);
+			sec2.setRaisonSociale("Toto Lausanne");      // même avec une raison sociale différente, comme c'est le seul établissement sur Lausanne
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire1 = sec1.getNumero();
-				ids.idEtablissementSecondaire2 = sec2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire1 = sec1.getNumero();
+			ids1.idEtablissementSecondaire2 = sec2.getNumero();
+			return ids1;
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(2, candidats.size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(2, candidats.size());
 
-				final List<CandidatAppariement> candidatsTries = new ArrayList<>(candidats);
-				Collections.sort(candidatsTries, new Comparator<CandidatAppariement>() {
-					@Override
-					public int compare(CandidatAppariement o1, CandidatAppariement o2) {
-						return Long.compare(o1.getEtablissement().getNumero(), o2.getEtablissement().getNumero());
-					}
-				});
+			final List<CandidatAppariement> candidatsTries = new ArrayList<>(candidats);
+			Collections.sort(candidatsTries, new Comparator<CandidatAppariement>() {
+				@Override
+				public int compare(CandidatAppariement o1, CandidatAppariement o2) {
+					return Long.compare(o1.getEtablissement().getNumero(), o2.getEtablissement().getNumero());
+				}
+			});
 
-				{
-					final CandidatAppariement candidat = candidatsTries.get(0);
-					Assert.assertNotNull(candidat);
-					Assert.assertEquals(noCantonalEtablissementSecondaire2, candidat.getEtablissementCivil().getNumeroEtablissement());
-					Assert.assertEquals((Long) ids.idEtablissementSecondaire1, candidat.getEtablissement().getNumero());
-					Assert.assertEquals(CandidatAppariement.CritereDecisif.LOCALISATION, candidat.getCritere());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
-					Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), candidat.getOfsSiege());
-				}
-				{
-					final CandidatAppariement candidat = candidatsTries.get(1);
-					Assert.assertNotNull(candidat);
-					Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getEtablissementCivil().getNumeroEtablissement());
-					Assert.assertEquals((Long) ids.idEtablissementSecondaire2, candidat.getEtablissement().getNumero());
-					Assert.assertEquals(CandidatAppariement.CritereDecisif.LOCALISATION, candidat.getCritere());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
-				}
+			{
+				final CandidatAppariement candidat = candidatsTries.get(0);
+				Assert.assertNotNull(candidat);
+				Assert.assertEquals(noCantonalEtablissementSecondaire2, candidat.getEtablissementCivil().getNumeroEtablissement());
+				Assert.assertEquals((Long) ids.idEtablissementSecondaire1, candidat.getEtablissement().getNumero());
+				Assert.assertEquals(CandidatAppariement.CritereDecisif.LOCALISATION, candidat.getCritere());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), candidat.getOfsSiege());
 			}
+			{
+				final CandidatAppariement candidat = candidatsTries.get(1);
+				Assert.assertNotNull(candidat);
+				Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getEtablissementCivil().getNumeroEtablissement());
+				Assert.assertEquals((Long) ids.idEtablissementSecondaire2, candidat.getEtablissement().getNumero());
+				Assert.assertEquals(CandidatAppariement.CritereDecisif.LOCALISATION, candidat.getCritere());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -500,46 +474,41 @@ public class AppariementServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec1 = addEtablissement();
-				addDomicileEtablissement(sec1, dateDebut, null, MockCommune.Prilly);
-				addActiviteEconomique(e, sec1, dateDebut, null, false);
-				sec1.setRaisonSociale("Toto Prilly");
+			final Etablissement sec1 = addEtablissement();
+			addDomicileEtablissement(sec1, dateDebut, null, MockCommune.Prilly);
+			addActiviteEconomique(e, sec1, dateDebut, null, false);
+			sec1.setRaisonSociale("Toto Prilly");
 
-				final Etablissement sec2 = addEtablissement();
-				addDomicileEtablissement(sec2, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec2, dateDebut, null, false);
-				sec2.setRaisonSociale("Toto Lausanne 1");
+			final Etablissement sec2 = addEtablissement();
+			addDomicileEtablissement(sec2, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec2, dateDebut, null, false);
+			sec2.setRaisonSociale("Toto Lausanne 1");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire1 = sec1.getNumero();
-				ids.idEtablissementSecondaire2 = sec2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire1 = sec1.getNumero();
+			ids1.idEtablissementSecondaire2 = sec2.getNumero();
+			return ids1;
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(0, candidats.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(0, candidats.size());
+			return null;
 		});
 	}
 
@@ -581,40 +550,35 @@ public class AppariementServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Renens);     // on ne connait que Lausanne et Prilly dans le civil
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto Lausanne 1");
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Renens);     // on ne connait que Lausanne et Prilly dans le civil
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto Lausanne 1");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// calcul des candidats à l'appariement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
-				Assert.assertNotNull(candidats);
-				Assert.assertEquals(0, candidats.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+			Assert.assertNotNull(candidats);
+			Assert.assertEquals(0, candidats.size());
+			return null;
 		});
 	}
 }

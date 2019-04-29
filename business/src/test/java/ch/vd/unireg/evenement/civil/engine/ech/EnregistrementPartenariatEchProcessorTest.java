@@ -2,13 +2,12 @@ package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
@@ -50,43 +49,36 @@ public class EnregistrementPartenariatEchProcessorTest extends AbstractEvenement
 		});
 
 		// événement civil
-		final long eventId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(1235563456L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateEnregistrement);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noPrincipal);
-				evt.setType(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT);
-
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long eventId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(1235563456L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateEnregistrement);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noPrincipal);
+			evt.setType(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noPrincipal);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(eventId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(eventId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique principal = tiersService.getPersonnePhysiqueByNumeroIndividu(noPrincipal);
-				assertNotNull(principal);
+			final PersonnePhysique principal = tiersService.getPersonnePhysiqueByNumeroIndividu(noPrincipal);
+			assertNotNull(principal);
 
-				final PersonnePhysique conjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(noConjoint);
-				assertNotNull(conjoint);
+			final PersonnePhysique conjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(noConjoint);
+			assertNotNull(conjoint);
 
-				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(conjoint, dateEnregistrement);
-				assertNotNull(ensemble);
-				assertSame(principal, ensemble.getPrincipal());
-				assertSame(conjoint, ensemble.getConjoint());
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(conjoint, dateEnregistrement);
+			assertNotNull(ensemble);
+			assertSame(principal, ensemble.getPrincipal());
+			assertSame(conjoint, ensemble.getConjoint());
+			return null;
 		});
 	}
 }

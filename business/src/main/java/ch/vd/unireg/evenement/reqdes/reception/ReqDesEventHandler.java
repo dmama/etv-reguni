@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.SAXException;
 
@@ -206,50 +204,47 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
+		return template.execute(status -> {
 
-				// on crée d'abord l'événement lui-même
-				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, doublon, noAffaire, xmlContent);
+			// on crée d'abord l'événement lui-même
+			final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, doublon, noAffaire, xmlContent);
 
-				// toutes les autres entités seront créées avec un visa spécifique à l'événement
-				AuthenticationHelper.pushPrincipal(String.format("ReqDes-%d", evt.getId()));
-				try {
-					// les transactions immobilières (dans le même ordre que ce que donne le message entrant)
-					final List<TransactionImmobiliere> transImmobilieres = new ArrayList<>(transactions.size());
-					for (ReqDesTransactionImmobiliere t : transactions) {
-						transImmobilieres.add(buildTransactionImmobiliere(evt, t));
+			// toutes les autres entités seront créées avec un visa spécifique à l'événement
+			AuthenticationHelper.pushPrincipal(String.format("ReqDes-%d", evt.getId()));
+			try {
+				// les transactions immobilières (dans le même ordre que ce que donne le message entrant)
+				final List<TransactionImmobiliere> transImmobilieres = new ArrayList<>(transactions.size());
+				for (ReqDesTransactionImmobiliere t : transactions) {
+					transImmobilieres.add(buildTransactionImmobiliere(evt, t));
+				}
+
+				final Set<Long> ids = new HashSet<>(groupes.size());
+
+				// on peut maintenant créer les unités de traitement
+				for (List<ReqDesPartiePrenante> groupe : groupes) {
+					final UniteTraitement ut = buildUniteTraitement(evt);
+
+					// chaque unité de traitement correspond à une ou deux parties prenantes
+					final Map<Integer, PartiePrenante> partiesPrenantes = new HashMap<>(groupe.size());
+					for (ReqDesPartiePrenante src : groupe) {
+						final PartiePrenante pp = buildPartiePrenanteNue(ut, src);
+						ajouterRoles(pp, transImmobilieres, roles.get(src.getId()));
+						partiesPrenantes.put(src.getId(), pp);
 					}
 
-					final Set<Long> ids = new HashSet<>(groupes.size());
+					tisserLiensConjoint(groupe, partiesPrenantes);
 
-					// on peut maintenant créer les unités de traitement
-					for (List<ReqDesPartiePrenante> groupe : groupes) {
-						final UniteTraitement ut = buildUniteTraitement(evt);
-
-						// chaque unité de traitement correspond à une ou deux parties prenantes
-						final Map<Integer, PartiePrenante> partiesPrenantes = new HashMap<>(groupe.size());
-						for (ReqDesPartiePrenante src : groupe) {
-							final PartiePrenante pp = buildPartiePrenanteNue(ut, src);
-							ajouterRoles(pp, transImmobilieres, roles.get(src.getId()));
-							partiesPrenantes.put(src.getId(), pp);
-						}
-
-						tisserLiensConjoint(groupe, partiesPrenantes);
-
-						ut.setPartiesPrenantes(new HashSet<>(partiesPrenantes.values()));
-						ids.add(ut.getId());
-					}
-
-					// un petit flush de la session pour s'assurer que tout le monde est bien en base avant le reset de l'authentification
-					hibernateTemplate.flush();
-
-					return ids;
+					ut.setPartiesPrenantes(new HashSet<>(partiesPrenantes.values()));
+					ids.add(ut.getId());
 				}
-				finally {
-					AuthenticationHelper.popPrincipal();
-				}
+
+				// un petit flush de la session pour s'assurer que tout le monde est bien en base avant le reset de l'authentification
+				hibernateTemplate.flush();
+
+				return ids;
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
 			}
 		});
 	}

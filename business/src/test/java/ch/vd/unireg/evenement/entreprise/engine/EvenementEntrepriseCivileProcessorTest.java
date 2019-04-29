@@ -7,9 +7,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -120,12 +117,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				return addEntrepriseConnueAuCivil(noEntrepriseCivile);
-			}
-		});
+		doInNewTransactionAndSession(status -> addEntrepriseConnueAuCivil(noEntrepriseCivile));
 
 		// Mise en place Translator "espion"
 		SpyEvenementEntrepriseTranslatorImpl translator = new SpyEvenementEntrepriseTranslatorImpl();
@@ -156,12 +148,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
+		doInNewTransactionAndSession(status -> hibernateTemplate.merge(event).getId());
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
@@ -173,16 +160,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -199,12 +182,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			}
 		});
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Mise en place Translator "espion"
@@ -242,12 +222,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
+		doInNewTransactionAndSession(status -> hibernateTemplate.merge(event).getId());
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
@@ -260,22 +235,19 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(3) instanceof CappingAVerifier);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
-				                             Assert.assertNotNull(messages);
-				                             Assert.assertEquals(2, messages.size());
-				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA, IDE: CHE-999.999.996) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noEntrepriseCivile), messages.get(0).getMessage());
-				                             Assert.assertEquals("Evénement explicitement placé 'à vérifier' par configuration applicative.", messages.get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
+			Assert.assertNotNull(messages);
+			Assert.assertEquals(2, messages.size());
+			Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA, IDE: CHE-999.999.996) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noEntrepriseCivile),
+			                    messages.get(0).getMessage());
+			Assert.assertEquals("Evénement explicitement placé 'à vérifier' par configuration applicative.", messages.get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -292,12 +264,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			}
 		});
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Mise en place Translator "espion"
@@ -335,12 +304,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
+		doInNewTransactionAndSession(status -> hibernateTemplate.merge(event).getId());
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
@@ -353,22 +317,19 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(3) instanceof CappingEnErreur);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
-				                             Assert.assertNotNull(messages);
-				                             Assert.assertEquals(2, messages.size());
-				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA, IDE: CHE-999.999.996) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noEntrepriseCivile), messages.get(0).getMessage());
-				                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.", messages.get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
+			Assert.assertNotNull(messages);
+			Assert.assertEquals(2, messages.size());
+			Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA, IDE: CHE-999.999.996) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noEntrepriseCivile),
+			                    messages.get(0).getMessage());
+			Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.", messages.get(1).getMessage());
+			return null;
+		});
 	}
 
 	private List<EvenementEntrepriseInterne> getListeEvtInternesCrees(SpyEvenementEntrepriseTranslatorImpl translator) throws NoSuchFieldException,
@@ -399,12 +360,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			}
 		});
 
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Mise en place Translator "espion"
@@ -431,14 +389,11 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		buildProcessor(translator);
 
 		// Persistence événement
-		final long noEvenement = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				// Création de l'événement
-				final Long noEvenement = 12344321L;
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		final long noEvenement = doInNewTransactionAndSession(status -> {
+			// Création de l'événement
+			final Long no = 12344321L;
+			final EvenementEntreprise event = createEvent(no, noEntrepriseCivile, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
@@ -451,16 +406,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = evtEntrepriseDAO.get(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = evtEntrepriseDAO.get(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test
@@ -472,157 +423,152 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise eventCreation = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR);
-				EvenementEntreprise event = hibernateTemplate.merge(eventCreation);
-				event.setErreurs(new ArrayList<>());
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("Erreur 1");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("Erreur 2");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("Erreur 3");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise eventCreation = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR);
+			EvenementEntreprise event = hibernateTemplate.merge(eventCreation);
+			event.setErreurs(new ArrayList<>());
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("Erreur 1");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
 			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("Erreur 2");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("Erreur 3");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			;
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				EvenementEntreprise event = getUniqueEvent(noEvenement);
-				Assert.assertEquals(3, event.getErreurs().size());
+		doInNewTransactionAndSession(status -> {
+			EvenementEntreprise event = getUniqueEvent(noEvenement);
+			Assert.assertEquals(3, event.getErreurs().size());
 
-				event.getErreurs().clear();
+			event.getErreurs().clear();
 
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("4");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("5");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("6");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("7");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("8");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("9");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("10");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("11");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("12");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("13");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("14");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("15");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("16");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("17");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("18");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("19");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
-				{
-					final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
-					e.setMessage("20");
-					e.setType(TypeEvenementErreur.ERROR);
-					event.getErreurs().add(e);
-				}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("4");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
 			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("5");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("6");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("7");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("8");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("9");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("10");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("11");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("12");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("13");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("14");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("15");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("16");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("17");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("18");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("19");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			{
+				final EvenementEntrepriseErreur e = new EvenementEntrepriseErreur();
+				e.setMessage("20");
+				e.setType(TypeEvenementErreur.ERROR);
+				event.getErreurs().add(e);
+			}
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				EvenementEntreprise evenement = getUniqueEvent(noEvenement);
-				Assert.assertEquals(17, evenement.getErreurs().size());
-				StringBuilder orderSignature = new StringBuilder();
-				for (EvenementEntrepriseErreur err : evenement.getErreurs()) {
-					orderSignature.append(err.getMessage());
-				}
-				Assert.assertEquals("4567891011121314151617181920", orderSignature.toString());
+		doInNewTransactionAndSession(status -> {
+			EvenementEntreprise evenement = getUniqueEvent(noEvenement);
+			Assert.assertEquals(17, evenement.getErreurs().size());
+			StringBuilder orderSignature = new StringBuilder();
+			for (EvenementEntrepriseErreur err : evenement.getErreurs()) {
+				orderSignature.append(err.getMessage());
 			}
+			Assert.assertEquals("4567891011121314151617181920", orderSignature.toString());
+			return null;
 		});
 	}
 
@@ -647,29 +593,20 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création de l'entreprise
 		// mise en place des données fiscales
-		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissementId = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom + "Etab");
+			addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
+			return etablissement.getNumero();
 		});
-		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long noEntreprise = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
 
-				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
-
-				return entreprise.getNumero();
-			}
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -677,12 +614,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -728,16 +662,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -754,9 +684,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = noEntrepriseCivile + 1000001;
 
 		final MockEntrepriseCivile entreprise = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
-		                                                                                 dateRC,
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
+		                                                                               dateRC,
+		                                                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entreprise, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
 		                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
 		                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
@@ -770,45 +700,33 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création de l'entreprise
 		// mise en place des données fiscales
-		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom + "Etab");
-				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Lausanne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissementId = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom + "Etab");
+			addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Lausanne);
+			return etablissement.getNumero();
 		});
-		final long etablissement3Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom3 + "Etab");
-				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Aubonne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissement3Id = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom3 + "Etab");
+			addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Aubonne);
+			return etablissement.getNumero();
 		});
-		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long noEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise ent = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(ent, dateRC.getOneDayAfter(), null, nom);
+			addFormeJuridique(ent, dateRC.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
 
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC.getOneDayAfter(), null, nom);
-				addFormeJuridique(entreprise, dateRC.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
+			final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
+			tiersService.addActiviteEconomique(etablissement, ent, dateRC.getOneDayAfter(), true);
 
-				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateRC.getOneDayAfter(), true);
+			final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
+			tiersService.addActiviteEconomique(etablissement3, ent, dateRC.getOneDayAfter(), false);
 
-				final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
-				tiersService.addActiviteEconomique(etablissement3, entreprise, dateRC.getOneDayAfter(), false);
-
-				addRegimeFiscalVD(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateRC.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
-				return entreprise.getNumero();
-			}
+			addRegimeFiscalVD(ent, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(ent, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(ent, dateRC.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+			return ent.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -816,12 +734,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -862,26 +777,24 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
-					String.format("Entreprise civile n°%d rattachée à l'entreprise n°%s. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des établissements civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: n°%d",
-					              noEntrepriseCivile, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noEtablissement2), message);
+					String.format(
+							"Entreprise civile n°%d rattachée à l'entreprise n°%s. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des établissements civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: n°%d",
+							noEntrepriseCivile, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noEtablissement2), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(4) instanceof InformationComplementaire);
 		Assert.assertTrue(listEvtInterne.get(5) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             Assert.assertEquals("Refus de créer dans Unireg l'établissement n°102202101 (Synergy Renens SA, à Renens VD, IDE: CHE-999.999.997) dont la fondation / déménagement remonte à 24.06.2010, 1837 jours avant la date de l'événement. La tolérance étant de 15 jours. Il y a probablement une erreur d'identification ou un problème de date.",
-				                                                 evt.getErreurs().get(3).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(
+					"Refus de créer dans Unireg l'établissement n°102202101 (Synergy Renens SA, à Renens VD, IDE: CHE-999.999.997) dont la fondation / déménagement remonte à 24.06.2010, 1837 jours avant la date de l'événement. La tolérance étant de 15 jours. Il y a probablement une erreur d'identification ou un problème de date.",
+					evt.getErreurs().get(3).getMessage());
+			return null;
+		});
 	}
 
 	private String getMessageFromMessageSuiviPreExecution(MessageSuiviPreExecution msgSuivi) throws NoSuchFieldException, IllegalAccessException {
@@ -905,9 +818,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement2 = noEntrepriseCivile + 1000001;
 
 		final MockEntrepriseCivile entreprise = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
-		                                                                                 dateRC,
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
+		                                                                               dateRC,
+		                                                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, entreprise, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
 		                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
 		                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
@@ -921,58 +834,42 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création de l'entreprise
 		// mise en place des données fiscales
-		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom + "Etab");
-				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Lausanne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissementId = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom + "Etab");
+			addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Lausanne);
+			return etablissement.getNumero();
 		});
-		final long etablissement2Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom2 + "Etab");
-				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Renens);
-
-				return etablissement.getNumero();
-			}
+		final long etablissement2Id = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom2 + "Etab");
+			addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Renens);
+			return etablissement.getNumero();
 		});
-		final long etablissement3Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom3 + "Etab");
-				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Aubonne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissement3Id = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom3 + "Etab");
+			addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Aubonne);
+			return etablissement.getNumero();
 		});
-		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long noEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise ent = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(ent, dateRC.getOneDayAfter(), null, nom);
+			addFormeJuridique(ent, dateRC.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
 
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC.getOneDayAfter(), null, nom);
-				addFormeJuridique(entreprise, dateRC.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
+			final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
+			tiersService.addActiviteEconomique(etablissement, ent, dateRC.getOneDayAfter(), true);
 
-				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateRC.getOneDayAfter(), true);
+			final Etablissement etablissement2 = (Etablissement) tiersDAO.get(etablissement2Id);
+			tiersService.addActiviteEconomique(etablissement2, ent, dateRC.getOneDayAfter(), false);
 
-				final Etablissement etablissement2 = (Etablissement) tiersDAO.get(etablissement2Id);
-				tiersService.addActiviteEconomique(etablissement2, entreprise, dateRC.getOneDayAfter(), false);
+			final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
+			tiersService.addActiviteEconomique(etablissement3, ent, dateRC.getOneDayAfter(), false);
 
-				final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
-				tiersService.addActiviteEconomique(etablissement3, entreprise, dateRC.getOneDayAfter(), false);
-
-				addRegimeFiscalVD(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateRC.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
-				return entreprise.getNumero();
-			}
+			addRegimeFiscalVD(ent, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(ent, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(ent, dateRC.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+			return ent.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -980,12 +877,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1033,16 +927,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(5) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1071,30 +961,21 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création de l'entreprise
 		// mise en place des données fiscales
-		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom + "Etab");
-				etablissement.setNumeroEtablissement(noEtablissement);
-				addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissementId = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom + "Etab");
+			etablissement.setNumeroEtablissement(noEtablissement);
+			addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
+			return etablissement.getNumero();
 		});
-		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long noEntreprise = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
 
-				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
-
-				return entreprise.getNumero();
-			}
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -1102,12 +983,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivileDoublon, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivileDoublon, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1142,20 +1020,18 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
 			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%s identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996], mais déjà rattachée à l'entreprise civile n°101202100 (%s, IDE: CHE-999.999.996). Potentiel doublon au civil. Traitement manuel.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
+			Assert.assertEquals(String.format(
+					"Entreprise n°%s identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996], mais déjà rattachée à l'entreprise civile n°101202100 (%s, IDE: CHE-999.999.996). Potentiel doublon au civil. Traitement manuel.",
+					FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1181,24 +1057,16 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création des entreprises
 
-		long noEntrerpise1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC, null, "Synergy truc bidule");
-				return entreprise.getNumero();
-			}
+		long noEntrerpise1 = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateRC, null, "Synergy truc bidule");
+			return entreprise.getNumero();
 		});
 
-		long noEntrerpise2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC, null, "Synergy machin chose");
-				return entreprise.getNumero();
-			}
+		long noEntrerpise2 = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateRC, null, "Synergy machin chose");
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -1206,12 +1074,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1250,16 +1115,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		                    message);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1283,24 +1144,16 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création des entreprises
 
-		long noEntrerpise1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Syntétiques Sarl");
-				return entreprise.getNumero();
-			}
+		long noEntrerpise1 = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Syntétiques Sarl");
+			return entreprise.getNumero();
 		});
 
-		long noEntrerpise2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergios S.A.");
-				return entreprise.getNumero();
-			}
+		long noEntrerpise2 = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergios S.A.");
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -1308,12 +1161,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2105, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2105, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1352,16 +1202,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		                    message);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+			return null;
+		});
 	}
 
 	private String getMessageFromTraitementManuel(TraitementManuel msg) throws NoSuchFieldException, IllegalAccessException {
@@ -1391,24 +1237,16 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création des entreprises
 
-		long noEntrerpise1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy truc bidule");
-				return entreprise.getNumero();
-			}
+		long noEntrerpise1 = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy truc bidule");
+			return entreprise.getNumero();
 		});
 
-		long noEntrerpise2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy machin chose");
-				return entreprise.getNumero();
-			}
+		long noEntrerpise2 = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy machin chose");
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -1416,12 +1254,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1460,16 +1295,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		                    message);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1493,29 +1324,20 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 
 		// Création de l'entreprise
 		// mise en place des données fiscales
-		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nom + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
-
-				return etablissement.getNumero();
-			}
+		final long etablissementId = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom + "Etab");
+			addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
+			return etablissement.getNumero();
 		});
-		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long noEntreprise = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
 
-				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.EI);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
-
-				return entreprise.getNumero();
-			}
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.EI);
+			tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -1523,12 +1345,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1574,16 +1393,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		}
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1600,12 +1415,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			}
 		});
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Mise en place Translator "espion"
@@ -1637,12 +1449,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final EvenementEntreprise event2 = createEvent(2L, noEntrepriseCivile, FOSC_AUTRE_MUTATION, date(2015, 8, 10), A_TRAITER);
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				hibernateTemplate.merge(event1);
-				return hibernateTemplate.merge(event2).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			hibernateTemplate.merge(event1);
+			return hibernateTemplate.merge(event2).getId();
 		});
 
 		// Traitement synchrone de l'événement
@@ -1653,27 +1462,23 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertEquals(3, listEvtInterne.size());
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(2L);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(2L);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
-				                             Assert.assertNotNull(messages);
-				                             Assert.assertEquals(1, messages.size());
-				                             Assert.assertEquals(
-						                             String.format(
-								                             "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'entreprise civile %d possède une date de valeur antérieure à la date portée par un autre événement reçu avant. " +
-										                             "Traitement automatique impossible.",
-								                             2L, RegDateHelper.dateToDisplayString(date(2015, 8, 10)), noEntrepriseCivile
-						                             ),
-						                             messages.get(0).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
+			Assert.assertNotNull(messages);
+			Assert.assertEquals(1, messages.size());
+			Assert.assertEquals(
+					String.format(
+							"Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'entreprise civile %d possède une date de valeur antérieure à la date portée par un autre événement reçu avant. " +
+									"Traitement automatique impossible.",
+							2L, RegDateHelper.dateToDisplayString(date(2015, 8, 10)), noEntrepriseCivile
+					),
+					messages.get(0).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1690,12 +1495,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 			}
 		});
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Mise en place Translator "espion"
@@ -1729,12 +1531,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		event2.setCorrectionDansLePasse(true);
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				hibernateTemplate.merge(event1);
-				return hibernateTemplate.merge(event2).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			hibernateTemplate.merge(event1);
+			return hibernateTemplate.merge(event2).getId();
 		});
 
 		// Traitement synchrone de l'événement
@@ -1745,27 +1544,23 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertEquals(3, listEvtInterne.size());
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
-				                             Assert.assertNotNull(messages);
-				                             Assert.assertEquals(1, messages.size());
-				                             Assert.assertEquals(
-						                             String.format(
-								                             "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'entreprise civile %d est marqué comme événement de correction dans le passé. " +
-										                             "Traitement automatique impossible.",
-								                             noEvenement, RegDateHelper.dateToDisplayString(date(2015, 6, 18)), noEntrepriseCivile
-								                             ),
-						                             messages.get(0).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			final List<EvenementEntrepriseErreur> messages = evt.getErreurs();
+			Assert.assertNotNull(messages);
+			Assert.assertEquals(1, messages.size());
+			Assert.assertEquals(
+					String.format(
+							"Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'entreprise civile %d est marqué comme événement de correction dans le passé. " +
+									"Traitement automatique impossible.",
+							noEvenement, RegDateHelper.dateToDisplayString(date(2015, 6, 18)), noEntrepriseCivile
+					),
+					messages.get(0).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1778,8 +1573,8 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
 		final MockEntrepriseCivile entreprise = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
-		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
-		                                                                                 null, null, null, null);
+		                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
+		                                                                               null, null, null, null);
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
@@ -1794,12 +1589,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1847,16 +1639,12 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -1869,8 +1657,8 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
 		final MockEntrepriseCivile entreprise = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateDebut, null, null,
-		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
-		                                                                                 null, null, null, null);
+		                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
+		                                                                               null, null, null, null);
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
@@ -1885,12 +1673,9 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, date(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Mise en place Translator "espion"
@@ -1938,15 +1723,11 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+			return null;
+		});
 	}
 }

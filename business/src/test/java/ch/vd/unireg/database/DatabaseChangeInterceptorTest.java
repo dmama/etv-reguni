@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -101,24 +98,18 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	@Test
 	public void testDetectTiersChange() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		eventService.clear();
 
 		// on change le nom
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
-				pp.setNom("Weiss");
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
+			pp.setNom("Weiss");
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur le tiers a bien provoqué l'envoi d'une notification
@@ -135,29 +126,23 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2005);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				ids.tiers = pp.getId();
-				ids.di = di.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2005);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			ids.tiers = pp.getId();
+			ids.di = di.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur la déclaration
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
-				di.setDateFin(date(2005, 6, 30));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+			di.setDateFin(date(2005, 6, 30));
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur la déclaration a bien provoqué l'envoi d'une notification
@@ -174,27 +159,21 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final ForFiscalPrincipal ff = addForPrincipal(pp, date(2002, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				ids.tiers = pp.getId();
-				ids.ff = ff.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final ForFiscalPrincipal ff = addForPrincipal(pp, date(2002, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			ids.tiers = pp.getId();
+			ids.ff = ff.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur le for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final ForFiscalPrincipal ff = hibernateTemplate.get(ForFiscalPrincipal.class, ids.ff);
-				ff.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final ForFiscalPrincipal ff = hibernateTemplate.get(ForFiscalPrincipal.class, ids.ff);
+			ff.setAnnule(true);
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur le for fiscal a bien provoqué l'envoi d'une notification
@@ -211,27 +190,21 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2005, 1, 1), null, MockRue.Chamblon.RueDesUttins);
-				ids.tiers = pp.getId();
-				ids.adresse = adresse.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2005, 1, 1), null, MockRue.Chamblon.RueDesUttins);
+			ids.tiers = pp.getId();
+			ids.adresse = adresse.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur l'adresse
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final AdresseSuisse adresse = hibernateTemplate.get(AdresseSuisse.class, ids.adresse);
-				adresse.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final AdresseSuisse adresse = hibernateTemplate.get(AdresseSuisse.class, ids.adresse);
+			adresse.setAnnule(true);
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur l'adresse a bien provoqué l'envoi d'une notification
@@ -249,29 +222,23 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
-				final Tutelle tutelle = addTutelle(pupille, tuteur, null, date(2005, 1, 1), null);
-				ids.pupille = pupille.getId();
-				ids.tuteur = tuteur.getId();
-				ids.tutelle = tutelle.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
+			final Tutelle tutelle = addTutelle(pupille, tuteur, null, date(2005, 1, 1), null);
+			ids.pupille = pupille.getId();
+			ids.tuteur = tuteur.getId();
+			ids.tutelle = tutelle.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur le rapport-entre-tiers
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Tutelle tutelle = hibernateTemplate.get(Tutelle.class, ids.tutelle);
-				tutelle.setDateDebut(date(2005, 7, 1));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tutelle tutelle = hibernateTemplate.get(Tutelle.class, ids.tutelle);
+			tutelle.setDateDebut(date(2005, 7, 1));
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur le rapport-entre-tiers a bien provoqué l'envoi d'une notification sur chacun des tiers
@@ -293,29 +260,23 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
-				final Tutelle tutelle = addTutelle(pupille, tuteur, null, date(2005, 1, 1), null);
-				ids.pupille = pupille.getId();
-				ids.tuteur = tuteur.getId();
-				ids.tutelle = tutelle.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pupille = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final PersonnePhysique tuteur = addNonHabitant("Roger", "Moore", date(1954, 3, 23), Sexe.MASCULIN);
+			final Tutelle tutelle = addTutelle(pupille, tuteur, null, date(2005, 1, 1), null);
+			ids.pupille = pupille.getId();
+			ids.tuteur = tuteur.getId();
+			ids.tutelle = tutelle.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur le rapport-entre-tiers
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Tutelle tutelle = hibernateTemplate.get(Tutelle.class, ids.tutelle);
-				tutelle.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tutelle tutelle = hibernateTemplate.get(Tutelle.class, ids.tutelle);
+			tutelle.setAnnule(true);
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur le rapport-entre-tiers a bien provoqué l'envoi d'une notification sur chacun des tiers
@@ -333,27 +294,21 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final SituationFamille situation = addSituation(pp, date(2005, 1, 1), null, 2);
-				ids.tiers = pp.getId();
-				ids.situation = situation.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final SituationFamille situation = addSituation(pp, date(2005, 1, 1), null, 2);
+			ids.tiers = pp.getId();
+			ids.situation = situation.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur la situation de famille
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final SituationFamille situation = hibernateTemplate.get(SituationFamille.class, ids.situation);
-				situation.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final SituationFamille situation = hibernateTemplate.get(SituationFamille.class, ids.situation);
+			situation.setAnnule(true);
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur la situation de famille a bien provoqué l'envoi d'une notification
@@ -370,27 +325,21 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
-				final IdentificationPersonne ident = addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, "123456789");
-				ids.tiers = pp.getId();
-				ids.ident = ident.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Schwarz", date(1954, 3, 23), Sexe.MASCULIN);
+			final IdentificationPersonne ident = addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, "123456789");
+			ids.tiers = pp.getId();
+			ids.ident = ident.getId();
+			return null;
 		});
 
 		eventService.clear();
 
 		// on effectue une modification sur la situation de famille
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final IdentificationPersonne ident = hibernateTemplate.get(IdentificationPersonne.class, ids.ident);
-				ident.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final IdentificationPersonne ident = hibernateTemplate.get(IdentificationPersonne.class, ids.ident);
+			ident.setAnnule(true);
+			return null;
 		});
 
 		// on vérifie que le changement effectué sur la situation de famille a bien provoqué l'envoi d'une notification
@@ -1321,18 +1270,16 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedTiers);
 
 		// on modifie le tiers sur le rapprochement (= superGRA)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final RapprochementRF rapprochementRF = hibernateTemplate.get(RapprochementRF.class, ids.rapprochement);
-				assertNotNull(rapprochementRF);
-				assertEquals((Long) ids.previousTiers, rapprochementRF.getContribuable().getNumero());
+		doInNewTransactionAndSession(status -> {
+			final RapprochementRF rapprochementRF = hibernateTemplate.get(RapprochementRF.class, ids.rapprochement);
+			assertNotNull(rapprochementRF);
+			assertEquals((Long) ids.previousTiers, rapprochementRF.getContribuable().getNumero());
 
-				// changement
-				final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
-				assertNotNull(newTiers);
-				rapprochementRF.setContribuable(newTiers);
-			}
+			// changement
+			final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
+			assertNotNull(newTiers);
+			rapprochementRF.setContribuable(newTiers);
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement de tiers sur les deux tiers
@@ -1379,18 +1326,16 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedCommunautes);
 
 		// on modifie le tiers sur le rapprochement (= superGRA)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final RapprochementRF rapprochementRF = hibernateTemplate.get(RapprochementRF.class, ids.rapprochement);
-				assertNotNull(rapprochementRF);
-				assertEquals((Long) ids.previousTiers, rapprochementRF.getContribuable().getNumero());
+		doInNewTransactionAndSession(status -> {
+			final RapprochementRF rapprochementRF = hibernateTemplate.get(RapprochementRF.class, ids.rapprochement);
+			assertNotNull(rapprochementRF);
+			assertEquals((Long) ids.previousTiers, rapprochementRF.getContribuable().getNumero());
 
-				// changement
-				final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
-				assertNotNull(newTiers);
-				rapprochementRF.setContribuable(newTiers);
-			}
+			// changement
+			final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
+			assertNotNull(newTiers);
+			rapprochementRF.setContribuable(newTiers);
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
@@ -1465,19 +1410,17 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedCommunautes);
 
 		// on annule un des droits existants et on met-à-jour le regroupement sans toucher à la communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
-				assertNotNull(communaute);
+		doInNewTransactionAndSession(status -> {
+			final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+			assertNotNull(communaute);
 
-				final RegroupementCommunauteRF regroupement = communaute.getRegroupements().iterator().next();
-				assertNotNull(regroupement);
-				final ModeleCommunauteRF modele2 = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele2);
-				assertNotNull(modele2);
+			final RegroupementCommunauteRF regroupement = communaute.getRegroupements().iterator().next();
+			assertNotNull(regroupement);
+			final ModeleCommunauteRF modele2 = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele2);
+			assertNotNull(modele2);
 
-				regroupement.setModele(modele2);
-			}
+			regroupement.setModele(modele2);
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
@@ -1555,17 +1498,15 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedCommunautes);
 
 		// on modifie le modèle de communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final ModeleCommunauteRF modele = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele);
-				assertNotNull(modele);
+		doInNewTransactionAndSession(status -> {
+			final ModeleCommunauteRF modele = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele);
+			assertNotNull(modele);
 
-				final PersonnePhysiqueRF pp3 = hibernateTemplate.get(PersonnePhysiqueRF.class, ids.pp3);
-				assertNotNull(pp3);
-				modele.addMembre(pp3);
-				modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
-			}
+			final PersonnePhysiqueRF pp3 = hibernateTemplate.get(PersonnePhysiqueRF.class, ids.pp3);
+			assertNotNull(pp3);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
@@ -1642,15 +1583,13 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedCommunautes);
 
 		// on annule le principal sur le modèle de communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final ModeleCommunauteRF modele = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele);
-				assertNotNull(modele);
+		doInNewTransactionAndSession(status -> {
+			final ModeleCommunauteRF modele = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele);
+			assertNotNull(modele);
 
-				final PrincipalCommunauteRF principal = modele.getPrincipaux().iterator().next();
-				principal.setAnnule(true);
-			}
+			final PrincipalCommunauteRF principal = modele.getPrincipaux().iterator().next();
+			principal.setAnnule(true);
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
@@ -1738,14 +1677,11 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedCommunautes);
 
 		// on ajoute un héritier sur le tiers numéro 1
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-
-				final PersonnePhysique pp1 = hibernateTemplate.get(PersonnePhysique.class, ids.pp1);
-				final PersonnePhysique pp4 = addNonHabitant("Jojo", "Linconnu", date(1992, 1, 26), Sexe.MASCULIN);
-				addHeritage(pp4, pp1, date(2017,1,1), null, true);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp1 = hibernateTemplate.get(PersonnePhysique.class, ids.pp1);
+			final PersonnePhysique pp4 = addNonHabitant("Jojo", "Linconnu", date(1992, 1, 26), Sexe.MASCULIN);
+			addHeritage(pp4, pp1, date(2017, 1, 1), null, true);
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté Rf du défunt
@@ -1799,17 +1735,14 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedTiers);
 
 		// on met une date de fin sur le bénéfice du tiers 1
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-
-				final UsufruitRF usufruitRF = hibernateTemplate.get(UsufruitRF.class, ids.usufruit);
-				final BeneficeServitudeRF benefice0 = usufruitRF.getBenefices().stream()
-						.filter(b -> b.getAyantDroit().getId().equals(ids.ppRF1))
-						.findFirst()
-						.orElseThrow(IllegalArgumentException::new);
-				benefice0.setDateFin(RegDate.get(2010,12,31));
-			}
+		doInNewTransactionAndSession(status -> {
+			final UsufruitRF usufruitRF = hibernateTemplate.get(UsufruitRF.class, ids.usufruit);
+			final BeneficeServitudeRF benefice0 = usufruitRF.getBenefices().stream()
+					.filter(b -> b.getAyantDroit().getId().equals(ids.ppRF1))
+					.findFirst()
+					.orElseThrow(IllegalArgumentException::new);
+			benefice0.setDateFin(RegDate.get(2010, 12, 31));
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement sur les deux tiers
@@ -1865,14 +1798,11 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEmpty(eventService.changedTiers);
 
 		// on met une date de fin sur une des charges
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-
-				final UsufruitRF usufruitRF = hibernateTemplate.get(UsufruitRF.class, ids.usufruit);
-				final ChargeServitudeRF charge0 = usufruitRF.getCharges().iterator().next();
-				charge0.setDateFin(RegDate.get(2010,12,31));
-			}
+		doInNewTransactionAndSession(status -> {
+			final UsufruitRF usufruitRF = hibernateTemplate.get(UsufruitRF.class, ids.usufruit);
+			final ChargeServitudeRF charge0 = usufruitRF.getCharges().iterator().next();
+			charge0.setDateFin(RegDate.get(2010, 12, 31));
+			return null;
 		});
 
 		// on vérifie l'envoi de notification de changement sur les deux tiers

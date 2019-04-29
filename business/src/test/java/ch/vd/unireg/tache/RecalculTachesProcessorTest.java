@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -100,24 +99,18 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+			return pp.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI n'est pas là...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup)
@@ -142,19 +135,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -181,29 +171,23 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI n'est pas là...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup)
@@ -228,19 +212,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -267,29 +248,23 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de questionnaire n'est pas là...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup)
@@ -314,21 +289,18 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de questionnaire SNC est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 	}
 
@@ -347,56 +319,44 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+			return pp.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien toujours là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup)
@@ -413,19 +373,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -452,61 +409,49 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+			final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien toujours là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup)
@@ -523,19 +468,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -562,63 +504,51 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de questionnaire SNC est bien là
 		// (parce que l'intercepteur était enclenché ici)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+			final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de questionnaire est bien toujours là, non-annulée
 		// (parce que l'intercepteur n'est pas enclenché !!)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup)
@@ -635,21 +565,18 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 	}
 
@@ -668,56 +595,44 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+			return pp.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien toujours là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode full)
@@ -734,19 +649,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -773,61 +685,49 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+			final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien toujours là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode full)
@@ -844,19 +744,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -883,67 +780,55 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi est bien là
 		// (parce que l'intercepteur était enclenché)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+			final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi est bien toujours là, non-annulée
 		// (parce que l'intercepteur n'était pas enclenché)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 
 		// utilisation du processeur (mode full)
@@ -960,21 +845,18 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 	}
 
@@ -993,46 +875,37 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+			return pp.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là -> on l'annule
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				tache.setAnnule(true);
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			tache.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup) : rien ne doit être traité car toutes les tâches du contribuable sont annulées
@@ -1067,51 +940,42 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là -> on l'annule
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				tache.setAnnule(true);
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			tache.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup) : rien ne doit être traité car toutes les tâches du contribuable sont annulées
@@ -1146,55 +1010,46 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi est bien là -> on l'annule
 		// (elle a été créée car l'intecepteur était enclenché)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				tache.setAnnule(true);
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			tache.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi est bien annulée
 		// (l'intercepteur n'a rien modifié, vu qu'il n'était pas enclenché)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode cleanup) : rien ne doit être traité car toutes les tâches du contribuable sont annulées
@@ -1229,61 +1084,49 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+			final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien toujours là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode full)
@@ -1295,19 +1138,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est toujours identique
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -1326,56 +1166,44 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final PersonnePhysique pp = addNonHabitant("Guillaume", "Le Conquérant", date(1966, 4, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+			return pp.getNumero();
 		});
 
 		// vérification que la tâche d'envoi de DI est bien là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi de DI est bien toujours là
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 
 		// utilisation du processeur (mode full)
@@ -1387,19 +1215,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI n'a pas bougé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ppId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ppId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			return null;
 		});
 	}
 
@@ -1432,70 +1257,59 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale en générant la tâche qui va bien
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
-				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
-				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+			addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+			addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+			addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE,
+			                GenreImpot.REVENU_FORTUNE);
 
-				final PeriodeFiscale pfAvant = periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
-				addQuestionnaireSNC(e, pfAvant);
-				return e.getNumero();
-			}
+			final PeriodeFiscale pfAvant = periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
+			addQuestionnaireSNC(e, pfAvant);
+			return e.getNumero();
 		});
 
 		// vérification que la tâche d'envoi est bien là
 		// (parce que l'intercepteur était enclenché)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());         // tâche d'émission, pas de tâche d'annulation
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());         // tâche d'émission, pas de tâche d'annulation
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 
 		// annulation du for fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+			final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// vérification que la tâche d'envoi est bien toujours là, non-annulée
 		// (parce que l'intercepteur n'était pas enclenché)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertFalse(tache.isAnnule());
-				assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertFalse(tache.isAnnule());
+			assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 
 		// utilisation du processeur (mode full)
@@ -1512,21 +1326,18 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(pmId);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(pmId);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				assertTrue(tache.isAnnule());
-				assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
-				assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			assertTrue(tache.isAnnule());
+			assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+			assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+			return null;
 		});
 
 

@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationService;
@@ -178,48 +176,45 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique ppRentierOrdinaire = addHabitant(noIndividuRentierOrdinaire);
-				addForPrincipal(ppRentierOrdinaire, dateNaissanceRentierM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppRentierOrdinaire = addHabitant(noIndividuRentierOrdinaire);
+			addForPrincipal(ppRentierOrdinaire, dateNaissanceRentierM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				final PersonnePhysique ppRentierSource = addHabitant(noIndividuRentierSource);
-				addForPrincipal(ppRentierSource, dateNaissanceRentierM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
-				ppRentierSource.setDateNaissance(dateNaissanceRentierM);
+			final PersonnePhysique ppRentierSource = addHabitant(noIndividuRentierSource);
+			addForPrincipal(ppRentierSource, dateNaissanceRentierM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
+			ppRentierSource.setDateNaissance(dateNaissanceRentierM);
 
-				final PersonnePhysique ppRentierSourceDejaTraite = addHabitant(noIndividuRentierSourceDejaTraite);
-				addForPrincipal(ppRentierSourceDejaTraite, dateNaissanceRentierM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
-				ppRentierSourceDejaTraite.setRentierSourcierPasseAuRole(Boolean.TRUE);
-				ppRentierSourceDejaTraite.setDateNaissance(dateNaissanceRentierM);
+			final PersonnePhysique ppRentierSourceDejaTraite = addHabitant(noIndividuRentierSourceDejaTraite);
+			addForPrincipal(ppRentierSourceDejaTraite, dateNaissanceRentierM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
+			ppRentierSourceDejaTraite.setRentierSourcierPasseAuRole(Boolean.TRUE);
+			ppRentierSourceDejaTraite.setDateNaissance(dateNaissanceRentierM);
 
-				final PersonnePhysique ppActifOrdinaire = addHabitant(noIndividuActifOrdinaire);
-				addForPrincipal(ppActifOrdinaire, dateNaissanceActifM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+			final PersonnePhysique ppActifOrdinaire = addHabitant(noIndividuActifOrdinaire);
+			addForPrincipal(ppActifOrdinaire, dateNaissanceActifM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				final PersonnePhysique ppActifSource = addHabitant(noIndividuActifSource);
-				addForPrincipal(ppActifSource, dateNaissanceActifM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
-				ppActifSource.setDateNaissance(dateNaissanceActifM);
+			final PersonnePhysique ppActifSource = addHabitant(noIndividuActifSource);
+			addForPrincipal(ppActifSource, dateNaissanceActifM.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
+			ppActifSource.setDateNaissance(dateNaissanceActifM);
 
-				final PersonnePhysique ppMarieRentierSource = addHabitant(noIndividuMarieRentierSource);
-				ppMarieRentierSource.setDateNaissance(dateNaissanceRentierM);
-				final EnsembleTiersCouple coupleRentierSource = addEnsembleTiersCouple(ppMarieRentierSource, null, dateMariage, null);
-				addForPrincipal(coupleRentierSource.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+			final PersonnePhysique ppMarieRentierSource = addHabitant(noIndividuMarieRentierSource);
+			ppMarieRentierSource.setDateNaissance(dateNaissanceRentierM);
+			final EnsembleTiersCouple coupleRentierSource = addEnsembleTiersCouple(ppMarieRentierSource, null, dateMariage, null);
+			addForPrincipal(coupleRentierSource.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 
-				final PersonnePhysique ppMarieActifSource = addHabitant(noIndividuMarieActifSource);
-				ppMarieActifSource.setDateNaissance(dateNaissanceActifM);
-				final EnsembleTiersCouple coupleActifSource = addEnsembleTiersCouple(ppMarieActifSource, null, dateMariage, null);
-				addForPrincipal(coupleActifSource.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+			final PersonnePhysique ppMarieActifSource = addHabitant(noIndividuMarieActifSource);
+			ppMarieActifSource.setDateNaissance(dateNaissanceActifM);
+			final EnsembleTiersCouple coupleActifSource = addEnsembleTiersCouple(ppMarieActifSource, null, dateMariage, null);
+			addForPrincipal(coupleActifSource.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 
-				final Ids ids = new Ids();
-				ids.ppRentierOrdinaire = ppRentierOrdinaire.getNumero();
-				ids.ppRentierSource = ppRentierSource.getNumero();
-				ids.ppRentierSourceDejaTraite = ppRentierSourceDejaTraite.getNumero();
-				ids.ppActifOrdinaire = ppActifOrdinaire.getNumero();
-				ids.ppActifSource = ppActifSource.getNumero();
-				ids.ppMarieRentierSource = ppMarieRentierSource.getNumero();
-				ids.ppMarieActifSource = ppMarieActifSource.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppRentierOrdinaire = ppRentierOrdinaire.getNumero();
+			ids1.ppRentierSource = ppRentierSource.getNumero();
+			ids1.ppRentierSourceDejaTraite = ppRentierSourceDejaTraite.getNumero();
+			ids1.ppActifOrdinaire = ppActifOrdinaire.getNumero();
+			ids1.ppActifSource = ppActifSource.getNumero();
+			ids1.ppMarieRentierSource = ppMarieRentierSource.getNumero();
+			ids1.ppMarieActifSource = ppMarieActifSource.getNumero();
+			return ids1;
 		});
 
 		final List<Long> candidats = processor.getListPotentielsNouveauxRentiersSourciers(dateReference);
@@ -251,13 +246,10 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 		});
 
 		// mise en place fiscale avant le premier passage
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Echallens, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Echallens, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// première passe : on verifie qu'un nouveau for a bien été créé en mixte
@@ -277,54 +269,45 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 			Assert.assertEquals(dateNaissance.addYears(getAgeRentierFemme(paramAppService)), converti.dateOuverture);
 
 			// vérification des fors
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-					Assert.assertNotNull(pp);
-					Assert.assertTrue(pp.getRentierSourcierPasseAuRole());
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.getRentierSourcierPasseAuRole());
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-					Assert.assertNotNull(ffp);
-					Assert.assertEquals(dateNaissance.addYears(getAgeRentierFemme(paramAppService)), ffp.getDateDebut());
-					Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, ffp.getMotifOuverture());
-					Assert.assertNull(ffp.getDateFin());
-					Assert.assertNull(ffp.getMotifFermeture());
-					Assert.assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
-					return null;
-				}
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateNaissance.addYears(getAgeRentierFemme(paramAppService)), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+				return null;
 			});
 		}
 
 		// maintenant, on va annuler le for créé (dans l'idée qu'un second passage du batch ne devrait pas le re-créer)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp);
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			tiersService.annuleForFiscal(ffp);
+			return null;
 		});
 
 		// vérification du for actif
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
 
-				final ForFiscalPrincipalPP newFfp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(newFfp);
-				Assert.assertEquals(dateNaissance.addYears(18), newFfp.getDateDebut());
-				Assert.assertEquals(MotifFor.MAJORITE, newFfp.getMotifOuverture());
-				Assert.assertNull(newFfp.getDateFin());
-				Assert.assertNull(newFfp.getMotifFermeture());
-				Assert.assertEquals(ModeImposition.SOURCE, newFfp.getModeImposition());
-				return null;
-			}
+			final ForFiscalPrincipalPP newFfp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(newFfp);
+			Assert.assertEquals(dateNaissance.addYears(18), newFfp.getDateDebut());
+			Assert.assertEquals(MotifFor.MAJORITE, newFfp.getMotifOuverture());
+			Assert.assertNull(newFfp.getDateFin());
+			Assert.assertNull(newFfp.getMotifFermeture());
+			Assert.assertEquals(ModeImposition.SOURCE, newFfp.getModeImposition());
+			return null;
 		});
 
 		{
@@ -338,22 +321,19 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 			Assert.assertEquals(0, res.sourciersConvertis.size());
 
 			// vérification des fors
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-					Assert.assertNotNull(pp);
-					Assert.assertTrue(pp.getRentierSourcierPasseAuRole());
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertTrue(pp.getRentierSourcierPasseAuRole());
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-					Assert.assertNotNull(ffp);
-					Assert.assertEquals(dateNaissance.addYears(18), ffp.getDateDebut());
-					Assert.assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
-					Assert.assertNull(ffp.getDateFin());
-					Assert.assertNull(ffp.getMotifFermeture());
-					Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
-					return null;
-				}
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateNaissance.addYears(18), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				return null;
 			});
 		}
 	}

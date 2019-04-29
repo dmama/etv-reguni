@@ -19,8 +19,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.BatchIterator;
@@ -182,29 +180,26 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		final boolean enabled = parent.isEnabledForThread();
 		parent.setEnabledForThread(false);
 		try {
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final Session session = sessionFactory.openSession();
-					try {
-						final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
+			template.execute(status -> {
+				final Session session = sessionFactory.openSession();
+				try {
+					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
 
-						final BatchIterator<Long> batchIterator = new StandardBatchIterator<>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
-						while (batchIterator.hasNext()) {
-							final Collection<Long> subSet = batchIterator.next();
-							if (subSet != null && !subSet.isEmpty()) {
-								query.setParameterList("ids", subSet);
-								query.executeUpdate();
-							}
+					final BatchIterator<Long> batchIterator = new StandardBatchIterator<>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
+					while (batchIterator.hasNext()) {
+						final Collection<Long> subSet = batchIterator.next();
+						if (subSet != null && !subSet.isEmpty()) {
+							query.setParameterList("ids", subSet);
+							query.executeUpdate();
 						}
+					}
 
-						session.flush();
-					}
-					finally {
-						session.close();
-					}
-					return null;
+					session.flush();
 				}
+				finally {
+					session.close();
+				}
+				return null;
 			});
 		}
 		finally {

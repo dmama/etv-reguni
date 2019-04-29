@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
@@ -49,13 +47,10 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateMajorite, MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateMajorite, MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -83,32 +78,26 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// création de l'événement civil
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(11824L);
-				evt.setType(TypeEvenementCivilEch.CONTACT);
-				evt.setAction(action);
-				evt.setDateEvenement(dateEvt);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(11824L);
+			evt.setType(TypeEvenementCivilEch.CONTACT);
+			evt.setAction(action);
+			evt.setDateEvenement(dateEvt);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividu);
 
 		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			return null;
 		});
 
 		// attente de fin d'indexation

@@ -15,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -95,16 +93,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise nestle = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				final Entreprise bcv = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				final Ids ids = new Ids();
-				ids.idBcv = bcv.getNumero();
-				ids.idNestle = nestle.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise nestle = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			final Entreprise bcv = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			final Ids ids1 = new Ids();
+			ids1.idBcv = bcv.getNumero();
+			ids1.idNestle = nestle.getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -178,23 +173,20 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(1998, 7, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, date(1998, 7, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(1997, 5, 14), MotifFor.ARRIVEE_HS, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			addForPrincipal(elle, date(1997, 5, 14), MotifFor.ARRIVEE_HS, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
 
-				final Ids ids = new Ids();
-				ids.idlui = lui.getNumero();
-				ids.idmc = couple.getMenage().getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idlui = lui.getNumero();
+			ids1.idmc = couple.getMenage().getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -284,20 +276,17 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(1998, 7, 12), MotifFor.MAJORITE, MockCommune.Lausanne);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, date(1998, 7, 12), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(1997, 5, 14), MotifFor.ARRIVEE_HS, MockCommune.Morges);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			addForPrincipal(elle, date(1997, 5, 14), MotifFor.ARRIVEE_HS, MockCommune.Morges);
 
-				final Ids ids = new Ids();
-				ids.idlui = lui.getNumero();
-				ids.idelle = elle.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idlui = lui.getNumero();
+			ids1.idelle = elle.getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -385,17 +374,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuDespont);
+		doInNewTransactionAndSession(status -> {
+			addHabitant(noIndividuDespont);
 
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
+			final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
+			addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
 
-				addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-			}
+			addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -413,12 +400,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testNatureJuridique() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfredo", "Parnentiel", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfredo", "Parnentiel", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -462,12 +446,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuAndre);
-				addHabitant(noIndividuMartine);
-			}
+		doInNewTransactionAndSession(status -> {
+			addHabitant(noIndividuAndre);
+			addHabitant(noIndividuMartine);
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -505,21 +487,18 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idMenage;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique richard = addHabitant(noIndividuRichard);
-				final PersonnePhysique claudine = addHabitant(noIndividuClaudine);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(marcel, claudine, date(2001, 1, 1), null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
+			final PersonnePhysique richard = addHabitant(noIndividuRichard);
+			final PersonnePhysique claudine = addHabitant(noIndividuClaudine);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(marcel, claudine, date(2001, 1, 1), null);
 
-				final Ids ids = new Ids();
-				ids.idMarcel = marcel.getNumero();
-				ids.idRichard = richard.getNumero();
-				ids.idClaudine = claudine.getNumero();
-				ids.idMenage = couple.getMenage().getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idMarcel = marcel.getNumero();
+			ids1.idRichard = richard.getNumero();
+			ids1.idClaudine = claudine.getNumero();
+			ids1.idMenage = couple.getMenage().getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -569,12 +548,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuAndre);
-				addHabitant(noIndividuMartine);
-			}
+		doInNewTransactionAndSession(status -> {
+			addHabitant(noIndividuAndre);
+			addHabitant(noIndividuMartine);
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -604,20 +581,16 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		final long idFred = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique andre = addHabitant(noIndividuAndre);
-				addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
+		final long idFred = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique andre = addHabitant(noIndividuAndre);
+			addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
 
-				final PersonnePhysique martine = addHabitant(noIndividuMartine);
-				addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			final PersonnePhysique martine = addHabitant(noIndividuMartine);
+			addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
-				final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", null, Sexe.MASCULIN);
-				addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
-
-				return fred.getNumero();
-			}
+			final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", null, Sexe.MASCULIN);
+			addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
+			return fred.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -671,18 +644,16 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique andre = addHabitant(noIndividuAndre);
-				addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique andre = addHabitant(noIndividuAndre);
+			addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
 
-				final PersonnePhysique martine = addHabitant(noIndividuMartine);
-				addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			final PersonnePhysique martine = addHabitant(noIndividuMartine);
+			addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
-				final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", dateNaissanceFred, Sexe.MASCULIN);
-				addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
-			}
+			final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", dateNaissanceFred, Sexe.MASCULIN);
+			addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -754,26 +725,23 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idDpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique andre = addHabitant(noIndividuAndre);
-				addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique andre = addHabitant(noIndividuAndre);
+			addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
 
-				final PersonnePhysique martine = addHabitant(noIndividuMartine);
-				addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			final PersonnePhysique martine = addHabitant(noIndividuMartine);
+			addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
-				final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", null, Sexe.MASCULIN);
-				addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
+			final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", null, Sexe.MASCULIN);
+			addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
 
-				final DebiteurPrestationImposable dpi = addDebiteur("Debiteur IS", martine, date(2010, 5, 1));
+			final DebiteurPrestationImposable dpi = addDebiteur("Debiteur IS", martine, date(2010, 5, 1));
 
-				final Ids ids = new Ids();
-				ids.idAndre = andre.getNumero();
-				ids.idMartine = martine.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idAndre = andre.getNumero();
+			ids1.idMartine = martine.getNumero();
+			ids1.idDpi = dpi.getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -814,18 +782,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idDpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
-				final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
+			final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
 
-				final Ids ids = new Ids();
-				ids.idAlain = alain.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idAlain = alain.getNumero();
+			ids1.idDpi = dpi.getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -869,18 +834,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idDpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
-				final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
+			final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
 
-				final Ids ids = new Ids();
-				ids.idAlain = alain.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idAlain = alain.getNumero();
+			ids1.idDpi = dpi.getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -924,18 +886,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idDpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
-				final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
+			final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
 
-				final Ids ids = new Ids();
-				ids.idAlain = alain.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idAlain = alain.getNumero();
+			ids1.idDpi = dpi.getNumero();
+			return ids1;
 		});
 		globalTiersIndexer.sync();
 
@@ -977,13 +936,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addNonHabitant("Roger", "Rabbit", null, Sexe.MASCULIN);
-				return entreprise.getNumero();
-			}
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addNonHabitant("Roger", "Rabbit", null, Sexe.MASCULIN);
+			return entreprise.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -1018,16 +974,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
-		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> ids = new ArrayList<>(2000);
-				for (long i = 0; i < nbDocs; i++) {
-					final PersonnePhysique pp = addNonHabitant("Bimbo", "Maluna", date(1970, 1, 1), Sexe.MASCULIN);
-					ids.add(pp.getNumero());
-				}
-				return ids;
+		final List<Long> ids = doInNewTransactionAndSession(status -> {
+			final List<Long> ids1 = new ArrayList<>(2000);
+			for (long i = 0; i < nbDocs; i++) {
+				final PersonnePhysique pp = addNonHabitant("Bimbo", "Maluna", date(1970, 1, 1), Sexe.MASCULIN);
+				ids1.add(pp.getNumero());
 			}
+			return ids1;
 		});
 
 		globalTiersIndexer.schedule(ids);
@@ -1059,16 +1012,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
-		final Set<Long> idsDb = doInNewTransactionAndSession(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				final Set<Long> ids = new HashSet<>();
-				for (long i = 0; i < nbDocs; i++) {
-					PersonnePhysique pp = addNonHabitant("Alfred", "Fodor", date(1970, 1, 1), Sexe.MASCULIN);
-					ids.add(pp.getNumero());
-				}
-				return ids;
+		final Set<Long> idsDb = doInNewTransactionAndSession(status -> {
+			final Set<Long> ids = new HashSet<>();
+			for (long i = 0; i < nbDocs; i++) {
+				PersonnePhysique pp = addNonHabitant("Alfred", "Fodor", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.add(pp.getNumero());
 			}
+			return ids;
 		});
 
 		globalTiersIndexer.sync();
@@ -1167,37 +1117,33 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheCriteresTropCommuns() throws Exception {
 
-		final List<Long> ids = doInNewTransactionAndSession(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
+		final List<Long> ids = doInNewTransactionAndSession(status -> {
+			final List<Long> ids1 = new ArrayList<>(2000);
 
-				final List<Long> ids = new ArrayList<>(2000);
+			// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
+			for (int i = 0; i < 2000; ++i) {
 
-				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
-				for (int i = 0; i < 2000; ++i) {
+				final String nom;
+				final String prenom;
+				final String localite;
 
-					final String nom;
-					final String prenom;
-					final String localite;
-
-					if (i == 0) {
-						// Cas spécial pour le premier
-						nom = "Du Pont";
-						prenom = "Michel";
-						localite = "Romanel-s-Morges";
-					}
-					else {
-						nom = String.format("Du Pont%04d", i); // "Du Pont0001".."Du Pont1999"
-						prenom = String.format("Michel%02d", i % 50); // 40 * (Michel01..Michel49)
-						localite = String.format("Romanel-s%04d-Lausanne", i); // "Romanel-s0001-Lausanne".."Romanel-s1999-Lausanne"
-					}
-
-					final PersonnePhysique pp = addNonHabitant(encodeDigitsInName(prenom), encodeDigitsInName(nom), date(1970, 1, 1), Sexe.MASCULIN);
-					addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1970,1,1), null, "chemin du devin", encodeDigitsInName(localite), MockPays.Suisse);
-					ids.add(pp.getNumero());
+				if (i == 0) {
+					// Cas spécial pour le premier
+					nom = "Du Pont";
+					prenom = "Michel";
+					localite = "Romanel-s-Morges";
 				}
-				return ids;
+				else {
+					nom = String.format("Du Pont%04d", i); // "Du Pont0001".."Du Pont1999"
+					prenom = String.format("Michel%02d", i % 50); // 40 * (Michel01..Michel49)
+					localite = String.format("Romanel-s%04d-Lausanne", i); // "Romanel-s0001-Lausanne".."Romanel-s1999-Lausanne"
+				}
+
+				final PersonnePhysique pp = addNonHabitant(encodeDigitsInName(prenom), encodeDigitsInName(nom), date(1970, 1, 1), Sexe.MASCULIN);
+				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1970, 1, 1), null, "chemin du devin", encodeDigitsInName(localite), MockPays.Suisse);
+				ids1.add(pp.getNumero());
 			}
+			return ids1;
 		});
 
 		globalTiersIndexer.schedule(ids);
@@ -1265,17 +1211,14 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
-				marcel.setAncienNumeroSourcier(333111L);
-				ids.marcel = marcel.getId();
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+			marcel.setAncienNumeroSourcier(333111L);
+			ids.marcel = marcel.getId();
 
-				final PersonnePhysique jules = addNonHabitant("Jules", "Espol", date(1936, 8, 22), Sexe.MASCULIN);
-				ids.jules = jules.getId();
-				return null;
-			}
+			final PersonnePhysique jules = addNonHabitant("Jules", "Espol", date(1936, 8, 22), Sexe.MASCULIN);
+			ids.jules = jules.getId();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1331,17 +1274,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuDespont);
+		doInNewTransactionAndSession(status -> {
+			addHabitant(noIndividuDespont);
 
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
+			final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
+			addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
 
-				addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-			}
+			addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -1392,17 +1333,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuDespont);
+		doInNewTransactionAndSession(status -> {
+			addHabitant(noIndividuDespont);
 
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
+			final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
+			addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
 
-				addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-			}
+			addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -1429,17 +1368,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique alain = addHabitant(noIndividuDespont);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique alain = addHabitant(noIndividuDespont);
 
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
+			final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
+			addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
 
-				addDebiteur("Débiteur IS", alain, date(2009, 1, 1));
-			}
+			addDebiteur("Débiteur IS", alain, date(2009, 1, 1));
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -1464,17 +1401,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique alain = addHabitant(noIndividuDespont);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique alain = addHabitant(noIndividuDespont);
 
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
+			final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
+			addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
 
-				addDebiteur("Débiteur IS", alain, date(2009, 1, 1));
-			}
+			addDebiteur("Débiteur IS", alain, date(2009, 1, 1));
+			return null;
 		});
 		globalTiersIndexer.sync();
 
@@ -1516,16 +1451,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long elle;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique elle = addNonHabitant("Albertine", "Cochin", null, Sexe.FEMININ);
-				final PersonnePhysique lui = addNonHabitant("Robert", "Cochin", null, Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.elle = elle.getNumero();
-				ids.lui = lui.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique elle = addNonHabitant("Albertine", "Cochin", null, Sexe.FEMININ);
+			final PersonnePhysique lui = addNonHabitant("Robert", "Cochin", null, Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.elle = elle.getNumero();
+			ids1.lui = lui.getNumero();
+			return ids1;
 		});
 
 		globalTiersIndexer.sync();
@@ -1586,21 +1518,18 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp1 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965), Sexe.MASCULIN);
-				final PersonnePhysique pp2 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965,2), Sexe.MASCULIN);
-				final PersonnePhysique pp3 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965,2,21), Sexe.MASCULIN);
-				final PersonnePhysique pp4 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965,3), Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp1 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965), Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965, 2), Sexe.MASCULIN);
+			final PersonnePhysique pp3 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965, 2, 21), Sexe.MASCULIN);
+			final PersonnePhysique pp4 = addNonHabitant("Albert", "Tartempion", RegDate.get(1965, 3), Sexe.MASCULIN);
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero();
-				ids.pp2 = pp2.getNumero();
-				ids.pp3 = pp3.getNumero();
-				ids.pp4 = pp4.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero();
+			ids1.pp2 = pp2.getNumero();
+			ids1.pp3 = pp3.getNumero();
+			ids1.pp4 = pp4.getNumero();
+			return ids1;
 		});
 
 		final Comparator<TiersIndexedData> comparator = new Comparator<TiersIndexedData>() {
@@ -1703,38 +1632,35 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e1 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e1, date(2000, 1, 1), null, "Toto fondée");
-				addEtatEntreprise(e1, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e1 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e1, date(2000, 1, 1), null, "Toto fondée");
+			addEtatEntreprise(e1, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Entreprise e2 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e2, date(2000, 1, 1), null, "Toto inscrite RC");
-				addEtatEntreprise(e2, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e2, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			final Entreprise e2 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e2, date(2000, 1, 1), null, "Toto inscrite RC");
+			addEtatEntreprise(e2, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e2, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Entreprise e3 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e3, date(2000, 1, 1), null, "Toto Radiée RC");
-				addEtatEntreprise(e3, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e3, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e3, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			final Entreprise e3 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e3, date(2000, 1, 1), null, "Toto Radiée RC");
+			addEtatEntreprise(e3, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e3, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e3, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Entreprise e4 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e4, date(2000, 1, 1), null, "Toto Absorbée Radiée RC");
-				addEtatEntreprise(e4, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e4, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e4, date(2009, 10, 1), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e4, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			final Entreprise e4 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e4, date(2000, 1, 1), null, "Toto Absorbée Radiée RC");
+			addEtatEntreprise(e4, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e4, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e4, date(2009, 10, 1), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e4, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Ids ids = new Ids();
-				ids.pm1 = e1.getNumero();
-				ids.pm2 = e2.getNumero();
-				ids.pm3 = e3.getNumero();
-				ids.pm4 = e4.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pm1 = e1.getNumero();
+			ids1.pm2 = e2.getNumero();
+			ids1.pm3 = e3.getNumero();
+			ids1.pm4 = e4.getNumero();
+			return ids1;
 		});
 
 		// on attend la fin de l'indexation des nouveaux contribuables
@@ -1800,38 +1726,35 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e1 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e1, date(2000, 1, 1), null, "Toto fondée");
-				addEtatEntreprise(e1, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e1 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e1, date(2000, 1, 1), null, "Toto fondée");
+			addEtatEntreprise(e1, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Entreprise e2 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e2, date(2000, 1, 1), null, "Toto inscrite RC");
-				addEtatEntreprise(e2, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e2, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			final Entreprise e2 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e2, date(2000, 1, 1), null, "Toto inscrite RC");
+			addEtatEntreprise(e2, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e2, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Entreprise e3 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e3, date(2000, 1, 1), null, "Toto Radiée RC");
-				addEtatEntreprise(e3, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e3, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e3, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			final Entreprise e3 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e3, date(2000, 1, 1), null, "Toto Radiée RC");
+			addEtatEntreprise(e3, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e3, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e3, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Entreprise e4 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e4, date(2000, 1, 1), null, "Toto Absorbée Radiée RC");
-				addEtatEntreprise(e4, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e4, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e4, date(2009, 10, 1), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
-				addEtatEntreprise(e4, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			final Entreprise e4 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e4, date(2000, 1, 1), null, "Toto Absorbée Radiée RC");
+			addEtatEntreprise(e4, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e4, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e4, date(2009, 10, 1), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
+			addEtatEntreprise(e4, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
 
-				final Ids ids = new Ids();
-				ids.pm1 = e1.getNumero();
-				ids.pm2 = e2.getNumero();
-				ids.pm3 = e3.getNumero();
-				ids.pm4 = e4.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pm1 = e1.getNumero();
+			ids1.pm2 = e2.getNumero();
+			ids1.pm3 = e3.getNumero();
+			ids1.pm4 = e4.getNumero();
+			return ids1;
 		});
 
 		// on attend la fin de l'indexation des nouveaux contribuables

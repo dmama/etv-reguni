@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -81,24 +79,18 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 			}
 		});
 
-		final long entrepriseId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long entrepriseId = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.IDE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.IDE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -106,21 +98,16 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("La forme juridique (legalForm) de l'entreprise civile est introuvable au registre civil. Traitement manuel.",
-				                                                               FormatNumeroHelper.numeroCTBToDisplay(entrepriseId), noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("La forme juridique (legalForm) de l'entreprise civile est introuvable au registre civil. Traitement manuel.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(entrepriseId), noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -147,24 +134,18 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 			}
 		});
 
-		final long entrepriseId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				return entreprise.getNumero();
-			}
+		final long entrepriseId = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			return entreprise.getNumero();
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -172,20 +153,15 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("Données RCEnt invalides pour l'entreprise civile n°%d, champ(s) nécessaire(s) manquant(s): [legalForm] .", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(0).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("Données RCEnt invalides pour l'entreprise civile n°%d, champ(s) nécessaire(s) manquant(s): [legalForm] .", noEntrepriseCivile),
+			                    evt.getErreurs().get(0).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -211,32 +187,24 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("La forme juridique (legalForm) de l'entreprise civile est introuvable au registre civil. Traitement manuel.", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("La forme juridique (legalForm) de l'entreprise civile est introuvable au registre civil. Traitement manuel.", noEntrepriseCivile),
+			                    evt.getErreurs().get(1).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -267,12 +235,9 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 7, 5), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 
@@ -280,20 +245,15 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-
-				                             Assert.assertEquals(String.format("Données RCEnt invalides pour l'entreprise civile n°%d, champ(s) nécessaire(s) manquant(s): [legalForm] .", noEntrepriseCivile),
-				                                                 evt.getErreurs().get(0).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
+			Assert.assertEquals(String.format("Données RCEnt invalides pour l'entreprise civile n°%d, champ(s) nécessaire(s) manquant(s): [legalForm] .", noEntrepriseCivile),
+			                    evt.getErreurs().get(0).getMessage());
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -319,116 +279,104 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
+			addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				return entreprise;
-			}
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			return entreprise;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
+			Assert.assertEquals("Le registre civil n'indique pas de forme juridique (legalForm) pour l'entreprise civile.",
+			                    evt.getErreurs().get(1).getMessage());
 
-				                             Assert.assertEquals("Le registre civil n'indique pas de forme juridique (legalForm) pour l'entreprise civile.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+			Assert.assertNotNull(etablissement);
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertNotNull(etablissement);
+			{
+				ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 23)).get(0);
+				Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
+				Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
+			}
+			{
+				ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
+				Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
+				Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
+				Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
+				Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
+			}
 
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 23)).get(0);
-					                             Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
-				                             }
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
-					                             Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
-				                             }
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(1);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
-
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
-				                             }
-
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
+			}
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -455,116 +403,104 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
+			addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				return entreprise;
-			}
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			return entreprise;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			Assert.assertEquals("Le registre civil n'indique plus de forme juridique (legalForm) pour l'entreprise civile. Dernière forme juridique: (0109) Association. Vérification requise.",
+			                    evt.getErreurs().get(1).getMessage());
 
-				                             Assert.assertEquals("Le registre civil n'indique plus de forme juridique (legalForm) pour l'entreprise civile. Dernière forme juridique: (0109) Association. Vérification requise.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+			Assert.assertNotNull(etablissement);
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertNotNull(etablissement);
+			{
+				ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 23)).get(0);
+				Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
+				Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
+			}
+			{
+				ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
+				Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
+				Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
+				Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
+				Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
+			}
 
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 23)).get(0);
-					                             Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
-				                             }
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
-					                             Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
-				                             }
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(1);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
-
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
-				                             }
-
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
+			}
+			return null;
+		});
 	}
 
 	@Test(timeout = 10000L)
@@ -591,115 +527,103 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementEntrepriseCivi
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
+			addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				return entreprise;
-			}
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			return entreprise;
 		});
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
+			return hibernateTemplate.merge(event).getId();
 		});
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			Assert.assertEquals("Le registre civil indique maintenant la forme juridique (legalForm) de l'entreprise civile: (0109) Association. Elle n'était pas fournie auparavant. Vérification requise.",
+			                    evt.getErreurs().get(1).getMessage());
 
-				                             Assert.assertEquals("Le registre civil indique maintenant la forme juridique (legalForm) de l'entreprise civile: (0109) Association. Elle n'était pas fournie auparavant. Vérification requise.",
-				                                                 evt.getErreurs().get(1).getMessage());
+			final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+			Assert.assertNotNull(etablissement);
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertNotNull(etablissement);
+			{
+				ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 23)).get(0);
+				Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
+				Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
+			}
+			{
+				ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
+				Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
+				Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
+				Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
+				Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
+			}
 
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 23)).get(0);
-					                             Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
-				                             }
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
-					                             Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
-				                             }
+			// vérification des événements fiscaux
+			final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
+			final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+			Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(0);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
 
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
+			}
+			{
+				final EvenementFiscal ef = evtsFiscauxTries.get(1);
+				Assert.assertNotNull(ef);
+				Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+				Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
-				                             }
-				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
-					                             Assert.assertNotNull(ef);
-					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
-
-					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
-					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
-				                             }
-
-				                             return null;
-			                             }
-		                             }
-		);
+				final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+				Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
+			}
+			return null;
+		});
 	}
 }

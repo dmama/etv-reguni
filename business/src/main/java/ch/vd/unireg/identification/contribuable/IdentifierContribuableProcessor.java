@@ -14,8 +14,6 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -144,28 +142,23 @@ public class IdentifierContribuableProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-				@Override
-				public List<Long> doInTransaction(TransactionStatus status) {
-
-					final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-						@Override
-						public List<Long> doInHibernate(Session session) throws HibernateException {
-							final Query queryObject = session.createQuery(queryMessage);
-							final Set<IdentificationContribuable.Etat> etats = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
-							                                                              IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
-							                                                              IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
-							                                                              IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
-							                                                              IdentificationContribuable.Etat.EXCEPTION);
-							queryObject.setParameterList("etats", etats);
-							//noinspection unchecked
-							return queryObject.list();
-						}
-					});
-					Collections.sort(idsMessage);
-					return idsMessage;
-				}
-
+			final List<Long> ids = template.execute(status -> {
+				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryMessage);
+						final Set<IdentificationContribuable.Etat> etats = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
+						                                                              IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
+						                                                              IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
+						                                                              IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
+						                                                              IdentificationContribuable.Etat.EXCEPTION);
+						queryObject.setParameterList("etats", etats);
+						//noinspection unchecked
+						return queryObject.list();
+					}
+				});
+				Collections.sort(idsMessage);
+				return idsMessage;
 			});
 			return ids;
 		}

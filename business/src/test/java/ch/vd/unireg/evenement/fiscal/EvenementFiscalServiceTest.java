@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -84,27 +82,23 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		});
 
 		// création d'un for et envoi d'un événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(id);
-				assertNotNull(pp);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addDays(-5), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				evenementFiscalService.publierEvenementFiscalOuvertureFor(ffp);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(id);
+			assertNotNull(pp);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addDays(-5), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			evenementFiscalService.publierEvenementFiscalOuvertureFor(ffp);
+			return null;
 		});
 
 		// Vérifie que l'événement a été envoyé
 		assertEquals(1, evenementFiscalSender.getCount());
 
 		// Vérifie que l'événement est dans la base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-				assertEquals(1, events.size());
-				assertForEvent(id, RegDate.get().addDays(-5), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, events.get(0));
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+			assertForEvent(id, RegDate.get().addDays(-5), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, events.get(0));
+			return null;
 		});
 	}
 
@@ -122,30 +116,26 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		});
 
 		// création d'une LR et publication d'un événement correspondant
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				assertNotNull(dpi);
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, date(2009, 12, 31), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Lausanne);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			assertNotNull(dpi);
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, date(2009, 12, 31), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.ANNUEL, pf);
-				evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lr, RegDate.get().addDays(-2));
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.ANNUEL, pf);
+			evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lr, RegDate.get().addDays(-2));
+			return null;
 		});
 
 		// Vérifie que l'événement a été envoyé
 		assertEquals(1, evenementFiscalSender.getCount());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// Vérifie que l'événement est dans la base
-				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-				assertEquals(1, events.size());
-				assertDeclarationEvent(id, RegDate.get().addDays(-2), EvenementFiscalDeclarationSommable.TypeAction.EMISSION, date(2009, 1, 1), date(2009, 12, 31), DeclarationImpotSource.class, events.get(0));
-			}
+		doInNewTransactionAndSession(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+			assertDeclarationEvent(id, RegDate.get().addDays(-2), EvenementFiscalDeclarationSommable.TypeAction.EMISSION, date(2009, 1, 1), date(2009, 12, 31), DeclarationImpotSource.class, events.get(0));
+			return null;
 		});
 	}
 
@@ -165,14 +155,12 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		// Vérifie que l'événement a été envoyé
 		assertEquals(1, evenementFiscalSender.getCount());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// Vérifie que l'événement est dans la base
-				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-				assertEquals(1, events.size());
-				assertCSFEvent(id, RegDate.get().addDays(-3), events.get(0));
-			}
+		doInNewTransactionAndSession(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+			assertCSFEvent(id, RegDate.get().addDays(-3), events.get(0));
+			return null;
 		});
 	}
 

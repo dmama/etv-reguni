@@ -4,8 +4,6 @@ import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -51,13 +49,10 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -91,13 +86,10 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -132,21 +124,18 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			long mcId;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, date(2010, 3, 11), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, date(2010, 3, 11), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2010, 3, 12), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2010, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2010, 3, 12), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2010, 3, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.mcId = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.mcId = mc.getNumero();
+			return ids1;
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -185,14 +174,11 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -226,14 +212,11 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Colombie);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Colombie);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -267,15 +250,12 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2010, 3, 11), MotifFor.ARRIVEE_HS, MockPays.Colombie);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2010, 3, 11), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -317,13 +297,10 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -356,13 +333,10 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, false, false, null, null);
@@ -391,14 +365,11 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
-				addForPrincipal(pp, date(2010, 5, 13), MotifFor.DEPART_HS, MockPays.Colombie);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, date(2010, 5, 13), MotifFor.DEPART_HS, MockPays.Colombie);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
@@ -431,14 +402,11 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
-				addForPrincipal(pp, date(2010, 5, 13), MotifFor.DEPART_HS, MockPays.Colombie);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, date(2010, 5, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, date(2010, 5, 13), MotifFor.DEPART_HS, MockPays.Colombie);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, true, null, null);
@@ -468,13 +436,10 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, Collections.singletonList(ppId), null);
@@ -508,13 +473,10 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, Collections.singletonList(ppId + 1), null);

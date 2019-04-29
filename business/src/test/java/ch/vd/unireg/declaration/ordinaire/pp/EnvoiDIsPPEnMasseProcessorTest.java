@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
@@ -1345,23 +1344,19 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		final int annee = 2009;
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				diAnnulee.setAnnule(true);
-				assertEquals(1, (int) diAnnulee.getNumero());
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+			diAnnulee.setAnnule(true);
+			assertEquals(1, (int) diAnnulee.getNumero());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
-
-				return pp.getNumero();
-			}
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
+			return pp.getNumero();
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
@@ -1369,20 +1364,17 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-				assertNotNull(decls);
-				assertEquals(1, decls.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-				assertNotNull(di);
-				assertFalse(di.isAnnule());
-				assertEquals(2, (int) di.getNumero());
-				return null;
-			}
+			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+			assertNotNull(di);
+			assertFalse(di.isAnnule());
+			assertEquals(2, (int) di.getNumero());
+			return null;
 		});
 	}
 
@@ -1394,20 +1386,16 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		final int annee = 2010;
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
-
-				return pp.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
+			return pp.getNumero();
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
@@ -1415,19 +1403,16 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-				assertNotNull(decls);
-				assertEquals(1, decls.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-				assertNotNull(di);
-				assertNull(di.getCodeControle());
-				return null;
-			}
+			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+			assertNotNull(di);
+			assertNull(di.getCodeControle());
+			return null;
 		});
 	}
 
@@ -1439,20 +1424,16 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		final int annee = 2011;
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
-
-				return pp.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
+			return pp.getNumero();
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
@@ -1460,19 +1441,16 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-				assertNotNull(decls);
-				assertEquals(1, decls.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-				assertNotNull(di);
-				assertCodeControleIsValid(di.getCodeControle());
-				return null;
-			}
+			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+			assertNotNull(di);
+			assertCodeControleIsValid(di.getCodeControle());
+			return null;
 		});
 	}
 
@@ -1486,24 +1464,20 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final int annee = 2011;
 		final String codeControle = DeclarationAvecCodeControle.generateCodeControle();
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee, 8, 31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
-				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee, 8, 31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+			addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final DeclarationImpotOrdinairePP decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				decl.setCodeControle(codeControle);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
-
-				return pp.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final DeclarationImpotOrdinairePP decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			decl.setCodeControle(codeControle);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
+			return pp.getNumero();
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
@@ -1511,24 +1485,21 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-				assertNotNull(decls);
-				assertEquals(2, decls.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+			assertNotNull(decls);
+			assertEquals(2, decls.size());
 
-				final DeclarationImpotOrdinairePP di0 = (DeclarationImpotOrdinairePP) decls.get(0);
-				assertNotNull(di0);
-				assertEquals(codeControle, di0.getCodeControle());
+			final DeclarationImpotOrdinairePP di0 = (DeclarationImpotOrdinairePP) decls.get(0);
+			assertNotNull(di0);
+			assertEquals(codeControle, di0.getCodeControle());
 
-				// on vérifie que le code de contrôle de la deuxième DI est le même que celui de la première
-				final DeclarationImpotOrdinairePP di1 = (DeclarationImpotOrdinairePP) decls.get(1);
-				assertNotNull(di1);
-				assertEquals(codeControle, di1.getCodeControle());
-				return null;
-			}
+			// on vérifie que le code de contrôle de la deuxième DI est le même que celui de la première
+			final DeclarationImpotOrdinairePP di1 = (DeclarationImpotOrdinairePP) decls.get(1);
+			assertNotNull(di1);
+			assertEquals(codeControle, di1.getCodeControle());
+			return null;
 		});
 	}
 
@@ -1541,23 +1512,19 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		final int annee = 2011;
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee,8,31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
-				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee, 8, 31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+			addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				// une déclaration sans code de contrôle
-				addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
-
-				return pp.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			// une déclaration sans code de contrôle
+			addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
+			return pp.getNumero();
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
@@ -1566,24 +1533,21 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, results.nbCtbsTotal);
 
 		// on vérifie que les deux DIs ont reçu le même code de contrôle
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-				assertNotNull(decls);
-				assertEquals(2, decls.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+			assertNotNull(decls);
+			assertEquals(2, decls.size());
 
-				final DeclarationImpotOrdinairePP di0 = (DeclarationImpotOrdinairePP) decls.get(0);
-				assertNotNull(di0);
-				final String codeControle = di0.getCodeControle();
-				assertCodeControleIsValid(codeControle);
+			final DeclarationImpotOrdinairePP di0 = (DeclarationImpotOrdinairePP) decls.get(0);
+			assertNotNull(di0);
+			final String codeControle = di0.getCodeControle();
+			assertCodeControleIsValid(codeControle);
 
-				final DeclarationImpotOrdinairePP di1 = (DeclarationImpotOrdinairePP) decls.get(1);
-				assertNotNull(di1);
-				assertEquals(codeControle, di1.getCodeControle());
-				return null;
-			}
+			final DeclarationImpotOrdinairePP di1 = (DeclarationImpotOrdinairePP) decls.get(1);
+			assertNotNull(di1);
+			assertEquals(codeControle, di1.getCodeControle());
+			return null;
 		});
 	}
 
@@ -1597,21 +1561,19 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final int nbCtbs = 10 * TAILLE_LOT;
 		final int nbThreads = 7;
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				for (int i = 0 ; i < nbCtbs ; ++ i) {
-					final String prenom = "Jean-" + Integer.toString(i + 1);
-					final PersonnePhysique pp = addNonHabitant(prenom, "Dupont", null, Sexe.MASCULIN);
-					final RegDate ouverture = date(annee, 1, 1).addDays(i / 7);
-					addForPrincipal(pp, ouverture, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-					addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(1), ouverture, date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, null, null, oid);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			for (int i = 0; i < nbCtbs; ++i) {
+				final String prenom = "Jean-" + Integer.toString(i + 1);
+				final PersonnePhysique pp = addNonHabitant(prenom, "Dupont", null, Sexe.MASCULIN);
+				final RegDate ouverture = date(annee, 1, 1).addDays(i / 7);
+				addForPrincipal(pp, ouverture, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(1), ouverture, date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, null, null, oid);
 			}
+			;
+			return null;
 		});
 
 		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
@@ -1620,23 +1582,20 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				for (Long ctbId : results.ctbsAvecDiGeneree) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ctbId);
-					final String prenom = pp.getPrenomUsuel();
-					assertTrue(prenom.startsWith("Jean-"));
-					final int index = Integer.parseInt(prenom.substring(5)) - 1;
-					final List<Declaration> dis = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					final String message = "Contribuable " + pp.getNumero() + " (" + index + ")";
-					assertEquals(message, 1, dis.size());
-					assertNotNull(message, dis.get(0));
-					assertEquals(message, date(annee, 1, 1).addDays(index / 7), dis.get(0).getDateDebut());
-					assertEquals(message, date(annee, 12, 31), dis.get(0).getDateFin());
-				}
-				return null;
+		doInNewTransaction(status -> {
+			for (Long ctbId : results.ctbsAvecDiGeneree) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ctbId);
+				final String prenom = pp.getPrenomUsuel();
+				assertTrue(prenom.startsWith("Jean-"));
+				final int index = Integer.parseInt(prenom.substring(5)) - 1;
+				final List<Declaration> dis = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+				final String message = "Contribuable " + pp.getNumero() + " (" + index + ")";
+				assertEquals(message, 1, dis.size());
+				assertNotNull(message, dis.get(0));
+				assertEquals(message, date(annee, 1, 1).addDays(index / 7), dis.get(0).getDateDebut());
+				assertEquals(message, date(annee, 12, 31), dis.get(0).getDateFin());
 			}
+			return null;
 		});
 	}
 
@@ -1658,21 +1617,17 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
-				final PersonnePhysique pp = addNonHabitant("Alfred", "D'Isigny", date(1978, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2012, 1, 1), MotifFor.INDETERMINE, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				addForPrincipal(pp, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bale, ModeImposition.SOURCE);
+			final PersonnePhysique pp = addNonHabitant("Alfred", "D'Isigny", date(1978, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2012, 1, 1), MotifFor.INDETERMINE, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bale, ModeImposition.SOURCE);
 
-				final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().getOneDayAfter(), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, null, 0, oid);
-
-				return pp.getNumero();
-			}
+			final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().getOneDayAfter(), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, null, 0, oid);
+			return pp.getNumero();
 		});
 
 		// envoi de la DI ?
@@ -1765,29 +1720,26 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// initialisation des données fiscales
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final CollectiviteAdministrative oidLausanneOuest = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative oidMorges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final CollectiviteAdministrative oidLausanneOuest = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative oidMorges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
 
-				final PersonnePhysique pp1 = addHabitant(noIndividu1);
-				addForPrincipal(pp1, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Morges);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				                  pp1, Qualification.AUTOMATIQUE, 0, oidMorges);
+			final PersonnePhysique pp1 = addHabitant(noIndividu1);
+			addForPrincipal(pp1, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Morges);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			                  pp1, Qualification.AUTOMATIQUE, 0, oidMorges);
 
-				final PersonnePhysique pp2 = addHabitant(noIndividu2);
-				addForPrincipal(pp2, date(2010, 4, 14), MotifFor.INDETERMINE, MockCommune.Renens);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				                  pp2, Qualification.AUTOMATIQUE, 0, oidLausanneOuest);
+			final PersonnePhysique pp2 = addHabitant(noIndividu2);
+			addForPrincipal(pp2, date(2010, 4, 14), MotifFor.INDETERMINE, MockCommune.Renens);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			                  pp2, Qualification.AUTOMATIQUE, 0, oidLausanneOuest);
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero();
-				ids.pp2 = pp2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero();
+			ids1.pp2 = pp2.getNumero();
+			return ids1;
 		});
 
 		final Interceptor sub = new Interceptor();
@@ -1823,29 +1775,26 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// vérification que toutes les DI ont bien été générées comme attendu
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
-					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					assertNotNull(decls);
-					assertEquals(1, decls.size());
+		doInNewTransactionAndSession(status -> {
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
 
-					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-					assertNotNull(di);
-				}
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
-					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					assertNotNull(decls);
-					assertEquals(1, decls.size());
-
-					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-					assertNotNull(di);
-				}
-				return null;
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+				assertNotNull(di);
 			}
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
+
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+				assertNotNull(di);
+			}
+			return null;
 		});
 	}
 
@@ -1897,29 +1846,26 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// initialisation des données fiscales
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final CollectiviteAdministrative oidLausanneOuest = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative oidMorges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final CollectiviteAdministrative oidLausanneOuest = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative oidMorges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
 
-				final PersonnePhysique pp1 = addHabitant(noIndividu1);
-				addForPrincipal(pp1, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Morges);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				                  pp1, Qualification.AUTOMATIQUE, 0, oidMorges);
+			final PersonnePhysique pp1 = addHabitant(noIndividu1);
+			addForPrincipal(pp1, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Morges);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			                  pp1, Qualification.AUTOMATIQUE, 0, oidMorges);
 
-				final PersonnePhysique pp2 = addHabitant(noIndividu2);
-				addForPrincipal(pp2, date(2010, 4, 14), MotifFor.INDETERMINE, MockCommune.Renens);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				                  pp2, Qualification.AUTOMATIQUE, 0, oidLausanneOuest);
+			final PersonnePhysique pp2 = addHabitant(noIndividu2);
+			addForPrincipal(pp2, date(2010, 4, 14), MotifFor.INDETERMINE, MockCommune.Renens);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			                  pp2, Qualification.AUTOMATIQUE, 0, oidLausanneOuest);
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero();
-				ids.pp2 = pp2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero();
+			ids1.pp2 = pp2.getNumero();
+			return ids1;
 		});
 
 		final Validator sub = new Validator();
@@ -1948,29 +1894,26 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// vérification que toutes les DI ont bien été générées comme attendu
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
-					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					assertNotNull(decls);
-					assertEquals(1, decls.size());
+		doInNewTransactionAndSession(status -> {
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
 
-					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-					assertNotNull(di);
-				}
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
-					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					assertNotNull(decls);
-					assertEquals(1, decls.size());
-
-					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
-					assertNotNull(di);
-				}
-				return null;
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+				assertNotNull(di);
 			}
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
+
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
+				assertNotNull(di);
+			}
+			return null;
 		});
 	}
 }

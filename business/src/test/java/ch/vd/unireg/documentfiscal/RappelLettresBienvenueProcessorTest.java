@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -56,19 +53,16 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateEnvoiLettre = date(1990, 6, 2);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
-				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur avec une date trop tôt -> rien
@@ -79,25 +73,23 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, res.getTraites().size());
 
 		// vérification en base, on n'est jamais trop prudent...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
-				Assert.assertNotNull(lettres);
-				Assert.assertEquals(1, lettres.size());
+			final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
+			Assert.assertNotNull(lettres);
+			Assert.assertEquals(1, lettres.size());
 
-				final LettreBienvenue lettre = lettres.get(0);
-				Assert.assertNotNull(lettre);
-				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lettre.getEtat());
-				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
-				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
-				Assert.assertNull(lettre.getDateRappel());
-				Assert.assertNull(lettre.getDateRetour());
-			}
+			final LettreBienvenue lettre = lettres.get(0);
+			Assert.assertNotNull(lettre);
+			Assert.assertFalse(lettre.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lettre.getEtat());
+			Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
+			Assert.assertNull(lettre.getDateRappel());
+			Assert.assertNull(lettre.getDateRetour());
+			return null;
 		});
 	}
 
@@ -108,19 +100,16 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateEnvoiLettre = date(1990, 6, 2);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
-				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur avec une date après le délai officiel mais avant le délai administratif
@@ -137,25 +126,23 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		Assert.assertEquals(RappelLettresBienvenueResults.RaisonIgnorement.DELAI_ADMINISTRATIF_NON_ECHU, ignore.raison);
 
 		// vérification en base, on n'est jamais trop prudent...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
-				Assert.assertNotNull(lettres);
-				Assert.assertEquals(1, lettres.size());
+			final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
+			Assert.assertNotNull(lettres);
+			Assert.assertEquals(1, lettres.size());
 
-				final LettreBienvenue lettre = lettres.get(0);
-				Assert.assertNotNull(lettre);
-				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lettre.getEtat());
-				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
-				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
-				Assert.assertNull(lettre.getDateRappel());
-				Assert.assertNull(lettre.getDateRetour());
-			}
+			final LettreBienvenue lettre = lettres.get(0);
+			Assert.assertNotNull(lettre);
+			Assert.assertFalse(lettre.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lettre.getEtat());
+			Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
+			Assert.assertNull(lettre.getDateRappel());
+			Assert.assertNull(lettre.getDateRetour());
+			return null;
 		});
 	}
 
@@ -168,19 +155,16 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateEnvoiRappel = date(1990, 8, 23); // 3 jours après la date de traitement
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
-				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur avec une date après le délai administratif
@@ -196,31 +180,29 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		Assert.assertEquals(pmId, traite.noCtb);
 
 		// vérification en base, on n'est jamais trop prudent...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
-				Assert.assertNotNull(lettres);
-				Assert.assertEquals(1, lettres.size());
+			final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
+			Assert.assertNotNull(lettres);
+			Assert.assertEquals(1, lettres.size());
 
-				final LettreBienvenue lettre = lettres.get(0);
-				Assert.assertNotNull(lettre);
-				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
-				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
-				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
-				Assert.assertEquals(dateTraitementRappel, lettre.getDateRappel());
-				Assert.assertNull(lettre.getDateRetour());
+			final LettreBienvenue lettre = lettres.get(0);
+			Assert.assertNotNull(lettre);
+			Assert.assertFalse(lettre.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
+			Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
+			Assert.assertEquals(dateTraitementRappel, lettre.getDateRappel());
+			Assert.assertNull(lettre.getDateRetour());
 
-				// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
-				final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) lettre.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
-				assertNotNull(rappel);
-				assertEquals(dateTraitementRappel, rappel.getDateObtention());
-				assertEquals(dateEnvoiRappel, rappel.getDateEnvoiCourrier());
-			}
+			// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
+			final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) lettre.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+			assertNotNull(rappel);
+			assertEquals(dateTraitementRappel, rappel.getDateObtention());
+			assertEquals(dateEnvoiRappel, rappel.getDateEnvoiCourrier());
+			return null;
 		});
 	}
 
@@ -232,20 +214,17 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateRappel = date(1990, 7, 1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
-				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
-				addEtatAutreDocumentFiscalRappele(lb, dateRappel);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+			addEtatAutreDocumentFiscalRappele(lb, dateRappel);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur avec une date après le délai administratif sur une lettre déjà rappelée -> rien
@@ -256,25 +235,23 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, res.getTraites().size());
 
 		// vérification en base, on n'est jamais trop prudent...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
-				Assert.assertNotNull(lettres);
-				Assert.assertEquals(1, lettres.size());
+			final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
+			Assert.assertNotNull(lettres);
+			Assert.assertEquals(1, lettres.size());
 
-				final LettreBienvenue lettre = lettres.get(0);
-				Assert.assertNotNull(lettre);
-				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
-				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
-				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
-				Assert.assertEquals(dateRappel, lettre.getDateRappel());
-				Assert.assertNull(lettre.getDateRetour());
-			}
+			final LettreBienvenue lettre = lettres.get(0);
+			Assert.assertNotNull(lettre);
+			Assert.assertFalse(lettre.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
+			Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
+			Assert.assertEquals(dateRappel, lettre.getDateRappel());
+			Assert.assertNull(lettre.getDateRetour());
+			return null;
 		});
 	}
 
@@ -286,20 +263,17 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateRetour = date(1990, 7, 1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
-				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
-				addEtatAutreDocumentFiscalRetourne(lb, dateRetour);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+			addEtatAutreDocumentFiscalRetourne(lb, dateRetour);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur avec une date après le délai administratif sur une lettre déjà rappelée -> rien
@@ -310,25 +284,23 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, res.getTraites().size());
 
 		// vérification en base, on n'est jamais trop prudent...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
-				Assert.assertNotNull(lettres);
-				Assert.assertEquals(1, lettres.size());
+			final List<LettreBienvenue> lettres = getLettresBienvenue(entreprise);
+			Assert.assertNotNull(lettres);
+			Assert.assertEquals(1, lettres.size());
 
-				final LettreBienvenue lettre = lettres.get(0);
-				Assert.assertNotNull(lettre);
-				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, lettre.getEtat());
-				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
-				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
-				Assert.assertNull(lettre.getDateRappel());
-				Assert.assertEquals(dateRetour, lettre.getDateRetour());
-			}
+			final LettreBienvenue lettre = lettres.get(0);
+			Assert.assertNotNull(lettre);
+			Assert.assertFalse(lettre.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, lettre.getEtat());
+			Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
+			Assert.assertNull(lettre.getDateRappel());
+			Assert.assertEquals(dateRetour, lettre.getDateRetour());
+			return null;
 		});
 	}
 }

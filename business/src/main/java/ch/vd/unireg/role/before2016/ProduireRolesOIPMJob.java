@@ -2,8 +2,6 @@ package ch.vd.unireg.role.before2016;
 
 import java.util.Map;
 
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -41,12 +39,7 @@ public class ProduireRolesOIPMJob extends AbstractProduireRolesJob {
 		// Produit le rapport dans une transaction read-write.
 		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setReadOnly(false);
-		final RolesOIPMRapport rapport = template.execute(new TransactionCallback<RolesOIPMRapport>() {
-			@Override
-			public RolesOIPMRapport doInTransaction(TransactionStatus status) {
-				return getRapportService().generateRapport(results, dateTraitement, statusManager);
-			}
-		});
+		final RolesOIPMRapport rapport = template.execute(status -> getRapportService().generateRapport(results, dateTraitement, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success("La production des rôles (OIPM) pour l'année " + annee + " est terminée.", rapport);

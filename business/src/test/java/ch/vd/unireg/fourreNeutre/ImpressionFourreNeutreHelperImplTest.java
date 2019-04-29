@@ -3,7 +3,6 @@ package ch.vd.unireg.fourreNeutre;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
@@ -19,12 +18,9 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 	@Test
 	public void testCodeBarrePourPP() throws Exception {
 		// mise en place
-		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long idTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -43,12 +39,9 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 	@Test
 	public void testCodeBarrePourPM() throws Exception {
 		// mise en place
-		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise es = addEntrepriseInconnueAuCivil();
-				return es.getNumero();
-			}
+		final long idTiers = doInNewTransactionAndSession(status -> {
+			final Entreprise es = addEntrepriseInconnueAuCivil();
+			return es.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {

@@ -5,8 +5,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.RequestHandlerResult;
@@ -92,30 +90,28 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		Assert.assertEquals(CreateNonresidentByVNResponse.class, response.getClass());
 
 		final long id = ((CreateNonresidentByVNResponse) response).getNumber();
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(id);
-				Assert.assertNotNull(tiers);
-				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(id);
+			Assert.assertNotNull(tiers);
+			Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
 
-				// toutes les données viennent du DefaultMockServiceUpi...
-				final PersonnePhysique pp = (PersonnePhysique) tiers;
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
-				Assert.assertEquals("Susan", pp.getPrenomUsuel());
-				Assert.assertEquals("Susan Alexandra", pp.getTousPrenoms());
-				Assert.assertEquals("Weaver", pp.getNom());
-				Assert.assertEquals(date(1949, 10, 8), pp.getDateNaissance());
-				Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
-				Assert.assertEquals((Integer) MockPays.EtatsUnis.getNoOFS(), pp.getNumeroOfsNationalite());
-				Assert.assertEquals("Inglis", pp.getNomMere());
-				Assert.assertEquals("Elisabeth", pp.getPrenomsMere());
-				Assert.assertEquals("Weaver", pp.getNomPere());
-				Assert.assertEquals("Sylvester", pp.getPrenomsPere());
+			// toutes les données viennent du DefaultMockServiceUpi...
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(noAvs, pp.getNumeroAssureSocial());
+			Assert.assertEquals("Susan", pp.getPrenomUsuel());
+			Assert.assertEquals("Susan Alexandra", pp.getTousPrenoms());
+			Assert.assertEquals("Weaver", pp.getNom());
+			Assert.assertEquals(date(1949, 10, 8), pp.getDateNaissance());
+			Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+			Assert.assertEquals((Integer) MockPays.EtatsUnis.getNoOFS(), pp.getNumeroOfsNationalite());
+			Assert.assertEquals("Inglis", pp.getNomMere());
+			Assert.assertEquals("Elisabeth", pp.getPrenomsMere());
+			Assert.assertEquals("Weaver", pp.getNomPere());
+			Assert.assertEquals("Sylvester", pp.getPrenomsPere());
 
-				Assert.assertEquals(0, pp.getForsFiscaux().size());
-			}
+			Assert.assertEquals(0, pp.getForsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -142,30 +138,28 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		Assert.assertEquals(CreateNonresidentByVNResponse.class, response.getClass());
 
 		final long id = ((CreateNonresidentByVNResponse) response).getNumber();
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(id);
-				Assert.assertNotNull(tiers);
-				Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(id);
+			Assert.assertNotNull(tiers);
+			Assert.assertEquals(PersonnePhysique.class, tiers.getClass());
 
-				// toutes les données viennent du DefaultMockServiceUpi...
-				final PersonnePhysique pp = (PersonnePhysique) tiers;
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(noAvsRemplacant, pp.getNumeroAssureSocial());
-				Assert.assertEquals("Susan", pp.getPrenomUsuel());
-				Assert.assertEquals("Susan Alexandra", pp.getTousPrenoms());
-				Assert.assertEquals("Weaver", pp.getNom());
-				Assert.assertEquals(date(1949, 10, 8), pp.getDateNaissance());
-				Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
-				Assert.assertEquals((Integer) MockPays.EtatsUnis.getNoOFS(), pp.getNumeroOfsNationalite());
-				Assert.assertEquals("Inglis", pp.getNomMere());
-				Assert.assertEquals("Elisabeth", pp.getPrenomsMere());
-				Assert.assertEquals("Weaver", pp.getNomPere());
-				Assert.assertEquals("Sylvester", pp.getPrenomsPere());
+			// toutes les données viennent du DefaultMockServiceUpi...
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
+			Assert.assertFalse(pp.isHabitantVD());
+			Assert.assertEquals(noAvsRemplacant, pp.getNumeroAssureSocial());
+			Assert.assertEquals("Susan", pp.getPrenomUsuel());
+			Assert.assertEquals("Susan Alexandra", pp.getTousPrenoms());
+			Assert.assertEquals("Weaver", pp.getNom());
+			Assert.assertEquals(date(1949, 10, 8), pp.getDateNaissance());
+			Assert.assertEquals(Sexe.FEMININ, pp.getSexe());
+			Assert.assertEquals((Integer) MockPays.EtatsUnis.getNoOFS(), pp.getNumeroOfsNationalite());
+			Assert.assertEquals("Inglis", pp.getNomMere());
+			Assert.assertEquals("Elisabeth", pp.getPrenomsMere());
+			Assert.assertEquals("Weaver", pp.getNomPere());
+			Assert.assertEquals("Sylvester", pp.getPrenomsPere());
 
-				Assert.assertEquals(0, pp.getForsFiscaux().size());
-			}
+			Assert.assertEquals(0, pp.getForsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -198,13 +192,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		Assert.assertEquals("Numéro AVS inconnu à l'UPI.", bei.getMessage());
 		Assert.assertEquals(BusinessExceptionCode.UNKNOWN_PARTY.name(), bei.getCode());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Long> idsPP = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
-				Assert.assertNotNull(idsPP);
-				Assert.assertEquals(0, idsPP.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Long> idsPP = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(idsPP);
+			Assert.assertEquals(0, idsPP.size());
+			return null;
 		});
 	}
 
@@ -220,13 +212,10 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		setWantIndexationTiers(true);
 
 		// création d'un tiers PP avec ce même numéro
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Viersteine", date(1908, 6, 14), Sexe.MASCULIN);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Viersteine", date(1908, 6, 14), Sexe.MASCULIN);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// attente de fin d'indexation
@@ -253,17 +242,15 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		Assert.assertEquals("Un contribuable existe déjà avec ce numéro AVS.", bei.getMessage());
 		Assert.assertEquals(BusinessExceptionCode.ALREADY_EXISTING_PARTY.name(), bei.getCode());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Long> idsPP = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
-				Assert.assertNotNull(idsPP);
-				Assert.assertEquals(1, idsPP.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Long> idsPP = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(idsPP);
+			Assert.assertEquals(1, idsPP.size());
 
-				final Long foundId = idsPP.get(0);
-				Assert.assertNotNull(foundId);
-				Assert.assertEquals((Long) ppId, foundId);
-			}
+			final Long foundId = idsPP.get(0);
+			Assert.assertNotNull(foundId);
+			Assert.assertEquals((Long) ppId, foundId);
+			return null;
 		});
 	}
 
@@ -281,13 +268,10 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		setWantIndexationTiers(true);
 
 		// création d'un tiers PP avec ce même numéro
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Viersteine", date(1908, 6, 14), Sexe.MASCULIN);
-				pp.setNumeroAssureSocial(noAvsRemplacant);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Viersteine", date(1908, 6, 14), Sexe.MASCULIN);
+			pp.setNumeroAssureSocial(noAvsRemplacant);
+			return pp.getNumero();
 		});
 
 		// attente de fin d'indexation
@@ -314,17 +298,15 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		Assert.assertEquals("Un contribuable existe déjà avec ce numéro AVS.", bei.getMessage());
 		Assert.assertEquals(BusinessExceptionCode.ALREADY_EXISTING_PARTY.name(), bei.getCode());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Long> idsPP = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
-				Assert.assertNotNull(idsPP);
-				Assert.assertEquals(1, idsPP.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Long> idsPP = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(idsPP);
+			Assert.assertEquals(1, idsPP.size());
 
-				final Long foundId = idsPP.get(0);
-				Assert.assertNotNull(foundId);
-				Assert.assertEquals((Long) ppId, foundId);
-			}
+			final Long foundId = idsPP.get(0);
+			Assert.assertNotNull(foundId);
+			Assert.assertEquals((Long) ppId, foundId);
+			return null;
 		});
 	}
 }

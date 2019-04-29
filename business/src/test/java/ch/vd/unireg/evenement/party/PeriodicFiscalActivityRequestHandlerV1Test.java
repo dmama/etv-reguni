@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -43,12 +42,9 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableSansFor() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -77,14 +73,11 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForVaudoisAnnule() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 1, 5), MotifFor.DEPART_HS, MockCommune.Cossonay);
-				ffp.setAnnule(true);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 1, 5), MotifFor.DEPART_HS, MockCommune.Cossonay);
+			ffp.setAnnule(true);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -113,13 +106,10 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForPrincipalVaudois() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 12, 31), MotifFor.ARRIVEE_HS, date(2010, 1, 1), MotifFor.DEPART_HS, MockCommune.Cossonay);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 12, 31), MotifFor.ARRIVEE_HS, date(2010, 1, 1), MotifFor.DEPART_HS, MockCommune.Cossonay);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -153,13 +143,10 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForPrincipalHorsSuisseSansForSecondaire() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockPays.Allemagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockPays.Allemagne);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -187,13 +174,10 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForPrincipalHorsCantonSansForSecondaire() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockCommune.Chur);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockCommune.Chur);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -222,14 +206,11 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForPrincipalHorsSuisseAvecForSecondaire() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockPays.Allemagne);
-				addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockPays.Allemagne);
+			addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -263,14 +244,11 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForPrincipalHorsCantonAvecForSecondaire() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockCommune.Chur);
-				addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockCommune.Chur);
+			addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 
@@ -304,13 +282,10 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 	public void testContribuableAvecForVaudoisOuvert() throws Exception {
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, MockCommune.Echallens);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, MockCommune.Echallens);
+			return pp.getNumero();
 		});
 		Assert.assertTrue(Long.toString(ppId), ppId >= Integer.MIN_VALUE && ppId <= Integer.MAX_VALUE);
 

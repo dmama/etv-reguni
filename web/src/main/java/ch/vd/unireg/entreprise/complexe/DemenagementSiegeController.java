@@ -10,8 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -85,32 +83,28 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 	private String showStart(final Model model, final DemenagementSiegeView view) {
 		model.addAttribute(ACTION_COMMAND, view);
 		model.addAttribute(TYPES_AUTORITE_FISCALE, tiersMapHelper.getMapTypeAutoriteFiscale());
-		return doInReadOnlyTransaction(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				model.addAttribute(CONNUE_CIVILEMENT, entreprise.isConnueAuCivil());
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			model.addAttribute(CONNUE_CIVILEMENT, entreprise.isConnueAuCivil());
 
-				// le dernier siège
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
-				final Pair<RegDate, LocalisationFiscale> dernierSiege = getDerniereLocalisation(sieges);
-				if (dernierSiege != null) {
-					model.addAttribute(DEBUT_SIEGE_ACTUEL, dernierSiege.getLeft());
-					model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getRight().getTypeAutoriteFiscale());
-					model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getRight().getNumeroOfsAutoriteFiscale());
-				}
-
-				// le dernier for principal
-				final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
-				final Pair<RegDate, LocalisationFiscale> dernierForPrincipal = getDerniereLocalisation(ffps);
-				if (dernierForPrincipal != null) {
-					model.addAttribute(DEBUT_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getLeft());
-					model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getRight().getTypeAutoriteFiscale());
-					model.addAttribute(OFS_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getRight().getNumeroOfsAutoriteFiscale());
-				}
-
-				return "entreprise/demenagement/start";
+			// le dernier siège
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
+			final Pair<RegDate, LocalisationFiscale> dernierSiege = getDerniereLocalisation(sieges);
+			if (dernierSiege != null) {
+				model.addAttribute(DEBUT_SIEGE_ACTUEL, dernierSiege.getLeft());
+				model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getRight().getTypeAutoriteFiscale());
+				model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getRight().getNumeroOfsAutoriteFiscale());
 			}
+
+			// le dernier for principal
+			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			final Pair<RegDate, LocalisationFiscale> dernierForPrincipal = getDerniereLocalisation(ffps);
+			if (dernierForPrincipal != null) {
+				model.addAttribute(DEBUT_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getLeft());
+				model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getRight().getTypeAutoriteFiscale());
+				model.addAttribute(OFS_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getRight().getNumeroOfsAutoriteFiscale());
+			}
+			return "entreprise/demenagement/start";
 		});
 	}
 
@@ -169,14 +163,12 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 		// tout s'est bien passé... mais si le contribuable est sous le coup d'une décision ACI
 		// (et que l'utilisateur courant a le droit de modification, ce qui est le cas si nous sommes
 		// arrivés jusqu'ici), il faut lui laisser un petit mot...
-		doInReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				if (tiersService.isSousInfluenceDecisions(entreprise)) {
-					Flash.warning("Cette entreprise est actuellement sous l'influence d'une décision ACI. Veuillez en vérifier la pertinence après ce déménagement de siège.");
-				}
+		doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			if (tiersService.isSousInfluenceDecisions(entreprise)) {
+				Flash.warning("Cette entreprise est actuellement sous l'influence d'une décision ACI. Veuillez en vérifier la pertinence après ce déménagement de siège.");
 			}
+			return null;
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntreprise();

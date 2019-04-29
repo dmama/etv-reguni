@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
@@ -103,13 +101,10 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				entreprise.setBlocageRemboursementAutomatique(true);
-				return entreprise.getNumero();
-			}
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			entreprise.setBlocageRemboursementAutomatique(true);
+			return entreprise.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -151,12 +146,9 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -202,15 +194,12 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			}
 		});
 
-		final long idPM = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addRegimeFiscalVD(pm, date(1990, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, date(1990, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(pm, date(1883, 6, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				return pm.getNumero();
-			}
+		final long idPM = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addRegimeFiscalVD(pm, date(1990, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(1990, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(1883, 6, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			return pm.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -246,15 +235,12 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addRegimeFiscalVD(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(pm, date(1960, 1, 1), null, MockCommune.Bale);
-				return pm.getNumero();
-			}
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addRegimeFiscalVD(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(1960, 1, 1), null, MockCommune.Bale);
+			return pm.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -283,17 +269,14 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMHorsSuisse() throws Exception {
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, date(1965, 5, 4), null, "Oversees Ltd.");
-				addFormeJuridique(pm, date(1965, 5, 4), null, FormeJuridiqueEntreprise.FILIALE_HS_NIRC);
-				addRegimeFiscalVD(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(pm, date(1965, 5, 4), null, MockPays.Liechtenstein);
-				return pm.getNumero();
-			}
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, date(1965, 5, 4), null, "Oversees Ltd.");
+			addFormeJuridique(pm, date(1965, 5, 4), null, FormeJuridiqueEntreprise.FILIALE_HS_NIRC);
+			addRegimeFiscalVD(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(1965, 5, 4), null, MockPays.Liechtenstein);
+			return pm.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -331,16 +314,13 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			long idPM;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.idPP = pp.getNumero();
-				ids.idPM = pm.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.idPP = pp.getNumero();
+			ids1.idPM = pm.getNumero();
+			return ids1;
 		});
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();

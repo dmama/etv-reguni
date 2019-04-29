@@ -8,8 +8,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -62,36 +60,33 @@ public class DumpDatabaseJob extends JobDefinition {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 
-		final DatabaseDump doc = template.execute(new TransactionCallback<DatabaseDump>() {
-			@Override
-			public DatabaseDump doInTransaction(TransactionStatus status) {
-				
-				final Date date = DateHelper.getCurrentDate();
-				final int count = tiersDAO.getCount(Tiers.class);
-				final String name = "dbdump_" + FILE_DATE_FORMAT.format(date);
-				final String description = "Export de la base généré le " + SCREEN_DATE_FORMAT.format(date) + " et contenant " + count + " tiers.";
-				final String extension = "zip";
+		final DatabaseDump doc = template.execute(s -> {
 
-				try {
-					return docService.newDoc(DatabaseDump.class, name, description, extension,
-							new DocumentService.WriteDocCallback<DatabaseDump>() {
-								@Override
-								public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
+			final Date date = DateHelper.getCurrentDate();
+			final int count = tiersDAO.getCount(Tiers.class);
+			final String name = "dbdump_" + FILE_DATE_FORMAT.format(date);
+			final String description = "Export de la base généré le " + SCREEN_DATE_FORMAT.format(date) + " et contenant " + count + " tiers.";
+			final String extension = "zip";
 
-									// Dump la base de donnée dans un fichier zip sur le disque
-									try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
-										final ZipEntry e = new ZipEntry(name + ".xml");
-										zipstream.putNextEntry(e);
-										dbService.dumpToDbunitFile(zipstream);
-									}
+			try {
+				return docService.newDoc(DatabaseDump.class, name, description, extension,
+						new DocumentService.WriteDocCallback<DatabaseDump>() {
+							@Override
+							public void writeDoc(DatabaseDump doc1, OutputStream os) throws Exception {
 
-									doc.setNbTiers(count);
+								// Dump la base de donnée dans un fichier zip sur le disque
+								try (ZipOutputStream zipstream = new ZipOutputStream(os)) {
+									final ZipEntry e = new ZipEntry(name + ".xml");
+									zipstream.putNextEntry(e);
+									dbService.dumpToDbunitFile(zipstream);
 								}
-							});
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+
+								doc1.setNbTiers(count);
+							}
+						});
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 

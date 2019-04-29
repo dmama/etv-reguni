@@ -7,8 +7,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.MultipleSwitch;
@@ -128,18 +126,14 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	private void processTiers(final List<Long> ids, final StatusManager status) {
 
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus s) {
+		template.execute(s -> {
+			current += ids.size();
 
-				current += ids.size();
+			final int percent = (current * 100) / total;
+			status.setMessage("Calcul de l'office d'impôt du tiers " + current + " sur " + total + " (id=" + ids.get(0) + ')', percent);
 
-				final int percent = (current * 100) / total;
-				status.setMessage("Calcul de l'office d'impôt du tiers " + current + " sur " + total + " (id=" + ids.get(0) + ')', percent);
-				
-				oidInterceptor.updateOfficeID(ids);
-				return null;
-			}
+			oidInterceptor.updateOfficeID(ids);
+			return null;
 		});
 	}
 
@@ -173,20 +167,16 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryAllTiers);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
-
-				return ids;
-			}
+		return template.execute(status -> {
+			final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException {
+					final Query queryObject = session.createQuery(queryAllTiers);
+					//noinspection unchecked
+					return queryObject.list();
+				}
+			});
+			return ids;
 		});
 	}
 
@@ -221,20 +211,16 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryTiersWithNullOID);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
-
-				return ids;
-			}
+		return template.execute(status -> {
+			final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException {
+					final Query queryObject = session.createQuery(queryTiersWithNullOID);
+					//noinspection unchecked
+					return queryObject.list();
+				}
+			});
+			return ids;
 		});
 	}
 }

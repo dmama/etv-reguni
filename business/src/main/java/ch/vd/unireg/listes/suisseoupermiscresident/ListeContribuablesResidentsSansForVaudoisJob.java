@@ -3,8 +3,6 @@ package ch.vd.unireg.listes.suisseoupermiscresident;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -70,12 +68,7 @@ public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ListeContribuablesResidentsSansForVaudoisRapport rapport = template.execute(new TransactionCallback<ListeContribuablesResidentsSansForVaudoisRapport>() {
-			@Override
-			public ListeContribuablesResidentsSansForVaudoisRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final ListeContribuablesResidentsSansForVaudoisRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success("La production des listes des contribuables suisses ou permis C avec adresse principale sur le canton mais sans for vaudois en date du " + dateTraitement + " est terminée.", rapport);

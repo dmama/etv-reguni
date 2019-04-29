@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -384,16 +383,13 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
-				pp.setDateDeces(date(2014, 6, 12));
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+			pp.setDateDeces(date(2014, 6, 12));
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
 
-				final DebiteurPrestationImposable dpi = addDebiteur("MonComplément", pp, date(2006, 1, 1));
-				return dpi.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur("MonComplément", pp, date(2006, 1, 1));
+			return dpi.getNumero();
 		});
 
 		// demande de l'adresse du débiteur

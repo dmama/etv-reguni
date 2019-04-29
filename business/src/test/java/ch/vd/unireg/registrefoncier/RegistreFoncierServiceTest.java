@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -1519,30 +1518,28 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// interrogation du service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
-				Assert.assertNotNull(immeuble);
+		doInNewTransactionAndSession(status -> {
+			final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+			Assert.assertNotNull(immeuble);
 
-				final Set<SituationRF> allSituations = immeuble.getSituations();
-				Assert.assertNotNull(allSituations);
-				Assert.assertEquals(1, allSituations.size());
-				final SituationRF situation = allSituations.iterator().next();
-				Assert.assertNotNull(situation);
-				Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
-				Assert.assertNull(situation.getDateFin());
+			final Set<SituationRF> allSituations = immeuble.getSituations();
+			Assert.assertNotNull(allSituations);
+			Assert.assertEquals(1, allSituations.size());
+			final SituationRF situation = allSituations.iterator().next();
+			Assert.assertNotNull(situation);
+			Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
+			Assert.assertNull(situation.getDateFin());
 
-				// avant la date de début de la situation
-				final Commune commune1990 = serviceRF.getCommune(immeuble, date(1990, 1, 1));
-				Assert.assertNotNull(commune1990);
-				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), commune1990.getNoOFS());
+			// avant la date de début de la situation
+			final Commune commune1990 = serviceRF.getCommune(immeuble, date(1990, 1, 1));
+			Assert.assertNotNull(commune1990);
+			Assert.assertEquals(MockCommune.Echallens.getNoOFS(), commune1990.getNoOFS());
 
-				// après la date de début
-				final Commune commune2001 = serviceRF.getCommune(immeuble, date(2001, 1, 1));
-				Assert.assertNotNull(commune2001);
-				assertSame(commune1990, commune2001);
-			}
+			// après la date de début
+			final Commune commune2001 = serviceRF.getCommune(immeuble, date(2001, 1, 1));
+			Assert.assertNotNull(commune2001);
+			assertSame(commune1990, commune2001);
+			return null;
 		});
 	}
 
@@ -1556,30 +1553,28 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// interrogation du service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
-				Assert.assertNotNull(immeuble);
+		doInNewTransactionAndSession(status -> {
+			final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+			Assert.assertNotNull(immeuble);
 
-				final Set<SituationRF> allSituations = immeuble.getSituations();
-				Assert.assertNotNull(allSituations);
-				Assert.assertEquals(1, allSituations.size());
-				final SituationRF situation = allSituations.iterator().next();
-				Assert.assertNotNull(situation);
-				Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
-				Assert.assertNull(situation.getDateFin());
+			final Set<SituationRF> allSituations = immeuble.getSituations();
+			Assert.assertNotNull(allSituations);
+			Assert.assertEquals(1, allSituations.size());
+			final SituationRF situation = allSituations.iterator().next();
+			Assert.assertNotNull(situation);
+			Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
+			Assert.assertNull(situation.getDateFin());
 
-				// avant la date de début de la situation
-				final String noParcelle1990 = serviceRF.getNumeroParcelleComplet(immeuble, date(1990, 1, 1));
-				Assert.assertNotNull(noParcelle1990);
-				Assert.assertEquals("4514-4-2-1", noParcelle1990);
+			// avant la date de début de la situation
+			final String noParcelle1990 = serviceRF.getNumeroParcelleComplet(immeuble, date(1990, 1, 1));
+			Assert.assertNotNull(noParcelle1990);
+			Assert.assertEquals("4514-4-2-1", noParcelle1990);
 
-				// après la date de début
-				final String noParcelle2001 = serviceRF.getNumeroParcelleComplet(immeuble, date(2001, 1, 1));
-				Assert.assertNotNull(noParcelle2001);
-				Assert.assertEquals("4514-4-2-1", noParcelle2001);
-			}
+			// après la date de début
+			final String noParcelle2001 = serviceRF.getNumeroParcelleComplet(immeuble, date(2001, 1, 1));
+			Assert.assertNotNull(noParcelle2001);
+			Assert.assertEquals("4514-4-2-1", noParcelle2001);
+			return null;
 		});
 	}
 
@@ -1594,30 +1589,28 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// interrogation du service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
-				Assert.assertNotNull(immeuble);
+		doInNewTransactionAndSession(status -> {
+			final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+			Assert.assertNotNull(immeuble);
 
-				final Set<SituationRF> allSituations = immeuble.getSituations();
-				Assert.assertNotNull(allSituations);
-				Assert.assertEquals(1, allSituations.size());
-				final SituationRF situation = allSituations.iterator().next();
-				Assert.assertNotNull(situation);
-				Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
-				Assert.assertNull(situation.getDateFin());
+			final Set<SituationRF> allSituations = immeuble.getSituations();
+			Assert.assertNotNull(allSituations);
+			Assert.assertEquals(1, allSituations.size());
+			final SituationRF situation = allSituations.iterator().next();
+			Assert.assertNotNull(situation);
+			Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
+			Assert.assertNull(situation.getDateFin());
 
-				// avant la date de début de la situation
-				final SituationRF situ1990 = serviceRF.getSituation(immeuble, date(1990, 1, 1));
-				Assert.assertNotNull(situ1990);
-				assertSame(situation, situ1990);
+			// avant la date de début de la situation
+			final SituationRF situ1990 = serviceRF.getSituation(immeuble, date(1990, 1, 1));
+			Assert.assertNotNull(situ1990);
+			assertSame(situation, situ1990);
 
-				// après la date de début
-				final SituationRF situ2001 = serviceRF.getSituation(immeuble, date(2001, 1, 1));
-				Assert.assertNotNull(situ2001);
-				assertSame(situation, situ2001);
-			}
+			// après la date de début
+			final SituationRF situ2001 = serviceRF.getSituation(immeuble, date(2001, 1, 1));
+			Assert.assertNotNull(situ2001);
+			assertSame(situation, situ2001);
+			return null;
 		});
 	}
 
@@ -1822,25 +1815,23 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les infos de la communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
-				assertNotNull(communaute);
+		doInNewTransactionAndSession(status -> {
+			final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+			assertNotNull(communaute);
 
-				// la communauté avec Philip comme membre principal (parce que Linconnu arrive avant Loongle)
-				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
-				assertNotNull(info);
-				assertEquals(Arrays.asList(ids.ppId1, ids.ppId2), info.getCtbIds());
+			// la communauté avec Philip comme membre principal (parce que Linconnu arrive avant Loongle)
+			final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+			assertNotNull(info);
+			assertEquals(Arrays.asList(ids.ppId1, ids.ppId2), info.getCtbIds());
 
-				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
-				assertEquals(1, principaux.size());
+			final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+			assertEquals(1, principaux.size());
 
-				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
-				assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
-				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
-				assertNull(principal0.getDateFin());
-			}
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
+			assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+			assertNull(principal0.getDateFin());
+			return null;
 		});
 	}
 
@@ -1904,25 +1895,23 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les infos de la communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
-				assertNotNull(communaute);
+		doInNewTransactionAndSession(status -> {
+			final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+			assertNotNull(communaute);
 
-				// la communauté avec Elodie comme membre principal (parce qu'elle est explicitement choisie)
-				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
-				assertNotNull(info);
-				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1), info.getCtbIds());
+			// la communauté avec Elodie comme membre principal (parce qu'elle est explicitement choisie)
+			final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+			assertNotNull(info);
+			assertEquals(Arrays.asList(ids.ppId2, ids.ppId1), info.getCtbIds());
 
-				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
-				assertEquals(1, principaux.size());
+			final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+			assertEquals(1, principaux.size());
 
-				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
-				assertEquals(ids.ppId2.longValue(), principal0.getCtbId());
-				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
-				assertNull(principal0.getDateFin());
-			}
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertEquals(ids.ppId2.longValue(), principal0.getCtbId());
+			assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+			assertNull(principal0.getDateFin());
+			return null;
 		});
 	}
 
@@ -2002,32 +1991,30 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les infos de la communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
-				assertNotNull(communaute);
+		doInNewTransactionAndSession(status -> {
+			final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+			assertNotNull(communaute);
 
-				// la communauté des 3 membres
-				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
-				assertNotNull(info);
-				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1, ids.ppId3), info.getCtbIds());
+			// la communauté des 3 membres
+			final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+			assertNotNull(info);
+			assertEquals(Arrays.asList(ids.ppId2, ids.ppId1, ids.ppId3), info.getCtbIds());
 
-				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
-				assertEquals(2, principaux.size());
+			final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+			assertEquals(2, principaux.size());
 
-				// la période où Philip est le principal
-				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
-				assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
-				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
-				assertEquals(datePartage.getOneDayBefore(), principal0.getDateFin());
+			// la période où Philip est le principal
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
+			assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+			assertEquals(datePartage.getOneDayBefore(), principal0.getDateFin());
 
-				// la période où Elodie est la principale
-				final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
-				assertEquals(ids.ppId2.longValue(), principal1.getCtbId());
-				assertEquals(datePartage, principal1.getDateDebut());
-				assertNull(principal1.getDateFin());
-			}
+			// la période où Elodie est la principale
+			final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+			assertEquals(ids.ppId2.longValue(), principal1.getCtbId());
+			assertEquals(datePartage, principal1.getDateDebut());
+			assertNull(principal1.getDateFin());
+			return null;
 		});
 	}
 
@@ -2129,79 +2116,77 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les infos de la communauté
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
-				assertNotNull(communaute);
+		doInNewTransactionAndSession(status -> {
+			final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+			assertNotNull(communaute);
 
-				// la communauté possède 4 membres (3 membres de base - le défunt + les deux héritiers)
-				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
-				assertNotNull(info);
-				assertEquals(Arrays.asList(ids.membre2, ids.heritier1, ids.heritier2, ids.membre3), info.getCtbIds());
+			// la communauté possède 4 membres (3 membres de base - le défunt + les deux héritiers)
+			final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+			assertNotNull(info);
+			assertEquals(Arrays.asList(ids.membre2, ids.heritier1, ids.heritier2, ids.membre3), info.getCtbIds());
 
-				// l'historique d'appartenance devrait contenir les 5 membres
-				final List<CommunauteRFAppartenanceInfo> membresHisto = info.getMembresHisto();
-				assertNotNull(membresHisto);
-				assertEquals(5, membresHisto.size());
+			// l'historique d'appartenance devrait contenir les 5 membres
+			final List<CommunauteRFAppartenanceInfo> membresHisto = info.getMembresHisto();
+			assertNotNull(membresHisto);
+			assertEquals(5, membresHisto.size());
 
-				// l'appartenance du défunt
-				final CommunauteRFAppartenanceInfo appartenance0 = membresHisto.get(0);
-				assertEquals(dateDebutCommunaute, appartenance0.getDateDebut());
-				assertEquals(dateDebutHeritage.getOneDayBefore(), appartenance0.getDateFin());
-				assertEquals(ids.defunt, appartenance0.getCtbId());
+			// l'appartenance du défunt
+			final CommunauteRFAppartenanceInfo appartenance0 = membresHisto.get(0);
+			assertEquals(dateDebutCommunaute, appartenance0.getDateDebut());
+			assertEquals(dateDebutHeritage.getOneDayBefore(), appartenance0.getDateFin());
+			assertEquals(ids.defunt, appartenance0.getCtbId());
 
-				// l'appartenance d'Elodie
-				final CommunauteRFAppartenanceInfo appartenance1 = membresHisto.get(1);
-				assertEquals(dateDebutCommunaute, appartenance1.getDateDebut());
-				assertNull(appartenance1.getDateFin());
-				assertEquals(ids.membre2, appartenance1.getCtbId());
+			// l'appartenance d'Elodie
+			final CommunauteRFAppartenanceInfo appartenance1 = membresHisto.get(1);
+			assertEquals(dateDebutCommunaute, appartenance1.getDateDebut());
+			assertNull(appartenance1.getDateFin());
+			assertEquals(ids.membre2, appartenance1.getCtbId());
 
-				// l'appartenance d'Edouard
-				final CommunauteRFAppartenanceInfo appartenance2 = membresHisto.get(2);
-				assertEquals(dateDebutCommunaute, appartenance2.getDateDebut());
-				assertNull(appartenance2.getDateFin());
-				assertEquals(ids.membre3, appartenance2.getCtbId());
+			// l'appartenance d'Edouard
+			final CommunauteRFAppartenanceInfo appartenance2 = membresHisto.get(2);
+			assertEquals(dateDebutCommunaute, appartenance2.getDateDebut());
+			assertNull(appartenance2.getDateFin());
+			assertEquals(ids.membre3, appartenance2.getCtbId());
 
-				// l'appartenance de Cosette (héritière)
-				final CommunauteRFAppartenanceInfo appartenance3 = membresHisto.get(3);
-				assertEquals(dateDebutHeritage, appartenance3.getDateDebut());
-				assertNull(appartenance3.getDateFin());
-				assertEquals(ids.heritier1, appartenance3.getCtbId());
+			// l'appartenance de Cosette (héritière)
+			final CommunauteRFAppartenanceInfo appartenance3 = membresHisto.get(3);
+			assertEquals(dateDebutHeritage, appartenance3.getDateDebut());
+			assertNull(appartenance3.getDateFin());
+			assertEquals(ids.heritier1, appartenance3.getCtbId());
 
-				// l'appartenance de Lucette (héritière)
-				final CommunauteRFAppartenanceInfo appartenance4 = membresHisto.get(4);
-				assertEquals(dateDebutHeritage, appartenance4.getDateDebut());
-				assertNull(appartenance4.getDateFin());
-				assertEquals(ids.heritier2, appartenance4.getCtbId());
+			// l'appartenance de Lucette (héritière)
+			final CommunauteRFAppartenanceInfo appartenance4 = membresHisto.get(4);
+			assertEquals(dateDebutHeritage, appartenance4.getDateDebut());
+			assertNull(appartenance4.getDateFin());
+			assertEquals(ids.heritier2, appartenance4.getCtbId());
 
-				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
-				assertEquals(4, principaux.size());
+			final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+			assertEquals(4, principaux.size());
 
-				// la période où le défunt est le principal (mais pas encore décédé)
-				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
-				assertEquals(ids.defunt.longValue(), principal0.getCtbId());
-				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
-				assertEquals(dateDebutHeritage.getOneDayBefore(), principal0.getDateFin());
+			// la période où le défunt est le principal (mais pas encore décédé)
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertEquals(ids.defunt.longValue(), principal0.getCtbId());
+			assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+			assertEquals(dateDebutHeritage.getOneDayBefore(), principal0.getDateFin());
 
-				// la période où le défunt est le principal, mais remplacé par son premier héritier principal
-				final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
-				assertEquals(ids.heritier1.longValue(), principal1.getCtbId());
-				assertEquals(dateDebutHeritage, principal1.getDateDebut());
-				assertEquals(dateChangementHeritierPrincipal.getOneDayBefore(), principal1.getDateFin());
+			// la période où le défunt est le principal, mais remplacé par son premier héritier principal
+			final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+			assertEquals(ids.heritier1.longValue(), principal1.getCtbId());
+			assertEquals(dateDebutHeritage, principal1.getDateDebut());
+			assertEquals(dateChangementHeritierPrincipal.getOneDayBefore(), principal1.getDateFin());
 
-				// la période où le défunt est le principal, mais remplacé par son second héritier principal
-				final CommunauteRFPrincipalInfo principal2 = principaux.get(2);
-				assertEquals(ids.heritier2.longValue(), principal2.getCtbId());
-				assertEquals(dateChangementHeritierPrincipal, principal2.getDateDebut());
-				assertEquals(dateChangementPrincipalRF.getOneDayBefore(), principal2.getDateFin());
+			// la période où le défunt est le principal, mais remplacé par son second héritier principal
+			final CommunauteRFPrincipalInfo principal2 = principaux.get(2);
+			assertEquals(ids.heritier2.longValue(), principal2.getCtbId());
+			assertEquals(dateChangementHeritierPrincipal, principal2.getDateDebut());
+			assertEquals(dateChangementPrincipalRF.getOneDayBefore(), principal2.getDateFin());
 
-				// la période où le tiers n°2 est le principal RF
-				final CommunauteRFPrincipalInfo principal3 = principaux.get(3);
-				assertEquals(ids.membre2.longValue(), principal3.getCtbId());
-				assertEquals(dateChangementPrincipalRF, principal3.getDateDebut());
-				assertNull(principal3.getDateFin());
-			}
+			// la période où le tiers n°2 est le principal RF
+			final CommunauteRFPrincipalInfo principal3 = principaux.get(3);
+			assertEquals(ids.membre2.longValue(), principal3.getCtbId());
+			assertEquals(dateChangementPrincipalRF, principal3.getDateDebut());
+			assertNull(principal3.getDateFin());
+			return null;
 		});
 	}
 

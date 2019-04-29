@@ -15,8 +15,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -194,47 +192,42 @@ public class DeterminerLRsEchuesProcessor {
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
 		final String sql = b.toString();
 
-		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(new TransactionCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
+		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
 			@Override
-			public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
-					@Override
-					public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInHibernate(Session session) throws HibernateException {
+			public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInHibernate(Session session) throws HibernateException {
 
-						final Query query = session.createSQLQuery(sql);
-						if (periodeFiscale != null) {
-							query.setParameter("pf", periodeFiscale);
-						}
+				final Query query = session.createSQLQuery(sql);
+				if (periodeFiscale != null) {
+					query.setParameter("pf", periodeFiscale);
+				}
 
-						@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
-						if (rows != null && !rows.isEmpty()) {
-							final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<>(rows.size());
-							for (Object[] row : rows) {
-								final int indexSommation = ((Number) row[4]).intValue();
-								final RegDate sommation = RegDate.fromIndex(indexSommation, false);
-								final RegDate echeanceReelle = getSeuilEcheanceSommation(sommation);
-								if (dateTraitement.isAfter(echeanceReelle)) {
-									final long idDebiteur = ((Number) row[1]).longValue();
-									final DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos.computeIfAbsent(idDebiteur, k -> new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur));
+				@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
+				if (rows != null && !rows.isEmpty()) {
+					final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<>(rows.size());
+					for (Object[] row : rows) {
+						final int indexSommation = ((Number) row[4]).intValue();
+						final RegDate sommation = RegDate.fromIndex(indexSommation, false);
+						final RegDate echeanceReelle = getSeuilEcheanceSommation(sommation);
+						if (dateTraitement.isAfter(echeanceReelle)) {
+							final long idDebiteur = ((Number) row[1]).longValue();
+							final DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos.computeIfAbsent(idDebiteur, k -> new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur));
 
-									final long id = ((Number) row[0]).longValue();
-									final int indexDebut = ((Number) row[2]).intValue();
-									final Number indexFin = ((Number) row[3]);
+							final long id = ((Number) row[0]).longValue();
+							final int indexDebut = ((Number) row[2]).intValue();
+							final Number indexFin = ((Number) row[3]);
 
-									final RegDate debut = RegDate.fromIndex(indexDebut, false);
-									final RegDate fin = indexFin != null ? RegDate.fromIndex(indexFin.intValue(), false) : null;
-									infoDebiteur.addLrEchue(id, debut, fin, sommation);
-								}
-							}
-							return new ArrayList<>(infos.values());
-						}
-						else {
-							return Collections.emptyList();
+							final RegDate debut = RegDate.fromIndex(indexDebut, false);
+							final RegDate fin = indexFin != null ? RegDate.fromIndex(indexFin.intValue(), false) : null;
+							infoDebiteur.addLrEchue(id, debut, fin, sommation);
 						}
 					}
-				});
+					return new ArrayList<>(infos.values());
+				}
+				else {
+					return Collections.emptyList();
+				}
 			}
-		});
+		}));
 
 		return infos;
 	}

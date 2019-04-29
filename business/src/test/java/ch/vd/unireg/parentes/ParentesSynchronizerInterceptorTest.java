@@ -3,13 +3,11 @@ package ch.vd.unireg.parentes;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.type.Sexe;
@@ -44,40 +42,33 @@ public class ParentesSynchronizerInterceptorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale avec synchronizer activé
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(noIndPapa);
-				final PersonnePhysique fifille = addHabitant(noIndFifille);
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique papa = addHabitant(noIndPapa);
+			final PersonnePhysique fifille = addHabitant(noIndFifille);
 
-				final Ids ids = new Ids();
-				ids.idPapa = papa.getNumero();
-				ids.idFifille = fifille.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idPapa = papa.getNumero();
+			ids1.idFifille = fifille.getNumero();
+			return ids1;
 		});
 
 		// vérification que les parentés ont été créées
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = (PersonnePhysique) tiersDAO.get(ids.idPapa);
-				assertNotNull(papa);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique papa = (PersonnePhysique) tiersDAO.get(ids.idPapa);
+			assertNotNull(papa);
 
-				final Set<RapportEntreTiers> rapports = papa.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = papa.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RapportEntreTiers rapport = rapports.iterator().next();
-				assertNotNull(rapport);
-				assertEquals((Long) ids.idPapa, rapport.getObjetId());
-				assertEquals((Long) ids.idFifille, rapport.getSujetId());
-				assertEquals(dateNaissanceFifille, rapport.getDateDebut());
-				assertNull(rapport.getDateFin());
-				assertFalse(rapport.isAnnule());
-
-				return null;
-			}
+			final RapportEntreTiers rapport = rapports.iterator().next();
+			assertNotNull(rapport);
+			assertEquals((Long) ids.idPapa, rapport.getObjetId());
+			assertEquals((Long) ids.idFifille, rapport.getSujetId());
+			assertEquals(dateNaissanceFifille, rapport.getDateDebut());
+			assertNull(rapport.getDateFin());
+			assertFalse(rapport.isAnnule());
+			return null;
 		});
 	}
 }

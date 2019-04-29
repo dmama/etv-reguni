@@ -16,9 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -668,20 +665,16 @@ public class DeterminationDIsPMAEmettreProcessor {
 	protected List<Long> createListeIdsContribuables() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
+		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final String hql = "select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ff.genreImpot = 'BENEFICE_CAPITAL' order by ff.tiers.id";
-						final Query query = session.createQuery(hql);
-						//noinspection unchecked
-						return query.list();
-					}
-				});
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final String hql =
+						"select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ff.genreImpot = 'BENEFICE_CAPITAL' order by ff.tiers.id";
+				final Query query = session.createQuery(hql);
+				//noinspection unchecked
+				return query.list();
 			}
-		});
+		}));
 	}
 
 	/**
@@ -711,15 +704,14 @@ public class DeterminationDIsPMAEmettreProcessor {
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
-			template.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					// Récupère la période fiscale
-					final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriodeFiscale);
-					if (periode == null) {
-						throw new RuntimeException(String.format("La période fiscale %d n'existe pas dans la base de données.", anneePeriodeFiscale));
-					}
+			template.execute(status -> {
+				// Récupère la période fiscale
+				final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriodeFiscale);
+				if (periode == null) {
+					throw new RuntimeException(String.format("La période fiscale %d n'existe pas dans la base de données.", anneePeriodeFiscale));
 				}
+				;
+				return null;
 			});
 		}
 		catch (Exception e) {

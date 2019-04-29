@@ -16,8 +16,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -129,23 +127,20 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 					// read-only transaction
 					session.setFlushMode(FlushMode.MANUAL);
 					transactionTemplate.setReadOnly(true);
-					transactionTemplate.execute(new TransactionCallback<Object>() {
-						@Override
-						public Object doInTransaction(TransactionStatus transactionStatus) {
-							final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
+					transactionTemplate.execute(status -> {
+						final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
 
-							// prefetch des données civiles
-							prefetchDonneesCiviles(ids, null);
+						// prefetch des données civiles
+						prefetchDonneesCiviles(ids, null);
 
-							for (Tiers t : tiers) {
-								traiteTiers(t);
-								niveauExtraction.increment();
-								if (interruptible.isInterrupted()) {
-									break;
-								}
+						for (Tiers t : tiers) {
+							traiteTiers(t);
+							niveauExtraction.increment();
+							if (interruptible.isInterrupted()) {
+								break;
 							}
-							return null;
 						}
+						return null;
 					});
 
 					return null;
@@ -195,19 +190,16 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
 					// read-only transaction
 					transactionTemplate.setReadOnly(true);
-					transactionTemplate.execute(new TransactionCallback<Object>() {
-						@Override
-						public Object doInTransaction(TransactionStatus transactionStatus) {
-							try {
-								final Tiers tiers = tiersDAO.get(id);
-								traiteTiers(tiers);
-							}
-							catch (Exception e) {
-								LOGGER.error("Exception levée sur le tiers " + id, e);
-								results.addErrorException(id, e);
-							}
-							return null;
+					transactionTemplate.execute(status -> {
+						try {
+							final Tiers tiers = tiersDAO.get(id);
+							traiteTiers(tiers);
 						}
+						catch (Exception e) {
+							LOGGER.error("Exception levée sur le tiers " + id, e);
+							results.addErrorException(id, e);
+						}
+						return null;
 					});
 
 					return null;

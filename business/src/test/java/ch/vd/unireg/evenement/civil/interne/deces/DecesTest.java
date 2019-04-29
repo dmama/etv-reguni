@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
@@ -199,13 +198,10 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne seule.");
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
-				assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
+			assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
+			return null;
 		});
 
 		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, date(2008, 12, 31));
@@ -239,13 +235,10 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un Suisse ou étranger avec permis C.");
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE);
-				assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE);
+			assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
+			return null;
 		});
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -333,13 +326,10 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un étranger sans permis C.");
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER);
-				assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER);
+			assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
+			return null;
 		});
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -449,24 +439,18 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				pp.setDateDeces(dateDeces);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			pp.setDateDeces(dateDeces);
+			return pp.getNumero();
 		});
 
 		// vérification du flag "habitant"
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertEquals(dateDeces, pp.getDateDeces());
-				assertTrue(pp.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertEquals(dateDeces, pp.getDateDeces());
+			assertTrue(pp.isHabitantVD());
+			return null;
 		});
 
 		// envoi de l'événement civil de décès
@@ -486,14 +470,11 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// vérification du flag habitant sur le contribuable
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertEquals(dateDeces, pp.getDateDeces());
-				assertFalse(pp.isHabitantVD());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertEquals(dateDeces, pp.getDateDeces());
+			assertFalse(pp.isHabitantVD());
+			return null;
 		});
 	}
 }

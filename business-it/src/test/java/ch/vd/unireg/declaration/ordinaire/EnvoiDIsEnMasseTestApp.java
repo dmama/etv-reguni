@@ -2,8 +2,6 @@ package ch.vd.unireg.declaration.ordinaire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -73,17 +71,14 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 	 */
 	private void envoyerDIsEnMasseEnTransaction(TransactionTemplate template, final CategorieEnvoiDIPP categorie) {
 
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				try {
-					LOGGER.info("Envoi des DIS vaudois ordinaires...");
-					service.envoyerDIsPPEnMasse(2008, categorie, null, null, 100000, RegDate.get(2009, 1, 15), false, 1, null);
-					return null;
-				}
-				catch (DeclarationException e) {
-					throw new RuntimeException(e);
-				}
+		template.execute(status -> {
+			try {
+				LOGGER.info("Envoi des DIS vaudois ordinaires...");
+				service.envoyerDIsPPEnMasse(2008, categorie, null, null, 100000, RegDate.get(2009, 1, 15), false, 1, null);
+				return null;
+			}
+			catch (DeclarationException e) {
+				throw new RuntimeException(e);
 			}
 		});
 	}

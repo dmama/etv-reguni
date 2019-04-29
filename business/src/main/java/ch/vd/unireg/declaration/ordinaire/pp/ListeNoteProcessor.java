@@ -14,8 +14,6 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -201,41 +199,34 @@ public class ListeNoteProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final Map<Long, List<ForFiscalSecondaire>> mapInfo = template.execute(new TransactionCallback<Map<Long, List<ForFiscalSecondaire>>>() {
-			@Override
-			public Map<Long, List<ForFiscalSecondaire>> doInTransaction(TransactionStatus status) {
-
-				final List<Object[]> listeFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Object[]>>() {
-					@Override
-					public List<Object[]> doInHibernate(Session session) throws HibernateException {
-						Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
-						queryObject.setParameter("debutAnnee", debutAnnee);
-						queryObject.setParameter("finAnnee", finAnnee);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
+		final Map<Long, List<ForFiscalSecondaire>> mapInfo = template.execute(status -> {
+			final List<Object[]> listeFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Object[]>>() {
+				@Override
+				public List<Object[]> doInHibernate(Session session) throws HibernateException {
+					Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
+					queryObject.setParameter("debutAnnee", debutAnnee);
+					queryObject.setParameter("finAnnee", finAnnee);
+					//noinspection unchecked
+					return queryObject.list();
+				}
+			});
 
 
-				//Construction de la map <numeroctb;Liste des fors secondaires fermés>
-				final Map<Long, List<ForFiscalSecondaire>> mapInfo = new HashMap<>();
-				for (Object[] listeId : listeFors) {
-					final long numeroCtb = ((Number) listeId[0]).longValue();
-					final ForFiscalSecondaire forSecondaire = (ForFiscalSecondaire) listeId[1];
-					List<ForFiscalSecondaire> listeForSecondaire = mapInfo.get(numeroCtb);
-					if (listeForSecondaire == null) {
-						listeForSecondaire = new ArrayList<>();
-
-					}
-					listeForSecondaire.add(forSecondaire);
-					mapInfo.put(numeroCtb, listeForSecondaire);
+			//Construction de la map <numeroctb;Liste des fors secondaires fermés>
+			final Map<Long, List<ForFiscalSecondaire>> map = new HashMap<>();
+			for (Object[] listeId : listeFors) {
+				final long numeroCtb = ((Number) listeId[0]).longValue();
+				final ForFiscalSecondaire forSecondaire = (ForFiscalSecondaire) listeId[1];
+				List<ForFiscalSecondaire> listeForSecondaire = map.get(numeroCtb);
+				if (listeForSecondaire == null) {
+					listeForSecondaire = new ArrayList<>();
 
 				}
+				listeForSecondaire.add(forSecondaire);
+				map.put(numeroCtb, listeForSecondaire);
 
-				return mapInfo;
 			}
-
-
+			return map;
 		});
 
 

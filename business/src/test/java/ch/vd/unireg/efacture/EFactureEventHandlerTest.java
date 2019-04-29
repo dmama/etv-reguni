@@ -102,15 +102,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -167,15 +164,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -233,15 +227,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -300,15 +291,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -367,15 +355,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -434,15 +419,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -503,15 +485,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvsUnireg);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvsUnireg);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -570,21 +549,18 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
-				final MenageCommun mc = couple.getMenage();
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
 
-				elle.setNumeroAssureSocial(noAvs1);
-				lui.setNumeroAssureSocial(noAvs2);
-				return mc.getNumero();
-			}
+			elle.setNumeroAssureSocial(noAvs1);
+			lui.setNumeroAssureSocial(noAvs2);
+			return mc.getNumero();
 		});
 
 		// mise en place...
@@ -642,15 +618,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvsUnireg);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvsUnireg);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -709,21 +682,18 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
-				final MenageCommun mc = couple.getMenage();
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
 
-				elle.setNumeroAssureSocial(noAvs1);
-				lui.setNumeroAssureSocial(noAvs2);
-				return mc.getNumero();
-			}
+			elle.setNumeroAssureSocial(noAvs1);
+			lui.setNumeroAssureSocial(noAvs2);
+			return mc.getNumero();
 		});
 
 		// mise en place...
@@ -782,21 +752,18 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
-				final MenageCommun mc = couple.getMenage();
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
 
-				lui.setNumeroAssureSocial(noAvs1);
-				elle.setNumeroAssureSocial(noAvs2);
-				return mc.getNumero();
-			}
+			lui.setNumeroAssureSocial(noAvs1);
+			elle.setNumeroAssureSocial(noAvs2);
+			return mc.getNumero();
 		});
 
 		// mise en place...
@@ -855,21 +822,18 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
-				final MenageCommun mc = couple.getMenage();
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			final PersonnePhysique elle = addNonHabitant("Françoise", "Dufoin", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(2010, 1, 1), null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			addForPrincipal(mc, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(lui, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
 
-				elle.setNumeroAssureSocial(noAvs1);
-				lui.setNumeroAssureSocial(noAvs2);
-				return mc.getNumero();
-			}
+			elle.setNumeroAssureSocial(noAvs1);
+			lui.setNumeroAssureSocial(noAvs2);
+			return mc.getNumero();
 		});
 
 		// mise en place...
@@ -927,15 +891,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -993,15 +954,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1059,15 +1017,12 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 13), null, MockRue.Lausanne.CheminPrazBerthoud);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1192,14 +1147,11 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1258,14 +1210,11 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1324,14 +1273,11 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bale);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bale);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1390,16 +1336,13 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.INDETERMINE, MockPays.France);
-				pp.setNumeroAssureSocial(noAvs);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.INDETERMINE, MockPays.France);
+			pp.setNumeroAssureSocial(noAvs);
 
-				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 12), null, "35 rue des alouettes", "63000 Clermont-Ferrand", MockPays.France);
-				return pp.getNumero();
-			}
+			addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 12), null, "35 rue des alouettes", "63000 Clermont-Ferrand", MockPays.France);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1457,14 +1400,11 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...
@@ -1521,14 +1461,11 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				pp.setNumeroAssureSocial(noAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			pp.setNumeroAssureSocial(noAvs);
+			return pp.getNumero();
 		});
 
 		// mise en place...

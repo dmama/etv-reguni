@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -65,29 +62,25 @@ public class ServiceIDERadiationEntrepriseTest extends AbstractServiceIDEService
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
 		// Création de l'entreprise
-		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		final Long noEntreprise = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+			addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
-				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
+			addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
+			addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
-				//entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+			//entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
-				adresseSuisse.setNumeroMaison("1");
+			final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+			adresseSuisse.setNumeroMaison("1");
 
-				addEtatEntreprise(entreprise, date(2016, 9, 5), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addEtatEntreprise(entreprise, date(2017, 3, 15), TypeEtatEntreprise.DISSOUTE, TypeGenerationEtatEntreprise.MANUELLE);
-
-				return entreprise.getNumero();
-			}
+			addEtatEntreprise(entreprise, date(2016, 9, 5), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addEtatEntreprise(entreprise, date(2017, 3, 15), TypeEtatEntreprise.DISSOUTE, TypeGenerationEtatEntreprise.MANUELLE);
+			return entreprise.getNumero();
 		});
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
@@ -120,90 +113,85 @@ public class ServiceIDERadiationEntrepriseTest extends AbstractServiceIDEService
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
-			@Override
-			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
-				try {
-					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
-				} catch (Exception e) {
-					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
-					return null;
-				}
+		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(transactionStatus -> {
+			try {
+				return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
+			} catch (Exception e) {
+				fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
+				return null;
 			}
 		});
 
 		// Vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-				assertNotNull(annonceIDE.getNumero());
-				final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(annonceIDE.getNumero());
-				Assert.assertNotNull(referenceAnnonceIDE);
+			assertNotNull(annonceIDE.getNumero());
+			final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(annonceIDE.getNumero());
+			Assert.assertNotNull(referenceAnnonceIDE);
 
-				assertNotNull(annonceIDESender.getMsgBusinessIdUtilisee());
-				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
+			assertNotNull(annonceIDESender.getMsgBusinessIdUtilisee());
+			assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
 
-				assertEquals(TypeAnnonce.RADIATION, annonceIDE.getType());
-				assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
+			assertEquals(TypeAnnonce.RADIATION, annonceIDE.getType());
+			assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
 
-				assertNotNull(annonceIDE.getNoIde());
-				assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
-				assertNull(annonceIDE.getNoIdeRemplacant());
-				assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
+			assertNotNull(annonceIDE.getNoIde());
+			assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
+			assertNull(annonceIDE.getNoIdeRemplacant());
+			assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
 
-				assertNull(annonceIDE.getRaisonDeRadiation());
+			assertNull(annonceIDE.getRaisonDeRadiation());
 
-				assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
+			assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
 
-				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
-				assertNull(statut);
+			final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
+			assertNull(statut);
 
-				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
-				assertNotNull(infoServiceIDEObligEtendues);
-				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
-				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
-				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
+			final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
+			assertNotNull(infoServiceIDEObligEtendues);
+			assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
+			assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
+			assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
-				final BaseAnnonceIDE.InformationEntreprise informationEntreprise = annonceIDE.getInformationEntreprise();
-				assertNotNull(informationEntreprise);
-				assertNotNull(informationEntreprise.getNumeroEntreprise());
-				assertEquals(noEntrepriseCivile, informationEntreprise.getNumeroEntreprise());
-				assertNotNull(informationEntreprise.getNumeroEtablissement());
-				assertEquals(noEtablissement, informationEntreprise.getNumeroEtablissement());
-				assertNull(informationEntreprise.getNumeroEtablissementRemplacant());
+			final BaseAnnonceIDE.InformationEntreprise informationEntreprise = annonceIDE.getInformationEntreprise();
+			assertNotNull(informationEntreprise);
+			assertNotNull(informationEntreprise.getNumeroEntreprise());
+			assertEquals(noEntrepriseCivile, informationEntreprise.getNumeroEntreprise());
+			assertNotNull(informationEntreprise.getNumeroEtablissement());
+			assertEquals(noEtablissement, informationEntreprise.getNumeroEtablissement());
+			assertNull(informationEntreprise.getNumeroEtablissementRemplacant());
 
-				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
-				assertNotNull(utilisateur);
-				assertEquals(RCEntAnnonceIDEHelper.UNIREG_USER, utilisateur.getUserId());
-				assertNull(utilisateur.getTelephone());
+			final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
+			assertNotNull(utilisateur);
+			assertEquals(RCEntAnnonceIDEHelper.UNIREG_USER, utilisateur.getUserId());
+			assertNull(utilisateur.getTelephone());
 
-				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
-				assertNotNull(contenu);
-				assertEquals("Syntruc Asso", contenu.getNom());
-				assertNull(contenu.getNomAdditionnel());
-				assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
-				assertNull(contenu.getSecteurActivite());
+			final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+			assertNotNull(contenu);
+			assertEquals("Syntruc Asso", contenu.getNom());
+			assertNull(contenu.getNomAdditionnel());
+			assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
+			assertNull(contenu.getSecteurActivite());
 
-				final AdresseAnnonceIDE adresse = contenu.getAdresse();
-				assertNotNull(adresse);
-				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
-				assertEquals("1", adresse.getNumero());
-				assertNull(adresse.getNumeroAppartement());
-				assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
-				assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
-				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
+			final AdresseAnnonceIDE adresse = contenu.getAdresse();
+			assertNotNull(adresse);
+			assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
+			assertEquals("1", adresse.getNumero());
+			assertNull(adresse.getNumeroAppartement());
+			assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
+			assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
+			assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
 
-				assertNull(adresse.getNumeroCasePostale());
-				assertNull(adresse.getTexteCasePostale());
+			assertNull(adresse.getNumeroCasePostale());
+			assertNull(adresse.getTexteCasePostale());
 
-				final AdresseAnnonceIDE.Pays pays = adresse.getPays();
-				assertNotNull(pays);
-				assertEquals(MockPays.Suisse.getNoOFS(), pays.getNoOfs().intValue());
-				assertEquals(MockPays.Suisse.getCodeIso2(), pays.getCodeISO2());
-				assertEquals(MockPays.Suisse.getNomCourt(), pays.getNomCourt());
-			}
+			final AdresseAnnonceIDE.Pays pays = adresse.getPays();
+			assertNotNull(pays);
+			assertEquals(MockPays.Suisse.getNoOFS(), pays.getNoOfs().intValue());
+			assertEquals(MockPays.Suisse.getCodeIso2(), pays.getCodeISO2());
+			assertEquals(MockPays.Suisse.getNomCourt(), pays.getNomCourt());
+			return null;
 		});
 	}
 
@@ -217,29 +205,25 @@ public class ServiceIDERadiationEntrepriseTest extends AbstractServiceIDEService
 		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
 		// Création de l'entreprise
-		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		final Long noEntreprise = doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+			addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
-				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
+			addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
+			addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
-				//entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+			//entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
-				adresseSuisse.setNumeroMaison("1");
+			final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+			adresseSuisse.setNumeroMaison("1");
 
-				addEtatEntreprise(entreprise, date(2016, 9, 5), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addEtatEntreprise(entreprise, date(2017, 3, 15), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
-
-				return entreprise.getNumero();
-			}
+			addEtatEntreprise(entreprise, date(2016, 9, 5), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addEtatEntreprise(entreprise, date(2017, 3, 15), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
+			return entreprise.getNumero();
 		});
 
 		serviceEntreprise.setUp(new MockServiceEntreprise() {
@@ -272,90 +256,85 @@ public class ServiceIDERadiationEntrepriseTest extends AbstractServiceIDEService
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
-			@Override
-			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
-				try {
-					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
-				} catch (Exception e) {
-					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
-					return null;
-				}
+		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(transactionStatus -> {
+			try {
+				return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
+			} catch (Exception e) {
+				fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
+				return null;
 			}
 		});
 
 		// Vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-				assertNotNull(annonceIDE.getNumero());
-				final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(annonceIDE.getNumero());
-				Assert.assertNotNull(referenceAnnonceIDE);
+			assertNotNull(annonceIDE.getNumero());
+			final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(annonceIDE.getNumero());
+			Assert.assertNotNull(referenceAnnonceIDE);
 
-				assertNotNull(annonceIDESender.getMsgBusinessIdUtilisee());
-				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
+			assertNotNull(annonceIDESender.getMsgBusinessIdUtilisee());
+			assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
 
-				assertEquals(TypeAnnonce.RADIATION, annonceIDE.getType());
-				assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
+			assertEquals(TypeAnnonce.RADIATION, annonceIDE.getType());
+			assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
 
-				assertNotNull(annonceIDE.getNoIde());
-				assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
-				assertNull(annonceIDE.getNoIdeRemplacant());
-				assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
+			assertNotNull(annonceIDE.getNoIde());
+			assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
+			assertNull(annonceIDE.getNoIdeRemplacant());
+			assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
 
-				assertNull(annonceIDE.getRaisonDeRadiation());
+			assertNull(annonceIDE.getRaisonDeRadiation());
 
-				assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
+			assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
 
-				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
-				assertNull(statut);
+			final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
+			assertNull(statut);
 
-				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
-				assertNotNull(infoServiceIDEObligEtendues);
-				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
-				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
-				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
+			final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
+			assertNotNull(infoServiceIDEObligEtendues);
+			assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
+			assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
+			assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
-				final BaseAnnonceIDE.InformationEntreprise informationEntreprise = annonceIDE.getInformationEntreprise();
-				assertNotNull(informationEntreprise);
-				assertNotNull(informationEntreprise.getNumeroEntreprise());
-				assertEquals(noEntrepriseCivile, informationEntreprise.getNumeroEntreprise());
-				assertNotNull(informationEntreprise.getNumeroEtablissement());
-				assertEquals(noEtablissement, informationEntreprise.getNumeroEtablissement());
-				assertNull(informationEntreprise.getNumeroEtablissementRemplacant());
+			final BaseAnnonceIDE.InformationEntreprise informationEntreprise = annonceIDE.getInformationEntreprise();
+			assertNotNull(informationEntreprise);
+			assertNotNull(informationEntreprise.getNumeroEntreprise());
+			assertEquals(noEntrepriseCivile, informationEntreprise.getNumeroEntreprise());
+			assertNotNull(informationEntreprise.getNumeroEtablissement());
+			assertEquals(noEtablissement, informationEntreprise.getNumeroEtablissement());
+			assertNull(informationEntreprise.getNumeroEtablissementRemplacant());
 
-				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
-				assertNotNull(utilisateur);
-				assertEquals(RCEntAnnonceIDEHelper.UNIREG_USER, utilisateur.getUserId());
-				assertNull(utilisateur.getTelephone());
+			final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
+			assertNotNull(utilisateur);
+			assertEquals(RCEntAnnonceIDEHelper.UNIREG_USER, utilisateur.getUserId());
+			assertNull(utilisateur.getTelephone());
 
-				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
-				assertNotNull(contenu);
-				assertEquals("Syntruc Asso", contenu.getNom());
-				assertNull(contenu.getNomAdditionnel());
-				assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
-				assertNull(contenu.getSecteurActivite());
+			final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+			assertNotNull(contenu);
+			assertEquals("Syntruc Asso", contenu.getNom());
+			assertNull(contenu.getNomAdditionnel());
+			assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
+			assertNull(contenu.getSecteurActivite());
 
-				final AdresseAnnonceIDE adresse = contenu.getAdresse();
-				assertNotNull(adresse);
-				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
-				assertEquals("1", adresse.getNumero());
-				assertNull(adresse.getNumeroAppartement());
-				assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
-				assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
-				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
+			final AdresseAnnonceIDE adresse = contenu.getAdresse();
+			assertNotNull(adresse);
+			assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
+			assertEquals("1", adresse.getNumero());
+			assertNull(adresse.getNumeroAppartement());
+			assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
+			assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
+			assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
 
-				assertNull(adresse.getNumeroCasePostale());
-				assertNull(adresse.getTexteCasePostale());
+			assertNull(adresse.getNumeroCasePostale());
+			assertNull(adresse.getTexteCasePostale());
 
-				final AdresseAnnonceIDE.Pays pays = adresse.getPays();
-				assertNotNull(pays);
-				assertEquals(MockPays.Suisse.getNoOFS(), pays.getNoOfs().intValue());
-				assertEquals(MockPays.Suisse.getCodeIso2(), pays.getCodeISO2());
-				assertEquals(MockPays.Suisse.getNomCourt(), pays.getNomCourt());
-			}
+			final AdresseAnnonceIDE.Pays pays = adresse.getPays();
+			assertNotNull(pays);
+			assertEquals(MockPays.Suisse.getNoOFS(), pays.getNoOfs().intValue());
+			assertEquals(MockPays.Suisse.getCodeIso2(), pays.getCodeISO2());
+			assertEquals(MockPays.Suisse.getNomCourt(), pays.getNomCourt());
+			return null;
 		});
 	}
 }

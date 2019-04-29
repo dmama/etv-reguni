@@ -4,14 +4,8 @@ import net.sf.ehcache.CacheManager;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -22,6 +16,10 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
@@ -207,12 +205,9 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			serviceCivil.setUp(cache);
 
 			// mise en place fiscale
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addHabitant(noIndividuPere);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addHabitant(noIndividuPere);
+				return pp.getNumero();
 			});
 
 			// remplissons le cache avec toutes les données
@@ -256,32 +251,26 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			});
 
 			// création de l'événement civil qui va passer par cette stratégie sur le père (= celui qui a des relations avec tous les autres)
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(2367353L);
-					evt.setNumeroIndividu(noIndividuPere);
-					evt.setType(TypeEvenementCivilEch.TESTING);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(RegDate.get());
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(2367353L);
+				evt.setNumeroIndividu(noIndividuPere);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(RegDate.get());
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traite l'événement civil
 			traiterEvenements(noIndividuPere);
 
 			// l'événement civil doit avoir été traité
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(expectedEventState, evt.getEtat());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(expectedEventState, evt.getEtat());
+				return null;
 			});
 
 			// la relation père -> enfant n'est pas fournie par le civil, donc le cache de l'enfant n'a pas été rafraîchi
@@ -331,15 +320,12 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			serviceCivil.setUp(cache);
 
 			// mise en place fiscale
-			doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					addHabitant(noIndividuPere);
-					addHabitant(noIndividuMere);
-					addHabitant(noIndividuFils);
-					addHabitant(noIndividuGrandPere);
-					return null;
-				}
+			doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+				addHabitant(noIndividuPere);
+				addHabitant(noIndividuMere);
+				addHabitant(noIndividuFils);
+				addHabitant(noIndividuGrandPere);
+				return null;
 			});
 
 			// remplissons le cache avec toutes les données
@@ -383,32 +369,26 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 			});
 
 			// création de l'événement civil qui va passer par cette stratégie sur le père (= celui qui a des relations avec tous les autres)
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(2367353L);
-					evt.setNumeroIndividu(noIndividuPere);
-					evt.setType(TypeEvenementCivilEch.TESTING);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(RegDate.get());
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(2367353L);
+				evt.setNumeroIndividu(noIndividuPere);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(RegDate.get());
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traite l'événement civil
 			traiterEvenements(noIndividuPere);
 
 			// l'événement civil doit avoir été traité
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					Assert.assertNotNull(evt);
-					Assert.assertEquals(expectedEventState, evt.getEtat());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(expectedEventState, evt.getEtat());
+				return null;
 			});
 
 			// la relation père -> enfant n'est pas fournie par le civil, mais par le fiscal, oui -> le nouveau prénom doit apparaître aussi

@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -145,28 +144,25 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 	 */
 	private boolean processEvent(final EvenementEntrepriseBasicInfo info, final boolean force) {
 		try {
-			return doInNewTransaction(new TransactionCallback<Boolean>() {
-				@Override
-				public Boolean doInTransaction(TransactionStatus status) {
+			return doInNewTransaction(status -> {
 
-					// première chose, on invalide le cache de l'entreprise (afin que les stratégies aient déjà une version à jour de l'entreprise)
-					dataEventService.onEntrepriseChange(info.getNoEntrepriseCivile());
+				// première chose, on invalide le cache de l'entreprise (afin que les stratégies aient déjà une version à jour de l'entreprise)
+				dataEventService.onEntrepriseChange(info.getNoEntrepriseCivile());
 
-					// Detecter les événements déjà traités
-					final EvenementEntreprise evt = fetchDatabaseEvent(info);
-					if (evt.getEtat().isTraite()) {
-						if (!force || info.getEtat() != EtatEvenementEntreprise.A_VERIFIER) {
-							audit.info(evt.getId(), String.format("Evénement %s (rcent: %d) déjà dans l'état %s, on ne le re-traite pas", info.getId(), info.getNoEvenement(), evt.getEtat()));
-							return Boolean.TRUE;
-						}
+				// Detecter les événements déjà traités
+				final EvenementEntreprise evt = fetchDatabaseEvent(info);
+				if (evt.getEtat().isTraite()) {
+					if (!force || info.getEtat() != EtatEvenementEntreprise.A_VERIFIER) {
+						audit.info(evt.getId(), String.format("Evénement %s (rcent: %d) déjà dans l'état %s, on ne le re-traite pas", info.getId(), info.getNoEvenement(), evt.getEtat()));
+						return Boolean.TRUE;
 					}
+				}
 
-					try {
-						return processEvent(evt, force);
-					}
-					catch (EvenementEntrepriseException e) {
-						throw new EvenementEntrepriseWrappingException(e);
-					}
+				try {
+					return processEvent(evt, force);
+				}
+				catch (EvenementEntrepriseException e) {
+					throw new EvenementEntrepriseWrappingException(e);
 				}
 			});
 		}
@@ -206,33 +202,30 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 	 * @param e exception qui a sauté
 	 */
 	private void onException(final EvenementEntrepriseBasicInfo info, final Exception e, final boolean force) {
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementEntreprise evt = fetchDatabaseEvent(info);
-				if (!force) {
-					cleanupAvantTraitement(evt);
-				}
-				addDateTraitement(evt);
-
-				// c'est un cas spécial, on veut conserver les messages...
-				final boolean keepStack;
-				if (e instanceof EvenementEntrepriseConservationMessagesException) {
-					final EvenementEntrepriseConservationMessagesException ex = (EvenementEntrepriseConservationMessagesException) e;
-					final EvenementEntrepriseMessageCollector<EvenementEntrepriseErreur> messageCollector = ex.getMessageCollector();
-					keepStack = ex.keepStack();
-					evt.getErreurs().addAll(messageCollector.getEntrees());
-				}
-				else {
-					keepStack = true;
-				}
-
-				final EvenementEntrepriseErreur erreur = keepStack ? ERREUR_FACTORY.createErreur(e) : ERREUR_FACTORY.createErreur(e.getMessage());
-				evt.getErreurs().add(erreur);
-
-				assignerEtatApresTraitement(EtatEvenementEntreprise.EN_ERREUR, evt);
-				return null;
+		doInNewTransaction(status -> {
+			final EvenementEntreprise evt = fetchDatabaseEvent(info);
+			if (!force) {
+				cleanupAvantTraitement(evt);
 			}
+			addDateTraitement(evt);
+
+			// c'est un cas spécial, on veut conserver les messages...
+			final boolean keepStack;
+			if (e instanceof EvenementEntrepriseConservationMessagesException) {
+				final EvenementEntrepriseConservationMessagesException ex = (EvenementEntrepriseConservationMessagesException) e;
+				final EvenementEntrepriseMessageCollector<EvenementEntrepriseErreur> messageCollector = ex.getMessageCollector();
+				keepStack = ex.keepStack();
+				evt.getErreurs().addAll(messageCollector.getEntrees());
+			}
+			else {
+				keepStack = true;
+			}
+
+			final EvenementEntrepriseErreur erreur = keepStack ? ERREUR_FACTORY.createErreur(e) : ERREUR_FACTORY.createErreur(e.getMessage());
+			evt.getErreurs().add(erreur);
+
+			assignerEtatApresTraitement(EtatEvenementEntreprise.EN_ERREUR, evt);
+			return null;
 		});
 	}
 
@@ -253,12 +246,7 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 				final Mutable<Object> dataHolder = new MutableObject<>();
 				if (strategy.needsTransactionOnCollectPhase()) {
 					final List<EvenementEntrepriseBasicInfo> toAnalyse = currentlyRemaining;
-					currentlyRemaining = doInNewTransaction(new TransactionCallback<List<EvenementEntrepriseBasicInfo>>() {
-						@Override
-						public List<EvenementEntrepriseBasicInfo> doInTransaction(TransactionStatus status) {
-							return strategy.doCollectPhase(toAnalyse, dataHolder);
-						}
-					});
+					currentlyRemaining = doInNewTransaction(status -> strategy.doCollectPhase(toAnalyse, dataHolder));
 				}
 				else {
 					currentlyRemaining = strategy.doCollectPhase(currentlyRemaining, dataHolder);
@@ -266,12 +254,9 @@ public class EvenementEntrepriseProcessorInternal implements ProcessorInternal, 
 
 				// phase de finalisation
 				if (strategy.needsTransactionOnFinalizePhase()) {
-					doInNewTransaction(new TransactionCallback<Object>() {
-						@Override
-						public Object doInTransaction(TransactionStatus status) {
-							strategy.doFinalizePhase(dataHolder.getValue());
-							return null;
-						}
+					doInNewTransaction(status -> {
+						strategy.doFinalizePhase(dataHolder.getValue());
+						return null;
 					});
 				}
 				else {

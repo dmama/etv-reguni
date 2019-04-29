@@ -3,8 +3,6 @@ package ch.vd.unireg.stats.evenements;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -115,7 +113,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
 		final boolean notaires = getBooleanValue(params, EVTS_NOTAIRES);
 		final int dureeReference = getPositiveIntegerValue(params, DUREE_REFERENCE);
-		final RegDate debutActivite = RegDate.get().addDays(- dureeReference);
+		final RegDate debutActivite = RegDate.get().addDays(-dureeReference);
 
 		// lancement des extractions
 		final StatsEvenementsCivilsPersonnesResults resultatsCivilsPersonnes = civils ? service.getStatistiquesEvenementsCivilsPersonnes(debutActivite) : null;
@@ -127,12 +125,8 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
-			@Override
-			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(resultatsCivilsPersonnes, resultatsEntreprises, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager());
-			}
-		});
+		final StatistiquesEvenementsRapport rapport =
+				template.execute(status -> rapportService.generateRapport(resultatsCivilsPersonnes, resultatsEntreprises, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager()));
 
 		setLastRunReport(rapport);
 		audit.success("La production des statistiques des événements reçus en date du " + RegDate.get() + " est terminée.", rapport);

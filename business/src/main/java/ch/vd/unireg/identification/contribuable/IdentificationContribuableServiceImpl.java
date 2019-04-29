@@ -30,9 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -1656,12 +1654,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private <T> void fillValues(IdentificationContribuableCache cache, final CustomValueFiller<T> filler) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final Map<Etat, List<T>> map = template.execute(new TransactionCallback<Map<Etat, List<T>>>() {
-			@Override
-			public Map<Etat, List<T>> doInTransaction(TransactionStatus transactionStatus) {
-				return filler.getValuesParEtat(identCtbDAO);
-			}
-		});
+		final Map<Etat, List<T>> map = template.execute(status -> filler.getValuesParEtat(identCtbDAO));
 
 		// assignation des valeurs
 		filler.fillCache(cache, map);
@@ -1685,12 +1678,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final Map<TypeDemande, Map<Etat, List<String>>> map = template.execute(new TransactionCallback<Map<TypeDemande, Map<Etat, List<String>>>>() {
-			@Override
-			public Map<TypeDemande, Map<Etat, List<String>>> doInTransaction(TransactionStatus status) {
-				return identCtbDAO.getTypesMessages();
-			}
-		});
+		final Map<TypeDemande, Map<Etat, List<String>>> map = template.execute(status -> identCtbDAO.getTypesMessages());
 
 		cache.setTypesMessages(map);
 	}
@@ -1699,13 +1687,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-		return template.execute(new TransactionCallback<List<String>>() {
-			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				return identCtbDAO.getTraitementUser();
-
-			}
-		});
+		return template.execute(status -> identCtbDAO.getTraitementUser());
 	}
 
 	private void fillNewValuesForPeriodesFiscales(IdentificationContribuableCache cache) {

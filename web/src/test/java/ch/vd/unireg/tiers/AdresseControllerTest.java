@@ -6,23 +6,21 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.view.AdresseView;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
@@ -58,14 +56,11 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addAdresseEtrangere(pp, TypeAdresseTiers.REPRESENTATION, date(2006, 2, 12), date(2006, 4, 12), "12 Avenue des Ternes", "75012 Paris", MockPays.France);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2008, 8, 23), null, MockRue.Lausanne.AvenueDesBergieres);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addAdresseEtrangere(pp, TypeAdresseTiers.REPRESENTATION, date(2006, 2, 12), date(2006, 4, 12), "12 Avenue des Ternes", "75012 Paris", MockPays.France);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2008, 8, 23), null, MockRue.Lausanne.AvenueDesBergieres);
+			return pp.getNumero();
 		});
 
 		request.setMethod("GET");
@@ -96,19 +91,16 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addAdresseEtrangere(pp, TypeAdresseTiers.REPRESENTATION, date(2006, 2, 12), date(2006, 4, 12), "12 Avenue des Ternes", "75012 Paris", MockPays.France);
-				final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2008, 8, 23), null, MockRue.Lausanne.AvenueDesBergieres);
-				adresse.setNumeroMaison("186b");
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addAdresseEtrangere(pp, TypeAdresseTiers.REPRESENTATION, date(2006, 2, 12), date(2006, 4, 12), "12 Avenue des Ternes", "75012 Paris", MockPays.France);
+			final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2008, 8, 23), null, MockRue.Lausanne.AvenueDesBergieres);
+			adresse.setNumeroMaison("186b");
 
-				final Ids ids = new Ids();
-				ids.idAdresse = adresse.getId();
-				ids.idTiers = pp.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idAdresse = adresse.getId();
+			ids1.idTiers = pp.getNumero();
+			return ids1;
 		});
 
 		request.setMethod("GET");
@@ -151,19 +143,16 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addAdresseEtrangere(pp, TypeAdresseTiers.REPRESENTATION, date(2006, 2, 12), date(2006, 4, 12), "12 Avenue des Ternes", "75012 Paris", MockPays.France);
-				final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2008, 8, 23), null, MockRue.Lausanne.AvenueDesBergieres);
-				adresse.setNumeroMaison("186b");
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addAdresseEtrangere(pp, TypeAdresseTiers.REPRESENTATION, date(2006, 2, 12), date(2006, 4, 12), "12 Avenue des Ternes", "75012 Paris", MockPays.France);
+			final AdresseSuisse adresse = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2008, 8, 23), null, MockRue.Lausanne.AvenueDesBergieres);
+			adresse.setNumeroMaison("186b");
 
-				final Ids ids = new Ids();
-				ids.idAdresse = adresse.getId();
-				ids.idTiers = pp.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idAdresse = adresse.getId();
+			ids1.idTiers = pp.getNumero();
+			return ids1;
 		});
 
 		request.setMethod("POST");
@@ -178,15 +167,13 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		assertNotNull(model);
 
 		// vérification de la clôture de l'adresse en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final AdresseTiers adresse = hibernateTemplate.get(AdresseSupplementaire.class, ids.idAdresse);
-				assertNotNull(adresse);
-				assertFalse(adresse.isAnnule());
-				assertEquals(date(2015, 12, 31), adresse.getDateFin());
-				assertEquals((Long) ids.idTiers, adresse.getTiers().getNumero());
-			}
+		doInNewTransactionAndSession(status -> {
+			final AdresseTiers adresse = hibernateTemplate.get(AdresseSupplementaire.class, ids.idAdresse);
+			assertNotNull(adresse);
+			assertFalse(adresse.isAnnule());
+			assertEquals(date(2015, 12, 31), adresse.getDateFin());
+			assertEquals((Long) ids.idTiers, adresse.getTiers().getNumero());
+			return null;
 		});
 	}
 
@@ -205,12 +192,9 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		request.addParameter("numCTB", String.valueOf(ppId));
@@ -227,24 +211,22 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		assertNotNull(model);
 
 		// vérification de la création de l'adresse
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(ppId);
-				final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
-				assertEquals(1, adressesTiers.size());
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ppId);
+			final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
+			assertEquals(1, adressesTiers.size());
 
-				final AdresseTiers adresse = adressesTiers.iterator().next();
-				assertNotNull(adresse);
-				assertFalse(adresse.isAnnule());
-				assertEquals(date(2002, 2, 12), adresse.getDateDebut());
-				assertNull(adresse.getDateFin());
-				assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
-				assertEquals(AdresseEtrangere.class, adresse.getClass());
+			final AdresseTiers adresse = adressesTiers.iterator().next();
+			assertNotNull(adresse);
+			assertFalse(adresse.isAnnule());
+			assertEquals(date(2002, 2, 12), adresse.getDateDebut());
+			assertNull(adresse.getDateFin());
+			assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+			assertEquals(AdresseEtrangere.class, adresse.getClass());
 
-				final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
-				assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
-			}
+			final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+			assertEquals((Integer) MockPays.France.getNoOFS(), adresseEtrangere.getNumeroOfsPays());
+			return null;
 		});
 	}
 
@@ -263,12 +245,9 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		request.addParameter("numCTB", String.valueOf(ppId));
@@ -284,24 +263,22 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		assertNotNull(model);
 
 		// vérification de la création de l'adresse
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(ppId);
-				final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
-				assertEquals(1, adressesTiers.size());
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ppId);
+			final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
+			assertEquals(1, adressesTiers.size());
 
-				final AdresseTiers adresse = adressesTiers.iterator().next();
-				assertNotNull(adresse);
-				assertFalse(adresse.isAnnule());
-				assertEquals(date(2002, 2, 12), adresse.getDateDebut());
-				assertNull(adresse.getDateFin());
-				assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
-				assertEquals(AdresseSuisse.class, adresse.getClass());
+			final AdresseTiers adresse = adressesTiers.iterator().next();
+			assertNotNull(adresse);
+			assertFalse(adresse.isAnnule());
+			assertEquals(date(2002, 2, 12), adresse.getDateDebut());
+			assertNull(adresse.getDateFin());
+			assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+			assertEquals(AdresseSuisse.class, adresse.getClass());
 
-				final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
-				assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-			}
+			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+			assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			return null;
 		});
 	}
 
@@ -320,12 +297,9 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		request.addParameter("numCTB", String.valueOf(ppId));
@@ -345,13 +319,11 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		assertTrue(br.hasFieldErrors("dateDebut"));
 
 		// vérification de la non-création de l'adresse
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(ppId);
-				final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
-				assertEquals(0, adressesTiers.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ppId);
+			final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
+			assertEquals(0, adressesTiers.size());
+			return null;
 		});
 	}
 
@@ -370,12 +342,9 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		request.addParameter("numCTB", String.valueOf(ppId));
@@ -396,13 +365,11 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		assertTrue(br.hasFieldErrors("dateDebut"));
 
 		// vérification de la non-création de l'adresse
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = tiersDAO.get(ppId);
-				final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
-				assertEquals(0, adressesTiers.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ppId);
+			final Set<AdresseTiers> adressesTiers = tiers.getAdressesTiers();
+			assertEquals(0, adressesTiers.size());
+			return null;
 		});
 	}
 

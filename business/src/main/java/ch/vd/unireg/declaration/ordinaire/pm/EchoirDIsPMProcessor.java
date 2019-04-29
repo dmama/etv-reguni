@@ -10,8 +10,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -183,38 +181,35 @@ public class EchoirDIsPMProcessor {
 		b.append(" ORDER BY DI.TIERS_ID");
 		final String sql = b.toString();
 
-		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
-			@Override
-			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
-				return hibernateTemplate.execute(new HibernateCallback<List<IdentifiantDeclaration>>() {
-					@Override
-					public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {
+		return template.execute(status -> {
+			final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
+			return hibernateTemplate.execute(new HibernateCallback<List<IdentifiantDeclaration>>() {
+				@Override
+				public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {
 
-						final Query query = session.createSQLQuery(sql);
-						//noinspection unchecked
-						final List<Object[]> rows = query.list();
-						if (rows != null && !rows.isEmpty()) {
-							for (Object[] row : rows) {
-								final int indexDateSommation = ((Number) row[1]).intValue();
-								final RegDate dateSommation = RegDate.fromIndex(indexDateSommation, false);
-								final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
-								if (dateTraitement.isAfter(echeanceReelle)) {
-									final long diId = ((Number) row[0]).longValue();
-									final long numeroTiers = ((Number) row[2]).longValue();
-									final Integer numeroOID = row[3] == null ? null : ((Number) row[3]).intValue();
-									final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(diId, numeroTiers, numeroOID);
-									identifiantDi.add(identifiantDeclaration);
-								}
+					final Query query = session.createSQLQuery(sql);
+					//noinspection unchecked
+					final List<Object[]> rows = query.list();
+					if (rows != null && !rows.isEmpty()) {
+						for (Object[] row : rows) {
+							final int indexDateSommation = ((Number) row[1]).intValue();
+							final RegDate dateSommation = RegDate.fromIndex(indexDateSommation, false);
+							final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
+							if (dateTraitement.isAfter(echeanceReelle)) {
+								final long diId = ((Number) row[0]).longValue();
+								final long numeroTiers = ((Number) row[2]).longValue();
+								final Integer numeroOID = row[3] == null ? null : ((Number) row[3]).intValue();
+								final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(diId, numeroTiers, numeroOID);
+								identifiantDi.add(identifiantDeclaration);
 							}
-							return identifiantDi;
 						}
-						else {
-							return Collections.emptyList();
-						}
+						return identifiantDi;
 					}
-				});
-			}
+					else {
+						return Collections.emptyList();
+					}
+				}
+			});
 		});
 	}
 

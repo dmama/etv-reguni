@@ -4,8 +4,6 @@ import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.audit.AuditManager;
@@ -98,12 +96,7 @@ public class CalculParentesJob extends JobDefinition {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final CalculParentesRapport rapport = template.execute(new TransactionCallback<CalculParentesRapport>() {
-			@Override
-			public CalculParentesRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final CalculParentesRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 		setLastRunReport(rapport);
 		audit.success("La génération des données de parenté est terminée.", rapport);
 	}

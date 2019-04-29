@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import java.util.EnumSet;
 
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -63,20 +62,17 @@ public abstract class AnnulationRepriseFinActiviteController extends AbstractPro
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(idEntreprise);
 
-		return doInReadOnlyTransaction(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
-				final ForFiscalPrincipalPM dernierFor = entreprise.getDernierForFiscalPrincipal();
-				if (dernierFor == null || dernierFor.getMotifFermeture() != MotifFor.FIN_EXPLOITATION) {
-					Flash.error("Le dernier for principal de l'entreprise sélectionnée n'est plus fermé pour motif 'Cessation d'activité'.");
-					return "redirect:list.do";
-				}
-
-				final FinActiviteView view = new FinActiviteView(idEntreprise);
-				view.setDateFinActivite(dernierFor.getDateFin());
-				return showStart(model, view);
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
+			final ForFiscalPrincipalPM dernierFor = entreprise.getDernierForFiscalPrincipal();
+			if (dernierFor == null || dernierFor.getMotifFermeture() != MotifFor.FIN_EXPLOITATION) {
+				Flash.error("Le dernier for principal de l'entreprise sélectionnée n'est plus fermé pour motif 'Cessation d'activité'.");
+				return "redirect:list.do";
 			}
+
+			final FinActiviteView view = new FinActiviteView(idEntreprise);
+			view.setDateFinActivite(dernierFor.getDateFin());
+			return showStart(model, view);
 		});
 	}
 

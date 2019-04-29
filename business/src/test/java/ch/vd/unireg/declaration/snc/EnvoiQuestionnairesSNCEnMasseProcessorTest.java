@@ -7,9 +7,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -89,14 +87,12 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getNombreErreurs());
 
 		// vérification qu'aucun questionnaire SNC n'a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
-				Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
+			Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -129,14 +125,12 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getNombreErreurs());
 
 		// vérification qu'aucun questionnaire SNC n'a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
-				Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
+			Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -168,14 +162,12 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getNombreErreurs());
 
 		// vérification qu'aucun questionnaire SNC n'a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
-				Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
+			Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -217,37 +209,35 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(EnvoiQuestionnairesSNCEnMasseResults.CauseIgnorance.QUESTIONNAIRE_DEJA_EXISTANT, ignore.cause);
 
 		// vérification qu'aucun questionnaire SNC n'a effectivement été généré en plus, mais que les dates du questionnaire existant ont bien été ré-alignées
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertNotNull(questionnaires);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertNotNull(questionnaires);
+			Assert.assertEquals(1, questionnaires.size());
 
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(date(periode, 4, 12), questionnaire.getDateDebut());        // les dates du questionnaire existant n'ont pas été ré-alignées
-				Assert.assertEquals(date(periode, 7, 23), questionnaire.getDateFin());
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(date(periode, 4, 12), questionnaire.getDateDebut());        // les dates du questionnaire existant n'ont pas été ré-alignées
+			Assert.assertEquals(date(periode, 7, 23), questionnaire.getDateFin());
 
-				// et la tâche elle-même doit être annulée
-				final List<Tache> taches = tacheDAO.find(pmId);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertTrue(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-				Assert.assertEquals(date(periode, 2, 1), tacheEnvoi.getDateDebut());
-				Assert.assertEquals(date(periode, 10, 31), tacheEnvoi.getDateFin());
-			}
+			// et la tâche elle-même doit être annulée
+			final List<Tache> taches = tacheDAO.find(pmId);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertTrue(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+			Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+			Assert.assertEquals(date(periode, 2, 1), tacheEnvoi.getDateDebut());
+			Assert.assertEquals(date(periode, 10, 31), tacheEnvoi.getDateFin());
+			return null;
 		});
 	}
 
@@ -279,14 +269,12 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getNombreErreurs());
 
 		// vérification qu'aucun questionnaire SNC n'a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
-				Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
+			Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -319,14 +307,12 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getNombreErreurs());
 
 		// vérification qu'aucun questionnaire SNC n'a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
-				Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true).size());
+			Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -364,75 +350,73 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(pmId, envoye.noCtb);
 
 		// vérification qu'un questionnaire SNC a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+			Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertEquals(1, questionnaires.size());
 
-				// le questionnaire lui-même
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+			// le questionnaire lui-même
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+			Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+			Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
 
-				// son état "EMISE"
-				final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-				Assert.assertNotNull(etats);
-				Assert.assertEquals(1, etats.size());
-				final EtatDeclaration etat = etats.iterator().next();
-				Assert.assertNotNull(etat);
-				Assert.assertFalse(etat.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-				Assert.assertEquals(dateTraitement, etat.getDateObtention());
+			// son état "EMISE"
+			final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(1, etats.size());
+			final EtatDeclaration etat = etats.iterator().next();
+			Assert.assertNotNull(etat);
+			Assert.assertFalse(etat.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+			Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
-				// son délai initial
-				final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-				Assert.assertNotNull(delais);
-				Assert.assertEquals(1, delais.size());
-				final DelaiDeclaration delai = delais.iterator().next();
-				Assert.assertNotNull(delai);
-				Assert.assertFalse(delai.isAnnule());
-				Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-				Assert.assertEquals(dateTraitement, delai.getDateDemande());
-				Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-				Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-				Assert.assertNull(delai.getCleArchivageCourrier());
-				Assert.assertFalse(delai.isSursis());
+			// son délai initial
+			final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+			Assert.assertNotNull(delais);
+			Assert.assertEquals(1, delais.size());
+			final DelaiDeclaration delai = delais.iterator().next();
+			Assert.assertNotNull(delai);
+			Assert.assertFalse(delai.isAnnule());
+			Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+			Assert.assertEquals(dateTraitement, delai.getDateDemande());
+			Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+			Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+			Assert.assertNull(delai.getCleArchivageCourrier());
+			Assert.assertFalse(delai.isSursis());
 
-				// la tâche d'envoi doit être marquée comme traitée
-				final List<Tache> taches = tacheDAO.find(pmId);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
+			// la tâche d'envoi doit être marquée comme traitée
+			final List<Tache> taches = tacheDAO.find(pmId);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+			Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+			Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+			Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+			Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
 
-				// événement fiscal
-				final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
-				Assert.assertNotNull(evtsFiscaux);
-				Assert.assertEquals(1, evtsFiscaux.size());
-				final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
-				Assert.assertNotNull(evtFiscal);
-				Assert.assertEquals(EvenementFiscalDeclarationRappelable.class, evtFiscal.getClass());
-				final EvenementFiscalDeclarationRappelable evtFiscalDeclaration = (EvenementFiscalDeclarationRappelable) evtFiscal;
-				Assert.assertFalse(evtFiscalDeclaration.isAnnule());
-				Assert.assertEquals(dateTraitement, evtFiscalDeclaration.getDateValeur());
-				Assert.assertEquals(EvenementFiscalDeclarationRappelable.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
-			}
+			// événement fiscal
+			final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
+			Assert.assertNotNull(evtsFiscaux);
+			Assert.assertEquals(1, evtsFiscaux.size());
+			final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
+			Assert.assertNotNull(evtFiscal);
+			Assert.assertEquals(EvenementFiscalDeclarationRappelable.class, evtFiscal.getClass());
+			final EvenementFiscalDeclarationRappelable evtFiscalDeclaration = (EvenementFiscalDeclarationRappelable) evtFiscal;
+			Assert.assertFalse(evtFiscalDeclaration.isAnnule());
+			Assert.assertEquals(dateTraitement, evtFiscalDeclaration.getDateValeur());
+			Assert.assertEquals(EvenementFiscalDeclarationRappelable.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
+			return null;
 		});
 	}
 
@@ -494,120 +478,118 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// vérification qu'un questionnaire SNC a effectivement été généré pour chacune des entreprises
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm1);
-					Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm1);
+				Assert.assertNotNull(entreprise);
 
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(1, questionnaires.size());
 
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
 
-					// son état "EMISE"
-					final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-					Assert.assertNotNull(etats);
-					Assert.assertEquals(1, etats.size());
-					final EtatDeclaration etat = etats.iterator().next();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-					Assert.assertEquals(dateTraitement, etat.getDateObtention());
+				// son état "EMISE"
+				final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(1, etats.size());
+				final EtatDeclaration etat = etats.iterator().next();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+				Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
-					// son délai initial
-					final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-					Assert.assertNotNull(delais);
-					Assert.assertEquals(1, delais.size());
-					final DelaiDeclaration delai = delais.iterator().next();
-					Assert.assertNotNull(delai);
-					Assert.assertFalse(delai.isAnnule());
-					Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-					Assert.assertEquals(dateTraitement, delai.getDateDemande());
-					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-					Assert.assertNull(delai.getCleArchivageCourrier());
-					Assert.assertFalse(delai.isSursis());
+				// son délai initial
+				final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+				Assert.assertNotNull(delais);
+				Assert.assertEquals(1, delais.size());
+				final DelaiDeclaration delai = delais.iterator().next();
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+				Assert.assertEquals(dateTraitement, delai.getDateDemande());
+				Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+				Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+				Assert.assertFalse(delai.isSursis());
 
-					// la tâche d'envoi doit être marquée comme traitée
-					final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm2);
-					Assert.assertNotNull(entreprise);
-
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
-
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
-
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
-
-					// son état "EMISE"
-					final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-					Assert.assertNotNull(etats);
-					Assert.assertEquals(1, etats.size());
-					final EtatDeclaration etat = etats.iterator().next();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-					Assert.assertEquals(dateTraitement, etat.getDateObtention());
-
-					// son délai initial
-					final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-					Assert.assertNotNull(delais);
-					Assert.assertEquals(1, delais.size());
-					final DelaiDeclaration delai = delais.iterator().next();
-					Assert.assertNotNull(delai);
-					Assert.assertFalse(delai.isAnnule());
-					Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-					Assert.assertEquals(dateTraitement, delai.getDateDemande());
-					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-					Assert.assertNull(delai.getCleArchivageCourrier());
-					Assert.assertFalse(delai.isSursis());
-
-					// la tâche d'envoi doit être marquée comme traitée
-					final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
+				// la tâche d'envoi doit être marquée comme traitée
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
 			}
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm2);
+				Assert.assertNotNull(entreprise);
+
+				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(1, questionnaires.size());
+
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+
+				// son état "EMISE"
+				final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(1, etats.size());
+				final EtatDeclaration etat = etats.iterator().next();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+				Assert.assertEquals(dateTraitement, etat.getDateObtention());
+
+				// son délai initial
+				final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+				Assert.assertNotNull(delais);
+				Assert.assertEquals(1, delais.size());
+				final DelaiDeclaration delai = delais.iterator().next();
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+				Assert.assertEquals(dateTraitement, delai.getDateDemande());
+				Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+				Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+				Assert.assertFalse(delai.isSursis());
+
+				// la tâche d'envoi doit être marquée comme traitée
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -669,120 +651,118 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// vérification qu'un questionnaire SNC a effectivement été généré pour chacune des entreprises
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm1);
-					Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm1);
+				Assert.assertNotNull(entreprise);
 
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(1, questionnaires.size());
 
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
 
-					// son état "EMISE"
-					final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-					Assert.assertNotNull(etats);
-					Assert.assertEquals(1, etats.size());
-					final EtatDeclaration etat = etats.iterator().next();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-					Assert.assertEquals(dateTraitement, etat.getDateObtention());
+				// son état "EMISE"
+				final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(1, etats.size());
+				final EtatDeclaration etat = etats.iterator().next();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+				Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
-					// son délai initial
-					final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-					Assert.assertNotNull(delais);
-					Assert.assertEquals(1, delais.size());
-					final DelaiDeclaration delai = delais.iterator().next();
-					Assert.assertNotNull(delai);
-					Assert.assertFalse(delai.isAnnule());
-					Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-					Assert.assertEquals(dateTraitement, delai.getDateDemande());
-					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-					Assert.assertNull(delai.getCleArchivageCourrier());
-					Assert.assertFalse(delai.isSursis());
+				// son délai initial
+				final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+				Assert.assertNotNull(delais);
+				Assert.assertEquals(1, delais.size());
+				final DelaiDeclaration delai = delais.iterator().next();
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+				Assert.assertEquals(dateTraitement, delai.getDateDemande());
+				Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+				Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+				Assert.assertFalse(delai.isSursis());
 
-					// la tâche d'envoi doit être marquée comme traitée
-					final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm2);
-					Assert.assertNotNull(entreprise);
-
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
-
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
-
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
-
-					// son état "EMISE"
-					final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-					Assert.assertNotNull(etats);
-					Assert.assertEquals(1, etats.size());
-					final EtatDeclaration etat = etats.iterator().next();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-					Assert.assertEquals(dateTraitement, etat.getDateObtention());
-
-					// son délai initial
-					final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-					Assert.assertNotNull(delais);
-					Assert.assertEquals(1, delais.size());
-					final DelaiDeclaration delai = delais.iterator().next();
-					Assert.assertNotNull(delai);
-					Assert.assertFalse(delai.isAnnule());
-					Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-					Assert.assertEquals(dateTraitement, delai.getDateDemande());
-					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-					Assert.assertNull(delai.getCleArchivageCourrier());
-					Assert.assertFalse(delai.isSursis());
-
-					// la tâche d'envoi doit être marquée comme traitée
-					final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
+				// la tâche d'envoi doit être marquée comme traitée
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
 			}
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm2);
+				Assert.assertNotNull(entreprise);
+
+				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(1, questionnaires.size());
+
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+
+				// son état "EMISE"
+				final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(1, etats.size());
+				final EtatDeclaration etat = etats.iterator().next();
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+				Assert.assertEquals(dateTraitement, etat.getDateObtention());
+
+				// son délai initial
+				final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+				Assert.assertNotNull(delais);
+				Assert.assertEquals(1, delais.size());
+				final DelaiDeclaration delai = delais.iterator().next();
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+				Assert.assertEquals(dateTraitement, delai.getDateDemande());
+				Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+				Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+				Assert.assertFalse(delai.isSursis());
+
+				// la tâche d'envoi doit être marquée comme traitée
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -837,130 +817,9 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.pm1, envoye.noCtb);
 
 		// vérification qu'un questionnaire SNC a effectivement été généré pour chacune des entreprises
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm1);
-					Assert.assertNotNull(entreprise);
-
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
-
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
-
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
-
-					// son état "EMISE"
-					final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-					Assert.assertNotNull(etats);
-					Assert.assertEquals(1, etats.size());
-					final EtatDeclaration etat = etats.iterator().next();
-					Assert.assertNotNull(etat);
-					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-					Assert.assertEquals(dateTraitement, etat.getDateObtention());
-
-					// son délai initial
-					final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-					Assert.assertNotNull(delais);
-					Assert.assertEquals(1, delais.size());
-					final DelaiDeclaration delai = delais.iterator().next();
-					Assert.assertNotNull(delai);
-					Assert.assertFalse(delai.isAnnule());
-					Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-					Assert.assertEquals(dateTraitement, delai.getDateDemande());
-					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-					Assert.assertNull(delai.getCleArchivageCourrier());
-					Assert.assertFalse(delai.isSursis());
-
-					// la tâche d'envoi doit être marquée comme traitée
-					final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm2);
-					Assert.assertNotNull(entreprise);
-
-					Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
-
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(0, questionnaires.size());
-
-					// la tâche d'envoi doit être restée en instance
-					final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
-			}
-		});
-	}
-
-	@Test
-	public void testTacheEnInstanceValideAvecMauvaisesDates() throws Exception {
-
-		final RegDate dateDebut = date(2006, 1, 4);
-		final int periode = 2015;
-
-		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(status -> {
-			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-
-			// dates à redresser : 05.04 -> 09.22 doit devenir 01.01 -> 31.12
-			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
-			addPeriodeFiscale(periode);
-			return entreprise.getNumero();
-		});
-
-		// lancement du job
-		final RegDate dateTraitement = RegDate.get().addMonths(-1);
-		final EnvoiQuestionnairesSNCEnMasseResults results = processor.run(periode, dateTraitement, null, null);
-		Assert.assertNotNull(results);
-		Assert.assertEquals(1, results.getNombreEnvoyes());
-		Assert.assertEquals(0, results.getNombreIgnores());
-		Assert.assertEquals(0, results.getNombreErreurs());
-
-		// vérification du numéro de contribuable
-		final EnvoiQuestionnairesSNCEnMasseResults.QuestionnaireEnvoye envoye = results.getEnvoyes().get(0);
-		Assert.assertNotNull(envoye);
-		Assert.assertEquals(pmId, envoye.noCtb);
-
-		// vérification qu'un questionnaire SNC a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm1);
 				Assert.assertNotNull(entreprise);
 
 				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
@@ -1001,7 +860,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				Assert.assertFalse(delai.isSursis());
 
 				// la tâche d'envoi doit être marquée comme traitée
-				final List<Tache> taches = tacheDAO.find(pmId);
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(1, taches.size());
 				final Tache tache = taches.get(0);
@@ -1014,6 +873,123 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
 				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
 			}
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.pm2);
+				Assert.assertNotNull(entreprise);
+
+				Assert.assertEquals(0, entreprise.getDocumentsFiscaux().size());
+
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(0, questionnaires.size());
+
+				// la tâche d'envoi doit être restée en instance
+				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
+			}
+			return null;
+		});
+	}
+
+	@Test
+	public void testTacheEnInstanceValideAvecMauvaisesDates() throws Exception {
+
+		final RegDate dateDebut = date(2006, 1, 4);
+		final int periode = 2015;
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+
+			// dates à redresser : 05.04 -> 09.22 doit devenir 01.01 -> 31.12
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
+		});
+
+		// lancement du job
+		final RegDate dateTraitement = RegDate.get().addMonths(-1);
+		final EnvoiQuestionnairesSNCEnMasseResults results = processor.run(periode, dateTraitement, null, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNombreEnvoyes());
+		Assert.assertEquals(0, results.getNombreIgnores());
+		Assert.assertEquals(0, results.getNombreErreurs());
+
+		// vérification du numéro de contribuable
+		final EnvoiQuestionnairesSNCEnMasseResults.QuestionnaireEnvoye envoye = results.getEnvoyes().get(0);
+		Assert.assertNotNull(envoye);
+		Assert.assertEquals(pmId, envoye.noCtb);
+
+		// vérification qu'un questionnaire SNC a effectivement été généré
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+
+			Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertEquals(1, questionnaires.size());
+
+			// le questionnaire lui-même
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+			Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+			Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+
+			// son état "EMISE"
+			final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(1, etats.size());
+			final EtatDeclaration etat = etats.iterator().next();
+			Assert.assertNotNull(etat);
+			Assert.assertFalse(etat.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+			Assert.assertEquals(dateTraitement, etat.getDateObtention());
+
+			// son délai initial
+			final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+			Assert.assertNotNull(delais);
+			Assert.assertEquals(1, delais.size());
+			final DelaiDeclaration delai = delais.iterator().next();
+			Assert.assertNotNull(delai);
+			Assert.assertFalse(delai.isAnnule());
+			Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+			Assert.assertEquals(dateTraitement, delai.getDateDemande());
+			Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+			Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+			Assert.assertNull(delai.getCleArchivageCourrier());
+			Assert.assertFalse(delai.isSursis());
+
+			// la tâche d'envoi doit être marquée comme traitée
+			final List<Tache> taches = tacheDAO.find(pmId);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+			Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+			Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+			final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+			Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
+			Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
+			return null;
 		});
 	}
 
@@ -1053,89 +1029,87 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(pmId, envoye.noCtb);
 
 		// vérification qu'un questionnaire SNC a effectivement été généré
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+			Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertEquals(1, questionnaires.size());
 
-				// le questionnaire lui-même
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+			// le questionnaire lui-même
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+			Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+			Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
 
-				// son état "EMISE"
-				final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
-				Assert.assertNotNull(etats);
-				Assert.assertEquals(1, etats.size());
-				final EtatDeclaration etat = etats.iterator().next();
-				Assert.assertNotNull(etat);
-				Assert.assertFalse(etat.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-				Assert.assertEquals(dateTraitement, etat.getDateObtention());
+			// son état "EMISE"
+			final Set<EtatDeclaration> etats = questionnaire.getEtatsDeclaration();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(1, etats.size());
+			final EtatDeclaration etat = etats.iterator().next();
+			Assert.assertNotNull(etat);
+			Assert.assertFalse(etat.isAnnule());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+			Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
-				// son délai initial
-				final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
-				Assert.assertNotNull(delais);
-				Assert.assertEquals(1, delais.size());
-				final DelaiDeclaration delai = delais.iterator().next();
-				Assert.assertNotNull(delai);
-				Assert.assertFalse(delai.isAnnule());
-				Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
-				Assert.assertEquals(dateTraitement, delai.getDateDemande());
-				Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-				Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
-				Assert.assertNull(delai.getCleArchivageCourrier());
-				Assert.assertFalse(delai.isSursis());
+			// son délai initial
+			final Set<DelaiDeclaration> delais = questionnaire.getDelaisDeclaration();
+			Assert.assertNotNull(delais);
+			Assert.assertEquals(1, delais.size());
+			final DelaiDeclaration delai = delais.iterator().next();
+			Assert.assertNotNull(delai);
+			Assert.assertFalse(delai.isAnnule());
+			Assert.assertEquals(date(periode + 1, 8, 31), delai.getDelaiAccordeAu());
+			Assert.assertEquals(dateTraitement, delai.getDateDemande());
+			Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+			Assert.assertEquals(EtatDelaiDocumentFiscal.ACCORDE, delai.getEtat());
+			Assert.assertNull(delai.getCleArchivageCourrier());
+			Assert.assertFalse(delai.isSursis());
 
-				// une seule des trois tâches en instance doit être marquée comme traitée, les autres doivent être annulées
-				final List<Tache> taches = tacheDAO.find(pmId);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(3, taches.size());
+			// une seule des trois tâches en instance doit être marquée comme traitée, les autres doivent être annulées
+			final List<Tache> taches = tacheDAO.find(pmId);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(3, taches.size());
 
-				// les tâches sont toujours récupérées par ID croissant : la première doit être traitée non-annulée, et les autres doivent être en instance, annulées (par le processus de recalcul des tâches).
-				{
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());            // les dates ont été réalignées
-					Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
-				}
-				{
-					final Tache tache = taches.get(1);
-					Assert.assertNotNull(tache);
-					Assert.assertTrue(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 4, 5), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 9, 22), tacheEnvoi.getDateFin());
-				}
-				{
-					final Tache tache = taches.get(2);
-					Assert.assertNotNull(tache);
-					Assert.assertTrue(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
-					Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
-					final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
-					Assert.assertEquals(date(periode, 9, 30), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 25), tacheEnvoi.getDateFin());
-				}
+			// les tâches sont toujours récupérées par ID croissant : la première doit être traitée non-annulée, et les autres doivent être en instance, annulées (par le processus de recalcul des tâches).
+			{
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());            // les dates ont été réalignées
+				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
 			}
+			{
+				final Tache tache = taches.get(1);
+				Assert.assertNotNull(tache);
+				Assert.assertTrue(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 4, 5), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 9, 22), tacheEnvoi.getDateFin());
+			}
+			{
+				final Tache tache = taches.get(2);
+				Assert.assertNotNull(tache);
+				Assert.assertTrue(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals(TacheEnvoiQuestionnaireSNC.class, tache.getClass());
+				Assert.assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
+				Assert.assertEquals(date(periode, 9, 30), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 25), tacheEnvoi.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -1175,30 +1149,28 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		Assert.assertEquals(1, results.getNombreEnvoyes());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-					Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
 
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(1, questionnaires.size());
 
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
 
-					Assert.assertNotNull(questionnaire.getCodeControle());
+				Assert.assertNotNull(questionnaire.getCodeControle());
 
-				}
 			}
+			return null;
 		});
 	}
 
@@ -1244,76 +1216,70 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		Assert.assertEquals(1, results.getNombreEnvoyes());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
-					Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
+				Assert.assertNotNull(entreprise);
 
-					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+				Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
 
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-					Assert.assertEquals(1, questionnaires.size());
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+				Assert.assertEquals(1, questionnaires.size());
 
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
-					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
-					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+				Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+				Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
 
-					Assert.assertNotNull(questionnaire.getCodeControle());
-					idsEtCode.codeControle = questionnaire.getCodeControle();
+				Assert.assertNotNull(questionnaire.getCodeControle());
+				idsEtCode.codeControle = questionnaire.getCodeControle();
 
-					questionnaire.setAnnulationDate(date(2017, 06, 12).asJavaDate());
-					questionnaire.setAnnulationUser("Mon test");
+				questionnaire.setAnnulationDate(date(2017, 06, 12).asJavaDate());
+				questionnaire.setAnnulationUser("Mon test");
 
-				}
 			}
+			return null;
 		});
 
 		// On recrée une tâche en instance pour la génération d'un nouveau questionnaire
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
-					Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
+				Assert.assertNotNull(entreprise);
 
-					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-					addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise,
-							oipm);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise,
+				                              oipm);
 
-				}
 			}
+			return null;
 		});
 
 		// lancement du job
 		final EnvoiQuestionnairesSNCEnMasseResults results2 = doUnderSwitch(tacheSynchronizer, true, () -> processor.run(periode, dateTraitement, null, null));
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				{
-					final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
-					Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			{
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
+				Assert.assertNotNull(entreprise);
 
-					Assert.assertEquals(2, entreprise.getDocumentsFiscaux().size());
+				Assert.assertEquals(2, entreprise.getDocumentsFiscaux().size());
 
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, false);
-					Assert.assertEquals(1, questionnaires.size());
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, false);
+				Assert.assertEquals(1, questionnaires.size());
 
-					// le questionnaire lui-même
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				// le questionnaire lui-même
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
 
-					Assert.assertNotNull(questionnaire.getCodeControle());
-					Assert.assertEquals(idsEtCode.codeControle,questionnaire.getCodeControle());
+				Assert.assertNotNull(questionnaire.getCodeControle());
+				Assert.assertEquals(idsEtCode.codeControle, questionnaire.getCodeControle());
 
-				}
 			}
+			return null;
 		});
 	}
 

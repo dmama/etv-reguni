@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -53,17 +51,15 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		});
 
 		// test lui-même
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertFalse(exercicesBruts.isEmpty());
-				final List<ExerciceCommercial> exercicesExposables = helper.getExercicesCommerciauxExposables(entreprise);
-				Assert.assertTrue(exercicesExposables.isEmpty());
-			}
+			final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertFalse(exercicesBruts.isEmpty());
+			final List<ExerciceCommercial> exercicesExposables = helper.getExercicesCommerciauxExposables(entreprise);
+			Assert.assertTrue(exercicesExposables.isEmpty());
+			return null;
 		});
 	}
 
@@ -93,17 +89,15 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		});
 
 		// test lui-même
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertFalse(exercicesBruts.isEmpty());
-				final List<ExerciceCommercial> exercicesExposables = helper.getExercicesCommerciauxExposables(entreprise);
-				Assert.assertTrue(exercicesExposables.isEmpty());
-			}
+			final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertFalse(exercicesBruts.isEmpty());
+			final List<ExerciceCommercial> exercicesExposables = helper.getExercicesCommerciauxExposables(entreprise);
+			Assert.assertTrue(exercicesExposables.isEmpty());
+			return null;
 		});
 	}
 
@@ -133,17 +127,15 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		});
 
 		// test lui-même
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertFalse(exercicesBruts.isEmpty());
-				final List<ExerciceCommercial> exercicesExposables = helper.getExercicesCommerciauxExposables(entreprise);
-				Assert.assertEquals(exercicesBruts, exercicesExposables);
-			}
+			final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertFalse(exercicesBruts.isEmpty());
+			final List<ExerciceCommercial> exercicesExposables = helper.getExercicesCommerciauxExposables(entreprise);
+			Assert.assertEquals(exercicesBruts, exercicesExposables);
+			return null;
 		});
 	}
 }

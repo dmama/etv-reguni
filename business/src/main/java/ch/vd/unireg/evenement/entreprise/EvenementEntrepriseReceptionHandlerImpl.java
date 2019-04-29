@@ -9,8 +9,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.audit.AuditManager;
@@ -151,28 +149,24 @@ public class EvenementEntrepriseReceptionHandlerImpl implements EvenementEntrepr
 	@Override
     @NotNull
 	public List<EvenementEntreprise> saveIncomingEvent(final List<EvenementEntreprise> events) {
-		if(events.isEmpty()) {
+		if (events.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TransactionCallback<List<EvenementEntreprise>>() {
-			@NotNull
-			@Override
-			public List<EvenementEntreprise> doInTransaction(TransactionStatus status) {
-				List<EvenementEntreprise> saved = new ArrayList<>();
+		return template.execute(status -> {
+			List<EvenementEntreprise> saved = new ArrayList<>();
 
-				// pour les stats
-				nombreEvenementsNonIgnores.incrementAndGet();
+			// pour les stats
+			nombreEvenementsNonIgnores.incrementAndGet();
 
-				for (EvenementEntreprise event : events) {
-					final EvenementEntreprise savedEvent = evtEntrepriseDAO.save(event);
-					saved.add(savedEvent);
-					audit.info(event.getNoEvenement(), String.format("L'événement entreprise %d pour l'entreprise %d est inséré en base de données", event.getNoEvenement(), event.getNoEntrepriseCivile()));
-				}
-				return saved;
+			for (EvenementEntreprise event : events) {
+				final EvenementEntreprise savedEvent = evtEntrepriseDAO.save(event);
+				saved.add(savedEvent);
+				audit.info(event.getNoEvenement(), String.format("L'événement entreprise %d pour l'entreprise %d est inséré en base de données", event.getNoEvenement(), event.getNoEntrepriseCivile()));
 			}
+			return saved;
 		});
 	}
 

@@ -3,8 +3,6 @@ package ch.vd.unireg.database;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -59,15 +57,12 @@ public class InsertEmployeurFictifEmpAciJob extends JobDefinition {
 		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				status.setMessage("Vérification de la base...");
-				assertNonPreexistance();
-				status.setMessage("Insertion de l'employeur fictif...");
-				insertEmployeurFictif();
-				return null;
-			}
+		template.execute(s -> {
+			status.setMessage("Vérification de la base...");
+			assertNonPreexistance();
+			status.setMessage("Insertion de l'employeur fictif...");
+			insertEmployeurFictif();
+			return null;
 		});
 
 		final String message = "L'employeur fictif n°" + ID_EMPLOYEUR_FICTIF + " pour EmpACI a bien été inséré dans la base de données.";

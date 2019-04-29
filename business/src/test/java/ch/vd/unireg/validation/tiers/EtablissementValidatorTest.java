@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -57,70 +54,59 @@ public class EtablissementValidatorTest extends AbstractValidatorTest<Etablissem
 			long idEtb;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alphonse", "Duchemin", null, Sexe.MASCULIN);
-				final Etablissement etb = addEtablissement(null);
-				final Ids ids = new Ids();
-				ids.idPP = pp.getNumero();
-				ids.idEtb = etb.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alphonse", "Duchemin", null, Sexe.MASCULIN);
+			final Etablissement etb = addEtablissement(null);
+			final Ids ids1 = new Ids();
+			ids1.idPP = pp.getNumero();
+			ids1.idEtb = etb.getNumero();
+			return ids1;
 		});
 
 		// ici, pas d'erreur
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
-				final ValidationResults results = validate(etb);
-				Assert.assertFalse(results.hasErrors());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
+			final ValidationResults results = validate(etb);
+			Assert.assertFalse(results.hasErrors());
+			return null;
 		});
 
 		// rajoutons un premier lien -> toujours pas d'erreur
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
-				addActiviteEconomique(pp, etb, date(2000, 1, 1), date(2000, 12, 31), true);
+		doInNewTransactionAndSession(status -> {
+			final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
+			addActiviteEconomique(pp, etb, date(2000, 1, 1), date(2000, 12, 31), true);
 
-				final ValidationResults results = validate(etb);
-				Assert.assertFalse(results.toString(), results.hasErrors());
-			}
+			final ValidationResults results = validate(etb);
+			Assert.assertFalse(results.toString(), results.hasErrors());
+			return null;
 		});
 
 		// rajoutons un autre lien, sans chevauchement -> toujours pas d'erreur
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
-				addActiviteEconomique(pp, etb, date(2002, 1, 1), null, true);
+		doInNewTransactionAndSession(status -> {
+			final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
+			addActiviteEconomique(pp, etb, date(2002, 1, 1), null, true);
 
-				final ValidationResults results = validate(etb);
-				Assert.assertFalse(results.hasErrors());
-			}
+			final ValidationResults results = validate(etb);
+			Assert.assertFalse(results.hasErrors());
+			return null;
 		});
 
 		// rajoutons un autre lien, avec chevauchement cette fois -> erreur
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
-				addActiviteEconomique(pp, etb, date(2000, 10, 1), date(2002, 2, 28), true);
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
+			addActiviteEconomique(pp, etb, date(2000, 10, 1), date(2002, 2, 28), true);
 
-				final ValidationResults results = validate(etb);
-				Assert.assertNotNull(results);
-				Assert.assertEquals(2, results.errorsCount());
+			final ValidationResults results = validate(etb);
+			Assert.assertNotNull(results);
+			Assert.assertEquals(2, results.errorsCount());
 
-				final List<String> errors = results.getErrors();
-				Assert.assertEquals("Le lien d'activité économique qui commence le 01.10.2000 chevauche le précédent ([01.01.2000 ; 31.12.2000])", errors.get(0));
-				Assert.assertEquals("Le lien d'activité économique qui commence le 01.01.2002 chevauche le précédent ([01.10.2000 ; 28.02.2002])", errors.get(1));
-			}
+			final List<String> errors = results.getErrors();
+			Assert.assertEquals("Le lien d'activité économique qui commence le 01.10.2000 chevauche le précédent ([01.01.2000 ; 31.12.2000])", errors.get(0));
+			Assert.assertEquals("Le lien d'activité économique qui commence le 01.01.2002 chevauche le précédent ([01.10.2000 ; 28.02.2002])", errors.get(1));
+			return null;
 		});
 	}
 }

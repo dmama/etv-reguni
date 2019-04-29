@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -266,31 +265,26 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) throws AccessDeniedException {
-		doInTransaction(false, new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
-				if (tiers == null || tiers instanceof Etablissement) {
-					throw new TiersNotFoundException(partyNo);
-				}
-				tiers.setBlocageRemboursementAutomatique(blocked);
+		doInTransaction(false, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
+			if (tiers == null || tiers instanceof Etablissement) {
+				throw new TiersNotFoundException(partyNo);
 			}
+			tiers.setBlocageRemboursementAutomatique(blocked);
+			return null;
 		});
 	}
 
 	@Override
 	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction(TransactionStatus status) {
-				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
-				if (tiers == null || tiers instanceof Etablissement) {
-					throw new TiersNotFoundException(partyNo);
-				}
-				return tiers.getBlocageRemboursementAutomatique() != null && tiers.getBlocageRemboursementAutomatique() ? Boolean.TRUE : Boolean.FALSE;
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
+			if (tiers == null || tiers instanceof Etablissement) {
+				throw new TiersNotFoundException(partyNo);
 			}
+			return tiers.getBlocageRemboursementAutomatique() != null && tiers.getBlocageRemboursementAutomatique() ? Boolean.TRUE : Boolean.FALSE;
 		});
 	}
 
@@ -569,33 +563,28 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			throw new ObjectNotFoundException("Code(s) région et/ou district inconnu(s) pour la commune.");
 		}
 
-		return doInTransaction(true, new TransactionCallback<TaxOffices>() {
-			@Override
-			public TaxOffices doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oid = context.tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, false);
-				final CollectiviteAdministrative oir = context.tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
-				return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
-				                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),
-				                      null);
-			}
+		return doInTransaction(true, status -> {
+			final CollectiviteAdministrative oid = context.tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, false);
+			final CollectiviteAdministrative oir = context.tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
+			return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
+			                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),
+			                      null);
 		});
 	}
 
 	@Override
 	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<PartyNumberList>() {
-			@Override
-			public PartyNumberList doInTransaction(TransactionStatus status) {
-				final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
-				final List<Integer> intList = new ArrayList<>(longList.size());
-				for (Long id : longList) {
-					// [SIPM] il faut écarter les établissements (les identifiants ne sont pas utilisables avec GetParty/GetParties) et ils étaient de fait écartés auparavant car il n'y en avait pas...
-					if (id != null && (id < Etablissement.ETB_GEN_FIRST_ID || id > Etablissement.ETB_GEN_LAST_ID)) {
-						intList.add(id.intValue());
-					}
+		return doInTransaction(true, status -> {
+			final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
+			final List<Integer> intList = new ArrayList<>(longList.size());
+			for (Long id : longList) {
+				// [SIPM] il faut écarter les établissements (les identifiants ne sont pas utilisables avec GetParty/GetParties) et ils étaient de fait écartés auparavant car il n'y en avait pas...
+				if (id != null && (id < Etablissement.ETB_GEN_FIRST_ID || id > Etablissement.ETB_GEN_LAST_ID)) {
+					intList.add(id.intValue());
 				}
-				return new PartyNumberList(intList);
 			}
+			;
+			return new PartyNumberList(intList);
 		});
 	}
 
@@ -614,20 +603,17 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<DebtorInfo>() {
-			@Override
-			public DebtorInfo doInTransaction(TransactionStatus status) {
-				final Tiers tiers = context.tiersDAO.get(debtorNo, false);
-				if (!(tiers instanceof DebiteurPrestationImposable)) {
-					throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
-				}
-
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				final List<? extends DateRange> lrEmises = dpi.getDeclarationsDansPeriode(DeclarationImpotSource.class, pf, false);
-				final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<>());
-				final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
-				return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersDAO.get(debtorNo, false);
+			if (!(tiers instanceof DebiteurPrestationImposable)) {
+				throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
 			}
+
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			final List<? extends DateRange> lrEmises = dpi.getDeclarationsDansPeriode(DeclarationImpotSource.class, pf, false);
+			final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<>());
+			final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
+			return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
 		});
 	}
 

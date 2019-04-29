@@ -5,8 +5,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
@@ -106,12 +104,9 @@ public class PartyRequestHandlerV4Test extends BusinessTest {
 	@Test
 	public void testHandleSurDossierProtege() throws Exception {
 
-		final long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Margoulin", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long tiersId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Margoulin", null, Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		final Role[] roles = {Role.VISU_ALL};
@@ -126,18 +121,16 @@ public class PartyRequestHandlerV4Test extends BusinessTest {
 			request.setLogin(login);
 			request.setPartyNumber((int) tiersId);
 
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					try {
-						handler.handle(request);
-						fail();
-					}
-					catch (EsbBusinessException e) {
-						assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS, e.getCode());
-						assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° " + tiersId + ".", e.getMessage());
-					}
+			doInNewTransactionAndSession(status -> {
+				try {
+					handler.handle(request);
+					fail();
 				}
+				catch (EsbBusinessException e) {
+					assertEquals(EsbBusinessCode.DROITS_INSUFFISANTS, e.getCode());
+					assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° " + tiersId + ".", e.getMessage());
+				}
+				return null;
 			});
 		}
 		finally {
@@ -281,12 +274,9 @@ public class PartyRequestHandlerV4Test extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+			return dpi.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);
@@ -324,12 +314,9 @@ public class PartyRequestHandlerV4Test extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+			return dpi.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);

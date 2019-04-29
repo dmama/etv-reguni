@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -79,15 +77,12 @@ public class FusionDeCommunesJob extends JobDefinition {
 
 		// Exécution du rapport dans une transaction.
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		FusionDeCommunesRapport rapport = template.execute(new TransactionCallback<FusionDeCommunesRapport>() {
-			@Override
-			public FusionDeCommunesRapport doInTransaction(TransactionStatus status) {
-				try {
-					return rapportService.generateRapport(results, getStatusManager());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+		FusionDeCommunesRapport rapport = template.execute(status -> {
+			try {
+				return rapportService.generateRapport(results, getStatusManager());
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 

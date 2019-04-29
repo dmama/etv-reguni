@@ -4,11 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
@@ -16,6 +13,7 @@ import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.declaration.IdentifiantDeclaration;
 import ch.vd.unireg.declaration.ListeRecapitulativeDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
@@ -67,26 +65,23 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			long lpp;
 			long reg;
 		}
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource admin = addLRaSommerAvecDebiteur(CategorieImpotSource.ADMINISTRATEURS, periode);
-				final DeclarationImpotSource cas = addLRaSommerAvecDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, periode);
-				final DeclarationImpotSource hypo = addLRaSommerAvecDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, periode);
-				final DeclarationImpotSource ltn = addLRaSommerAvecDebiteur(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR, periode);
-				final DeclarationImpotSource lpp = addLRaSommerAvecDebiteur(CategorieImpotSource.PRESTATIONS_PREVOYANCE, periode);
-				final DeclarationImpotSource reg = addLRaSommerAvecDebiteur(CategorieImpotSource.REGULIERS, periode);
+		final Ids ids = doInNewTransaction(status -> {
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final DeclarationImpotSource admin = addLRaSommerAvecDebiteur(CategorieImpotSource.ADMINISTRATEURS, periode);
+			final DeclarationImpotSource cas = addLRaSommerAvecDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, periode);
+			final DeclarationImpotSource hypo = addLRaSommerAvecDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, periode);
+			final DeclarationImpotSource ltn = addLRaSommerAvecDebiteur(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR, periode);
+			final DeclarationImpotSource lpp = addLRaSommerAvecDebiteur(CategorieImpotSource.PRESTATIONS_PREVOYANCE, periode);
+			final DeclarationImpotSource reg = addLRaSommerAvecDebiteur(CategorieImpotSource.REGULIERS, periode);
 
-				final Ids ids = new Ids();
-				ids.admin = admin.getId();
-				ids.cas = cas.getId();
-				ids.hypo = hypo.getId();
-				ids.ltn = ltn.getId();
-				ids.lpp = lpp.getId();
-				ids.reg = reg.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.admin = admin.getId();
+			ids1.cas = cas.getId();
+			ids1.hypo = hypo.getId();
+			ids1.ltn = ltn.getId();
+			ids1.lpp = lpp.getId();
+			ids1.reg = reg.getId();
+			return ids1;
 		});
 
 		// Pas de critère sur la catégorie de débiteur
@@ -156,33 +151,30 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			long decembreSemestrielle;
 			long decembreUnique;
 		}
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource janvierMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
-				final DeclarationImpotSource janvierTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
-				final DeclarationImpotSource janvierSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.SEMESTRIEL);
-				final DeclarationImpotSource janvierAnnuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.ANNUEL);
-				final DeclarationImpotSource janvierUnique = addLRaSommerAvecDebiteurPeriodiciteUnique(periode, date(2007, 1, 1), date(2007, 1, 1));
+		final Ids ids = doInNewTransaction(status -> {
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final DeclarationImpotSource janvierMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
+			final DeclarationImpotSource janvierTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
+			final DeclarationImpotSource janvierSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.SEMESTRIEL);
+			final DeclarationImpotSource janvierAnnuelle = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.ANNUEL);
+			final DeclarationImpotSource janvierUnique = addLRaSommerAvecDebiteurPeriodiciteUnique(periode, date(2007, 1, 1), date(2007, 1, 1));
 
-				final DeclarationImpotSource decembreMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 12, 1), PeriodiciteDecompte.MENSUEL);
-				final DeclarationImpotSource decembreTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 10, 1), PeriodiciteDecompte.TRIMESTRIEL);
-				final DeclarationImpotSource decembreSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 7, 1), PeriodiciteDecompte.SEMESTRIEL);
-				final DeclarationImpotSource decembreUnique = addLRaSommerAvecDebiteurPeriodiciteUnique(periode, date(2007, 12, 31), date(2007, 12, 31));
+			final DeclarationImpotSource decembreMensuelle = addLRaSommerAvecDebiteur(periode, date(2007, 12, 1), PeriodiciteDecompte.MENSUEL);
+			final DeclarationImpotSource decembreTrimestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 10, 1), PeriodiciteDecompte.TRIMESTRIEL);
+			final DeclarationImpotSource decembreSemestrielle = addLRaSommerAvecDebiteur(periode, date(2007, 7, 1), PeriodiciteDecompte.SEMESTRIEL);
+			final DeclarationImpotSource decembreUnique = addLRaSommerAvecDebiteurPeriodiciteUnique(periode, date(2007, 12, 31), date(2007, 12, 31));
 
-				final Ids ids = new Ids();
-				ids.janvierMensuelle = janvierMensuelle.getId();
-				ids.janvierTrimestrielle = janvierTrimestrielle.getId();
-				ids.janvierSemestrielle = janvierSemestrielle.getId();
-				ids.janvierAnnuelle = janvierAnnuelle.getId();
-				ids.janvierUnique = janvierUnique.getId();
-				ids.decembreMensuelle = decembreMensuelle.getId();
-				ids.decembreTrimestrielle = decembreTrimestrielle.getId();
-				ids.decembreSemestrielle = decembreSemestrielle.getId();
-				ids.decembreUnique = decembreUnique.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.janvierMensuelle = janvierMensuelle.getId();
+			ids1.janvierTrimestrielle = janvierTrimestrielle.getId();
+			ids1.janvierSemestrielle = janvierSemestrielle.getId();
+			ids1.janvierAnnuelle = janvierAnnuelle.getId();
+			ids1.janvierUnique = janvierUnique.getId();
+			ids1.decembreMensuelle = decembreMensuelle.getId();
+			ids1.decembreTrimestrielle = decembreTrimestrielle.getId();
+			ids1.decembreSemestrielle = decembreSemestrielle.getId();
+			ids1.decembreUnique = decembreUnique.getId();
+			return ids1;
 		});
 		
 		
@@ -280,18 +272,15 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	@Test
 	public void testNonSommationLrRetourneeAvantEmission() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
-				addEtatDeclarationRetournee(lr, date(2007, 1, 12), "TEST");
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(2007);
+			final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
+			addEtatDeclarationRetournee(lr, date(2007, 1, 12), "TEST");
 
-				final RegDate dateEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS).getDateObtention();
-				final RegDate dateRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE).getDateObtention();
-				assertTrue(dateEmission.isAfter(dateRetour));
-				return null;
-			}
+			final RegDate dateEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS).getDateObtention();
+			final RegDate dateRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE).getDateObtention();
+			assertTrue(dateEmission.isAfter(dateRetour));
+			return null;
 		});
 
 		final List<IdentifiantDeclaration> allIds = processor.getListIdLRs(null, RegDate.get(), null);
@@ -301,14 +290,11 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	@Test
 	public void testNonSommationLrDejaSommee() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
-				addEtatDeclarationSommee(lr, date(2007, 3, 12), date(2007, 3, 15), null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(2007);
+			final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
+			addEtatDeclarationSommee(lr, date(2007, 3, 12), date(2007, 3, 15), null);
+			return null;
 		});
 
 		final List<IdentifiantDeclaration> allIds = processor.getListIdLRs(null, RegDate.get(), null);
@@ -325,13 +311,10 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			}
 		};
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
-				return lr.getTiers().getId();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
+			return lr.getTiers().getId();
 		});
 
 		final EnvoiSommationLRsResults run = processor.run(null, null, RegDate.get(), null);
@@ -349,32 +332,26 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	@Test
 	public void testDateEnvoiCourrierLrSommee() throws Exception {
 
-		final long lrId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
-				return lr.getId();
-			}
+		final long lrId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(periode, date(2007, 1, 1), PeriodiciteDecompte.TRIMESTRIEL);
+			return lr.getId();
 		});
 
 		final RegDate dateTraitement = date(2007, 6, 11);
 		final EnvoiSommationLRsResults run = processor.run(null, null, dateTraitement, null);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotSource lrSommee = lrDAO.get(lrId);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotSource lrSommee = lrDAO.get(lrId);
 
-				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) lrSommee.getDernierEtatDeclaration();
-				final RegDate dateObtention = etatSomme.getDateObtention();
-				final RegDate attendu = dateObtention.addDays(3);
-				final RegDate dateEnvoiCourrier = etatSomme.getDateEnvoiCourrier();
+			final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) lrSommee.getDernierEtatDeclaration();
+			final RegDate dateObtention = etatSomme.getDateObtention();
+			final RegDate attendu = dateObtention.addDays(3);
+			final RegDate dateEnvoiCourrier = etatSomme.getDateEnvoiCourrier();
 
-				assertEquals(dateTraitement, dateObtention);
-				assertEquals(attendu, dateEnvoiCourrier);
-				return null;
-			}
+			assertEquals(dateTraitement, dateObtention);
+			assertEquals(attendu, dateEnvoiCourrier);
+			return null;
 		});
 	}
 }

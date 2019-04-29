@@ -9,9 +9,6 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -80,38 +77,33 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		final String cleArchivage = "56782433289024328";
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			return entreprise.getNumero();
 		});
 
 		// envoi d'un nouveau document sortant
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final LettreTypeInformationLiquidation lettre = new LettreTypeInformationLiquidation();
-				final EtatAutreDocumentFiscalEmis etat = addEtatAutreDocumentFiscalEmis(lettre, dateEnvoiDocument);
-				etat.setCleArchivage(cleArchivage);
-				entreprise.addAutreDocumentFiscal(lettre);
+			final LettreTypeInformationLiquidation lettre = new LettreTypeInformationLiquidation();
+			final EtatAutreDocumentFiscalEmis etat = addEtatAutreDocumentFiscalEmis(lettre, dateEnvoiDocument);
+			etat.setCleArchivage(cleArchivage);
+			entreprise.addAutreDocumentFiscal(lettre);
 
-				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
-				infoArchivage.setDatTravail(String.valueOf(dateEnvoiDocument.index()));
-				infoArchivage.setIdDocument(cleArchivage);
-				infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
-				infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
-				infoArchivage.setTypDocument(TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION.getCodeDocumentArchivage());
-				infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+			final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
+			infoArchivage.setDatTravail(String.valueOf(dateEnvoiDocument.index()));
+			infoArchivage.setIdDocument(cleArchivage);
+			infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
+			infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
+			infoArchivage.setTypDocument(TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION.getCodeDocumentArchivage());
+			infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 
-				service.signaleLettreTypeInformationLiquidation(lettre, infoArchivage, true);
-			}
+			service.signaleLettreTypeInformationLiquidation(lettre, infoArchivage, true);
+			return null;
 		});
 
 		// vérification du contenu collecté
@@ -169,53 +161,47 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		final String cleArchivage = "56782433289024328";
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-				final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondsRF immeuble = addBienFondsRF("85343fldfg", null, commune, 42);
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble = addBienFondsRF("85343fldfg", null, commune, 42);
 
-				final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
-				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
-				addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
-
-				return entreprise.getNumero();
-			}
+			final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
+			addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
+			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
+			return entreprise.getNumero();
 		});
 
 		// envoi d'un nouveau document sortant
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final DemandeDegrevementICI demande = new DemandeDegrevementICI();
-				demande.setCodeControle("H12345");
-				demande.setNumeroSequence(1);
-				demande.setPeriodeFiscale(dateEnvoiDocument.year() + 1);
-				addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addMonths(4), EtatDelaiDocumentFiscal.ACCORDE);
-				final EtatAutreDocumentFiscalEmis etat = addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
-				etat.setCleArchivage(cleArchivage);
-				entreprise.addAutreDocumentFiscal(demande);
+			final DemandeDegrevementICI demande = new DemandeDegrevementICI();
+			demande.setCodeControle("H12345");
+			demande.setNumeroSequence(1);
+			demande.setPeriodeFiscale(dateEnvoiDocument.year() + 1);
+			addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addMonths(4), EtatDelaiDocumentFiscal.ACCORDE);
+			final EtatAutreDocumentFiscalEmis etat = addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
+			etat.setCleArchivage(cleArchivage);
+			entreprise.addAutreDocumentFiscal(demande);
 
-				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
-				infoArchivage.setDatTravail(String.valueOf(dateEnvoiDocument.index()));
-				infoArchivage.setIdDocument(cleArchivage);
-				infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
-				infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
-				infoArchivage.setTypDocument(TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
-				infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+			final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
+			infoArchivage.setDatTravail(String.valueOf(dateEnvoiDocument.index()));
+			infoArchivage.setIdDocument(cleArchivage);
+			infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
+			infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
+			infoArchivage.setTypDocument(TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
+			infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 
-				service.signaleDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, true, false);
-			}
+			service.signaleDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, true, false);
+			return null;
 		});
 
 		// vérification du contenu collecté
@@ -274,59 +260,53 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		final String cleArchivage = "56782433289024328sdnjas";
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-				final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondsRF immeuble = addBienFondsRF("85343fldfg", null, commune, 42);
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble = addBienFondsRF("85343fldfg", null, commune, 42);
 
-				final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
-				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
-				addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
+			addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
+			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
-				final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument.year() + 1, immeuble);
-				addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
-				demande.setCodeControle("U74157");
-
-				return entreprise.getNumero();
-			}
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument.year() + 1, immeuble);
+			addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
+			demande.setCodeControle("U74157");
+			return entreprise.getNumero();
 		});
 
 		// envoi d'un nouveau document sortant
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
+			final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
 
-				final DemandeDegrevementICI demande = demandes.get(0);
-				Assert.assertNotNull(demande);
-				Assert.assertFalse(demande.isAnnule());
+			final DemandeDegrevementICI demande = demandes.get(0);
+			Assert.assertNotNull(demande);
+			Assert.assertFalse(demande.isAnnule());
 
-				addEtatAutreDocumentFiscalRappele(demande, dateRappel);
+			addEtatAutreDocumentFiscalRappele(demande, dateRappel);
 
-				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
-				infoArchivage.setDatTravail(String.valueOf(dateRappel.index()));
-				infoArchivage.setIdDocument(cleArchivage);
-				infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
-				infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
-				infoArchivage.setTypDocument(TypeDocumentEditique.RAPPEL_DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
-				infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+			final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
+			infoArchivage.setDatTravail(String.valueOf(dateRappel.index()));
+			infoArchivage.setIdDocument(cleArchivage);
+			infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
+			infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
+			infoArchivage.setTypDocument(TypeDocumentEditique.RAPPEL_DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
+			infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 
-				service.signaleRappelDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, false);
-			}
+			service.signaleRappelDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, false);
+			return null;
 		});
 
 		// vérification du contenu collecté

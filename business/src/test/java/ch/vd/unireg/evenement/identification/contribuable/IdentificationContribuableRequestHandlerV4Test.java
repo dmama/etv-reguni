@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
@@ -76,14 +75,11 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		final int nbCtb = 150;
 
 		// création des contribuables avec le même nom et une date de naissance différente à chaque fois
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				for (int i = 0; i < nbCtb; ++i) {
-					addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i / 2), Sexe.MASCULIN);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			for (int i = 0; i < nbCtb; ++i) {
+				addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i / 2), Sexe.MASCULIN);
 			}
+			return null;
 		});
 
 		// attente de la fin de l'indexation
@@ -122,14 +118,11 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		final int nbCtb = 150;
 
 		// création des contribuables avec le même nom et une date de naissance différente à chaque fois
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				for (int i = 0; i < nbCtb; ++i) {
-					addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i), Sexe.MASCULIN);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			for (int i = 0; i < nbCtb; ++i) {
+				addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i), Sexe.MASCULIN);
 			}
+			return null;
 		});
 
 		// attente de la fin de l'indexation
@@ -169,12 +162,9 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		assertTrue(nom.length() > 100);
 
 		// création du contribuable
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant(prenom, nom, null, Sexe.FEMININ);
-				return pp.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant(prenom, nom, null, Sexe.FEMININ);
+			return pp.getNumero();
 		});
 
 		// attente de la fin de l'indexation
@@ -245,24 +235,21 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
-				final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
-				final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+			final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
+			final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
 
-				// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
-				for (int i = 0; i < 150; ++i) {
-					addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
-				}
-
-				final Ids ids = new Ids();
-				ids.ppUn = ppUn.getNumero().intValue();
-				ids.ppDeux = ppDeux.getNumero().intValue();
-				ids.ppTrois = ppTrois.getNumero().intValue();
-				return ids;
+			// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
+			for (int i = 0; i < 150; ++i) {
+				addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
 			}
+
+			final Ids ids1 = new Ids();
+			ids1.ppUn = ppUn.getNumero().intValue();
+			ids1.ppDeux = ppDeux.getNumero().intValue();
+			ids1.ppTrois = ppTrois.getNumero().intValue();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation
@@ -392,12 +379,9 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		});
 
 		// mise en place fiscale
-		final long idPM = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(noCivilPM);
-				return pm.getNumero();
-			}
+		final long idPM = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(noCivilPM);
+			return pm.getNumero();
 		});
 
 		// attente de la fin de l'indexation
@@ -455,12 +439,9 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		});
 
 		// L'autre communauté
-		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final AutreCommunaute autreCommunaute = addAutreCommunaute("Correia Pinto, Jardinage et Paysagisme");
-				return autreCommunaute.getNumero();
-			}
+		final Long tiersId = doInNewTransactionAndSession(status -> {
+			final AutreCommunaute autreCommunaute = addAutreCommunaute("Correia Pinto, Jardinage et Paysagisme");
+			return autreCommunaute.getNumero();
 		});
 
 		// attente de la fin de l'indexation

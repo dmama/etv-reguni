@@ -5,8 +5,6 @@ import java.util.List;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
@@ -36,24 +34,21 @@ public class IcGlobalIndexTest extends InContainerTest {
 		final String prenom1 = "Claude";
 		final String prenom2 = "Alain";
 
-		executeInTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				{
-					PersonnePhysique nh = new PersonnePhysique(false);
-					nh.setNom(nom);
-					nh.setPrenomUsuel(prenom1);
-					getTiersDAO().save(nh);
-				}
-
-				{
-					PersonnePhysique nh = new PersonnePhysique(false);
-					nh.setNom(nom);
-					nh.setPrenomUsuel(prenom2);
-					getTiersDAO().save(nh);
-				}
-				return null;
+		executeInTransaction(status -> {
+			{
+				PersonnePhysique nh = new PersonnePhysique(false);
+				nh.setNom(nom);
+				nh.setPrenomUsuel(prenom1);
+				getTiersDAO().save(nh);
 			}
+
+			{
+				PersonnePhysique nh = new PersonnePhysique(false);
+				nh.setNom(nom);
+				nh.setPrenomUsuel(prenom2);
+				getTiersDAO().save(nh);
+			}
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -163,12 +158,9 @@ public class IcGlobalIndexTest extends InContainerTest {
 	 * @param tiers le tiers à sauver
 	 */
 	private Long save(final Tiers tiers) {
-		return executeInTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Session session = getSessionFactory().getCurrentSession();
-				return (Long) session.save(tiers);
-			}
+		return executeInTransaction(status -> {
+			final Session session = getSessionFactory().getCurrentSession();
+			return (Long) session.save(tiers);
 		});
 	}
 

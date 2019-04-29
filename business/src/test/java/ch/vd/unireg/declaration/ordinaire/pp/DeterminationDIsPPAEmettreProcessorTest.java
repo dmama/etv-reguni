@@ -5,8 +5,6 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -1527,72 +1525,64 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			}
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique ppSansDeclaration = addNonHabitant("Turlu", "Tutu", null, Sexe.MASCULIN);
-				addForPrincipal(ppSansDeclaration, date(2011, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppSansDeclaration = addNonHabitant("Turlu", "Tutu", null, Sexe.MASCULIN);
+			addForPrincipal(ppSansDeclaration, date(2011, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 
-				final PeriodeFiscale pf2010 = addPeriodeFiscale(2010);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2010);
+			final PeriodeFiscale pf2010 = addPeriodeFiscale(2010);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2010);
 
-				final PersonnePhysique ppAvecDeclarationSansCodeAssigne = addNonHabitant("Tarla", "Tata", null, Sexe.FEMININ);
-				addForPrincipal(ppAvecDeclarationSansCodeAssigne, date(2010, 7, 1), MotifFor.ARRIVEE_HC, MockCommune.Bex);
-				addDeclarationImpot(ppAvecDeclarationSansCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			final PersonnePhysique ppAvecDeclarationSansCodeAssigne = addNonHabitant("Tarla", "Tata", null, Sexe.FEMININ);
+			addForPrincipal(ppAvecDeclarationSansCodeAssigne, date(2010, 7, 1), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+			addDeclarationImpot(ppAvecDeclarationSansCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 
-				final PersonnePhysique ppAvecDeclarationEtCodeAssigne = addNonHabitant("Torlo", "Toto", null, Sexe.MASCULIN);
-				addForPrincipal(ppAvecDeclarationEtCodeAssigne, date(2010, 11, 7), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(ppAvecDeclarationEtCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setCodeSegment(2);
+			final PersonnePhysique ppAvecDeclarationEtCodeAssigne = addNonHabitant("Torlo", "Toto", null, Sexe.MASCULIN);
+			addForPrincipal(ppAvecDeclarationEtCodeAssigne, date(2010, 11, 7), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(ppAvecDeclarationEtCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setCodeSegment(2);
 
-				addPeriodeFiscale(2011);
-				return new Ids(ppSansDeclaration.getNumero(), ppAvecDeclarationSansCodeAssigne.getNumero(), ppAvecDeclarationEtCodeAssigne.getNumero());
-			}
+			addPeriodeFiscale(2011);
+			return new Ids(ppSansDeclaration.getNumero(), ppAvecDeclarationSansCodeAssigne.getNumero(), ppAvecDeclarationEtCodeAssigne.getNumero());
 		});
 
 		final DeterminationDIsPPResults results = service.run(2011, date(2012, 1, 5), 1, null);
 		assertNotNull(results);
 		assertEquals(3, results.traites.size());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				// sans déclaration préalable
-				{
-					final List<Tache> taches = tacheDAO.find(ids.idSansDeclaration);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
-					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
-					assertNull(tacheDi.getCodeSegment());
-				}
-
-				// avec déclaration préalable, mais qui n'a pas de code segment
-				{
-					final List<Tache> taches = tacheDAO.find(ids.idAvecDeclarationSansCodeAssigne);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
-					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
-					assertNull(tacheDi.getCodeSegment());
-				}
-
-				// avec déclaration préalable, qui a un code segment assigné
-				{
-					final List<Tache> taches = tacheDAO.find(ids.idAvecDeclarationEtCodeAssigne);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
-					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
-					assertEquals(2, (int) tacheDi.getCodeSegment());
-				}
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			// sans déclaration préalable
+			{
+				final List<Tache> taches = tacheDAO.find(ids.idSansDeclaration);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
+				final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
+				assertNull(tacheDi.getCodeSegment());
 			}
+
+			// avec déclaration préalable, mais qui n'a pas de code segment
+			{
+				final List<Tache> taches = tacheDAO.find(ids.idAvecDeclarationSansCodeAssigne);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
+				final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
+				assertNull(tacheDi.getCodeSegment());
+			}
+
+			// avec déclaration préalable, qui a un code segment assigné
+			{
+				final List<Tache> taches = tacheDAO.find(ids.idAvecDeclarationEtCodeAssigne);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
+				final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
+				assertEquals(2, (int) tacheDi.getCodeSegment());
+			}
+			return null;
 		});
 	}
 
@@ -1637,13 +1627,11 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		}
 
 		// vérification que l'OID associé au contribuable est toujours l'ancien (puisque le premier des fors fiscaux secondaires valides est encore ouvert aujourd'hui)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertEquals((Integer) MockOfficeImpot.OID_GRANDSON.getNoColAdm(), pp.getOfficeImpotId());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertEquals((Integer) MockOfficeImpot.OID_GRANDSON.getNoColAdm(), pp.getOfficeImpotId());
+			return null;
 		});
 
 		// lancement de la génération des tâches (l'OID associé à la tâche, et montré dans le rapport, doit être le nouveau, i.e. celui de la fin de l'année)
@@ -1660,27 +1648,25 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		}
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertEquals((Integer) MockOfficeImpot.OID_GRANDSON.getNoColAdm(), pp.getOfficeImpotId());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertEquals((Integer) MockOfficeImpot.OID_GRANDSON.getNoColAdm(), pp.getOfficeImpotId());
 
-				final List<Tache> taches = tacheDAO.listTaches(ppId, TypeTache.TacheEnvoiDeclarationImpotPP);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
-				{
-					final Tache tache = taches.get(0);
-					assertNotNull(tache);
-					assertFalse(tache.isAnnule());
-					assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
-					final TacheEnvoiDeclarationImpotPP tacheDI = (TacheEnvoiDeclarationImpotPP) tache;
-					assertEquals(date(annee, 1, 1), tacheDI.getDateDebut());
-					assertEquals(date(annee, 12, 31), tacheDI.getDateFin());
-					assertEquals((Integer) MockOfficeImpot.OID_AIGLE.getNoColAdm(), tache.getCollectiviteAdministrativeAssignee().getNumeroCollectiviteAdministrative());
-				}
+			final List<Tache> taches = tacheDAO.listTaches(ppId, TypeTache.TacheEnvoiDeclarationImpotPP);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
+			{
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertFalse(tache.isAnnule());
+				assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
+				final TacheEnvoiDeclarationImpotPP tacheDI = (TacheEnvoiDeclarationImpotPP) tache;
+				assertEquals(date(annee, 1, 1), tacheDI.getDateDebut());
+				assertEquals(date(annee, 12, 31), tacheDI.getDateFin());
+				assertEquals((Integer) MockOfficeImpot.OID_AIGLE.getNoColAdm(), tache.getCollectiviteAdministrativeAssignee().getNumeroCollectiviteAdministrative());
 			}
+			return null;
 		});
 	}
 }

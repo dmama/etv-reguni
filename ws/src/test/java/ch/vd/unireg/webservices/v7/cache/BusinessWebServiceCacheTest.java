@@ -36,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -1806,18 +1805,15 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			int dpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Constantin", "Dugenou", null, Sexe.MASCULIN);
-				addDroitAcces("zai1232", pp, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2014, 1, 1), null);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Constantin", "Dugenou", null, Sexe.MASCULIN);
+			addDroitAcces("zai1232", pp, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2014, 1, 1), null);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			return ids1;
 		});
 
 		// premier appel avec celui qui a le droit de tout voir -> mise en cache ok
@@ -1832,8 +1828,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// deuxième appel avec celui qui n'a pas le droit de voir -> devrait être bloqué
 		AuthenticationHelper.pushPrincipal("TOTO", 22);
-		try
-		{
+		try {
 			final Parties parties = cache.getParties(Arrays.asList(ids.pp, ids.dpi), null);
 			assertNotNull(parties);
 			assertNotNull(parties.getEntries());
@@ -1900,32 +1895,27 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		// on va construire un contribuable avec toutes ses collections contenant quelque chose,
 		// puis on va interroger depuis plusieurs threads le contribuable, avec un nombre de parts aléatoire à chaque fois...
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long id = doInNewTransactionAndSession(status -> {
+			// Un tiers avec avec toutes les parties renseignées
+			final PersonnePhysique eric = addNonHabitant("Eric", "de Melniboné", date(1965, 4, 13), Sexe.MASCULIN);
+			addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
-				// Un tiers avec avec toutes les parties renseignées
-				final PersonnePhysique eric = addNonHabitant("Eric", "de Melniboné", date(1965, 4, 13), Sexe.MASCULIN);
-				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+			final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+			addTutelle(pupille, eric, null, date(2005, 7, 1), null);
 
-				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
-				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+			final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+			situation.setDateDebut(date(1989, 5, 1));
+			situation.setNombreEnfants(0);
+			eric.addSituationFamille(situation);
 
-				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
-				situation.setDateDebut(date(1989, 5, 1));
-				situation.setNombreEnfants(0);
-				eric.addSituationFamille(situation);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(2004);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(di, date(2004, 1, 10));
-
-				return eric.getNumero();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(2004);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(di, date(2004, 1, 10));
+			return eric.getNumero();
 		});
 
 		final Random rnd = new Random();
@@ -2005,32 +1995,27 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		// on va construire un contribuable avec toutes ses collections contenant quelque chose,
 		// puis on va interroger depuis plusieurs threads le contribuable, avec un nombre de parts aléatoire à chaque fois...
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long id = doInNewTransactionAndSession(status -> {
+			// Un tiers avec avec toutes les parties renseignées
+			final PersonnePhysique eric = addNonHabitant("Eric", "de Melniboné", date(1965, 4, 13), Sexe.MASCULIN);
+			addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
-				// Un tiers avec avec toutes les parties renseignées
-				final PersonnePhysique eric = addNonHabitant("Eric", "de Melniboné", date(1965, 4, 13), Sexe.MASCULIN);
-				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+			final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+			addTutelle(pupille, eric, null, date(2005, 7, 1), null);
 
-				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
-				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+			final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+			situation.setDateDebut(date(1989, 5, 1));
+			situation.setNombreEnfants(0);
+			eric.addSituationFamille(situation);
 
-				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
-				situation.setDateDebut(date(1989, 5, 1));
-				situation.setNombreEnfants(0);
-				eric.addSituationFamille(situation);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(2004);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(di, date(2004, 1, 10));
-
-				return eric.getNumero();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(2004);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(di, date(2004, 1, 10));
+			return eric.getNumero();
 		});
 
 		final Random rnd = new Random();

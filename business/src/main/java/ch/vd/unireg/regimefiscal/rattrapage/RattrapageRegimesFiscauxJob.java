@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -113,21 +111,18 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 		for (final Long tiersId : tiersSansRegime) {
 
 			// On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
-			final RattrapageRegimesFiscauxJobResults resultat = template.execute(new TransactionCallback<RattrapageRegimesFiscauxJobResults>() {
-				@Override
-				public RattrapageRegimesFiscauxJobResults doInTransaction(TransactionStatus status) {
-					if (simulation) {
-						status.setRollbackOnly();
-					}
-					try {
-						return traiteTiers(tiersId, simulation);
-					}
-					catch (Exception e) {
-						status.setRollbackOnly();
-						final RattrapageRegimesFiscauxJobResults resultatTiers = new RattrapageRegimesFiscauxJobResults(simulation);
-						resultatTiers.addErrorException(tiersId, e);
-						return resultatTiers;
-					}
+			final RattrapageRegimesFiscauxJobResults resultat = template.execute(status -> {
+				if (simulation) {
+					status.setRollbackOnly();
+				}
+				try {
+					return traiteTiers(tiersId, simulation);
+				}
+				catch (Exception e) {
+					status.setRollbackOnly();
+					final RattrapageRegimesFiscauxJobResults resultatTiers = new RattrapageRegimesFiscauxJobResults(simulation);
+					resultatTiers.addErrorException(tiersId, e);
+					return resultatTiers;
 				}
 			});
 			if (resultat != null) {

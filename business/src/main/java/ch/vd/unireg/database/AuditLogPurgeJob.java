@@ -4,8 +4,6 @@ import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -52,18 +50,13 @@ public class AuditLogPurgeJob extends JobDefinition {
 		if (delaiPurge < MIN_DAYS_ALLOWED) {
 			throw new IllegalArgumentException("Le nombre de jours à conserver doit être d'au moins " + MIN_DAYS_ALLOWED);
 		}
-		final RegDate seuilPurge = RegDate.get().addDays(- delaiPurge);
+		final RegDate seuilPurge = RegDate.get().addDays(-delaiPurge);
 		audit.info(String.format("Purge des lignes d'audit plus vieilles que %d jour(s) - %s.", delaiPurge, RegDateHelper.dateToDisplayString(seuilPurge)));
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final int nbPurged = template.execute(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				return auditLineDao.purge(seuilPurge);
-			}
-		});
+		final int nbPurged = template.execute(status -> auditLineDao.purge(seuilPurge));
 		audit.info(String.format("Purge de l'audit terminée : %d ligne(s) effacée(s)", nbPurged));
 	}
 }

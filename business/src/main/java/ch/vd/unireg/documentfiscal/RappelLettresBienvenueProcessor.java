@@ -9,8 +9,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -111,26 +109,21 @@ public class RappelLettresBienvenueProcessor {
 	private List<Long> fetchIdsLettres(final RegDate dateTraitement) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
+		return template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final String hql = "select distinct lb.id from LettreBienvenue as lb" +
-								" where lb.annulationDate is null" +
-								" and exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where lb.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat = 'EMIS')" +
-								" and not exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where lb.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat in ('RAPPELE', 'RETOURNE'))" +
-								" and exists (select delai.documentFiscal.id from DelaiDocumentFiscal as delai where lb.id = delai.documentFiscal.id and delai.annulationDate is null and delai.delaiAccordeAu is not null and delai.etat = 'ACCORDE'" +
-								"              group by delai.documentFiscal.id having max(delai.delaiAccordeAu) < :dateTraitement)" +
-								" order by lb.id asc";
-						final Query query = session.createQuery(hql);
-						query.setParameter("dateTraitement", dateTraitement);
-						//noinspection unchecked
-						return query.list();
-					}
-				});
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final String hql = "select distinct lb.id from LettreBienvenue as lb" +
+						" where lb.annulationDate is null" +
+						" and exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where lb.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat = 'EMIS')" +
+						" and not exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where lb.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat in ('RAPPELE', 'RETOURNE'))" +
+						" and exists (select delai.documentFiscal.id from DelaiDocumentFiscal as delai where lb.id = delai.documentFiscal.id and delai.annulationDate is null and delai.delaiAccordeAu is not null and delai.etat = 'ACCORDE'" +
+						"              group by delai.documentFiscal.id having max(delai.delaiAccordeAu) < :dateTraitement)" +
+						" order by lb.id asc";
+				final Query query = session.createQuery(hql);
+				query.setParameter("dateTraitement", dateTraitement);
+				//noinspection unchecked
+				return query.list();
 			}
-		});
+		}));
 	}
 }

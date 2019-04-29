@@ -2,8 +2,6 @@ package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationService;
@@ -57,22 +55,19 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 
 		final int year = RegDate.get().year();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1967, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year - 2, 4, 12), MotifFor.ARRIVEE_HS, date(year - 1, 10, 23), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1967, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year - 2, 4, 12), MotifFor.ARRIVEE_HS, date(year - 1, 10, 23), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 
-				final PeriodeFiscale pf1 = addPeriodeFiscale(year - 2);
-				final PeriodeFiscale pf2 = addPeriodeFiscale(year - 1);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf1);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2);
-				final ModeleDocument md1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf1);
-				final ModeleDocument md2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2);
-				addDeclarationImpot(pp, pf1, date(year - 2, 4, 12), date(year - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md1);
-				addDeclarationImpot(pp, pf2, date(year - 1, 1, 1), date(year - 1, 10, 23), TypeContribuable.VAUDOIS_ORDINAIRE, md2);
-				return null;
-			}
+			final PeriodeFiscale pf1 = addPeriodeFiscale(year - 2);
+			final PeriodeFiscale pf2 = addPeriodeFiscale(year - 1);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf1);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2);
+			final ModeleDocument md1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf1);
+			final ModeleDocument md2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2);
+			addDeclarationImpot(pp, pf1, date(year - 2, 4, 12), date(year - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md1);
+			addDeclarationImpot(pp, pf2, date(year - 1, 1, 1), date(year - 1, 10, 23), TypeContribuable.VAUDOIS_ORDINAIRE, md2);
+			return null;
 		});
 
 		{
@@ -112,18 +107,15 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 
 		final int year = RegDate.get().year();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1967, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(year - 2, 4, 12), MotifFor.ARRIVEE_HS, date(year - 1, 10, 23), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1967, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(year - 2, 4, 12), MotifFor.ARRIVEE_HS, date(year - 1, 10, 23), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 
-				final PeriodeFiscale pf1 = addPeriodeFiscale(year - 2);
-				final PeriodeFiscale pf2 = addPeriodeFiscale(year - 1);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf1);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2);
-				return null;
-			}
+			final PeriodeFiscale pf1 = addPeriodeFiscale(year - 2);
+			final PeriodeFiscale pf2 = addPeriodeFiscale(year - 1);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf1);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2);
+			return null;
 		});
 
 		{

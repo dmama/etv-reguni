@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -51,45 +48,29 @@ public class EvenementEntrepriseCivileReceptionHandlerTest extends BusinessTest 
 
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				hibernateTemplate.merge(eventPresentSansBusinessId);
-				hibernateTemplate.merge(eventPresent);
-			}
+		doInNewTransactionAndSession(status -> {
+			hibernateTemplate.merge(eventPresentSansBusinessId);
+			hibernateTemplate.merge(eventPresent);
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				assertFalse(receptionHandler.dejaRecu("maBizId"));
-
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			assertFalse(receptionHandler.dejaRecu("maBizId"));
+			return null;
 		});
 
 		final EvenementEntreprise event = createEvent(1L, 100L, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, date(2014, 1, 1), EtatEvenementEntreprise.TRAITE);
 		event.setBusinessId("maBizId");
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				hibernateTemplate.merge(event);
-			}
+		doInNewTransactionAndSession(status -> {
+			hibernateTemplate.merge(event);
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				assertTrue(receptionHandler.dejaRecu("maBizId"));
-
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			assertTrue(receptionHandler.dejaRecu("maBizId"));
+			return null;
 		});
 	}
 
@@ -106,56 +87,48 @@ public class EvenementEntrepriseCivileReceptionHandlerTest extends BusinessTest 
 		event3.setBusinessId("biz3_103");
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-				hibernateTemplate.merge(event3);
-			}
+		doInNewTransactionAndSession(status -> {
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			hibernateTemplate.merge(event3);
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				{
-					final List<EvenementEntreprise> evts = evtEntrepriseDAO.getEvenementsForNoEvenement(1L);
-					assertEquals(1, evts.size());
-					EvenementEntreprise evt = evts.get(0);
-					assertEquals(1L, evt.getNoEvenement());
-					assertEquals(101L, evt.getNoEntrepriseCivile());
-					assertEquals("biz1_101", evt.getBusinessId());
-					assertEquals(TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, evt.getType());
-					assertEquals(date(2015, 8, 18), evt.getDateEvenement());
-					assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
-				}
-				{
-					final List<EvenementEntreprise> evts = evtEntrepriseDAO.getEvenementsForNoEvenement(2L);
-					assertEquals(1, evts.size());
-					EvenementEntreprise evt = evts.get(0);
-					assertEquals(2L, evt.getNoEvenement());
-					assertEquals(102L, evt.getNoEntrepriseCivile());
-					assertEquals("biz2_102", evt.getBusinessId());
-					assertEquals(TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, evt.getType());
-					assertEquals(date(2015, 8, 18), evt.getDateEvenement());
-					assertEquals(EtatEvenementEntreprise.A_TRAITER, evt.getEtat());
-				}
-				{
-					final List<EvenementEntreprise> evts = evtEntrepriseDAO.getEvenementsForNoEvenement(3L);
-					assertEquals(1, evts.size());
-					EvenementEntreprise evt = evts.get(0);
-					assertEquals(3L, evt.getNoEvenement());
-					assertEquals(103L, evt.getNoEntrepriseCivile());
-					assertEquals("biz3_103", evt.getBusinessId());
-					assertEquals(TypeEvenementEntreprise.IDE_MUTATION, evt.getType());
-					assertEquals(date(2015, 8, 18), evt.getDateEvenement());
-					assertEquals(EtatEvenementEntreprise.A_TRAITER, evt.getEtat());
-				}
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			{
+				final List<EvenementEntreprise> evts = evtEntrepriseDAO.getEvenementsForNoEvenement(1L);
+				assertEquals(1, evts.size());
+				EvenementEntreprise evt = evts.get(0);
+				assertEquals(1L, evt.getNoEvenement());
+				assertEquals(101L, evt.getNoEntrepriseCivile());
+				assertEquals("biz1_101", evt.getBusinessId());
+				assertEquals(TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, evt.getType());
+				assertEquals(date(2015, 8, 18), evt.getDateEvenement());
+				assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
 			}
+			{
+				final List<EvenementEntreprise> evts = evtEntrepriseDAO.getEvenementsForNoEvenement(2L);
+				assertEquals(1, evts.size());
+				EvenementEntreprise evt = evts.get(0);
+				assertEquals(2L, evt.getNoEvenement());
+				assertEquals(102L, evt.getNoEntrepriseCivile());
+				assertEquals("biz2_102", evt.getBusinessId());
+				assertEquals(TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, evt.getType());
+				assertEquals(date(2015, 8, 18), evt.getDateEvenement());
+				assertEquals(EtatEvenementEntreprise.A_TRAITER, evt.getEtat());
+			}
+			{
+				final List<EvenementEntreprise> evts = evtEntrepriseDAO.getEvenementsForNoEvenement(3L);
+				assertEquals(1, evts.size());
+				EvenementEntreprise evt = evts.get(0);
+				assertEquals(3L, evt.getNoEvenement());
+				assertEquals(103L, evt.getNoEntrepriseCivile());
+				assertEquals("biz3_103", evt.getBusinessId());
+				assertEquals(TypeEvenementEntreprise.IDE_MUTATION, evt.getType());
+				assertEquals(date(2015, 8, 18), evt.getDateEvenement());
+				assertEquals(EtatEvenementEntreprise.A_TRAITER, evt.getEtat());
+			}
+			return null;
 		});
 
 	}

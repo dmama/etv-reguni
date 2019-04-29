@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -98,14 +96,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -153,16 +149,14 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
-				final EvenementEntreprise event3 = createEvent(3333L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-				hibernateTemplate.merge(event3);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
+			final EvenementEntreprise event3 = createEvent(3333L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			hibernateTemplate.merge(event3);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -213,14 +207,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 28), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 28), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -270,14 +262,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -326,16 +316,14 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event0 = createEvent(1000L, noEntrepriseCivile, TypeEvenementEntreprise.IMPORTATION_ENTREPRISE, RegDate.get(2015, 6, 26), FORCE);
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event0);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event0 = createEvent(1000L, noEntrepriseCivile, TypeEvenementEntreprise.IMPORTATION_ENTREPRISE, RegDate.get(2015, 6, 26), FORCE);
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+			hibernateTemplate.merge(event0);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -393,14 +381,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_SUCCURSALE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_SUCCURSALE, RegDate.get(2015, 6, 26), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -670,14 +656,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -735,14 +719,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_MUTATION, RegDate.get(2015, 6, 26), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_MUTATION, RegDate.get(2015, 6, 26), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement
@@ -798,14 +780,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 		// Création de l'événement
 
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
-				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1);
-				hibernateTemplate.merge(event2);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
+			final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
+			hibernateTemplate.merge(event1);
+			hibernateTemplate.merge(event2);
+			return null;
 		});
 
 		// Traitement synchrone de l'événement

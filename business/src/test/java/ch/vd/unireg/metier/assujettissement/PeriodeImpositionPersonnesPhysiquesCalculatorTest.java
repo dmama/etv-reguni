@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -1282,15 +1281,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 	public void testHcVenteDernierImmeubleEtAchatAnneeSuivante() throws Exception {
 
 		// mise en place des fors
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", date(1967, 3, 25), Sexe.FEMININ);
-				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, MockCommune.Geneve);
-				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", date(1967, 3, 25), Sexe.FEMININ);
+			addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, MockCommune.Geneve);
+			addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul des périodes d'imposition
@@ -1319,15 +1315,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 	public void testHcVenteDernierImmeubleAvecDemenagementPrincipalEnFinAnnee() throws Exception {
 
 		// mise en place des fors
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Mélina", "Dostoïevskaïa", null, Sexe.FEMININ);
-				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre);
-				addForPrincipal(pp, date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
-				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Mélina", "Dostoïevskaïa", null, Sexe.FEMININ);
+			addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre);
+			addForPrincipal(pp, date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
+			addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// calcul de la période d'imposition 2009 qui devrait être "remplacée par note"
@@ -1380,17 +1373,13 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 		final int firstYear = 2010;
 		Assert.assertTrue("Il faudrait au moins deux pf actives", RegDate.get().year() - firstYear > 1);
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Piotr", "Pietrovitch", null, Sexe.MASCULIN);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Piotr", "Pietrovitch", null, Sexe.MASCULIN);
 
-				// j'ai pris le mode d'imposition "DEPENSE" afin de ne pas avoir d'effet de bord sur le calcul du type de DI (VAUDTAX vs. COMPLETE)
-				// (qui doit parfois recalculer l'assujettissement de l'année précédente)
-				addForPrincipal(pp, date(firstYear, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-
-				return pp.getNumero();
-			}
+			// j'ai pris le mode d'imposition "DEPENSE" afin de ne pas avoir d'effet de bord sur le calcul du type de DI (VAUDTAX vs. COMPLETE)
+			// (qui doit parfois recalculer l'assujettissement de l'année précédente)
+			addForPrincipal(pp, date(firstYear, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
+			return pp.getNumero();
 		});
 
 		// calcul des périodes d'imposition

@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.party;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -50,18 +48,15 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateFin = RegDate.get().addMonths(-1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Renens);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Renens);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(RegDate.get(), 1);
@@ -85,18 +80,15 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -131,19 +123,16 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Renens);
-				addForPrincipal(e, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Sierre);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Renens);
+			addForPrincipal(e, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Sierre);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -178,18 +167,15 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Renens);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Renens);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -214,18 +200,15 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Renens);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Renens);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -250,18 +233,15 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = dateFaillite.addMonths(-1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Renens);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Renens);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -296,18 +276,15 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateCessationActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Renens);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateCessationActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Renens);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -332,28 +309,24 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long pmId = doInNewTransactionAndSession(status -> {
+			//
+			// FP     |-------------------VD-------------------|-----HC-----|----VD----|--------------HC---------------------
+			// ExComm.                             ... ---|---------|-------------------------|------------ ...
+			// DateRef                                                                     ^
+			//
 
-				//
-				// FP     |-------------------VD-------------------|-----HC-----|----VD----|--------------HC---------------------
-				// ExComm.                             ... ---|---------|-------------------------|------------ ...
-				// DateRef                                                                     ^
-				//
-
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(2015, 6, 20), MotifFor.DEPART_HC, MockCommune.Renens);
-				addForPrincipal(e, date(2015, 6, 21), MotifFor.DEPART_HC, date(2015, 7, 3), MotifFor.ARRIVEE_HC, MockCommune.Sierre);
-				addForPrincipal(e, date(2015, 7, 4), MotifFor.ARRIVEE_HC, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Renens);
-				addForPrincipal(e, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Sierre);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(2015, 6, 20), MotifFor.DEPART_HC, MockCommune.Renens);
+			addForPrincipal(e, date(2015, 6, 21), MotifFor.DEPART_HC, date(2015, 7, 3), MotifFor.ARRIVEE_HC, MockCommune.Sierre);
+			addForPrincipal(e, date(2015, 7, 4), MotifFor.ARRIVEE_HC, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Renens);
+			addForPrincipal(e, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Sierre);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);
@@ -387,19 +360,16 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		final RegDate dateReference = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, null, MockCommune.Sierre);
-				addForSecondaire(e, date(2015, 6, 21), MotifFor.ACHAT_IMMOBILIER, date(2015, 12, 3), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addForPrincipal(e, dateDebut, null, MockCommune.Sierre);
+			addForSecondaire(e, date(2015, 6, 21), MotifFor.ACHAT_IMMOBILIER, date(2015, 12, 3), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001;
+			return e.getNumero();
 		});
 
 		final AdvancePaymentCorporationsRequestHandler.ExtractionResult result = handler.buildPopulation(dateReference, 1);

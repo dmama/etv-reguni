@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -82,43 +80,38 @@ public class SimulationController {
 		if (dateChangement == null) {
 			return null;
 		}
-		
+
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<SimulationResults>() {
-			@Override
-			public SimulationResults doInTransaction(TransactionStatus status) {
+		return template.execute(status -> {
+			// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
+			status.setRollbackOnly();
 
-				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
-				status.setRollbackOnly();
-
-				final ForFiscal ff = forFiscalDAO.get(idFor);
-				if (!(ff instanceof ForFiscalPrincipalPP)) {
-					return null;
-				}
-				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
-					return null;
-				}
-				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
-
-				SimulationResults table;
-				try {
-					// applique le changement du mode d'imposition (transaction rollback-only)
-					tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
-
-					table = buildSynchronizeActionsTable(ctb);
-				}
-				catch (ValidationException e) {
-					table = new SimulationResults();
-					for (ValidationMessage message : e.getErrors()) {
-						table.addError(message.getMessage());
-					}
-				}
-
-				return table;
+			final ForFiscal ff = forFiscalDAO.get(idFor);
+			if (!(ff instanceof ForFiscalPrincipalPP)) {
+				return null;
 			}
+			final Tiers tiers = ff.getTiers();
+			if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+				return null;
+			}
+			final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
+
+			SimulationResults table;
+			try {
+				// applique le changement du mode d'imposition (transaction rollback-only)
+				tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
+
+				table = buildSynchronizeActionsTable(ctb);
+			}
+			catch (ValidationException e) {
+				table = new SimulationResults();
+				for (ValidationMessage message : e.getErrors()) {
+					table.addError(message.getMessage());
+				}
+			}
+			return table;
 		});
 	}
 
@@ -134,48 +127,43 @@ public class SimulationController {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<SimulationResults>() {
-			@Override
-			public SimulationResults doInTransaction(TransactionStatus status) {
+		return template.execute(status -> {
+			// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
+			status.setRollbackOnly();
 
-				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
-				status.setRollbackOnly();
+			final ForFiscal ff = forFiscalDAO.get(idFor);
+			final Tiers tiers = ff.getTiers();
+			if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+				return null;
+			}
+			final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 
-				final ForFiscal ff = forFiscalDAO.get(idFor);
-				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+			SimulationResults table;
+			try {
+				// simule la mise-à-jour du for fiscal
+				if (ff instanceof ForFiscalPrincipal) {
+					tiersService.updateForPrincipal((ForFiscalPrincipal) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+				}
+				else if (ff instanceof ForFiscalSecondaire) {
+					tiersService.updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+				}
+				else if (ff instanceof ForFiscalAutreElementImposable) {
+					tiersService.updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+				}
+				else {
+					// les autres types de fors ne sont pas pris en compte pour l'instant
 					return null;
 				}
-				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 
-				SimulationResults table;
-				try {
-					// simule la mise-à-jour du for fiscal
-					if (ff instanceof ForFiscalPrincipal) {
-						tiersService.updateForPrincipal((ForFiscalPrincipal) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
-					}
-					else if (ff instanceof ForFiscalSecondaire) {
-						tiersService.updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
-					}
-					else if (ff instanceof ForFiscalAutreElementImposable) {
-						tiersService.updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
-					}
-					else {
-						// les autres types de fors ne sont pas pris en compte pour l'instant
-						return null;
-					}
-
-					table = buildSynchronizeActionsTable(ctb);
-				}
-				catch (ValidationException e) {
-					table = new SimulationResults();
-					for (ValidationMessage message : e.getErrors()) {
-						table.addError(message.getMessage());
-					}
-				}
-
-				return table;
+				table = buildSynchronizeActionsTable(ctb);
 			}
+			catch (ValidationException e) {
+				table = new SimulationResults();
+				for (ValidationMessage message : e.getErrors()) {
+					table.addError(message.getMessage());
+				}
+			}
+			return table;
 		});
 	}
 

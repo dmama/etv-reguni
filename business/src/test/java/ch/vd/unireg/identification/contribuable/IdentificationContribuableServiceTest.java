@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -2636,24 +2635,19 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Arnold Duchoux ne doit pas être trouvé
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Arnold Duchoux ne doit pas être trouvé
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
-				// Pas de réponse automatique
-				assertEmpty(messageHandler.getSentMessages());
-
-				return null;
-			}
+			// Pas de réponse automatique
+			assertEmpty(messageHandler.getSentMessages());
+			return null;
 		});
 	}
 
@@ -2685,31 +2679,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora doit avoir été trouvée, et traitée automatiquement
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora doit avoir été trouvée, et traitée automatiquement
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			assertNull(reponse.getErreur());
+			assertEquals(id, reponse.getNoContribuable());
 
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				assertNull(reponse.getErreur());
-				assertEquals(id, reponse.getNoContribuable());
-
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -2742,31 +2731,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora n'est pas trouvée
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora n'est pas trouvée
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				assertNotNull(reponse.getErreur());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			assertNotNull(reponse.getErreur());
 
 
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -2799,31 +2783,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora n'est pas trouvé
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora n'est pas trouvé
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
 
 
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -2872,31 +2851,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora n'est pas trouvé
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora n'est pas trouvé
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.EXCEPTION, ic.getEtat());
+			assertNull(ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.EXCEPTION, ic.getEtat());
-				assertNull(ic.getNbContribuablesTrouves());
-
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
 
 
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -2930,31 +2904,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora n'est pas trouvé
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora n'est pas trouvé
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
 
 
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -2987,31 +2956,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Laurent n'est pas trouvé
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Laurent n'est pas trouvé
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
 
 
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -3045,31 +3009,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora est trouvée
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora est trouvée
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
-
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				assertEquals(numeroZora, reponse.getNoContribuable());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			assertEquals(numeroZora, reponse.getNoContribuable());
 
 
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 
 	}
@@ -3103,26 +3062,22 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora n'est pas trouvé
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora n'est pas trouvé
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+			assertEquals("Aucun contribuable trouvé.", ic.getCommentaireTraitement());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-				assertEquals("Aucun contribuable trouvé.", ic.getCommentaireTraitement());
-
-				final Reponse reponse = ic.getReponse();
-				assertNull(reponse);
-				// Pas de réponse automatique
-				assertEmpty(messageHandler.getSentMessages());
-				return null;
-			}
+			final Reponse reponse = ic.getReponse();
+			assertNull(reponse);
+			// Pas de réponse automatique
+			assertEmpty(messageHandler.getSentMessages());
+			return null;
 		});
 
 	}
@@ -3156,21 +3111,17 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
-
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(3), ic.getNbContribuablesTrouves());
-				assertTrue(ic.getCommentaireTraitement(), ic.getCommentaireTraitement().startsWith("3 contribuables trouvés : "));
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(3), ic.getNbContribuablesTrouves());
+			assertTrue(ic.getCommentaireTraitement(), ic.getCommentaireTraitement().startsWith("3 contribuables trouvés : "));
+			return null;
 		});
 
 		// Pas de réponse automatique
@@ -3213,31 +3164,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			messageHandler.setThrowExceptionOnSend(false);
 		}
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora doit avoir été trouvée, mais le traitement interrompu à cause de l'exception
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora doit avoir été trouvée, mais le traitement interrompu à cause de l'exception
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.EXCEPTION, ic.getEtat());
+			assertNull(ic.getNbContribuablesTrouves());
+			assertNull(ic.getCommentaireTraitement());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.EXCEPTION, ic.getEtat());
-				assertNull(ic.getNbContribuablesTrouves());
-				assertNull(ic.getCommentaireTraitement());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			assertNull(reponse.getNoContribuable());
 
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				assertNull(reponse.getNoContribuable());
-
-				final Erreur erreur = reponse.getErreur();
-				assertNotNull(erreur);
-				assertEquals(TypeErreur.TECHNIQUE, erreur.getType());
-				assertEquals("Exception de test.", erreur.getMessage());
-
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
+			final Erreur erreur = reponse.getErreur();
+			assertNotNull(erreur);
+			assertEquals(TypeErreur.TECHNIQUE, erreur.getType());
+			assertEquals("Exception de test.", erreur.getMessage());
+			return null;
 		});
 
 		// Pas de réponse automatique
@@ -3277,28 +3223,23 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
+			// automatique
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
-				// automatique
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+			assertEquals(id, ic.getReponse().getNoContribuable());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
-				assertEquals(id, ic.getReponse().getNoContribuable());
-
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 	}
 
@@ -3337,22 +3278,17 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
+			// car la priorité du navs13 est la plus forte
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
-				// car la priorité du navs13 est la plus forte
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
-
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+			return null;
 		});
 	}
 
@@ -3403,32 +3339,27 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora doit avoir été trouvée, et traitée automatiquement
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora doit avoir été trouvée, et traitée automatiquement
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			assertNull(reponse.getErreur());
+			assertEquals(ids.zora, reponse.getNoContribuable());
+			assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
 
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				assertNull(reponse.getErreur());
-				assertEquals(ids.zora, reponse.getNoContribuable());
-				assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
-
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 	}
 	//SIFISC-4845 : Pour une periode
@@ -3485,32 +3416,27 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Zora doit avoir été trouvée, et traitée automatiquement
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				// Zora doit avoir été trouvée, et traitée automatiquement
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+			final Reponse reponse = ic.getReponse();
+			assertNotNull(reponse);
+			assertNull(reponse.getErreur());
+			assertEquals(ids.zora, reponse.getNoContribuable());
+			assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
 
-				final Reponse reponse = ic.getReponse();
-				assertNotNull(reponse);
-				assertNull(reponse.getErreur());
-				assertEquals(ids.zora, reponse.getNoContribuable());
-				assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
-
-				// La demande doit avoir reçu une réponse automatiquement
-				assertEquals(1, messageHandler.getSentMessages().size());
-				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-				assertEquals(ic.getId(), sent.getId());
-
-				return null;
-			}
+			// La demande doit avoir reçu une réponse automatiquement
+			assertEquals(1, messageHandler.getSentMessages().size());
+			final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+			assertEquals(ic.getId(), sent.getId());
+			return null;
 		});
 	}
 
@@ -3869,13 +3795,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				this.mcId = mcId;
 			}
 		}
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
-				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
-			}
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
+			return new Ids(pp.getNumero(), couple.getMenage().getNumero());
 		});
 
 		globalTiersIndexer.sync();
@@ -3921,13 +3844,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				this.mcId = mcId;
 			}
 		}
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2005, 11, 28));
-				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
-			}
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2005, 11, 28));
+			return new Ids(pp.getNumero(), couple.getMenage().getNumero());
 		});
 
 		globalTiersIndexer.sync();
@@ -3992,13 +3912,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				this.mcId = mcId;
 			}
 		}
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
-				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
-			}
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
+			return new Ids(pp.getNumero(), couple.getMenage().getNumero());
 		});
 
 		globalTiersIndexer.sync();
@@ -4201,12 +4118,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	private void assertCountDemandes(final int count) throws Exception {
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				assertEquals(count, identCtbDAO.getCount(IdentificationContribuable.class));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertEquals(count, identCtbDAO.getCount(IdentificationContribuable.class));
+			return null;
 		});
 	}
 
@@ -4282,20 +4196,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		// au fiscal, un non-habitant marié
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", null, Sexe.MASCULIN);
-				addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, navs11);
-				addEnsembleTiersCouple(pp, null, date(2012, 5, 1), null);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", null, Sexe.MASCULIN);
+			addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, navs11);
+			addEnsembleTiersCouple(pp, null, date(2012, 5, 1), null);
 
-				// on crée aussi plein d'autres personnes (> 100), parce que c'est le problème (tant que ces personnes n'ont pas de NAVS11...)
-				for (int i = 0 ; i < 130 ; ++ i) {
-					addNonHabitant("Clone-" + i, "Foldingue", RegDate.get().addDays(-i), Sexe.MASCULIN);
-				}
-
-				return pp.getNumero();
+			// on crée aussi plein d'autres personnes (> 100), parce que c'est le problème (tant que ces personnes n'ont pas de NAVS11...)
+			for (int i = 0; i < 130; ++i) {
+				addNonHabitant("Clone-" + i, "Foldingue", RegDate.get().addDays(-i), Sexe.MASCULIN);
 			}
+			return pp.getNumero();
 		});
 
 		// on indexe tout ça
@@ -4361,13 +4271,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		// au fiscal, une personne avec un vieux numéro AVS que l'on connait avec son nouveau numéro mais pour laquel on reçoit une demande d'identification avec le vieux
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
-				pp.setNumeroAssureSocial(newAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
+			pp.setNumeroAssureSocial(newAvs);
+			return pp.getNumero();
 		});
 
 		// on indexe tout ça
@@ -4416,13 +4323,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 		// au fiscal, une personne avec un vieux numéro AVS que l'on connait avec le vieux numéro et pour laquel on reçoit une demande d'identification avec le vieux
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
-				pp.setNumeroAssureSocial(oldAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
+			pp.setNumeroAssureSocial(oldAvs);
+			return pp.getNumero();
 		});
 
 		// on indexe tout ça
@@ -4477,24 +4381,21 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp1 = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
-				pp1.setNumeroAssureSocial(oldAvs);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp1 = addNonHabitant("Albert", "Foldingue", date(2000, 5, 3), Sexe.MASCULIN);
+			pp1.setNumeroAssureSocial(oldAvs);
 
-				final PersonnePhysique pp2 = addNonHabitant("Albertine", "Foldingo", date(2000, 5, 3), Sexe.FEMININ);
-				pp2.setNumeroAssureSocial(oldAvs);
+			final PersonnePhysique pp2 = addNonHabitant("Albertine", "Foldingo", date(2000, 5, 3), Sexe.FEMININ);
+			pp2.setNumeroAssureSocial(oldAvs);
 
-				final PersonnePhysique pp3 = addNonHabitant("Francine", "Foldinginni", date(2000, 5, 3), Sexe.FEMININ);
-				pp3.setNumeroAssureSocial(newAvs);
+			final PersonnePhysique pp3 = addNonHabitant("Francine", "Foldinginni", date(2000, 5, 3), Sexe.FEMININ);
+			pp3.setNumeroAssureSocial(newAvs);
 
-				final Ids ids = new Ids();
-				ids.ppId1 = pp1.getNumero();
-				ids.ppId2 = pp2.getNumero();
-				ids.ppId3 = pp3.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId1 = pp1.getNumero();
+			ids1.ppId2 = pp2.getNumero();
+			ids1.ppId3 = pp3.getNumero();
+			return ids1;
 		});
 
 		// on indexe tout ça
@@ -4505,7 +4406,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final CriteresPersonne criteres = new CriteresPersonne();
 				criteres.setNAVS13(oldAvs);
-				criteres.setDateNaissance(date(2000,5,3));
+				criteres.setDateNaissance(date(2000, 5, 3));
 				final Mutable<String> upiAvs = new MutableObject<>("titi");
 				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
 				assertNotNull(res);
@@ -4556,35 +4457,29 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setNAVS13(oldAvs);
-				criteres.setPrenoms("Mathilda");
-				criteres.setNom("Tourdesac");
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNAVS13(oldAvs);
+			criteres.setPrenoms("Mathilda");
+			criteres.setNom("Tourdesac");
 
-				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
-				service.handleDemande(message);
-				return null;
-			}
+			final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+			service.handleDemande(message);
+			return null;
 		});
 
 		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+		doInNewTransactionAndSession(status -> {
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
-				assertEquals(oldAvs, ic.getDemande().getPersonne().getNAVS13());
-				assertEquals(newAvs, ic.getNAVS13Upi());
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+			assertEquals(oldAvs, ic.getDemande().getPersonne().getNAVS13());
+			assertEquals(newAvs, ic.getNAVS13Upi());
+			return null;
 		});
 	}
 
@@ -4622,36 +4517,30 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setNAVS13(oldAvs);
-				criteres.setPrenoms("Mathilda");
-				criteres.setNom("Tourdesac");
-				criteres.setDateNaissance(date(1967, 5, 9));        // ce n'est pas la date connue dans Unireg, donc l'identification automatique échoue
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNAVS13(oldAvs);
+			criteres.setPrenoms("Mathilda");
+			criteres.setNom("Tourdesac");
+			criteres.setDateNaissance(date(1967, 5, 9));        // ce n'est pas la date connue dans Unireg, donc l'identification automatique échoue
 
-				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
-				service.handleDemande(message);
-				return null;
-			}
+			final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+			service.handleDemande(message);
+			return null;
 		});
 
 		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+		doInNewTransactionAndSession(status -> {
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-				assertEquals(oldAvs, ic.getDemande().getPersonne().getNAVS13());
-				assertEquals(newAvs, ic.getNAVS13Upi());
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+			assertEquals(oldAvs, ic.getDemande().getPersonne().getNAVS13());
+			assertEquals(newAvs, ic.getNAVS13Upi());
+			return null;
 		});
 	}
 
@@ -4676,34 +4565,28 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setPrenoms("Albert");
-				criteres.setNom("Zweisteinen");
-				criteres.setAdresse(new CriteresAdresse());         // <--- c'était ça la problème
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setPrenoms("Albert");
+			criteres.setNom("Zweisteinen");
+			criteres.setAdresse(new CriteresAdresse());         // <--- c'était ça la problème
 
-				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
-				service.handleDemande(message);
-				return null;
-			}
+			final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+			service.handleDemande(message);
+			return null;
 		});
 
 		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+		doInNewTransactionAndSession(status -> {
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
-				assertEquals(id, ic.getReponse().getNoContribuable());
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+			assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+			assertEquals(id, ic.getReponse().getNoContribuable());
+			return null;
 		});
 	}
 
@@ -4728,34 +4611,28 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setPrenoms("Jean-Claude");     // <-- même première partie de prénom composé
-				criteres.setNom("Zweisteinen");
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setPrenoms("Jean-Claude");     // <-- même première partie de prénom composé
+			criteres.setNom("Zweisteinen");
 
-				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
-				message.getDemande().setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
-				service.handleDemande(message);
-				return null;
-			}
+			final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+			message.getDemande().setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
+			service.handleDemande(message);
+			return null;
 		});
 
 		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+		doInNewTransactionAndSession(status -> {
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-				assertNull(ic.getReponse().getNoContribuable());
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+			assertNull(ic.getReponse().getNoContribuable());
+			return null;
 		});
 	}
 
@@ -4777,34 +4654,28 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setPrenoms("Jean Daniel René Albert");     // <-- si on n'enlève que le dernier prénom, on ne doit trouver personne
-				criteres.setNom("Zweisteinen");
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setPrenoms("Jean Daniel René Albert");     // <-- si on n'enlève que le dernier prénom, on ne doit trouver personne
+			criteres.setNom("Zweisteinen");
 
-				final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
-				message.getDemande().setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
-				service.handleDemande(message);
-				return null;
-			}
+			final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+			message.getDemande().setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
+			service.handleDemande(message);
+			return null;
 		});
 
 		// vérification du résultat : identification automatique avec autre NAVS (fourni par l'UPI)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<IdentificationContribuable> list = identCtbDAO.getAll();
-				assertEquals(1, list.size());
+		doInNewTransactionAndSession(status -> {
+			final List<IdentificationContribuable> list = identCtbDAO.getAll();
+			assertEquals(1, list.size());
 
-				final IdentificationContribuable ic = list.get(0);
-				assertNotNull(ic);
-				assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
-				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-				assertNull(ic.getReponse().getNoContribuable());
-				return null;
-			}
+			final IdentificationContribuable ic = list.get(0);
+			assertNotNull(ic);
+			assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
+			assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+			assertNull(ic.getReponse().getNoContribuable());
+			return null;
 		});
 	}
 
@@ -4824,18 +4695,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
-				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
-				addIdentificationEntreprise(ppBidon, ideCoop);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+			final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+			addIdentificationEntreprise(ppBidon, ideCoop);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -4871,18 +4739,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
-				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
-				addIdentificationEntreprise(ppBidon, ideCoop);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+			final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+			addIdentificationEntreprise(ppBidon, ideCoop);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -4918,18 +4783,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
-				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
-				addIdentificationEntreprise(ppBidon, ideCoop);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même numéro IDE que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+			final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+			addIdentificationEntreprise(ppBidon, ideCoop);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -4966,17 +4828,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
-				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+			final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -5013,17 +4872,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
-				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+			final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -5060,17 +4916,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
-				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
+			final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -5106,19 +4959,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// personne physique avec le même nom
-				addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			// personne physique avec le même nom
+			addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
 
-				final AutreCommunaute ac = addAutreCommunaute("Mueller GmbH");
+			final AutreCommunaute ac = addAutreCommunaute("Mueller GmbH");
 
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return ac.getNumero();
-			}
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return ac.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -5155,22 +5005,19 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
 
-				final AutreCommunaute one = addAutreCommunaute("Favre GmbH");
-				addAdresseSuisse(one, TypeAdresseTiers.COURRIER, date(2011, 1, 1), null, MockRue.Echallens.GrandRue);
+			final AutreCommunaute one = addAutreCommunaute("Favre GmbH");
+			addAdresseSuisse(one, TypeAdresseTiers.COURRIER, date(2011, 1, 1), null, MockRue.Echallens.GrandRue);
 
-				final AutreCommunaute two = addAutreCommunaute("Favre & Co AG");
-				addAdresseSuisse(two, TypeAdresseTiers.COURRIER, date(2013, 4, 12), null, MockRue.Lausanne.AvenueDeLaGare);
+			final AutreCommunaute two = addAutreCommunaute("Favre & Co AG");
+			addAdresseSuisse(two, TypeAdresseTiers.COURRIER, date(2013, 4, 12), null, MockRue.Lausanne.AvenueDeLaGare);
 
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-				return one.getNumero();
-			}
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+			return one.getNumero();
 		});
 
 		// on attend la fin de l'indexation
@@ -5214,15 +5061,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String numeroIDE = "CHE113343438";
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, raisonSocialeConnueUnireg);
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addIdentificationEntreprise(entreprise, numeroIDE);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, raisonSocialeConnueUnireg);
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addIdentificationEntreprise(entreprise, numeroIDE);
+			return entreprise.getNumero();
 		});
 
 		// on laisse le temps à l'indexation de faire son travail
@@ -5256,15 +5100,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final String numeroIDE = "CHE113343438";
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, raisonSocialeConnueUnireg);
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addIdentificationEntreprise(entreprise, numeroIDE);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, raisonSocialeConnueUnireg);
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addIdentificationEntreprise(entreprise, numeroIDE);
+			return entreprise.getNumero();
 		});
 
 		// on laisse le temps à l'indexation de faire son travail

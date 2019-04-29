@@ -5,8 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -86,20 +84,17 @@ public class AssujettisParSubstitutionProcessor {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<Long> getIdRapportSubstitution(){
+	private List<Long> getIdRapportSubstitution() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final StringBuilder b = new StringBuilder();
-				b.append("SELECT DISTINCT rapport.id FROM AssujettissementParSubstitution AS rapport");
-				b.append(" WHERE rapport.annulationDate IS NULL");
-				b.append(" AND rapport.annulationUser IS NULL");
-				b.append(" ORDER BY rapport.id ASC");
-				final String hql = b.toString();
-				return hibernateTemplate.find(hql, null);
-			}
+		return template.execute(status -> {
+			final StringBuilder b = new StringBuilder();
+			b.append("SELECT DISTINCT rapport.id FROM AssujettissementParSubstitution AS rapport");
+			b.append(" WHERE rapport.annulationDate IS NULL");
+			b.append(" AND rapport.annulationUser IS NULL");
+			b.append(" ORDER BY rapport.id ASC");
+			final String hql = b.toString();
+			return hibernateTemplate.find(hql, null);
 		});
 
 	}

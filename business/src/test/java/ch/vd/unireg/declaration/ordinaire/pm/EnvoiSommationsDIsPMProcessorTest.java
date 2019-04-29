@@ -4,14 +4,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -21,6 +15,9 @@ import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -86,29 +83,25 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 
 		final RegDate dateDebut = RegDate.get(2000, 1, 1);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final RegDate dateEmission = RegDate.get(2015, 1, 5);
-				final RegDate dateDelaiInitial = RegDate.get(2015, 6, 30);
-				final PeriodeFiscale periode = addPeriodeFiscale(2014);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");         // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final RegDate dateEmission = RegDate.get(2015, 1, 5);
+			final RegDate dateDelaiInitial = RegDate.get(2015, 6, 30);
+			final PeriodeFiscale periode = addPeriodeFiscale(2014);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");         // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+			addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final EnvoiSommationsDIsPMResults results = processor.run(RegDate.get(), null, null);
@@ -130,30 +123,26 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 
 		final RegDate dateDebut = RegDate.get(2000, 1, 1);
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final RegDate dateEmission = RegDate.get(2015, 1, 15);
-				final RegDate dateDelaiInitial = RegDate.get(2015, 6, 30);
-				final PeriodeFiscale periode = addPeriodeFiscale(2014);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
-				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");             // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final RegDate dateEmission = RegDate.get(2015, 1, 15);
+			final RegDate dateDelaiInitial = RegDate.get(2015, 6, 30);
+			final PeriodeFiscale periode = addPeriodeFiscale(2014);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
+			addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");             // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+			addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final EnvoiSommationsDIsPMResults results = processor.run(RegDate.get(), null, null);
@@ -175,26 +164,22 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return e.getNumero();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return e.getNumero();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addDays(5);         // avant l'expiration du délai administratif
@@ -221,26 +206,22 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);       // on a passé le délai administratif de 15 jours...
@@ -262,26 +243,22 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 18);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -294,18 +271,15 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
-				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
+			final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
 
-				Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
+			Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
 
-				final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
-				Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
-				return null;
-			}
+			final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
+			Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
+			return null;
 		});
 	}
 
@@ -317,27 +291,23 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			final ForFiscalPrincipal ffp = addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+			ffp.setAnnule(true);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				final ForFiscalPrincipal ffp = addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-				ffp.setAnnule(true);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
@@ -360,26 +330,22 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2010, 6, 30);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		processor = new EnvoiSommationsDIsPMProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, periodeImpositionService, adresseService) {
@@ -394,16 +360,13 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final List<EnvoiSommationsDIsPMResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
 		Assert.assertEquals(1, infoListErreur.size());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire declaration = diDao.get(diId);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire declaration = diDao.get(diId);
 
-				final EnvoiSommationsDIsPMResults.ErrorInfo error = infoListErreur.get(0);
-				Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
-				Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
-				return null;
-			}
+			final EnvoiSommationsDIsPMResults.ErrorInfo error = infoListErreur.get(0);
+			Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
+			Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
+			return null;
 		});
 
 		Assert.assertEquals(1, results.getTotalDisTraitees());
@@ -426,27 +389,23 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
@@ -468,27 +427,23 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
@@ -510,27 +465,23 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationSuspendue(declaration, dateEmission.addMonths(2));
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addEtatDeclarationSuspendue(declaration, dateEmission.addMonths(2));
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
@@ -543,13 +494,11 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(1, results.getTotalDisSuspendues());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) diDao.get(diId);
-				Assert.assertNotNull(di);
-				Assert.assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMME));
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) diDao.get(diId);
+			Assert.assertNotNull(di);
+			Assert.assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMME));
+			return null;
 		});
 	}
 
@@ -561,26 +510,22 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
 		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
 
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Truc machin");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.CORP_DP_ADM);
+			addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Truc machin");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.CORP_DP_ADM);
-				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periode);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periode);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, dateEmission);
+			addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
@@ -593,18 +538,15 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
-				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
-				Assert.assertNotNull(etatSomme);
-				Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
+			final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
+			Assert.assertNotNull(etatSomme);
+			Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
 
-				final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
-				Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
-				return null;
-			}
+			final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
+			Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
+			return null;
 		});
 	}
 }

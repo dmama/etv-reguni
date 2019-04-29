@@ -13,8 +13,6 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
@@ -155,12 +153,9 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	private boolean isAncienHabitant(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				return pp != null && !pp.isHabitantVD();
-			}
+		return template.execute(status -> {
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			return pp != null && !pp.isHabitantVD();
 		});
 	}
 

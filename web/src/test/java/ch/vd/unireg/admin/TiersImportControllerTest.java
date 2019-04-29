@@ -8,22 +8,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.TypeAdresseCivil;
@@ -142,17 +140,12 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		assertNotNull(view);
 		assertEquals("redirect:/admin/dbpreview.do", view);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				
-				int nbTiers = tiersDAO.getCount(Tiers.class);
-				assertEquals(126, nbTiers);
-				int nbInIndex = globalTiersSearcher.getExactDocCount();
-				assertEquals(123, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			int nbTiers = tiersDAO.getCount(Tiers.class);
+			assertEquals(126, nbTiers);
+			int nbInIndex = globalTiersSearcher.getExactDocCount();
+			assertEquals(123, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas;
+			return null;
 		});
 	}
 
@@ -181,17 +174,12 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		assertNotNull(view);
 		assertEquals("redirect:/admin/dbpreview.do", view);
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				int nbTiers = tiersDAO.getCount(Tiers.class);
-				assertEquals(126, nbTiers);
-				int nbInIndex = globalTiersSearcher.getExactDocCount();
-				assertEquals(123, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			int nbTiers = tiersDAO.getCount(Tiers.class);
+			assertEquals(126, nbTiers);
+			int nbInIndex = globalTiersSearcher.getExactDocCount();
+			assertEquals(123, nbInIndex); // => les individus 325631, 325740 et 333911 n'existent pas;
+			return null;
 		});
 	}
 

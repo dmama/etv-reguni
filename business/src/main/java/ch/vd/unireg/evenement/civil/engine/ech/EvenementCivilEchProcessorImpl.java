@@ -25,7 +25,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -387,36 +386,33 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		final ParenteRefreshForcingInterceptor myInterceptor = new ParenteRefreshForcingInterceptor(info.getNoIndividu());
 		mainInterceptor.register(myInterceptor);
 		try {
-			return doInNewTransaction(new TransactionCallback<Boolean>() {
-				@Override
-				public Boolean doInTransaction(TransactionStatus status) {
+			return doInNewTransaction(status -> {
 
-					// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
-					dataEventService.onIndividuChange(info.getNoIndividu());
+				// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
+				dataEventService.onIndividuChange(info.getNoIndividu());
 
-					final EvenementCivilEch evt = fetchDatabaseEvent(info);
-					if (evt.getEtat().isTraite()) {
-						LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
-						return Boolean.TRUE;
-					}
+				final EvenementCivilEch evt = fetchDatabaseEvent(info);
+				if (evt.getEtat().isTraite()) {
+					LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
+					return Boolean.TRUE;
+				}
 
-					try {
-						final List<EvenementCivilEchBasicInfo> sortedReferrers = info.getSortedReferrers();
-						if (LOGGER.isDebugEnabled() && sortedReferrers.size() > 0) {
-							final StringBuilder b = new StringBuilder();
-							b.append("Evénement principal : ").append(evt.getId());
-							b.append(", événements dépendants :");
-							for (EvenementCivilEchBasicInfo ref : sortedReferrers) {
-								b.append(' ').append(ref.getId());
-							}
-							LOGGER.debug(b.toString());
+				try {
+					final List<EvenementCivilEchBasicInfo> sortedReferrers = info.getSortedReferrers();
+					if (LOGGER.isDebugEnabled() && sortedReferrers.size() > 0) {
+						final StringBuilder b = new StringBuilder();
+						b.append("Evénement principal : ").append(evt.getId());
+						b.append(", événements dépendants :");
+						for (EvenementCivilEchBasicInfo ref : sortedReferrers) {
+							b.append(' ').append(ref.getId());
 						}
-						final List<EvenementCivilEch> referingEvts = buildEventList(sortedReferrers);
-						return processEvent(evt, referingEvts, info.getDate(), info.getIdForDataAfterEvent());
+						LOGGER.debug(b.toString());
 					}
-					catch (EvenementCivilException e) {
-						throw new EvenementCivilWrappingException(e);
-					}
+					final List<EvenementCivilEch> referingEvts = buildEventList(sortedReferrers);
+					return processEvent(evt, referingEvts, info.getDate(), info.getIdForDataAfterEvent());
+				}
+				catch (EvenementCivilException e) {
+					throw new EvenementCivilWrappingException(e);
 				}
 			});
 		}
@@ -474,19 +470,16 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param e exception qui a sauté
 	 */
 	private void onException(final EvenementCivilEchBasicInfo info, final Exception e) {
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
-				final EvenementCivilEch evt = fetchDatabaseEvent(info);
-				final List<EvenementCivilEch> referrers = buildEventList(info.getSortedReferrers());
-				final EvenementCivilGrappe grappe = buildGrappe(evt, referrers);
-				grappe.forEach(CLEANUP_AVANT_TRAITEMENT);
-				grappe.forEach(DATE_TRAITEMENT);
-				evt.getErreurs().add(erreur);
-				assignerEtatApresTraitement(EtatEvenementCivil.EN_ERREUR, grappe);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final EvenementCivilEchErreur erreur = ERREUR_FACTORY.createErreur(e);
+			final EvenementCivilEch evt = fetchDatabaseEvent(info);
+			final List<EvenementCivilEch> referrers = buildEventList(info.getSortedReferrers());
+			final EvenementCivilGrappe grappe = buildGrappe(evt, referrers);
+			grappe.forEach(CLEANUP_AVANT_TRAITEMENT);
+			grappe.forEach(DATE_TRAITEMENT);
+			evt.getErreurs().add(erreur);
+			assignerEtatApresTraitement(EtatEvenementCivil.EN_ERREUR, grappe);
+			return null;
 		});
 	}
 
@@ -507,12 +500,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				final Mutable<Object> dataHolder = new MutableObject<>();
 				if (strategy.needsTransactionOnCollectPhase()) {
 					final List<EvenementCivilEchBasicInfo> toAnalyse = currentlyRemaining;
-					currentlyRemaining = doInNewTransaction(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-						@Override
-						public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-							return strategy.doCollectPhase(toAnalyse, dataHolder);
-						}
-					});
+					currentlyRemaining = doInNewTransaction(status -> strategy.doCollectPhase(toAnalyse, dataHolder));
 				}
 				else {
 					currentlyRemaining = strategy.doCollectPhase(currentlyRemaining, dataHolder);
@@ -520,12 +508,9 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 				// phase de finalisation
 				if (strategy.needsTransactionOnFinalizePhase()) {
-					doInNewTransaction(new TransactionCallback<Object>() {
-						@Override
-						public Object doInTransaction(TransactionStatus status) {
-							strategy.doFinalizePhase(dataHolder.getValue());
-							return null;
-						}
+					doInNewTransaction(status -> {
+						strategy.doFinalizePhase(dataHolder.getValue());
+						return null;
 					});
 				}
 				else {

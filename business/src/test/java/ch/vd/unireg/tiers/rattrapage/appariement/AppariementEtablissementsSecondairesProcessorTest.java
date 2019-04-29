@@ -6,9 +6,6 @@ import java.util.List;
 import org.hibernate.dialect.Dialect;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -72,31 +69,28 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		});
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Toto et compagnie");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Toto et compagnie");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto Lausanne");
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto Lausanne");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// tentative d'appariement
@@ -106,30 +100,28 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		Assert.assertEquals(0, results.getErreurs().size());
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertNull(e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertNull(e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertNull(prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertNull(prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertNull(sec.getNumeroEtablissement());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertNull(sec.getNumeroEtablissement());
 
-				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
-				Assert.assertNotNull(domiciles);
-				Assert.assertEquals(2, domiciles.size());
-				for (DomicileEtablissement domicile : domiciles) {
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertNull(domicile.getDateFin());
-				}
+			final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(2, domiciles.size());
+			for (DomicileEtablissement domicile : domiciles) {
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertNull(domicile.getDateFin());
 			}
+			return null;
 		});
 	}
 
@@ -164,31 +156,28 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		});
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, dateDebut, null, "Toto et compagnie");
-				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(e, dateDebut, null, "Toto et compagnie");
+			addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			addDomicileEtablissement(prn, dateDebut, null, MockCommune.Echallens);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto Lausanne");
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto Lausanne");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// tentative d'appariement explicite pour cette entreprise
@@ -198,30 +187,28 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		Assert.assertEquals(0, results.getErreurs().size());
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertNull(e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertNull(e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertNull(prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertNull(prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertNull(sec.getNumeroEtablissement());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertNull(sec.getNumeroEtablissement());
 
-				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
-				Assert.assertNotNull(domiciles);
-				Assert.assertEquals(2, domiciles.size());
-				for (DomicileEtablissement domicile : domiciles) {
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertNull(domicile.getDateFin());
-				}
+			final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(2, domiciles.size());
+			for (DomicileEtablissement domicile : domiciles) {
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertNull(domicile.getDateFin());
 			}
+			return null;
 		});
 	}
 
@@ -264,31 +251,28 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebut, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebut, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebut, null, false);
-				sec.setRaisonSociale("Toto et compagnie Lausanne");
-				sec.setEnseigne("Toto & cie");
-				addIdentificationEntreprise(sec, ide);
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebut, null, false);
+			sec.setRaisonSociale("Toto et compagnie Lausanne");
+			sec.setEnseigne("Toto & cie");
+			addIdentificationEntreprise(sec, ide);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// lancement de l'appariement (SIMULATION)
@@ -306,32 +290,30 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// vérification en base (SIMULATION -> rien)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertNull(sec.getNumeroEtablissement());
-				Assert.assertEquals("Toto et compagnie Lausanne", sec.getRaisonSociale());
-				Assert.assertEquals("Toto & cie", sec.getEnseigne());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertNull(sec.getNumeroEtablissement());
+			Assert.assertEquals("Toto et compagnie Lausanne", sec.getRaisonSociale());
+			Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
-				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
-				Assert.assertNotNull(domiciles);
-				Assert.assertEquals(1, domiciles.size());
-				for (DomicileEtablissement domicile : domiciles) {
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertNull(domicile.getDateFin());
-				}
+			final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+			for (DomicileEtablissement domicile : domiciles) {
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertNull(domicile.getDateFin());
 			}
+			return null;
 		});
 
 		// lancement de l'appariement (REEL)
@@ -349,37 +331,35 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
-				Assert.assertNull(sec.getRaisonSociale());
-				Assert.assertEquals("Toto & cie", sec.getEnseigne());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
+			Assert.assertNull(sec.getRaisonSociale());
+			Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
-				// le domicile fiscal a été carrément annulé car la date de début de l'établissement civil est la même que celle du domicile fiscal actuel
-				final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
-				Assert.assertNotNull(secDomiciles);
-				Assert.assertEquals(1, secDomiciles.size());
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(0);
-					Assert.assertNotNull(domicile);
-					Assert.assertTrue(domicile.isAnnule());
-					Assert.assertEquals(dateDebut, domicile.getDateDebut());
-					Assert.assertNull(domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
+			// le domicile fiscal a été carrément annulé car la date de début de l'établissement civil est la même que celle du domicile fiscal actuel
+			final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
+			Assert.assertNotNull(secDomiciles);
+			Assert.assertEquals(1, secDomiciles.size());
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertTrue(domicile.isAnnule());
+				Assert.assertEquals(dateDebut, domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -423,31 +403,28 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutFiscale, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutFiscale, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebutFiscale, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebutFiscale, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebutFiscale, dateDemenagementFiscal.getOneDayBefore(), MockCommune.Prilly);
-				addDomicileEtablissement(sec, dateDemenagementFiscal, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebutFiscale, null, false);
-				sec.setRaisonSociale("Toto et compagnie Lausanne");
-				sec.setEnseigne("Toto & cie");
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebutFiscale, dateDemenagementFiscal.getOneDayBefore(), MockCommune.Prilly);
+			addDomicileEtablissement(sec, dateDemenagementFiscal, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebutFiscale, null, false);
+			sec.setRaisonSociale("Toto et compagnie Lausanne");
+			sec.setEnseigne("Toto & cie");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// lancement de l'appariement (SIMULATION)
@@ -465,47 +442,45 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// vérification en base (SIMULATION -> rien)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertNull(sec.getNumeroEtablissement());
-				Assert.assertEquals("Toto et compagnie Lausanne", sec.getRaisonSociale());
-				Assert.assertEquals("Toto & cie", sec.getEnseigne());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertNull(sec.getNumeroEtablissement());
+			Assert.assertEquals("Toto et compagnie Lausanne", sec.getRaisonSociale());
+			Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
-				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("FROM DomicileEtablissement de ORDER BY de.dateDebut ASC", null);
-				Assert.assertNotNull(domiciles);
-				Assert.assertEquals(2, domiciles.size());
-				{
-					final DomicileEtablissement domicile = domiciles.get(0);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
-					Assert.assertEquals(dateDemenagementFiscal.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = domiciles.get(1);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal, domicile.getDateDebut());
-					Assert.assertNull(domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
+			final List<DomicileEtablissement> domiciles = hibernateTemplate.find("FROM DomicileEtablissement de ORDER BY de.dateDebut ASC", null);
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(2, domiciles.size());
+			{
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
+				Assert.assertEquals(dateDemenagementFiscal.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
+			{
+				final DomicileEtablissement domicile = domiciles.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal, domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			return null;
 		});
 
 		// lancement de l'appariement (REEL)
@@ -523,48 +498,46 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
-				Assert.assertNull(sec.getRaisonSociale());
-				Assert.assertEquals("Toto & cie", sec.getEnseigne());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
+			Assert.assertNull(sec.getRaisonSociale());
+			Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
-				// le domicile fiscal actif au moment de la date de début civile a été fermé à la veille
-				final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
-				Assert.assertNotNull(secDomiciles);
-				Assert.assertEquals(2, secDomiciles.size());
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(0);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
-					Assert.assertEquals(dateDemenagementFiscal.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(1);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal, domicile.getDateDebut());
-					Assert.assertEquals(dateDebutCivile.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
+			// le domicile fiscal actif au moment de la date de début civile a été fermé à la veille
+			final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
+			Assert.assertNotNull(secDomiciles);
+			Assert.assertEquals(2, secDomiciles.size());
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
+				Assert.assertEquals(dateDemenagementFiscal.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal, domicile.getDateDebut());
+				Assert.assertEquals(dateDebutCivile.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -604,32 +577,29 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
-				addRegimeFiscalVD(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateDebutFiscale, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+			addRegimeFiscalVD(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(e, dateDebutFiscale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateDebutFiscale, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final Etablissement prn = addEtablissement();
-				prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
-				addActiviteEconomique(e, prn, dateDebutFiscale, null, true);
+			final Etablissement prn = addEtablissement();
+			prn.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+			addActiviteEconomique(e, prn, dateDebutFiscale, null, true);
 
-				final Etablissement sec = addEtablissement();
-				addDomicileEtablissement(sec, dateDebutFiscale, dateDemenagementFiscal1.getOneDayBefore(), MockCommune.Prilly);
-				addDomicileEtablissement(sec, dateDemenagementFiscal1, dateDemenagementFiscal2.getOneDayBefore(), MockCommune.Renens);
-				addDomicileEtablissement(sec, dateDemenagementFiscal2, null, MockCommune.Lausanne);
-				addActiviteEconomique(e, sec, dateDebutFiscale, null, false);
-				sec.setRaisonSociale("Toto Lausanne");
-				sec.setEnseigne("Toto & cie");
+			final Etablissement sec = addEtablissement();
+			addDomicileEtablissement(sec, dateDebutFiscale, dateDemenagementFiscal1.getOneDayBefore(), MockCommune.Prilly);
+			addDomicileEtablissement(sec, dateDemenagementFiscal1, dateDemenagementFiscal2.getOneDayBefore(), MockCommune.Renens);
+			addDomicileEtablissement(sec, dateDemenagementFiscal2, null, MockCommune.Lausanne);
+			addActiviteEconomique(e, sec, dateDebutFiscale, null, false);
+			sec.setRaisonSociale("Toto Lausanne");
+			sec.setEnseigne("Toto & cie");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = e.getNumero();
-				ids.idEtablissementPrincipal = prn.getNumero();
-				ids.idEtablissementSecondaire = sec.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = e.getNumero();
+			ids1.idEtablissementPrincipal = prn.getNumero();
+			ids1.idEtablissementSecondaire = sec.getNumero();
+			return ids1;
 		});
 
 		// lancement de l'appariement (SIMULATION)
@@ -647,57 +617,55 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// vérification en base (SIMULATION -> rien)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertNull(sec.getNumeroEtablissement());
-				Assert.assertEquals("Toto Lausanne", sec.getRaisonSociale());
-				Assert.assertEquals("Toto & cie", sec.getEnseigne());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertNull(sec.getNumeroEtablissement());
+			Assert.assertEquals("Toto Lausanne", sec.getRaisonSociale());
+			Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
-				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("FROM DomicileEtablissement de ORDER BY de.dateDebut ASC", null);
-				Assert.assertNotNull(domiciles);
-				Assert.assertEquals(3, domiciles.size());
-				{
-					final DomicileEtablissement domicile = domiciles.get(0);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
-					Assert.assertEquals(dateDemenagementFiscal1.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = domiciles.get(1);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal1, domicile.getDateDebut());
-					Assert.assertEquals(dateDemenagementFiscal2.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Renens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = domiciles.get(2);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal2, domicile.getDateDebut());
-					Assert.assertNull(domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
+			final List<DomicileEtablissement> domiciles = hibernateTemplate.find("FROM DomicileEtablissement de ORDER BY de.dateDebut ASC", null);
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(3, domiciles.size());
+			{
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
+				Assert.assertEquals(dateDemenagementFiscal1.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
+			{
+				final DomicileEtablissement domicile = domiciles.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal1, domicile.getDateDebut());
+				Assert.assertEquals(dateDemenagementFiscal2.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Renens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final DomicileEtablissement domicile = domiciles.get(2);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal2, domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			return null;
 		});
 
 		// lancement de l'appariement (REEL)
@@ -715,68 +683,66 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
-				Assert.assertNotNull(e);
-				Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersService.getTiers(ids.idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals((Long) noCantonalEntreprise, e.getNumeroEntreprise());
 
-				final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
+			final Etablissement prn = (Etablissement) tiersService.getTiers(ids.idEtablissementPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, prn.getNumeroEtablissement());
 
-				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
-				Assert.assertNotNull(sec);
-				Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
-				Assert.assertNull(sec.getRaisonSociale());
-				Assert.assertEquals("Toto & cie", sec.getEnseigne());
+			final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
+			Assert.assertNotNull(sec);
+			Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
+			Assert.assertNull(sec.getRaisonSociale());
+			Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
-				// le domicile fiscal actif au moment de la date de début civile a été fermé à la veille
-				final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
-				Assert.assertNotNull(secDomiciles);
-				Assert.assertEquals(4, secDomiciles.size());
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(0);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
-					Assert.assertEquals(dateDemenagementFiscal1.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(1);
-					Assert.assertNotNull(domicile);
-					Assert.assertFalse(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal1, domicile.getDateDebut());
-					Assert.assertEquals(dateDebutCivile.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Renens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(2);
-					Assert.assertNotNull(domicile);
-					Assert.assertTrue(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal1, domicile.getDateDebut());
-					Assert.assertEquals(dateDemenagementFiscal2.getOneDayBefore(), domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Renens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
-				{
-					final DomicileEtablissement domicile = secDomiciles.get(3);
-					Assert.assertNotNull(domicile);
-					Assert.assertTrue(domicile.isAnnule());
-					Assert.assertSame(sec, domicile.getEtablissement());
-					Assert.assertEquals(dateDemenagementFiscal2, domicile.getDateDebut());
-					Assert.assertNull(domicile.getDateFin());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				}
+			// le domicile fiscal actif au moment de la date de début civile a été fermé à la veille
+			final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
+			Assert.assertNotNull(secDomiciles);
+			Assert.assertEquals(4, secDomiciles.size());
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDebutFiscale, domicile.getDateDebut());
+				Assert.assertEquals(dateDemenagementFiscal1.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal1, domicile.getDateDebut());
+				Assert.assertEquals(dateDebutCivile.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Renens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(2);
+				Assert.assertNotNull(domicile);
+				Assert.assertTrue(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal1, domicile.getDateDebut());
+				Assert.assertEquals(dateDemenagementFiscal2.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Renens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final DomicileEtablissement domicile = secDomiciles.get(3);
+				Assert.assertNotNull(domicile);
+				Assert.assertTrue(domicile.isAnnule());
+				Assert.assertSame(sec, domicile.getEtablissement());
+				Assert.assertEquals(dateDemenagementFiscal2, domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+			}
+			return null;
 		});
 	}
 }

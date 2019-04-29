@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.Fuse;
@@ -98,20 +96,15 @@ public class EvenementReqDesRetryProcessorImpl implements EvenementReqDesRetryPr
 	private Set<Long> getIds() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<Set<Long>>() {
+		return template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<Set<Long>>() {
 			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback<Set<Long>>() {
-					@Override
-					public Set<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final Query query = session.createQuery("select ut.id from UniteTraitement as ut where ut.etat in (:etats)");
-						final Set<EtatTraitement> etats = EnumSet.of(EtatTraitement.A_TRAITER, EtatTraitement.EN_ERREUR);
-						query.setParameterList("etats", etats);
-						//noinspection unchecked
-						return new HashSet<>(query.list());
-					}
-				});
+			public Set<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery("select ut.id from UniteTraitement as ut where ut.etat in (:etats)");
+				final Set<EtatTraitement> etats = EnumSet.of(EtatTraitement.A_TRAITER, EtatTraitement.EN_ERREUR);
+				query.setParameterList("etats", etats);
+				//noinspection unchecked
+				return new HashSet<>(query.list());
 			}
-		});
+		}));
 	}
 }

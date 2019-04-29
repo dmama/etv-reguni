@@ -33,12 +33,9 @@ public class TransactionHelper {
 	 * @param callback traitement à exécuter dans le contexte de la transaction
 	 */
 	public void doInTransaction(boolean readonly, final TransactionCallbackWithoutResult callback) {
-		doInTransaction(readonly, new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				callback.doInTransaction(status);
-				return null;
-			}
+		doInTransaction(readonly, status -> {
+			callback.doInTransaction(status);
+			return null;
 		});
 	}
 
@@ -85,19 +82,16 @@ public class TransactionHelper {
 	 */
 	public <T, E extends Exception> T doInTransactionWithException(boolean readonly, final ExceptionThrowingCallback<T, E> callback) throws E {
 		try {
-			return doInTransaction(readonly, new TransactionCallback<T>() {
-				@Override
-				public T doInTransaction(TransactionStatus status) {
-					try {
-						return callback.execute(status);
-					}
-					catch (RuntimeException e) {
-						throw e;
-					}
-					catch (Exception e) {
-						// d'après la signature du callback, cela ne peut être qu'une exception de classe E
-						throw new WrappingException(e);
-					}
+			return doInTransaction(readonly, status -> {
+				try {
+					return callback.execute(status);
+				}
+				catch (RuntimeException e) {
+					throw e;
+				}
+				catch (Exception e) {
+					// d'après la signature du callback, cela ne peut être qu'une exception de classe E
+					throw new WrappingException(e);
 				}
 			});
 		}

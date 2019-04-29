@@ -3,8 +3,6 @@ package ch.vd.unireg.tiers.manager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -94,21 +92,18 @@ public class AutorisationCacheTest extends WebTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
 
-				final Ids ids = new Ids();
-				ids.ppLui = lui.getNumero();
-				ids.ppElle = elle.getNumero();
-				ids.ppMenageCommun = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppLui = lui.getNumero();
+			ids1.ppElle = elle.getNumero();
+			ids1.ppMenageCommun = mc.getNumero();
+			return ids1;
 		});
 
 		// contenu du cache -> vide
@@ -248,59 +243,50 @@ public class AutorisationCacheTest extends WebTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
-				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
-				final int anneeFinAncienCouple = RegDate.get().year() - 4;
-				final int anneeDebutNouveauCouple = RegDate.get().year() - 3;
-				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m, mmEx, date(2001, 3, 7), date(anneeFinAncienCouple, 5, 1));
-				EnsembleTiersCouple etc = addEnsembleTiersCouple(m, mm, date(anneeDebutNouveauCouple, 5, 7), null);
-				final MenageCommun mc = etc.getMenage();
-				final MenageCommun mcEx = etcEx.getMenage();
-				final Ids ids = new Ids();
-				ids.ppLui = m.getNumero();
-				ids.ppElle = mm.getNumero();
-				ids.ppElleEx = mmEx.getNumero();
-				ids.menageCommun = mc.getNumero();
-				ids.menageCommunEx = mcEx.getNumero();
-
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
+			final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
+			final int anneeFinAncienCouple = RegDate.get().year() - 4;
+			final int anneeDebutNouveauCouple = RegDate.get().year() - 3;
+			EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m, mmEx, date(2001, 3, 7), date(anneeFinAncienCouple, 5, 1));
+			EnsembleTiersCouple etc = addEnsembleTiersCouple(m, mm, date(anneeDebutNouveauCouple, 5, 7), null);
+			final MenageCommun mc = etc.getMenage();
+			final MenageCommun mcEx = etcEx.getMenage();
+			final Ids ids1 = new Ids();
+			ids1.ppLui = m.getNumero();
+			ids1.ppElle = mm.getNumero();
+			ids1.ppElleEx = mmEx.getNumero();
+			ids1.menageCommun = mc.getNumero();
+			ids1.menageCommunEx = mcEx.getNumero();
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
-				DecisionAci d = addDecisionAci(personneEx, date(2013, 11, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		final IdsDecision idsDecision = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+			DecisionAci d = addDecisionAci(personneEx, date(2013, 11, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 
 		// vérification de la situation sur le nouveau couple,
 		//tout le monde sous influence de la décision aci posé sur l'ex, c'est la nouvelle femme qui va être contente ....
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
-				Assert.assertNotNull(ppLui);
-				assertTrue(tiersService.isSousInfluenceDecisions(ppLui));
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+			Assert.assertNotNull(ppLui);
+			assertTrue(tiersService.isSousInfluenceDecisions(ppLui));
 
-				final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
-				Assert.assertNotNull(nouveauMc);
-				assertTrue(tiersService.isSousInfluenceDecisions(nouveauMc));
+			final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+			Assert.assertNotNull(nouveauMc);
+			assertTrue(tiersService.isSousInfluenceDecisions(nouveauMc));
 
-				final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
-				Assert.assertNotNull(ppElle);
-				assertTrue(tiersService.isSousInfluenceDecisions(ppElle));
-			}
+			final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+			Assert.assertNotNull(ppElle);
+			assertTrue(tiersService.isSousInfluenceDecisions(ppElle));
+			return null;
 		});
 
 		// contenu du cache -> vide
@@ -344,15 +330,12 @@ public class AutorisationCacheTest extends WebTest {
 		Assert.assertTrue(cache.hasCachedData(ids.menageCommunEx, visaOperateurSansDroitDecision, 5));
 
 		//fermeture Decision
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
-				DecisionAci d = personneEx.getDecisionsSorted().get(0);
-				final RegDate dateFin = date(RegDate.get().year() - 2, 12, 31);
-				d.setDateFin(dateFin);
-
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+			DecisionAci d = personneEx.getDecisionsSorted().get(0);
+			final RegDate dateFin = date(RegDate.get().year() - 2, 12, 31);
+			d.setDateFin(dateFin);
+			return null;
 		});
 
 		//Cache vide pour tout le monde

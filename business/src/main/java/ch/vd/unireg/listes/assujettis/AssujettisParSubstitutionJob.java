@@ -4,8 +4,6 @@ import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -48,17 +46,12 @@ public class AssujettisParSubstitutionJob extends JobDefinition {
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();
-		final AssujettisParSubstitutionProcessor processor = new AssujettisParSubstitutionProcessor(hibernateTemplate, tiersService,transactionManager,assujettissementService);
+		final AssujettisParSubstitutionProcessor processor = new AssujettisParSubstitutionProcessor(hibernateTemplate, tiersService, transactionManager, assujettissementService);
 		final AssujettisParSubstitutionResults results = processor.run(dateTraitement, nbThreads, statusManager);
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final AssujettiParSubstitutionRapport rapport = template.execute(new TransactionCallback<AssujettiParSubstitutionRapport>() {
-			@Override
-			public AssujettiParSubstitutionRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final AssujettiParSubstitutionRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 		setLastRunReport(rapport);
 		audit.success("La génération le la liste des assujettis par substitution est terminée.", rapport);
 

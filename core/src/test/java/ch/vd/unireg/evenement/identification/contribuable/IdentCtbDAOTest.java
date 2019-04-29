@@ -11,9 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -181,107 +179,78 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 
 	@Test
 	public void testMetaDataPersistenceNull() throws Exception {
-		final long id = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.merge(buildDummyIdentificationContribuable(null)).getId();
-			}
-		});
+		final long id = doInNewTransaction(status -> hibernateTemplate.merge(buildDummyIdentificationContribuable(null)).getId());
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final IdentificationContribuable ident = dao.get(id);
-				assertNotNull(ident);
-				assertNull(ident.getHeader().getMetadata());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final IdentificationContribuable ident = dao.get(id);
+			assertNotNull(ident);
+			assertNull(ident.getHeader().getMetadata());
+			return null;
 		});
 	}
 
 	@Test
 	public void testMetaDataPersistenceEmpty() throws Exception {
-		final long id = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.merge(buildDummyIdentificationContribuable(new HashMap<String, String>())).getId();
-			}
-		});
+		final long id = doInNewTransaction(status -> hibernateTemplate.merge(buildDummyIdentificationContribuable(new HashMap<String, String>())).getId());
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final IdentificationContribuable ident = dao.get(id);
-				assertNotNull(ident);
-				assertNotNull(ident.getHeader().getMetadata());
-				assertEquals(0, ident.getHeader().getMetadata().size());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final IdentificationContribuable ident = dao.get(id);
+			assertNotNull(ident);
+			assertNotNull(ident.getHeader().getMetadata());
+			assertEquals(0, ident.getHeader().getMetadata().size());
+			return null;
 		});
 	}
 
 	@Test
 	public void testMetaDataPersistenceOneElement() throws Exception {
-		final long id = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Map<String, String> metadata = new HashMap<>();
-				metadata.put("MyKey", "MyValue");
-				return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
-			}
+		final long id = doInNewTransaction(status -> {
+			final Map<String, String> metadata = new HashMap<>();
+			metadata.put("MyKey", "MyValue");
+			return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final IdentificationContribuable ident = dao.get(id);
-				assertNotNull(ident);
+		doInNewTransaction(status -> {
+			final IdentificationContribuable ident = dao.get(id);
+			assertNotNull(ident);
 
-				final Map<String, String> metadata = ident.getHeader().getMetadata();
-				assertNotNull(metadata);
-				assertEquals(1, metadata.size());
+			final Map<String, String> metadata = ident.getHeader().getMetadata();
+			assertNotNull(metadata);
+			assertEquals(1, metadata.size());
 
-				final Map.Entry<String, String> entry = metadata.entrySet().iterator().next();
-				assertNotNull(entry);
-				assertEquals("MyKey", entry.getKey());
-				assertEquals("MyValue", entry.getValue());
-
-				return null;
-			}
+			final Map.Entry<String, String> entry = metadata.entrySet().iterator().next();
+			assertNotNull(entry);
+			assertEquals("MyKey", entry.getKey());
+			assertEquals("MyValue", entry.getValue());
+			return null;
 		});
 	}
 
 	@Test
 	public void testMetaDataPersistenceSeveralElements() throws Exception {
-		final long id = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Map<String, String> metadata = new HashMap<>();
-				metadata.put("MyKey", "{}#,,");
-				metadata.put("YourKey{,", "YourValue");
-				metadata.put("HerKey\"{,", "HerValue\"{{");
-				metadata.put("HisKey", null);
-				return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
-			}
+		final long id = doInNewTransaction(status -> {
+			final Map<String, String> metadata = new HashMap<>();
+			metadata.put("MyKey", "{}#,,");
+			metadata.put("YourKey{,", "YourValue");
+			metadata.put("HerKey\"{,", "HerValue\"{{");
+			metadata.put("HisKey", null);
+			return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final IdentificationContribuable ident = dao.get(id);
-				assertNotNull(ident);
+		doInNewTransaction(status -> {
+			final IdentificationContribuable ident = dao.get(id);
+			assertNotNull(ident);
 
-				final Map<String, String> metadata = ident.getHeader().getMetadata();
-				assertNotNull(metadata);
-				assertEquals(4, metadata.size());
+			final Map<String, String> metadata = ident.getHeader().getMetadata();
+			assertNotNull(metadata);
+			assertEquals(4, metadata.size());
 
-				assertEquals("{}#,,", metadata.get("MyKey"));
-				assertEquals("YourValue", metadata.get("YourKey{,"));
-				assertEquals("HerValue\"{{", metadata.get("HerKey\"{,"));
-				assertTrue(metadata.containsKey("HisKey"));
-				assertNull(metadata.get("HisKey"));
-				return null;
-			}
+			assertEquals("{}#,,", metadata.get("MyKey"));
+			assertEquals("YourValue", metadata.get("YourKey{,"));
+			assertEquals("HerValue\"{{", metadata.get("HerKey\"{,"));
+			assertTrue(metadata.containsKey("HisKey"));
+			assertNull(metadata.get("HisKey"));
+			return null;
 		});
 	}
 }

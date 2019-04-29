@@ -4,8 +4,6 @@ import java.net.URL;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.AutreCommunaute;
@@ -104,21 +102,19 @@ public class AvatarServiceTest extends BusinessTest {
 		});
 
 		// vérifications
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				Assert.assertNotNull(lui);
-				Assert.assertEquals(TypeAvatar.HOMME, avatarService.getTypeAvatar(lui));
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			Assert.assertNotNull(lui);
+			Assert.assertEquals(TypeAvatar.HOMME, avatarService.getTypeAvatar(lui));
 
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
-				Assert.assertNotNull(elle);
-				Assert.assertEquals(TypeAvatar.FEMME, avatarService.getTypeAvatar(elle));
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+			Assert.assertNotNull(elle);
+			Assert.assertEquals(TypeAvatar.FEMME, avatarService.getTypeAvatar(elle));
 
-				final PersonnePhysique androgyne = (PersonnePhysique) tiersDAO.get(ids.androgyne);
-				Assert.assertNotNull(androgyne);
-				Assert.assertEquals(TypeAvatar.SEXE_INCONNU, avatarService.getTypeAvatar(androgyne));
-			}
+			final PersonnePhysique androgyne = (PersonnePhysique) tiersDAO.get(ids.androgyne);
+			Assert.assertNotNull(androgyne);
+			Assert.assertEquals(TypeAvatar.SEXE_INCONNU, avatarService.getTypeAvatar(androgyne));
+			return null;
 		});
 	}
 
@@ -213,41 +209,39 @@ public class AvatarServiceTest extends BusinessTest {
 		});
 
 		// vérification
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final MenageCommun luiSeul = (MenageCommun) tiersDAO.get(ids.luiSeul);
-				Assert.assertNotNull(luiSeul);
-				Assert.assertEquals(TypeAvatar.MC_HOMME_SEUL, avatarService.getTypeAvatar(luiSeul));
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun luiSeul = (MenageCommun) tiersDAO.get(ids.luiSeul);
+			Assert.assertNotNull(luiSeul);
+			Assert.assertEquals(TypeAvatar.MC_HOMME_SEUL, avatarService.getTypeAvatar(luiSeul));
 
-				final MenageCommun elleSeule = (MenageCommun) tiersDAO.get(ids.elleSeule);
-				Assert.assertNotNull(elleSeule);
-				Assert.assertEquals(TypeAvatar.MC_FEMME_SEULE, avatarService.getTypeAvatar(elleSeule));
+			final MenageCommun elleSeule = (MenageCommun) tiersDAO.get(ids.elleSeule);
+			Assert.assertNotNull(elleSeule);
+			Assert.assertEquals(TypeAvatar.MC_FEMME_SEULE, avatarService.getTypeAvatar(elleSeule));
 
-				final MenageCommun androgynes = (MenageCommun) tiersDAO.get(ids.androgynes);
-				Assert.assertNotNull(androgynes);
-				Assert.assertEquals(TypeAvatar.MC_SEXE_INCONNU, avatarService.getTypeAvatar(androgynes));
+			final MenageCommun androgynes = (MenageCommun) tiersDAO.get(ids.androgynes);
+			Assert.assertNotNull(androgynes);
+			Assert.assertEquals(TypeAvatar.MC_SEXE_INCONNU, avatarService.getTypeAvatar(androgynes));
 
-				final MenageCommun luiAvecAndrogyne = (MenageCommun) tiersDAO.get(ids.luiAvecAndrogyne);
-				Assert.assertNotNull(luiAvecAndrogyne);
-				Assert.assertEquals(TypeAvatar.MC_HOMME_SEUL, avatarService.getTypeAvatar(luiAvecAndrogyne));
+			final MenageCommun luiAvecAndrogyne = (MenageCommun) tiersDAO.get(ids.luiAvecAndrogyne);
+			Assert.assertNotNull(luiAvecAndrogyne);
+			Assert.assertEquals(TypeAvatar.MC_HOMME_SEUL, avatarService.getTypeAvatar(luiAvecAndrogyne));
 
-				final MenageCommun elleAvecAndrogyne = (MenageCommun) tiersDAO.get(ids.elleAvecAndrogyne);
-				Assert.assertNotNull(elleAvecAndrogyne);
-				Assert.assertEquals(TypeAvatar.MC_FEMME_SEULE, avatarService.getTypeAvatar(elleAvecAndrogyne));
+			final MenageCommun elleAvecAndrogyne = (MenageCommun) tiersDAO.get(ids.elleAvecAndrogyne);
+			Assert.assertNotNull(elleAvecAndrogyne);
+			Assert.assertEquals(TypeAvatar.MC_FEMME_SEULE, avatarService.getTypeAvatar(elleAvecAndrogyne));
 
-				final MenageCommun elleEtLui = (MenageCommun) tiersDAO.get(ids.elleEtLui);
-				Assert.assertNotNull(elleEtLui);
-				Assert.assertEquals(TypeAvatar.MC_MIXTE, avatarService.getTypeAvatar(elleEtLui));
+			final MenageCommun elleEtLui = (MenageCommun) tiersDAO.get(ids.elleEtLui);
+			Assert.assertNotNull(elleEtLui);
+			Assert.assertEquals(TypeAvatar.MC_MIXTE, avatarService.getTypeAvatar(elleEtLui));
 
-				final MenageCommun elles = (MenageCommun) tiersDAO.get(ids.elles);
-				Assert.assertNotNull(elles);
-				Assert.assertEquals(TypeAvatar.MC_FEMME_FEMME, avatarService.getTypeAvatar(elles));
+			final MenageCommun elles = (MenageCommun) tiersDAO.get(ids.elles);
+			Assert.assertNotNull(elles);
+			Assert.assertEquals(TypeAvatar.MC_FEMME_FEMME, avatarService.getTypeAvatar(elles));
 
-				final MenageCommun eux = (MenageCommun) tiersDAO.get(ids.eux);
-				Assert.assertNotNull(eux);
-				Assert.assertEquals(TypeAvatar.MC_HOMME_HOMME, avatarService.getTypeAvatar(eux));
-			}
+			final MenageCommun eux = (MenageCommun) tiersDAO.get(ids.eux);
+			Assert.assertNotNull(eux);
+			Assert.assertEquals(TypeAvatar.MC_HOMME_HOMME, avatarService.getTypeAvatar(eux));
+			return null;
 		});
 	}
 }

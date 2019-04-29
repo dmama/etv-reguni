@@ -18,9 +18,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.CoreDAOTest;
 
@@ -135,43 +132,37 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 	@Test
 	public void testSaveReload() throws Exception {
 
-		final long personneId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// CTB 1
-				Personne personne = new Personne();
-				personne.nom = "Tommy";
+		final long personneId = doInNewTransaction(status -> {
+			// CTB 1
+			Personne personne = new Personne();
+			personne.nom = "Tommy";
 
-				// CTB 2
-				Menage menage = new Menage();
+			// CTB 2
+			Menage menage = new Menage();
 
-				final Session session = sessionFactory.getCurrentSession();
-				personne = (Personne) session.merge(personne);
-				menage = (Menage) session.merge(menage);
+			final Session session = sessionFactory.getCurrentSession();
+			personne = (Personne) session.merge(personne);
+			menage = (Menage) session.merge(menage);
 
-				Rapport rapport = new Rapport();
-				rapport.objet = menage;
-				rapport.sujet = personne;
-				session.merge(rapport);
-
-				return personne.id;
-			}
+			Rapport rapport = new Rapport();
+			rapport.objet = menage;
+			rapport.sujet = personne;
+			session.merge(rapport);
+			return personne.id;
 		});
 
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Session session = sessionFactory.getCurrentSession();
-				final Personne personne = (Personne) session.get(Personne.class, personneId);
-				assertNotNull(personne);
+		doInNewReadOnlyTransaction(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			final Personne personne = (Personne) session.get(Personne.class, personneId);
+			assertNotNull(personne);
 
-				List<Rapport> rapports = personne.rapportSujets;
-				Rapport rapport = rapports.iterator().next();
-				assertNotNull(rapport);
+			List<Rapport> rapports = personne.rapportSujets;
+			Rapport rapport = rapports.iterator().next();
+			assertNotNull(rapport);
 
-				/* Cet assert saute avec le fetch mode = LAZY sur les collections ! */
-				assertTrue(rapport.objet instanceof Menage);
-			}
+			/* Cet assert saute avec le fetch mode = LAZY sur les collections ! */
+			assertTrue(rapport.objet instanceof Menage);
+			return null;
 		});
 	}
 

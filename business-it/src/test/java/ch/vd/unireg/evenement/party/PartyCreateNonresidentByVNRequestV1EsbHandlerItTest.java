@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
@@ -54,16 +52,14 @@ public class PartyCreateNonresidentByVNRequestV1EsbHandlerItTest extends PartyRe
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresident() throws Exception {
 		final long nhId = testRetour(true);
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
-				assertNotNull(nh);
-				assertFalse(nh.isHabitantVD());
-				assertNotNull(nh.getNom());
-				assertNotNull(nh.getPrenomUsuel());
-				assertNotNull(nh.getNumeroAssureSocial());
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
+			assertNotNull(nh);
+			assertFalse(nh.isHabitantVD());
+			assertNotNull(nh.getNom());
+			assertNotNull(nh.getPrenomUsuel());
+			assertNotNull(nh.getNumeroAssureSocial());
+			return null;
 		});
 	}
 

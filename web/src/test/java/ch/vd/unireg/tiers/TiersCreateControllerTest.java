@@ -5,8 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -14,8 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.tiers.view.CreateNonHabitantView;
 
 import static org.junit.Assert.assertEquals;
@@ -59,18 +57,16 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 		assertTrue(viewName, matcher.matches());
 		final long id = Long.parseLong(matcher.group(1));
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				assertEquals("Kamel", nh.getNom());
-				assertEquals((Long) id, nh.getNumero());
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			assertEquals("Kamel", nh.getNom());
+			assertEquals((Long) id, nh.getNumero());
+			return null;
 		});
 	}
 
@@ -93,19 +89,17 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 		assertTrue(viewName, matcher.matches());
 		final long id = Long.parseLong(matcher.group(1));
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				assertEquals(nom, nh.getNom());
-				assertEquals(dateN, nh.getDateNaissance());
-				assertEquals((Long) id, nh.getNumero());
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			assertEquals(nom, nh.getNom());
+			assertEquals(dateN, nh.getDateNaissance());
+			assertEquals((Long) id, nh.getNumero());
+			return null;
 		});
 	}
 
@@ -131,15 +125,13 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 		assertEquals("civil.dateNaissance", error.getField());
 		assertEquals("typeMismatch", error.getCode());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				assertEquals(MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			assertEquals(MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				assertEquals(0, allPP.size());
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			assertEquals(0, allPP.size());
+			return null;
 		});
 	}
 
@@ -160,18 +152,16 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 		assertTrue(viewName, matcher.matches());
 		final long id = Long.parseLong(matcher.group(1));
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				assertEquals(dateN, nh.getDateNaissance());
-				assertEquals((Long) id, nh.getNumero());
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			assertEquals(dateN, nh.getDateNaissance());
+			assertEquals((Long) id, nh.getNumero());
+			return null;
 		});
 	}
 
@@ -192,20 +182,18 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 		assertTrue(viewName, matcher.matches());
 		final long id = Long.parseLong(matcher.group(1));
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tiers> all = tiersDAO.getAll();
-				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Tiers> all = tiersDAO.getAll();
+			assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
-				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = allPP.get(0);
-				assertEquals((Long) id, nh.getNumero());
-				assertEquals("Petiot", nh.getNom());
-				assertEquals("Alain", nh.getPrenomUsuel());
-				assertEquals("Pierre Alain Gérard", nh.getTousPrenoms());
-			}
+			final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
+			assertEquals(1, allPP.size());
+			final PersonnePhysique nh = allPP.get(0);
+			assertEquals((Long) id, nh.getNumero());
+			assertEquals("Petiot", nh.getNom());
+			assertEquals("Alain", nh.getPrenomUsuel());
+			assertEquals("Pierre Alain Gérard", nh.getTousPrenoms());
+			return null;
 		});
 	}
 }

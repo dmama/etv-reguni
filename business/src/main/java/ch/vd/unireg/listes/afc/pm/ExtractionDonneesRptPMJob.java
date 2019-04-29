@@ -3,8 +3,6 @@ package ch.vd.unireg.listes.afc.pm;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -90,7 +88,7 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 		final StatusManager statusManager = getStatusManager();
 
 		// récupère les paramètres
-		final int nbThreads = getStrictlyPositiveIntegerValue(params,  NB_THREADS);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final int pf = getIntegerValue(params, PERIODE_FISCALE);
 		final VersionWS versionWS = getEnumValue(params, VERSION_WS, VersionWS.class);
 		final ModeExtraction mode = getEnumValue(params, MODE, ModeExtraction.class);
@@ -101,12 +99,7 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 		// on génère un rapport
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ExtractionDonneesRptRapport rapport = template.execute(new TransactionCallback<ExtractionDonneesRptRapport>() {
-			@Override
-			public ExtractionDonneesRptRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final ExtractionDonneesRptRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success(String.format("L'extraction des données de référence RPT PM IBC (%s %d) en date du %s est terminée.", null, pf, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);

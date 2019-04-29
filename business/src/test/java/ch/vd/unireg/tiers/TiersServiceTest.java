@@ -21,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -1327,33 +1325,30 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+			assertNotNull(secondForPrincipal);
 
-				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
-				assertNotNull(secondForPrincipal);
+			// annulation du second for principal
+			final ForFiscal reouvert = tiersService.annuleForFiscal(secondForPrincipal);
 
-				// annulation du second for principal
-				final ForFiscal reouvert = tiersService.annuleForFiscal(secondForPrincipal);
+			// vérification que le second for est bien annulé
+			assertTrue(secondForPrincipal.isAnnule());
 
-				// vérification que le second for est bien annulé
-				assertTrue(secondForPrincipal.isAnnule());
+			// vérification que le premier for est bien annulé aussi ...
+			final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+			assertNotNull(premierForPrincipal);
+			assertTrue(premierForPrincipal.isAnnule());
 
-				// vérification que le premier for est bien annulé aussi ...
-				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-				assertNotNull(premierForPrincipal);
-				assertTrue(premierForPrincipal.isAnnule());
-
-				// ... et remplacé par un for principal ré-ouvert
-				assertNotNull(reouvert);
-				assertEquals(ForFiscalPrincipalPP.class, reouvert.getClass());
-				assertFalse(reouvert.isAnnule());
-				assertEquals(date(1983, 4, 13), reouvert.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, ((ForFiscalPrincipalPP) reouvert).getMotifOuverture());
-				assertNull(reouvert.getDateFin());
-				assertNull(((ForFiscalPrincipalPP) reouvert).getMotifFermeture());
-			}
+			// ... et remplacé par un for principal ré-ouvert
+			assertNotNull(reouvert);
+			assertEquals(ForFiscalPrincipalPP.class, reouvert.getClass());
+			assertFalse(reouvert.isAnnule());
+			assertEquals(date(1983, 4, 13), reouvert.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, ((ForFiscalPrincipalPP) reouvert).getMotifOuverture());
+			assertNull(reouvert.getDateFin());
+			assertNull(((ForFiscalPrincipalPP) reouvert).getMotifFermeture());
+			return null;
 		});
 	}
 
@@ -1529,15 +1524,13 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 		try {
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-					assertNotNull(premierForPrincipal);
+			doInNewTransactionAndSession(status -> {
+				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+				assertNotNull(premierForPrincipal);
 
-					// l'annulation doit sauter...
-					tiersService.annuleForFiscal(premierForPrincipal);
-				}
+				// l'annulation doit sauter...
+				tiersService.annuleForFiscal(premierForPrincipal);
+				return null;
 			});
 			fail();
 		}
@@ -1546,31 +1539,27 @@ public class TiersServiceTest extends BusinessTest {
 			assertTrue(e.getMessage().contains("Seul le dernier for fiscal principal peut être annulé"));
 		}
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+			assertNotNull(premierForPrincipal);
+			final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+			assertNotNull(secondForPrincipal);
 
-				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-				assertNotNull(premierForPrincipal);
-				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
-				assertNotNull(secondForPrincipal);
+			// vérification que le premier for n'est pas annulé
+			assertNotNull(premierForPrincipal);
+			assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
+			assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
+			assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
+			assertFalse(premierForPrincipal.isAnnule());
 
-				// vérification que le premier for n'est pas annulé
-				assertNotNull(premierForPrincipal);
-				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
-				assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
-				assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
-				assertFalse(premierForPrincipal.isAnnule());
-
-				// vérification que le second for n'est pas changé
-				assertEquals(date(2008, 4, 1), secondForPrincipal.getDateDebut());
-				assertEquals(MotifFor.DEMENAGEMENT_VD, secondForPrincipal.getMotifOuverture());
-				assertNull(secondForPrincipal.getDateFin());
-				assertNull(secondForPrincipal.getMotifFermeture());
-				assertFalse(secondForPrincipal.isAnnule());
-
-			}
+			// vérification que le second for n'est pas changé
+			assertEquals(date(2008, 4, 1), secondForPrincipal.getDateDebut());
+			assertEquals(MotifFor.DEMENAGEMENT_VD, secondForPrincipal.getMotifOuverture());
+			assertNull(secondForPrincipal.getDateFin());
+			assertNull(secondForPrincipal.getMotifFermeture());
+			assertFalse(secondForPrincipal.isAnnule());
+			return null;
 		});
 	}
 
@@ -4736,12 +4725,10 @@ debut PF                                                                        
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		try {
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Emilie", "Jolie", date(1980, 10, 4), Sexe.FEMININ);
-					tiersDAO.addAndSave(pp, f);
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Emilie", "Jolie", date(1980, 10, 4), Sexe.FEMININ);
+				tiersDAO.addAndSave(pp, f);
+				return null;
 			});
 			Assert.fail("L'appel aurait dû sauter car la commune est une commune faîtière de fractions de communes");
 		}
@@ -4961,15 +4948,13 @@ debut PF                                                                        
 
 		// pour l'instant, le rapport existant n'est pas annulé -> on ne doit pas être capable d'en ajouter un entre les même personnes aux mêmes dates
 		try {
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
 
-					final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
-					tiersService.addRapport(candidat, pp, mc);
-				}
+				final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
+				tiersService.addRapport(candidat, pp, mc);
+				return null;
 			});
 			Assert.fail("Aurait dû exploser au motif que qu'un rapport identique existe déjà");
 		}
@@ -4994,18 +4979,16 @@ debut PF                                                                        
 		}
 
 		// mais si on l'annule, alors tout doit bien se passer
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
-				final AppartenanceMenage am = (AppartenanceMenage) mc.getRapportObjetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				Assert.assertNotNull(am);
-				am.setAnnule(true);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
+			final AppartenanceMenage am = (AppartenanceMenage) mc.getRapportObjetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			Assert.assertNotNull(am);
+			am.setAnnule(true);
 
-				final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
-				tiersService.addRapport(candidat, pp, mc);
-			}
+			final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
+			tiersService.addRapport(candidat, pp, mc);
+			return null;
 		});
 	}
 
@@ -6919,7 +6902,7 @@ debut PF                                                                        
 	@Test
 	public void testStatutMenageCommun() throws Exception {
 
-		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+		doInNewTransactionAndSession(status -> {
 			{
 				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
 				final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
@@ -6987,7 +6970,7 @@ debut PF                                                                        
 	public void testGetDateDecesDepuisDernierForPrincipal_1() throws Exception {
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertEquals(date(2010, 1, 1), dateDeces);
@@ -6996,7 +6979,7 @@ debut PF                                                                        
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertEquals(date(2010, 1, 1), dateDeces);
@@ -7005,7 +6988,7 @@ debut PF                                                                        
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertEquals(date(2010, 1, 1), dateDeces);
@@ -7025,7 +7008,7 @@ debut PF                                                                        
 	public void testGetDateDecesDepuisDernierForPrincipal_2() throws Exception {
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(null, null);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertNull(dateDeces);
@@ -7034,7 +7017,7 @@ debut PF                                                                        
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(null, null);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertNull(dateDeces);
@@ -7043,7 +7026,7 @@ debut PF                                                                        
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(null, null);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertNull(dateDeces);
@@ -7063,7 +7046,7 @@ debut PF                                                                        
 	public void testGetDateDecesDepuisDernierForPrincipal_3() throws Exception {
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(date(2010,1,1), MotifFor.DEPART_HS);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertNull(dateDeces);
@@ -7072,7 +7055,7 @@ debut PF                                                                        
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(date(2010,1,1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertNull(dateDeces);
@@ -7081,7 +7064,7 @@ debut PF                                                                        
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(date(2010,1,1), MotifFor.DEPART_HC);
-			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			doInNewTransactionAndSession(status -> {
 				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
 				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
 				assertNull(dateDeces);
@@ -8238,14 +8221,12 @@ debut PF                                                                        
 		assertEquals(ppId, error.getNoCtb());
 		assertEquals(String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", noIndividu, ppId), error.getErrorMsg());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
-				assertTrue(pp.isParenteDirty());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
+			assertTrue(pp.isParenteDirty());
+			return null;
 		});
 	}
 
@@ -8292,14 +8273,12 @@ debut PF                                                                        
 		assertEquals(ppId, error.getNoCtb());
 		assertEquals(String.format("Individu %d lié à l'habitant %d non-récupérable depuis le registre civil", noIndividu, ppId), error.getErrorMsg());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
-				assertTrue(pp.isParenteDirty());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
+			assertTrue(pp.isParenteDirty());
+			return null;
 		});
 	}
 
@@ -8329,15 +8308,13 @@ debut PF                                                                        
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertTrue(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertTrue(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC,
-				                             ModeImposition.SOURCE);
-			}
+			tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC,
+			                             ModeImposition.SOURCE);
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
@@ -8377,14 +8354,12 @@ debut PF                                                                        
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-			}
+			tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
@@ -8424,16 +8399,14 @@ debut PF                                                                        
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				final RegDate dateDeces = date(2013, 5, 2);
-				pp.setDateDeces(dateDeces);
-				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, dateDeces, MotifFor.VEUVAGE_DECES, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-			}
+			final RegDate dateDeces = date(2013, 5, 2);
+			pp.setDateDeces(dateDeces);
+			tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, dateDeces, MotifFor.VEUVAGE_DECES, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
@@ -8471,14 +8444,12 @@ debut PF                                                                        
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-			}
+			tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
@@ -8518,14 +8489,12 @@ debut PF                                                                        
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
-			}
+			tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
@@ -8577,40 +8546,36 @@ debut PF                                                                        
 		});
 
 		// vérification de l'état de départ du flag et départ du couple à l'étranger
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
-				Assert.assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+			Assert.assertNotNull(mc);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
-				Assert.assertNotNull(couple);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+			Assert.assertNotNull(couple);
 
-				Assert.assertFalse(mc.getBlocageRemboursementAutomatique());
-				Assert.assertTrue(couple.getPrincipal().getBlocageRemboursementAutomatique());
-				Assert.assertTrue(couple.getConjoint().getBlocageRemboursementAutomatique());
+			Assert.assertFalse(mc.getBlocageRemboursementAutomatique());
+			Assert.assertTrue(couple.getPrincipal().getBlocageRemboursementAutomatique());
+			Assert.assertTrue(couple.getConjoint().getBlocageRemboursementAutomatique());
 
-				// départ du couple vers l'étranger
-				tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HS);
-				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE,
-				                                    MotifFor.DEPART_HS);
-			}
+			// départ du couple vers l'étranger
+			tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HS);
+			tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE,
+			                                    MotifFor.DEPART_HS);
+			return null;
 		});
 
 		// vérification de l'état après départ
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
-				Assert.assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+			Assert.assertNotNull(mc);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
-				Assert.assertNotNull(couple);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+			Assert.assertNotNull(couple);
 
-				Assert.assertTrue(mc.getBlocageRemboursementAutomatique());                     // parti -> bloqué
-				Assert.assertFalse(couple.getPrincipal().getBlocageRemboursementAutomatique()); // parti mais PIIS source avec IBAN -> débloqué
-				Assert.assertFalse(couple.getConjoint().getBlocageRemboursementAutomatique());  // parti mais PIIS source avec IBAN -> débloqué
-			}
+			Assert.assertTrue(mc.getBlocageRemboursementAutomatique());                     // parti -> bloqué
+			Assert.assertFalse(couple.getPrincipal().getBlocageRemboursementAutomatique()); // parti mais PIIS source avec IBAN -> débloqué
+			Assert.assertFalse(couple.getConjoint().getBlocageRemboursementAutomatique());  // parti mais PIIS source avec IBAN -> débloqué;
+			return null;
 		});
 	}
 
@@ -8680,13 +8645,11 @@ debut PF                                                                        
 		});
 
 		// vérification du nouveau flag (devrait être non-habitant !!)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isHabitantVD());       // <-- la personne n'est plus considérée comme habitante la destination des adresses secondaires est maintenant ignorée
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isHabitantVD());       // <-- la personne n'est plus considérée comme habitante la destination des adresses secondaires est maintenant ignorée;
+			return null;
 		});
 	}
 
@@ -8746,13 +8709,11 @@ debut PF                                                                        
 		});
 
 		// vérification du nouveau flag (devrait être non-habitant !!)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse("Le flag habitant n'a pas été remis à false", pp.isHabitantVD());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse("Le flag habitant n'a pas été remis à false", pp.isHabitantVD());
+			return null;
 		});
 	}
 
@@ -8783,29 +8744,24 @@ debut PF                                                                        
 			return idDec;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				tiersService.updateDecisionAci(amodifier, null, "Nouvelle Remarque", null);
-			}
+		doInNewTransactionAndSession(status -> {
+			DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+			tiersService.updateDecisionAci(amodifier, null, "Nouvelle Remarque", null);
+			return null;
 		});
 
 		// vérification de l'état après départ
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
-				assertNotNull(decisionsAci);
-				assertFalse(decisionsAci.isEmpty());
-				assertEquals(1, decisionsAci.size());
-				DecisionAci d = decisionsAci.get(0);
-				assertEquals(idsDecision.idOriginal, d.getId());
-				assertEquals("Nouvelle Remarque", d.getRemarque());
-
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			Assert.assertNotNull(pp);
+			final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
+			assertNotNull(decisionsAci);
+			assertFalse(decisionsAci.isEmpty());
+			assertEquals(1, decisionsAci.size());
+			DecisionAci d = decisionsAci.get(0);
+			assertEquals(idsDecision.idOriginal, d.getId());
+			assertEquals("Nouvelle Remarque", d.getRemarque());
+			return null;
 		});
 	}
 
@@ -8837,30 +8793,25 @@ debut PF                                                                        
 			return idDec;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier, null, null, MockCommune.Aubonne.getNoOFS());
-				idsDecision.idNouvel = modifiee.getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+			DecisionAci modifiee = tiersService.updateDecisionAci(amodifier, null, null, MockCommune.Aubonne.getNoOFS());
+			idsDecision.idNouvel = modifiee.getId();
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
-				assertNotNull(decisionsAci);
-				assertFalse(decisionsAci.isEmpty());
-				assertEquals(2, decisionsAci.size());
-				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
-				assertTrue(dOriginal.isAnnule());
-				assertEquals(MockCommune.Aubonne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
-
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			Assert.assertNotNull(pp);
+			final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
+			assertNotNull(decisionsAci);
+			assertFalse(decisionsAci.isEmpty());
+			assertEquals(2, decisionsAci.size());
+			DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
+			DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
+			assertTrue(dOriginal.isAnnule());
+			assertEquals(MockCommune.Aubonne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+			return null;
 		});
 	}
 
@@ -8892,31 +8843,26 @@ debut PF                                                                        
 			return idDec;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier, date(2013, 5, 6), "Ma remarque", null);
-				idsDecision.idNouvel = modifiee.getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+			DecisionAci modifiee = tiersService.updateDecisionAci(amodifier, date(2013, 5, 6), "Ma remarque", null);
+			idsDecision.idNouvel = modifiee.getId();
+			return null;
 		});
 
 		// vérification de l'état après départ
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
-				assertNotNull(decisionsAci);
-				assertFalse(decisionsAci.isEmpty());
-				assertEquals(1, decisionsAci.size());
-				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
-				assertFalse(dOriginal.isAnnule());
-				assertEquals(date(2013, 5, 6), dOriginal.getDateFin());
-				assertEquals("Ma remarque",dOriginal.getRemarque());
-
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			Assert.assertNotNull(pp);
+			final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
+			assertNotNull(decisionsAci);
+			assertFalse(decisionsAci.isEmpty());
+			assertEquals(1, decisionsAci.size());
+			DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
+			assertFalse(dOriginal.isAnnule());
+			assertEquals(date(2013, 5, 6), dOriginal.getDateFin());
+			assertEquals("Ma remarque", dOriginal.getRemarque());
+			return null;
 		});
 	}
 
@@ -8948,33 +8894,27 @@ debut PF                                                                        
 			return idDec;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2012,12,10),"finalement rien",MockCommune.Lausanne.getNoOFS());
-				idsDecision.idNouvel = modifiee.getId();
-			}
+		doInNewTransactionAndSession(status -> {
+			DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+			DecisionAci modifiee = tiersService.updateDecisionAci(amodifier, date(2012, 12, 10), "finalement rien", MockCommune.Lausanne.getNoOFS());
+			idsDecision.idNouvel = modifiee.getId();
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
-				assertNotNull(decisionsAci);
-				assertFalse(decisionsAci.isEmpty());
-				assertEquals(2, decisionsAci.size());
-				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
-				assertTrue(dOriginal.isAnnule());
-				assertEquals(MockCommune.Lausanne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(date(2012, 12, 10), dNouvelle.getDateFin());
-				assertEquals("finalement rien",dNouvelle.getRemarque());
-
-
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			Assert.assertNotNull(pp);
+			final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
+			assertNotNull(decisionsAci);
+			assertFalse(decisionsAci.isEmpty());
+			assertEquals(2, decisionsAci.size());
+			DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
+			DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
+			assertTrue(dOriginal.isAnnule());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(date(2012, 12, 10), dNouvelle.getDateFin());
+			assertEquals("finalement rien", dNouvelle.getRemarque());
+			return null;
 		});
 	}
 
@@ -9027,21 +8967,19 @@ debut PF                                                                        
 
 		// vérification de la situation sur le nouveau couple,
 		//tout le monde sous influence de la décision aci posé sur l'ex, c'est la nouvelle femme qui va être contente ....
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
-				Assert.assertNotNull(ppLui);
-				assertTrue(tiersService.isSousInfluenceDecisions(ppLui));
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+			Assert.assertNotNull(ppLui);
+			assertTrue(tiersService.isSousInfluenceDecisions(ppLui));
 
-				final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
-				Assert.assertNotNull(nouveauMc);
-				assertTrue(tiersService.isSousInfluenceDecisions(nouveauMc));
+			final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+			Assert.assertNotNull(nouveauMc);
+			assertTrue(tiersService.isSousInfluenceDecisions(nouveauMc));
 
-				final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
-				Assert.assertNotNull(ppElle);
-				assertTrue(tiersService.isSousInfluenceDecisions(ppElle));
-			}
+			final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+			Assert.assertNotNull(ppElle);
+			assertTrue(tiersService.isSousInfluenceDecisions(ppElle));
+			return null;
 		});
 	}
 
@@ -9094,25 +9032,23 @@ debut PF                                                                        
 
 		// vérification de la situation sur le nouveau couple,
 		//tout le monde sous influence de la décision aci posé sur l'ex, c'est la nouvelle femme qui va être contente ....
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
-				Assert.assertNotNull(ppLui);
-				assertFalse(tiersService.isSousInfluenceDecisions(ppLui));
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+			Assert.assertNotNull(ppLui);
+			assertFalse(tiersService.isSousInfluenceDecisions(ppLui));
 
-				final PersonnePhysique ppEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
-				Assert.assertNotNull(ppEx);
-				assertTrue(tiersService.isSousInfluenceDecisions(ppEx));
+			final PersonnePhysique ppEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+			Assert.assertNotNull(ppEx);
+			assertTrue(tiersService.isSousInfluenceDecisions(ppEx));
 
-				final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
-				Assert.assertNotNull(nouveauMc);
-				assertFalse(tiersService.isSousInfluenceDecisions(nouveauMc));
+			final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+			Assert.assertNotNull(nouveauMc);
+			assertFalse(tiersService.isSousInfluenceDecisions(nouveauMc));
 
-				final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
-				Assert.assertNotNull(ppElle);
-				assertFalse(tiersService.isSousInfluenceDecisions(ppElle));
-			}
+			final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+			Assert.assertNotNull(ppElle);
+			assertFalse(tiersService.isSousInfluenceDecisions(ppElle));
+			return null;
 		});
 	}
 
@@ -9126,16 +9062,14 @@ debut PF                                                                        
 		});
 
 		// vérification du calcul : rien
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertEquals(0, exercices.size());
-			}
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+			Assert.assertEquals(0, exercices.size());
+			return null;
 		});
 	}
 
@@ -9150,24 +9084,22 @@ debut PF                                                                        
 		});
 
 		// vérification du calcul : le premier exercice commercial commence au lendemain de la première date de bouclement connue, et se termine cette année
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
 
-				final int nbExercicesAttendus = RegDate.get().year() - 2000;
-				Assert.assertEquals(nbExercicesAttendus, exercices.size());
-				for (int i = 0 ; i < nbExercicesAttendus ; ++ i) {
-					final ExerciceCommercial ex = exercices.get(i);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(i + 2001, 1, 1), ex.getDateDebut());
-					Assert.assertEquals(date(i + 2001, 12, 31), ex.getDateFin());
-				}
+			final int nbExercicesAttendus = RegDate.get().year() - 2000;
+			Assert.assertEquals(nbExercicesAttendus, exercices.size());
+			for (int i = 0; i < nbExercicesAttendus; ++i) {
+				final ExerciceCommercial ex = exercices.get(i);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(i + 2001, 1, 1), ex.getDateDebut());
+				Assert.assertEquals(date(i + 2001, 12, 31), ex.getDateFin());
 			}
+			return null;
 		});
 	}
 
@@ -9184,21 +9116,19 @@ debut PF                                                                        
 		});
 
 		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la fin de cette année (décision arbitraire)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertEquals(1, exercices.size());
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+			Assert.assertEquals(1, exercices.size());
 
-				final ExerciceCommercial ex = exercices.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
-				Assert.assertEquals(date(RegDate.get().year(), 12, 31), ex.getDateFin());
-			}
+			final ExerciceCommercial ex = exercices.get(0);
+			Assert.assertNotNull(ex);
+			Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
+			Assert.assertEquals(date(RegDate.get().year(), 12, 31), ex.getDateFin());
+			return null;
 		});
 	}
 
@@ -9213,21 +9143,19 @@ debut PF                                                                        
 		});
 
 		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la date de fermeture du for
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertEquals(1, exercices.size());
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+			Assert.assertEquals(1, exercices.size());
 
-				final ExerciceCommercial ex = exercices.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
-				Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
-			}
+			final ExerciceCommercial ex = exercices.get(0);
+			Assert.assertNotNull(ex);
+			Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
+			Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
+			return null;
 		});
 	}
 
@@ -9245,30 +9173,28 @@ debut PF                                                                        
 		});
 
 		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
 
-				final int nbExercicesAttendus = RegDate.get().year() - 2000 + (DayMonth.get().compareTo(DayMonth.get(6, 30)) > 0 ? 1 : 0);
-				Assert.assertEquals(nbExercicesAttendus, exercices.size());
-				{
-					final ExerciceCommercial ex = exercices.get(0);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
-					Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
-				}
-				for (int i = 1 ; i < nbExercicesAttendus ; ++ i) {
-					final ExerciceCommercial ex = exercices.get(i);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
-					Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
-				}
+			final int nbExercicesAttendus = RegDate.get().year() - 2000 + (DayMonth.get().compareTo(DayMonth.get(6, 30)) > 0 ? 1 : 0);
+			Assert.assertEquals(nbExercicesAttendus, exercices.size());
+			{
+				final ExerciceCommercial ex = exercices.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
+				Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
 			}
+			for (int i = 1; i < nbExercicesAttendus; ++i) {
+				final ExerciceCommercial ex = exercices.get(i);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
+				Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -9284,35 +9210,33 @@ debut PF                                                                        
 		});
 
 		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05, et le dernier qui se termine avec le for)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
 
-				Assert.assertEquals(7, exercices.size());
-				{
-					final ExerciceCommercial ex = exercices.get(0);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
-					Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
-				}
-				for (int i = 1 ; i < 6 ; ++ i) {
-					final ExerciceCommercial ex = exercices.get(i);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
-					Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
-				}
-				{
-					final ExerciceCommercial ex = exercices.get(6);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(2006, 7, 1), ex.getDateDebut());
-					Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
-				}
+			Assert.assertEquals(7, exercices.size());
+			{
+				final ExerciceCommercial ex = exercices.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
+				Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
 			}
+			for (int i = 1; i < 6; ++i) {
+				final ExerciceCommercial ex = exercices.get(i);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
+				Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
+			}
+			{
+				final ExerciceCommercial ex = exercices.get(6);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2006, 7, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -9346,41 +9270,40 @@ debut PF                                                                        
 		});
 
 		// récupération des capitaux d'après le tiers service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				final List<CapitalHisto> capitaux = tiersService.getCapitaux(entreprise, false);
-				Assert.assertNotNull(capitaux);
-				Assert.assertEquals(3, capitaux.size());
-				{
-					final CapitalHisto capital = capitaux.get(0);
-					Assert.assertNotNull(capital);
-					Assert.assertEquals(dateDebut, capital.getDateDebut());
-					Assert.assertEquals(dateDebutSurchargeCapital.getOneDayBefore(), capital.getDateFin());
-					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
-					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(Source.CIVILE, capital.getSource());
-				}
-				{
-					final CapitalHisto capital = capitaux.get(1);
-					Assert.assertNotNull(capital);
-					Assert.assertEquals(dateDebutSurchargeCapital, capital.getDateDebut());
-					Assert.assertEquals(dateFinSurchargeCapital, capital.getDateFin());
-					Assert.assertEquals((Long) 42L, capital.getMontant().getMontant());
-					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(Source.FISCALE, capital.getSource());
-				}
-				{
-					final CapitalHisto capital = capitaux.get(2);
-					Assert.assertNotNull(capital);
-					Assert.assertEquals(dateFinSurchargeCapital.getOneDayAfter(), capital.getDateDebut());
-					Assert.assertNull(capital.getDateFin());
-					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
-					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(Source.CIVILE, capital.getSource());
-				}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			final List<CapitalHisto> capitaux = tiersService.getCapitaux(entreprise, false);
+			Assert.assertNotNull(capitaux);
+			Assert.assertEquals(3, capitaux.size());
+			{
+				final CapitalHisto capital = capitaux.get(0);
+				Assert.assertNotNull(capital);
+				Assert.assertEquals(dateDebut, capital.getDateDebut());
+				Assert.assertEquals(dateDebutSurchargeCapital.getOneDayBefore(), capital.getDateFin());
+				Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
+				Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
+				Assert.assertEquals(Source.CIVILE, capital.getSource());
 			}
+			{
+				final CapitalHisto capital = capitaux.get(1);
+				Assert.assertNotNull(capital);
+				Assert.assertEquals(dateDebutSurchargeCapital, capital.getDateDebut());
+				Assert.assertEquals(dateFinSurchargeCapital, capital.getDateFin());
+				Assert.assertEquals((Long) 42L, capital.getMontant().getMontant());
+				Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
+				Assert.assertEquals(Source.FISCALE, capital.getSource());
+			}
+			{
+				final CapitalHisto capital = capitaux.get(2);
+				Assert.assertNotNull(capital);
+				Assert.assertEquals(dateFinSurchargeCapital.getOneDayAfter(), capital.getDateDebut());
+				Assert.assertNull(capital.getDateFin());
+				Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
+				Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
+				Assert.assertEquals(Source.CIVILE, capital.getSource());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -9660,14 +9583,12 @@ debut PF                                                                        
 		});
 
 		// vérification de la raison sociale telle qu'enregistrée en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals(attendu, tiersService.getDerniereRaisonSociale(entreprise));
-			}
+			Assert.assertEquals(attendu, tiersService.getDerniereRaisonSociale(entreprise));
+			return null;
 		});
 	}
 
@@ -9702,25 +9623,21 @@ debut PF                                                                        
 			return entreprise.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				final ForFiscalSecondaire forFiscalSecondaireEtabStable = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireEtabStableId);
-				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			final ForFiscalSecondaire forFiscalSecondaireEtabStable = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireEtabStableId);
+			final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
 
-				// Fermeture du For fiscal secondaire Etablissement Stable
-				// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
-				assertNull(activiteEconomique.getDateFin());
+			// Fermeture du For fiscal secondaire Etablissement Stable
+			// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
+			assertNull(activiteEconomique.getDateFin());
 
-				// Fermeture du For fiscal secondaire (ETABLISSEMENT_STABLE)
-				tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireEtabStable, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
+			// Fermeture du For fiscal secondaire (ETABLISSEMENT_STABLE)
+			tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireEtabStable, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
 
-				// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
-				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
-
-
-			}
+			// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
+			assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
+			return null;
 		});
 	}
 
@@ -9755,24 +9672,20 @@ debut PF                                                                        
 			return entreprise.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				final ForFiscalSecondaire forFiscalSecondaireImmPrv = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireImmPrvId);
-				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			final ForFiscalSecondaire forFiscalSecondaireImmPrv = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireImmPrvId);
+			final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
 
-				// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
-				assertNull(activiteEconomique.getDateFin());
+			// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
+			assertNull(activiteEconomique.getDateFin());
 
-				// Fermeture du For fiscal secondaire (IMMEUBLE_PRIVE)
-				tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireImmPrv, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
+			// Fermeture du For fiscal secondaire (IMMEUBLE_PRIVE)
+			tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireImmPrv, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
 
-				// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
-				assertNull(activiteEconomique.getDateFin());
-
-
-			}
+			// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
+			assertNull(activiteEconomique.getDateFin());
+			return null;
 		});
 	}
 
@@ -9809,22 +9722,19 @@ debut PF                                                                        
 		});
 
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(status -> {
+			final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
+			final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
 
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
-				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+			// contrôle sur l'activité économique (Rapport entre tiers) avant la réouverture du for fiscal secondaire
+			assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
 
-				// contrôle sur l'activité économique (Rapport entre tiers) avant la réouverture du for fiscal secondaire
-				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
+			// Réouverture du For fiscal secondaire (ETABLISSEMENT_STABLE)
+			tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
 
-				// Réouverture du For fiscal secondaire (ETABLISSEMENT_STABLE)
-				tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
-
-				// contrôle sur l'activité économique (Rapport entre tiers) après la réouverture du for fiscal secondaire
-				assertNull(activiteEconomique.getDateFin());
-			}
+			// contrôle sur l'activité économique (Rapport entre tiers) après la réouverture du for fiscal secondaire
+			assertNull(activiteEconomique.getDateFin());
+			return null;
 		});
 	}
 
@@ -9862,22 +9772,19 @@ debut PF                                                                        
 		});
 
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		doInNewTransactionAndSession(status -> {
+			final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+			final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
 
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
-				final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
+			// Contrôle de l'activité économique (Rapport entre tiers) avant réouverture du for fiscal secondaire (IMMEUBLE_PRIVE)
+			assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
 
-				// Contrôle de l'activité économique (Rapport entre tiers) avant réouverture du for fiscal secondaire (IMMEUBLE_PRIVE)
-				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
+			// Réouverture du For fiscal secondaire
+			tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
 
-				// Réouverture du For fiscal secondaire
-				tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
-
-				// Contrôle de l'activité économique après réouverture du for fiscal secondaire => pas de réouverture
-				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
-			}
+			// Contrôle de l'activité économique après réouverture du for fiscal secondaire => pas de réouverture
+			assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
+			return null;
 		});
 	}
 }

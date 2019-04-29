@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -67,22 +65,20 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		Assert.assertFalse(results.wasInterrupted());
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertNotNull(questionnaires);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertNotNull(questionnaires);
+			Assert.assertEquals(1, questionnaires.size());
 
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, questionnaire.getDernierEtatDeclaration().getEtat());
-			}
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+			Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, questionnaire.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
@@ -117,22 +113,20 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		Assert.assertFalse(results.wasInterrupted());
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertNotNull(questionnaires);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertNotNull(questionnaires);
+			Assert.assertEquals(1, questionnaires.size());
 
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
-			}
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
@@ -174,22 +168,20 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		Assert.assertNull(ignore.detail);
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertNotNull(questionnaires);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertNotNull(questionnaires);
+			Assert.assertEquals(1, questionnaires.size());
 
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
-			}
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
@@ -230,22 +222,20 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		Assert.assertEquals(periode, emis.pf);
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertNotNull(questionnaires);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertNotNull(questionnaires);
+			Assert.assertEquals(1, questionnaires.size());
 
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-			}
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+			Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 
@@ -304,35 +294,33 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
 
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
-
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
+
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
+			}
+			return null;
 		});
 	}
 
@@ -391,35 +379,33 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
 
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
-
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
+
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
+			}
+			return null;
 		});
 	}
 
@@ -472,35 +458,33 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
 
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
-
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
+
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
+			}
+			return null;
 		});
 	}
 
@@ -553,35 +537,33 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
 
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
-				{
-					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
-					Assert.assertNotNull(questionnaires);
-					Assert.assertEquals(1, questionnaires.size());
-
-					final QuestionnaireSNC questionnaire = questionnaires.get(0);
-					Assert.assertNotNull(questionnaire);
-					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
-				}
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
+			{
+				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
+				Assert.assertNotNull(questionnaires);
+				Assert.assertEquals(1, questionnaires.size());
+
+				final QuestionnaireSNC questionnaire = questionnaires.get(0);
+				Assert.assertNotNull(questionnaire);
+				Assert.assertFalse(questionnaire.isAnnule());
+				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
+			}
+			return null;
 		});
 	}
 
@@ -623,22 +605,20 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		Assert.assertNull(ignore.detail);
 
 		// vérification de l'état du questionnaire en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
-				Assert.assertNotNull(questionnaires);
-				Assert.assertEquals(1, questionnaires.size());
+			final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+			Assert.assertNotNull(questionnaires);
+			Assert.assertEquals(1, questionnaires.size());
 
-				final QuestionnaireSNC questionnaire = questionnaires.get(0);
-				Assert.assertNotNull(questionnaire);
-				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
-			}
+			final QuestionnaireSNC questionnaire = questionnaires.get(0);
+			Assert.assertNotNull(questionnaire);
+			Assert.assertFalse(questionnaire.isAnnule());
+			Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
+			return null;
 		});
 	}
 }

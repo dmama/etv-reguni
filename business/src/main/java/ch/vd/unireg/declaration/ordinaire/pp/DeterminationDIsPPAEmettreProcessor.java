@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -156,23 +154,20 @@ public class DeterminationDIsPPAEmettreProcessor {
 
 		try {
 			TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-
-					// Récupère la période fiscale
-					final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
-					if (periode == null) {
-						throw new RuntimeException("La période fiscale " + anneePeriode + " n'existe pas dans la base de données.");
-					}
-
-					final RegDate dateFinEnvoi = periode.getLatestDateFinEnvoiMasseDIPP();
-					if (dateTraitement.isAfter(dateFinEnvoi)) {
-						throw new RuntimeException("La date de fin d'envoi en masse [" + dateFinEnvoi
-								+ "] est dépassée à la date de traitement [" + dateTraitement + "].");
-					}
-					return null;
+			template.execute(status -> {
+				// Récupère la période fiscale
+				final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
+				if (periode == null) {
+					throw new RuntimeException("La période fiscale " + anneePeriode + " n'existe pas dans la base de données.");
 				}
+
+				final RegDate dateFinEnvoi = periode.getLatestDateFinEnvoiMasseDIPP();
+				if (dateTraitement.isAfter(dateFinEnvoi)) {
+					throw new RuntimeException("La date de fin d'envoi en masse [" + dateFinEnvoi
+							                           + "] est dépassée à la date de traitement [" + dateTraitement + "].");
+				}
+				;
+				return null;
 			});
 		}
 		catch (Exception e) {
@@ -722,50 +717,47 @@ public class DeterminationDIsPPAEmettreProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
+		final List<Long> ids = template.execute(status -> {
 
-				final List<Long> idsFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryIdsCtbWithFors);
-						queryObject.setParameter("debutAnnee", debutAnnee);
-						queryObject.setParameter("finAnnee", finAnnee);
-						return queryObject.list();
-					}
-				});
+			final List<Long> idsFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException {
+					final Query queryObject = session.createQuery(queryIdsCtbWithFors);
+					queryObject.setParameter("debutAnnee", debutAnnee);
+					queryObject.setParameter("finAnnee", finAnnee);
+					return queryObject.list();
+				}
+			});
 
-				final List<Long> idsTasks = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
-						queryObject.setParameter("debutAnnee", debutAnnee);
-						queryObject.setParameter("finAnnee", finAnnee);
-						return queryObject.list();
-					}
-				});
+			final List<Long> idsTasks = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException {
+					final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
+					queryObject.setParameter("debutAnnee", debutAnnee);
+					queryObject.setParameter("finAnnee", finAnnee);
+					return queryObject.list();
+				}
+			});
 
-				final List<Long> idsDIs = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
-						queryObject.setParameter("debutAnnee", debutAnnee);
-						queryObject.setParameter("finAnnee", finAnnee);
-						return queryObject.list();
-					}
-				});
+			final List<Long> idsDIs = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException {
+					final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
+					queryObject.setParameter("debutAnnee", debutAnnee);
+					queryObject.setParameter("finAnnee", finAnnee);
+					return queryObject.list();
+				}
+			});
 
-				final Set<Long> set = new HashSet<>(idsFors.size() + idsTasks.size() + idsDIs.size());
-				set.addAll(idsFors);
-				set.addAll(idsTasks);
-				set.addAll(idsDIs);
+			final Set<Long> set = new HashSet<>(idsFors.size() + idsTasks.size() + idsDIs.size());
+			set.addAll(idsFors);
+			set.addAll(idsTasks);
+			set.addAll(idsDIs);
 
-				final List<Long> ids = new ArrayList<>(set);
-				Collections.sort(ids);
+			final List<Long> ids1 = new ArrayList<>(set);
+			Collections.sort(ids1);
 
-				return ids;
-			}
+			return ids1;
 		});
 
 		return ids;

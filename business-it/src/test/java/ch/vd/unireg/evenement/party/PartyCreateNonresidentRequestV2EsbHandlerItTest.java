@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
@@ -60,60 +58,52 @@ public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyReques
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresident() throws Exception {
 		final long nhId = testRetour(true, true, true, false);
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
-				assertNotNull(nh);
-				assertFalse(nh.isHabitantVD());
-				assertNotNull(nh.getNom());
-				assertNotNull(nh.getPrenomUsuel());
-				assertNotNull(nh.getNumeroAssureSocial());
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
+			assertNotNull(nh);
+			assertFalse(nh.isHabitantVD());
+			assertNotNull(nh.getNom());
+			assertNotNull(nh.getPrenomUsuel());
+			assertNotNull(nh.getNumeroAssureSocial());
+			return null;
 		});
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentSansPrenom() throws Exception {
 		final long nhId = testRetour(true, false, true, false);
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
-				assertNotNull(nh);
-				assertFalse(nh.isHabitantVD());
-				assertNull(nh.getPrenomUsuel());
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
+			assertNotNull(nh);
+			assertFalse(nh.isHabitantVD());
+			assertNull(nh.getPrenomUsuel());
+			return null;
 		});
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentSansAvs13MaisAvecAvs11() throws Exception {
 		final long nhId = testRetour(true, true, false, true);
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
-				assertNotNull(nh);
-				assertFalse(nh.isHabitantVD());
+		doInNewTransaction(status -> {
+			final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
+			assertNotNull(nh);
+			assertFalse(nh.isHabitantVD());
 //				assertNull(nh.getNumeroAssureSocial());
-				assertTrue(nh.getIdentificationsPersonnes() != null || nh.getIdentificationsPersonnes().size() == 1);
-			}
+			assertTrue(nh.getIdentificationsPersonnes() != null || nh.getIdentificationsPersonnes().size() == 1);
+			return null;
 		});
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresidentAvecAvs13EtAvecAvs11() throws Exception {
 		final long nhId = testRetour(true, true, true, true);
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
-				assertNotNull(nh);
-				assertFalse(nh.isHabitantVD());
-				assertNotNull(nh.getNumeroAssureSocial());
-				assertTrue(nh.getIdentificationsPersonnes() == null || nh.getIdentificationsPersonnes().size() == 0);
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(nhId);
+			assertNotNull(nh);
+			assertFalse(nh.isHabitantVD());
+			assertNotNull(nh.getNumeroAssureSocial());
+			assertTrue(nh.getIdentificationsPersonnes() == null || nh.getIdentificationsPersonnes().size() == 0);
+			return null;
 		});
 	}
 

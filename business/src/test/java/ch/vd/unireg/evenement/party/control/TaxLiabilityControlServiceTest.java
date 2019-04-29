@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -858,12 +857,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		// mise en place fiscale
-		final long idPm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+		final long idPm = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		final int periode = 2012;
@@ -921,29 +917,26 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(noIndPapa);
-				papa.setDateDeces(dateDecesPapa);
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique papa = addHabitant(noIndPapa);
+			papa.setDateDeces(dateDecesPapa);
 
-				final PersonnePhysique maman = addHabitant(noIndMaman);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(papa, maman, dateMariage, dateDivorce.getOneDayBefore());
-				final MenageCommun mc = couple.getMenage();
+			final PersonnePhysique maman = addHabitant(noIndMaman);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(papa, maman, dateMariage, dateDivorce.getOneDayBefore());
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
-				addForPrincipal(papa, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDecesPapa, MotifFor.VEUVAGE_DECES, MockCommune.Aigle);
-				addForPrincipal(maman, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
+			addForPrincipal(papa, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDecesPapa, MotifFor.VEUVAGE_DECES, MockCommune.Aigle);
+			addForPrincipal(maman, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
 
-				final PersonnePhysique mineur = addHabitant(noIndMineur);
+			final PersonnePhysique mineur = addHabitant(noIndMineur);
 
-				final Ids ids = new Ids();
-				ids.idPapa = papa.getNumero();
-				ids.idMaman = maman.getNumero();
-				ids.idMenage = mc.getNumero();
-				ids.idMineur = mineur.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idPapa = papa.getNumero();
+			ids1.idMaman = maman.getNumero();
+			ids1.idMenage = mc.getNumero();
+			ids1.idMineur = mineur.getNumero();
+			return ids1;
 		});
 
 		// demande de contrôle
@@ -977,12 +970,9 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-				return pm.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+			return pm.getNumero();
 		});
 
 		// demande de contrôle apériodique
@@ -1021,17 +1011,13 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControleDPI() throws Exception {
 
 		// mise en place fiscale
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfredo", "Malaga", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfredo", "Malaga", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.ChateauDoex);
 
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", pp, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
-
-				return dpi.getNumero();
-			}
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", pp, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+			return dpi.getNumero();
 		});
 
 		// demande de contrôle apériodique

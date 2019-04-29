@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -67,12 +66,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// Récupère les ids des événements à traiter
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return evenementCivilRegPPDAO.getEvenementCivilsNonTraites();
-			}
-		});
+		final List<Long> ids = template.execute(s -> evenementCivilRegPPDAO.getEvenementCivilsNonTraites());
 
 		// [SIFISC-5806] quand on retraite les événements en erreur (batch hebdomadaire), il faut quand-même invalider
 		// le cache car il est tout à fait possible que les données récupérées à la réception de l'événement aient été tronquées
@@ -182,18 +176,14 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
 		t.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 
-		return t.execute(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		return t.execute(status -> {
+			final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
+			final List<EvenementCivilRegPPErreur> erreurs = new ArrayList<>();
+			final List<EvenementCivilRegPPErreur> warnings = new ArrayList<>();
+			erreurs.add(new EvenementCivilRegPPErreur(exception));
 
-				final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
-				final List<EvenementCivilRegPPErreur> erreurs = new ArrayList<>();
-				final List<EvenementCivilRegPPErreur> warnings = new ArrayList<>();
-				erreurs.add(new EvenementCivilRegPPErreur(exception));
-
-				evenementCivilExterne.getErreurs().clear();
-				return traiteErreurs(EtatEvenementCivil.EN_ERREUR, evenementCivilExterne, erreurs, warnings);
-			}
+			evenementCivilExterne.getErreurs().clear();
+			return traiteErreurs(EtatEvenementCivil.EN_ERREUR, evenementCivilExterne, erreurs, warnings);
 		});
 	}
 
@@ -309,12 +299,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// 1 - Récupération des ids des événements civils en erreur de l'individu
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return evenementCivilRegPPDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
-			}
-		});
+		final List<Long> ids = template.execute(status -> evenementCivilRegPPDAO.getIdsEvenementCivilsErreurIndividu(numIndividu));
 
 		/* 2 - Iteration sur les ids des événements civils */
 		final List<Long> aRelancer = new ArrayList<>(ids);
@@ -347,12 +332,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 				final TransactionTemplate template = new TransactionTemplate(transactionManager);
 				template.setReadOnly(true);
-				final Long numIndividu = template.execute(new TransactionCallback<Long>() {
-					@Override
-					public Long doInTransaction(TransactionStatus status) {
-						return evenementCivilRegPPDAO.get(id).getNumeroIndividuPrincipal();
-					}
-				});
+				final Long numIndividu = template.execute(s -> evenementCivilRegPPDAO.get(id).getNumeroIndividuPrincipal());
 
 				individusTraites.add(numIndividu);
 			}

@@ -9,8 +9,6 @@ import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -95,22 +93,19 @@ public class AnnonceIDEJob extends JobDefinition {
 			for (final Long tiersId : tiersAEvaluer) {
 
 				// On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
-				final AnnonceIDEJobResults resultat = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
-					@Override
-					public AnnonceIDEJobResults doInTransaction(TransactionStatus status) {
-						if (simulation) {
-							status.setRollbackOnly();
-						}
-						try {
-							return traiteTiers(tiersId, aujourdhui, simulation);
-						}
-						catch (Exception e) {
-							// On doit faire le ménage si un problème est survenu pendant l'envoi afin d'éviter de croire qu'on a émis l'annonce alors que ce n'est pas le cas.
-							status.setRollbackOnly();
-							final AnnonceIDEJobResults resultatTiers = new AnnonceIDEJobResults(simulation);
-							resultatTiers.addErrorException(tiersId, e);
-							return resultatTiers;
-						}
+				final AnnonceIDEJobResults resultat = template.execute(status -> {
+					if (simulation) {
+						status.setRollbackOnly();
+					}
+					try {
+						return traiteTiers(tiersId, aujourdhui, simulation);
+					}
+					catch (Exception e) {
+						// On doit faire le ménage si un problème est survenu pendant l'envoi afin d'éviter de croire qu'on a émis l'annonce alors que ce n'est pas le cas.
+						status.setRollbackOnly();
+						final AnnonceIDEJobResults resultatTiers = new AnnonceIDEJobResults(simulation);
+						resultatTiers.addErrorException(tiersId, e);
+						return resultatTiers;
 					}
 				});
 				if (resultat != null) {
@@ -169,19 +164,14 @@ public class AnnonceIDEJob extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(session -> {
-					final SQLQuery query = session.createSQLQuery("SELECT t.numero FROM tiers t WHERE t.ide_dirty = " + dialect.toBooleanValueString(true) + " AND t.annulation_date is null");
-					//noinspection unchecked
-					final List<Number> list = query.list();
-					return list.stream()
-							.map(Number::longValue)
-							.collect(Collectors.toList());
-				});
-			}
-		});
+		return template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
+			final SQLQuery query = session.createSQLQuery("SELECT t.numero FROM tiers t WHERE t.ide_dirty = " + dialect.toBooleanValueString(true) + " AND t.annulation_date is null");
+			//noinspection unchecked
+			final List<Number> list = query.list();
+			return list.stream()
+					.map(Number::longValue)
+					.collect(Collectors.toList());
+		}));
 	}
 
 }

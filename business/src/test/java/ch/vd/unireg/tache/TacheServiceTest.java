@@ -13,7 +13,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -5814,21 +5813,19 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		// vérification des tâches autour des DI
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
-				assertNotNull(pm);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+			assertNotNull(pm);
 
-				// aucune tâche générée
-				{
-					final TacheCriteria criteria = new TacheCriteria();
-					criteria.setContribuable(pm);
-					final List<Tache> taches = tacheDAO.find(criteria);
-					assertNotNull(taches);
-					assertEquals(0, taches.size());
-				}
+			// aucune tâche générée
+			{
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setContribuable(pm);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
 			}
+			return null;
 		});
 	}
 
@@ -5859,26 +5856,22 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// fermeture du for pour le départ
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				ffp.setDateFin(dateDepart);
-				ffp.setMotifFermeture(MotifFor.DEPART_HC);
-				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			ffp.setDateFin(dateDepart);
+			ffp.setMotifFermeture(MotifFor.DEPART_HC);
+			tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+			return null;
 		});
 
 		// récupération de la tâche de contrôle de dossier (il doit y en avoir une et une seule)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final TacheCriteria criteria = new TacheCriteria();
-				criteria.setNumeroCTB(ppId);
-				final List<Tache> taches = verifieControleDossier(criteria, 1);
-				assertEquals("Départ hors-canton", taches.get(0).getCommentaire());
-			}
+		doInNewTransactionAndSession(status -> {
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setNumeroCTB(ppId);
+			final List<Tache> taches = verifieControleDossier(criteria, 1);
+			assertEquals("Départ hors-canton", taches.get(0).getCommentaire());
+			return null;
 		});
 	}
 
@@ -5909,26 +5902,22 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// fermeture du for pour le départ
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				ffp.setDateFin(dateDepart);
-				ffp.setMotifFermeture(MotifFor.DEPART_HC);
-				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			ffp.setDateFin(dateDepart);
+			ffp.setMotifFermeture(MotifFor.DEPART_HC);
+			tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+			return null;
 		});
 
 		// récupération de la tâche de contrôle de dossier (il doit y en avoir une et une seule)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final TacheCriteria criteria = new TacheCriteria();
-				criteria.setNumeroCTB(ppId);
-				final List<Tache> taches = verifieControleDossier(criteria, 1);
-				assertEquals("Départ hors-canton", taches.get(0).getCommentaire());
-			}
+		doInNewTransactionAndSession(status -> {
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setNumeroCTB(ppId);
+			final List<Tache> taches = verifieControleDossier(criteria, 1);
+			assertEquals("Départ hors-canton", taches.get(0).getCommentaire());
+			return null;
 		});
 	}
 
@@ -5959,25 +5948,21 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// fermeture du for pour le départ
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				ffp.setDateFin(dateDepart);
-				ffp.setMotifFermeture(MotifFor.DEPART_HC);
-				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			ffp.setDateFin(dateDepart);
+			ffp.setMotifFermeture(MotifFor.DEPART_HC);
+			tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+			return null;
 		});
 
 		// récupération de la tâche de contrôle de dossier (il ne doit pas y en avoir)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final TacheCriteria criteria = new TacheCriteria();
-				criteria.setNumeroCTB(ppId);
-				verifieControleDossier(criteria, 0);
-			}
+		doInNewTransactionAndSession(status -> {
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setNumeroCTB(ppId);
+			verifieControleDossier(criteria, 0);
+			return null;
 		});
 	}
 
@@ -6026,23 +6011,21 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertNull(pp.getDateDeces());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertNull(pp.getDateDeces());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateRetourHS, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertNull(ffp.getMotifFermeture());
-				Assert.assertFalse(ffp.isAnnule());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateRetourHS, ffp.getDateDebut());
+			Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertNull(ffp.getMotifFermeture());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 
@@ -6103,30 +6086,28 @@ public class TacheServiceTest extends BusinessTest {
 			});
 
 			// vérification que les tâches ne sont pas encore annulées et lancement du recalcul
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-					final List<Tache> taches = tacheDAO.find(pmId);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(2, taches.size());
-					taches.sort(Comparator.comparingLong(Tache::getId));
-					{
-						final Tache tache = taches.get(0);
-						Assert.assertNotNull(tache);
-						Assert.assertFalse(tache.isAnnule());
-						Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-						Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-					}
-					{
-						final Tache tache = taches.get(1);
-						Assert.assertNotNull(tache);
-						Assert.assertFalse(tache.isAnnule());
-						Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-						Assert.assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
-					}
-
-					tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId));
+			doInNewTransactionAndSession(status -> {
+				final List<Tache> taches = tacheDAO.find(pmId);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(2, taches.size());
+				taches.sort(Comparator.comparingLong(Tache::getId));
+				{
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
 				}
+				{
+					final Tache tache = taches.get(1);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
+				}
+
+				tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId));
+				return null;
 			});
 		}
 		finally {
@@ -6134,43 +6115,41 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		// vérification que la tâche a bien été annulée après le recalcul
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				// tâche d'envoi
-				{
-					final TacheCriteria criteria = new TacheCriteria();
-					criteria.setAnnee(pf);
-					criteria.setNumeroCTB(pmId);
-					criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
-					criteria.setInclureTachesAnnulees(true);
-					final List<Tache> taches = tacheDAO.find(criteria);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertTrue("La tâche n'est pas annulée !", tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
-				}
-
-				// tâche d'annulation de DI
-				{
-					final TacheCriteria criteria = new TacheCriteria();
-					criteria.setAnnee(pf);
-					criteria.setNumeroCTB(pmId);
-					criteria.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-					criteria.setInclureTachesAnnulees(true);
-					final List<Tache> taches = tacheDAO.find(criteria);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertTrue("La tâche n'est pas annulée !", tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
-				}
+		doInNewTransactionAndSession(status -> {
+			// tâche d'envoi
+			{
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setAnnee(pf);
+				criteria.setNumeroCTB(pmId);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+				criteria.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertTrue("La tâche n'est pas annulée !", tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
 			}
+
+			// tâche d'annulation de DI
+			{
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setAnnee(pf);
+				criteria.setNumeroCTB(pmId);
+				criteria.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+				criteria.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertTrue("La tâche n'est pas annulée !", tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
+			}
+			return null;
 		});
 	}
 
@@ -6217,18 +6196,16 @@ public class TacheServiceTest extends BusinessTest {
 		Assert.assertEquals(0, results.getExceptions().size());
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final DeclarationImpotOrdinaire diAvecTypeContribuable = entreprise.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true).stream()
-						.filter(di -> di.getTypeContribuable() != null)
-						.findAny()
-						.orElse(null);
-				Assert.assertNull(diAvecTypeContribuable);
-			}
+			final DeclarationImpotOrdinaire diAvecTypeContribuable = entreprise.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true).stream()
+					.filter(di -> di.getTypeContribuable() != null)
+					.findAny()
+					.orElse(null);
+			Assert.assertNull(diAvecTypeContribuable);
+			return null;
 		});
 	}
 
@@ -6289,26 +6266,24 @@ public class TacheServiceTest extends BusinessTest {
 			Assert.assertEquals("création d'une tâche d'émission de déclaration d'impôt PM ordinaire couvrant la période du 01.01." + lastYear + " au 31.12." + lastYear, action.actionMsg);
 
 			// vérification en base
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-					final List<Tache> taches = tacheDAO.find(pmId);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
+			doInNewTransactionAndSession(status -> {
+				final List<Tache> taches = tacheDAO.find(pmId);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
 
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
-					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFinExercice());
-				}
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+				Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFinExercice());
+				return null;
 			});
 		}
 
@@ -6322,26 +6297,24 @@ public class TacheServiceTest extends BusinessTest {
 			Assert.assertEquals(0, results.getExceptions().size());
 
 			// vérification en base (que la tâche précédemment générée est toujours là dans le même état)
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-					final List<Tache> taches = tacheDAO.find(pmId);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
+			doInNewTransactionAndSession(status -> {
+				final List<Tache> taches = tacheDAO.find(pmId);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
 
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
-					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFinExercice());
-				}
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+				Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFinExercice());
+				return null;
 			});
 		}
 	}
@@ -6395,25 +6368,23 @@ public class TacheServiceTest extends BusinessTest {
 		Assert.assertEquals(1, results.getActions().size());
 
 		// vérification de l'état des questionnaires (tous OK) et de la tâche d'annulation (= devrait être annulée)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true).stream()
-						.filter(Annulable::isAnnule)
-						.forEach(q -> Assert.fail("Aucun questionnaire n'aurait dû être annulé"));
+			entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true).stream()
+					.filter(Annulable::isAnnule)
+					.forEach(q -> Assert.fail("Aucun questionnaire n'aurait dû être annulé"));
 
-				final List<Tache> taches = tacheDAO.find(pmId);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
+			final List<Tache> taches = tacheDAO.find(pmId);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertTrue(tache.isAnnule());            // <-- c'est ça, l'action, la tâche est maintenant annulée
-				Assert.assertEquals(TypeTache.TacheAnnulationQuestionnaireSNC, tache.getTypeTache());
-			}
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertTrue(tache.isAnnule());            // <-- c'est ça, l'action, la tâche est maintenant annulée
+			Assert.assertEquals(TypeTache.TacheAnnulationQuestionnaireSNC, tache.getTypeTache());
+			return null;
 		});
 	}
 
@@ -6466,25 +6437,23 @@ public class TacheServiceTest extends BusinessTest {
 		Assert.assertEquals(0, results.getActions().size());
 
 		// vérification de l'état des questionnaires (tous OK) et de la tâche d'annulation (= devrait être annulée)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true).stream()
-						.filter(Annulable::isAnnule)
-						.forEach(q -> Assert.fail("Aucun questionnaire n'aurait dû être annulé"));
+			entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true).stream()
+					.filter(Annulable::isAnnule)
+					.forEach(q -> Assert.fail("Aucun questionnaire n'aurait dû être annulé"));
 
-				final List<Tache> taches = tacheDAO.find(pmId);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
+			final List<Tache> taches = tacheDAO.find(pmId);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());           // la tâche d'annulation du QSNC ne doit pas être annulée...
-				Assert.assertEquals(TypeTache.TacheAnnulationQuestionnaireSNC, tache.getTypeTache());
-			}
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());           // la tâche d'annulation du QSNC ne doit pas être annulée...
+			Assert.assertEquals(TypeTache.TacheAnnulationQuestionnaireSNC, tache.getTypeTache());
+			return null;
 		});
 	}
 }

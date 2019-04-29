@@ -4,20 +4,18 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.context.MessageSource;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.ValidatorHelperImpl;
+import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.common.ValidatorHelperImpl;
-import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
@@ -82,13 +80,10 @@ public class CoupleValidatorTest extends WebTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+			return pp.getNumero();
 		});
 
 		// création du couple
@@ -124,17 +119,13 @@ public class CoupleValidatorTest extends WebTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
 
-				final SituationFamille situationFamille = addSituation(pp, date(2001, 5, 1), null, 0);
-				situationFamille.setEtatCivil(EtatCivil.SEPARE);
-
-				return pp.getNumero();
-			}
+			final SituationFamille situationFamille = addSituation(pp, date(2001, 5, 1), null, 0);
+			situationFamille.setEtatCivil(EtatCivil.SEPARE);
+			return pp.getNumero();
 		});
 
 		// création du couple
@@ -170,15 +161,12 @@ public class CoupleValidatorTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
-				final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);
-				ids.tiers1 = tiers1.getId();
-				ids.tiers2 = tiers2.getId();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
+			final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);
+			ids.tiers1 = tiers1.getId();
+			ids.tiers2 = tiers2.getId();
+			return null;
 		});
 
 		// création du couple
@@ -216,15 +204,12 @@ public class CoupleValidatorTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
-				final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);
-				ids.tiers1 = tiers1.getId();
-				ids.tiers2 = tiers2.getId();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique tiers1 = addNonHabitant("Alfred", "Dutuyau", date(1977, 3, 3), Sexe.MASCULIN);
+			final PersonnePhysique tiers2 = addNonHabitant("Georgette", "Dutuyau", date(1977, 3, 3), Sexe.FEMININ);
+			ids.tiers1 = tiers1.getId();
+			ids.tiers2 = tiers2.getId();
+			return null;
 		});
 
 		// création du couple

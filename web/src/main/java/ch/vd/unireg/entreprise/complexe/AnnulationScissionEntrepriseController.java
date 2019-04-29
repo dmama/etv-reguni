@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -54,14 +53,11 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 	@RequestMapping(value = "/dates-contrat.do", method = RequestMethod.GET)
 	@ResponseBody
 	public List<RegDate> getDatesContratScissionExistantes(@RequestParam("idEntreprise") final long idEntreprise) {
-		return doInReadOnlyTransaction(new TransactionCallback<List<RegDate>>() {
-			@Override
-			public List<RegDate> doInTransaction(TransactionStatus status) {
-				final Entreprise scindee = getTiers(Entreprise.class, idEntreprise);
-				final List<RegDate> datesContrats = new ArrayList<>(ScissionEntrepriseHelper.getScissions(scindee, tiersService).keySet());
-				datesContrats.sort(Collections.reverseOrder());
-				return datesContrats;
-			}
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise scindee = getTiers(Entreprise.class, idEntreprise);
+			final List<RegDate> datesContrats = new ArrayList<>(ScissionEntrepriseHelper.getScissions(scindee, tiersService).keySet());
+			datesContrats.sort(Collections.reverseOrder());
+			return datesContrats;
 		});
 	}
 

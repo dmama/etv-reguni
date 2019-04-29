@@ -10,8 +10,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -155,55 +153,53 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<IdentifiantDeclaration> ids = template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
-			@Override
-			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<Object[]> aSommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-					@Override
-					public List<Object[]> doInHibernate(Session session) throws HibernateException {
+		final List<IdentifiantDeclaration> ids = template.execute(status -> {
+			final List<Object[]> aSommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+				@Override
+				public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
-						final StringBuilder b = new StringBuilder();
-						b.append("SELECT lr.id, lr.tiers.id FROM DeclarationImpotSource AS lr");
-						b.append(" WHERE lr.annulationDate IS NULL");
-						if (dateFinPeriode != null) {
-							b.append(" AND lr.dateFin <= :dateFin");
-						}
-						if (categorie != null) {
-							b.append(" AND lr.tiers.categorieImpotSource = :categorie");
-						}
-						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue))");
-						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE lr.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
-						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
-						final String sql = b.toString();
-
-						final Query query = session.createQuery(sql);
-						if (dateFinPeriode != null) {
-							query.setParameter("dateFin", dateFinPeriode);
-						}
-						if (categorie != null) {
-							query.setParameter("categorie", categorie);
-						}
-						query.setParameter("dateLimite", dateLimite);
-						//noinspection unchecked
-						return query.list();
+					final StringBuilder b = new StringBuilder();
+					b.append("SELECT lr.id, lr.tiers.id FROM DeclarationImpotSource AS lr");
+					b.append(" WHERE lr.annulationDate IS NULL");
+					if (dateFinPeriode != null) {
+						b.append(" AND lr.dateFin <= :dateFin");
 					}
-				});
-
-				final List<IdentifiantDeclaration> ids;
-				if (aSommer != null && !aSommer.isEmpty()) {
-					ids = new ArrayList<>(aSommer.size());
-					for (Object[] elts : aSommer) {
-						final long idLr = ((Number) elts[0]).longValue();
-						final long idDebiteur = ((Number) elts[1]).longValue();
-						ids.add(new IdentifiantDeclaration(idLr, idDebiteur));
+					if (categorie != null) {
+						b.append(" AND lr.tiers.categorieImpotSource = :categorie");
 					}
+					b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+					b.append(
+							" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue))");
+					b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE lr.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
+					b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+					final String sql = b.toString();
+
+					final Query query = session.createQuery(sql);
+					if (dateFinPeriode != null) {
+						query.setParameter("dateFin", dateFinPeriode);
+					}
+					if (categorie != null) {
+						query.setParameter("categorie", categorie);
+					}
+					query.setParameter("dateLimite", dateLimite);
+					//noinspection unchecked
+					return query.list();
 				}
-				else {
-					ids = Collections.emptyList();
+			});
+
+			final List<IdentifiantDeclaration> list;
+			if (aSommer != null && !aSommer.isEmpty()) {
+				list = new ArrayList<>(aSommer.size());
+				for (Object[] elts : aSommer) {
+					final long idLr = ((Number) elts[0]).longValue();
+					final long idDebiteur = ((Number) elts[1]).longValue();
+					list.add(new IdentifiantDeclaration(idLr, idDebiteur));
 				}
-				return ids;
 			}
+			else {
+				list = Collections.emptyList();
+			}
+			return list;
 		});
 
 		return ids;

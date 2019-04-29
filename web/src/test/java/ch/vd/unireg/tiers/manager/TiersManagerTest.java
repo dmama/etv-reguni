@@ -6,11 +6,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.rt.view.RapportPrestationView;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -51,27 +50,24 @@ public class TiersManagerTest extends WebTest {
 		}
 
 		// mise en place fiscale : un débiteur et plusieurs relations de prestations imposables
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2010, 1, 1));
-				final PersonnePhysique habitantOk = addHabitant(noIndividu);
-				final PersonnePhysique habitantNotOk = addHabitant(noIndividu + 1);     // ce numéro n'existe pas dans le registre civil !
-				final PersonnePhysique habitantMine = addHabitant(noIndividuMine);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2010, 1, 1));
+			final PersonnePhysique habitantOk = addHabitant(noIndividu);
+			final PersonnePhysique habitantNotOk = addHabitant(noIndividu + 1);     // ce numéro n'existe pas dans le registre civil !
+			final PersonnePhysique habitantMine = addHabitant(noIndividuMine);
 
-				// petite construction pour que l'on puisse vérifier que l'on retrouve également les rapports APRES celui ou ceux qui posent problème...
-				addRapportPrestationImposable(dpi, habitantOk, date(2010, 1, 1), date(2011, 12, 31), false);
-				addRapportPrestationImposable(dpi, habitantNotOk, date(2011, 1, 1), null, false);
-				addRapportPrestationImposable(dpi, habitantMine, date(2012, 1, 1), date(2012, 6, 30), false);
-				addRapportPrestationImposable(dpi, habitantOk, date(2013, 1, 1), null, false);
+			// petite construction pour que l'on puisse vérifier que l'on retrouve également les rapports APRES celui ou ceux qui posent problème...
+			addRapportPrestationImposable(dpi, habitantOk, date(2010, 1, 1), date(2011, 12, 31), false);
+			addRapportPrestationImposable(dpi, habitantNotOk, date(2011, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, habitantMine, date(2012, 1, 1), date(2012, 6, 30), false);
+			addRapportPrestationImposable(dpi, habitantOk, date(2013, 1, 1), null, false);
 
-				final Ids ids = new Ids();
-				ids.dpi = dpi.getNumero();
-				ids.habitantOk = habitantOk.getNumero();
-				ids.habitantNotOk = habitantNotOk.getNumero();
-				ids.habitantMine = habitantMine.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.dpi = dpi.getNumero();
+			ids1.habitantOk = habitantOk.getNumero();
+			ids1.habitantNotOk = habitantNotOk.getNumero();
+			ids1.habitantMine = habitantMine.getNumero();
+			return ids1;
 		});
 
 		// allons maintenant chercher les rapports prestations de ce débiteur

@@ -2,8 +2,6 @@ package ch.vd.unireg.listes.suisseoupermiscresident;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
@@ -51,12 +49,9 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// un individu présent en secondaire seulement ne doit pas être listé par le batch (dans les ignorés, si, bien-sûr)
@@ -89,12 +84,9 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// un individu mineur doit être ignoré
@@ -128,12 +120,9 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// un individu décédé doit être ignoré
@@ -166,12 +155,9 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// un individu présent en principal sans for vaudois doit être listé par le batch
@@ -201,13 +187,10 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2010, 12, 12), MotifFor.INDETERMINE, MockCommune.Bern);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2010, 12, 12), MotifFor.INDETERMINE, MockCommune.Bern);
+			return pp.getNumero();
 		});
 
 		// un individu présent en principal avec un for hors-canton seul doit être listé par le batch
@@ -237,14 +220,11 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// un individu présent en principal avec un for hors-canton seul et for secondaire vaudois doit être listé par le batch
@@ -268,15 +248,12 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
-				pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
-				pp.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
+			pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
+			pp.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+			return pp.getNumero();
 		});
 
 		// un non-habitant dont l'adresse courrier est dans le canton ne doit pas être listé
@@ -303,16 +280,13 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
-				pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
-				pp.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
-				pp.setAnnule(true);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Ronald", "Weasley", null, Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
+			pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
+			pp.setCategorieEtranger(CategorieEtranger._03_ETABLI_C);
+			pp.setAnnule(true);
+			return pp.getNumero();
 		});
 
 		// un tiers annulé ne doit pas être vu du tout...

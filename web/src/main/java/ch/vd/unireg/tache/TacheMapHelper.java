@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.ApplicationConfig;
@@ -74,16 +72,13 @@ public class TacheMapHelper extends CommonMapHelper {
 
 			final Map<Integer, String> map = new TreeMap<>();
 
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();
-					for (PeriodeFiscale periode : periodes) {
-						final int annee = periode.getAnnee();
-						map.put(annee, Integer.toString(annee));
-					}
-					return null;
+			template.execute(status -> {
+				final List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();
+				for (PeriodeFiscale periode : periodes) {
+					final int annee = periode.getAnnee();
+					map.put(annee, Integer.toString(annee));
 				}
+				return null;
 			});
 
 			mapPeriodeFiscale = map;

@@ -7,12 +7,20 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest;
@@ -21,15 +29,6 @@ import ch.vd.unireg.xml.event.party.taxliab.v2.MinorInfo;
 import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.evenement.RequestHandlerResult;
-import ch.vd.unireg.evenement.party.control.TaxLiabilityControlService;
-import ch.vd.unireg.security.MockSecurityProvider;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.MotifFor;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -141,22 +140,20 @@ public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// on crée un habitant qui appartient à un ménage vaudois ordinaire
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique enfant = addHabitant(noIndEnfant);
-				final PersonnePhysique pere = addHabitant(noIndPere);
-				addForPrincipal(pere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
-				final PersonnePhysique mere = addHabitant(noIndMere);
-				addForPrincipal(mere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+		doInNewTransaction(status -> {
+			final PersonnePhysique enfant = addHabitant(noIndEnfant);
+			final PersonnePhysique pere = addHabitant(noIndPere);
+			addForPrincipal(pere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+			final PersonnePhysique mere = addHabitant(noIndMere);
+			addForPrincipal(mere, date(1994, 3, 12), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
 
-				addParente(enfant, pere, dateNaissance, null);
-				addParente(enfant, mere, dateNaissance, null);
+			addParente(enfant, pere, dateNaissance, null);
+			addParente(enfant, mere, dateNaissance, null);
 
-				ids.idEnfant = enfant.getId();
-				ids.idPere = pere.getId();
-				ids.idMere = mere.getId();
-			}
+			ids.idEnfant = enfant.getId();
+			ids.idPere = pere.getId();
+			ids.idMere = mere.getId();
+			return null;
 		});
 
 		final AperiodicTaxLiabilityRequest request = new AperiodicTaxLiabilityRequest();

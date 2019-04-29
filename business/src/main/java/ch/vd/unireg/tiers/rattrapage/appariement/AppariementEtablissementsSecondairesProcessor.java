@@ -11,8 +11,6 @@ import org.hibernate.dialect.Dialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -132,29 +130,24 @@ public class AppariementEtablissementsSecondairesProcessor {
 	private List<Long> getIdsEntreprisesApparieesAvecEtablissementSecondaireNonApparie() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
+		return template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final String sql = "SELECT DISTINCT ENTR.NUMERO FROM TIERS ENTR"
-								+ " JOIN RAPPORT_ENTRE_TIERS AE ON AE.TIERS_SUJET_ID=ENTR.NUMERO AND AE.ANNULATION_DATE IS NULL AND AE.RAPPORT_ENTRE_TIERS_TYPE='ActiviteEconomique' AND AE.ETB_PRINCIPAL=%s"
-								+ " JOIN TIERS ETB ON AE.TIERS_OBJET_ID=ETB.NUMERO AND ETB.NUMERO_ETABLISSEMENT IS NULL"
-								+ " WHERE ENTR.NUMERO_ENTREPRISE IS NOT NULL AND ENTR.ANNULATION_DATE IS NULL AND ENTR.TIERS_TYPE='Entreprise'"
-								+ " ORDER BY ENTR.NUMERO";
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+				final String sql = "SELECT DISTINCT ENTR.NUMERO FROM TIERS ENTR"
+						+ " JOIN RAPPORT_ENTRE_TIERS AE ON AE.TIERS_SUJET_ID=ENTR.NUMERO AND AE.ANNULATION_DATE IS NULL AND AE.RAPPORT_ENTRE_TIERS_TYPE='ActiviteEconomique' AND AE.ETB_PRINCIPAL=%s"
+						+ " JOIN TIERS ETB ON AE.TIERS_OBJET_ID=ETB.NUMERO AND ETB.NUMERO_ETABLISSEMENT IS NULL"
+						+ " WHERE ENTR.NUMERO_ENTREPRISE IS NOT NULL AND ENTR.ANNULATION_DATE IS NULL AND ENTR.TIERS_TYPE='Entreprise'"
+						+ " ORDER BY ENTR.NUMERO";
 
-						final Query query = session.createSQLQuery(String.format(sql, dbDialect.toBooleanValueString(false)));
-						//noinspection unchecked
-						final List<Number> brutto = query.list();
-						final List<Long> res = new LinkedList<>();
-						for (Number id : brutto) {
-							res.add(id.longValue());
-						}
-						return res;
-					}
-				});
+				final Query query = session.createSQLQuery(String.format(sql, dbDialect.toBooleanValueString(false)));
+				//noinspection unchecked
+				final List<Number> brutto = query.list();
+				final List<Long> res = new LinkedList<>();
+				for (Number id : brutto) {
+					res.add(id.longValue());
+				}
+				return res;
 			}
-		});
+		}));
 	}
 }

@@ -12,17 +12,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.unireg.evenement.civil.ech.MockEvenementCivilEchRecuperateur;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
@@ -42,12 +40,12 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 	
 	@Test(timeout = 10000L)
 	public void testBasics() throws Exception {
-		
+
 		final long noIndividuSans = 17385423L;
 		final long noIndividuAvecAttente = 16745234L;
 		final long noIndividuAvecErreur = 2367485247L;
 		final long noIndividuAvecAttenteEtErreur = 43784236L;
-		
+
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -57,35 +55,31 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 				addIndividu(noIndividuAvecAttenteEtErreur, null, "Avec", "Attente-Erreur", false);
 			}
 		});
-		
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				long id = 0L;
 
-				final RegDate date = RegDate.get();
-				final TypeEvenementCivilEch type = TypeEvenementCivilEch.TESTING;
-				final ActionEvenementCivilEch action = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
+		doInNewTransactionAndSession(status -> {
+			long id = 0L;
 
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.A_VERIFIER);
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.FORCE);
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.REDONDANT);
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.TRAITE);
+			final RegDate date = RegDate.get();
+			final TypeEvenementCivilEch type = TypeEvenementCivilEch.TESTING;
+			final ActionEvenementCivilEch action = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
 
-				addEvent(noIndividuAvecAttente, ++id, type, action, date, EtatEvenementCivil.A_VERIFIER);
-				addEvent(noIndividuAvecAttente, ++id, type, action, date, EtatEvenementCivil.EN_ATTENTE);
+			addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.A_VERIFIER);
+			addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.FORCE);
+			addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.REDONDANT);
+			addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementCivil.TRAITE);
 
-				addEvent(noIndividuAvecErreur, ++id, type, action, date, EtatEvenementCivil.FORCE);
-				addEvent(noIndividuAvecErreur, ++id, type, action, date, EtatEvenementCivil.EN_ERREUR);
+			addEvent(noIndividuAvecAttente, ++id, type, action, date, EtatEvenementCivil.A_VERIFIER);
+			addEvent(noIndividuAvecAttente, ++id, type, action, date, EtatEvenementCivil.EN_ATTENTE);
 
-				addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementCivil.TRAITE);
-				addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementCivil.EN_ATTENTE);
-				addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementCivil.EN_ERREUR);
+			addEvent(noIndividuAvecErreur, ++id, type, action, date, EtatEvenementCivil.FORCE);
+			addEvent(noIndividuAvecErreur, ++id, type, action, date, EtatEvenementCivil.EN_ERREUR);
 
-				return null;
-			}
+			addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementCivil.TRAITE);
+			addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementCivil.EN_ATTENTE);
+			addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementCivil.EN_ERREUR);
+			return null;
 		});
-		
+
 		final AtomicInteger pointer = new AtomicInteger(0);
 		final Map<Integer, EvenementCivilEchProcessor.Listener> listeners = new HashMap<>();
 
@@ -203,9 +197,9 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 		retry.setTransactionManager(transactionManager);
 		retry.setProcessor(queueProcessor);
 		retry.setNotificationQueue(queueProcessor);
-		
+
 		// et maintenant : le test !
-		
+
 		// Ca, c'est pour vérifier que l'on traite les bons individus
 		final Set<Long> remaining = new HashSet<>(Arrays.asList(noIndividuSans, noIndividuAvecAttente, noIndividuAvecErreur, noIndividuAvecAttenteEtErreur));
 		final EvenementCivilEchProcessor.ListenerHandle handleRemaining = queueProcessor.registerListener(new EvenementCivilEchProcessor.Listener() {
@@ -222,7 +216,7 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 		// lancement des travaux
 		retry.retraiteEvenements(null);
 		handleRemaining.unregister();
-		
+
 		// au final : il ne doit plus rester que le noIndividuSans dans la liste remaining, et tous les listeners doivent avoir été dés-enregistrés
 		Assert.assertEquals(1, remaining.size());
 		Assert.assertEquals((Long) noIndividuSans, remaining.iterator().next());

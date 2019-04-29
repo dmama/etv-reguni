@@ -12,14 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
@@ -29,6 +23,11 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalSituationFamille;
+import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.PersonnePhysique;
 
@@ -151,31 +150,26 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	@Test
 	public void testNaissanceTiersExistantRegPP() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addHabitant(NOUVEAU_NE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addHabitant(NOUVEAU_NE);
+			return null;
 		});
 
 		final Individu bebe = serviceCivil.getIndividu(NOUVEAU_NE, date(2007, 12, 31));
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Naissance naissance = createValidNaissance(bebe, true);
-				final MessageCollector collector = buildMessageCollector();
-				try {
-					naissance.validate(collector, collector);
-					naissance.handle(collector);
-					Assert.fail();
-				}
-				catch (EvenementCivilException e) {
-					Assert.assertEquals("Le tiers existe déjà avec l'individu " + NOUVEAU_NE + " alors que c'est une naissance", e.getMessage());
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final Naissance naissance = createValidNaissance(bebe, true);
+			final MessageCollector collector = buildMessageCollector();
+			try {
+				naissance.validate(collector, collector);
+				naissance.handle(collector);
+				Assert.fail();
 			}
+			catch (EvenementCivilException e) {
+				Assert.assertEquals("Le tiers existe déjà avec l'individu " + NOUVEAU_NE + " alors que c'est une naissance", e.getMessage());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -222,49 +216,45 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu bebe = serviceCivil.getIndividu(indEnfant, dateNaissanceEnfant);
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Naissance naissance = createValidNaissance(bebe, false);
-				final MessageCollector collector = buildMessageCollector();
-				try {
-					naissance.validate(collector, collector);
-					naissance.handle(collector);
-					Assert.assertFalse(collector.hasErreurs());
-					Assert.assertFalse(collector.hasWarnings());
-				}
-				catch (EvenementCivilException e) {
-					Assert.fail(e.getMessage());
-				}
-
-				// on vérifie les événements fiscaux (qui doivent quand-même avoir été envoyés)
-				// on vérifie que il y a eu :
-				// - un événement de changement de situation de famille
-				// - un événement de naissance
-				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-				assertNotNull(events);
-				assertEquals(2, events.size());
-
-				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
-
-				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
-				assertNotNull(event0);
-
-				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
-				assertNotNull(event1);
-				assertEquals(ids.mere, event1.getTiers().getNumero());
-				assertEquals(ids.enfant, event1.getEnfant().getNumero());
-				assertEquals(dateNaissanceEnfant, event1.getDateValeur());
-				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE, event1.getType());
-
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final Naissance naissance = createValidNaissance(bebe, false);
+			final MessageCollector collector = buildMessageCollector();
+			try {
+				naissance.validate(collector, collector);
+				naissance.handle(collector);
+				Assert.assertFalse(collector.hasErreurs());
+				Assert.assertFalse(collector.hasWarnings());
 			}
+			catch (EvenementCivilException e) {
+				Assert.fail(e.getMessage());
+			}
+
+			// on vérifie les événements fiscaux (qui doivent quand-même avoir été envoyés)
+			// on vérifie que il y a eu :
+			// - un événement de changement de situation de famille
+			// - un événement de naissance
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertNotNull(events);
+			assertEquals(2, events.size());
+
+			final List<EvenementFiscal> tries = new ArrayList<>(events);
+			Collections.sort(tries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
+
+			final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
+			assertNotNull(event0);
+
+			final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
+			assertNotNull(event1);
+			assertEquals(ids.mere, event1.getTiers().getNumero());
+			assertEquals(ids.enfant, event1.getEnfant().getNumero());
+			assertEquals(dateNaissanceEnfant, event1.getDateValeur());
+			assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE, event1.getType());
+			return null;
 		});
 	}
 
@@ -458,13 +448,10 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			});
 
 			// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					assertParent(indPere, ids.pere, idFils, dateNaissance);
-					assertParent(indMere, ids.mere, idFils, dateNaissance);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				assertParent(indPere, ids.pere, idFils, dateNaissance);
+				assertParent(indMere, ids.mere, idFils, dateNaissance);
+				return null;
 			});
 		}
 		finally {

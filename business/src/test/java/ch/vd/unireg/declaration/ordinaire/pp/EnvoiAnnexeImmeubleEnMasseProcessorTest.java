@@ -1,15 +1,10 @@
 package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
@@ -19,6 +14,8 @@ import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -78,54 +75,45 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		final EnvoiAnnexeImmeubleResults r = new EnvoiAnnexeImmeubleResults(2011, RegDate.get(), "tubidu.zip", Integer.MAX_VALUE, tiersService, adresseService);
 
 		// Contribuable sans for fiscal
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
-				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(erich, 2011, r));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
+			assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(erich, 2011, r));
+			return null;
 		});
 
 		// Contribuable avec un for fiscal principal à Neuchâtel
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
-				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(maxwell, 2011, r));			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
+			assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(maxwell, 2011, r));
+			return null;
 		});
 
 		// Contribuable avec un for fiscal principal ouvert à Lausanne
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				final PeriodeImpositionPersonnesPhysiques piFelicien = processor.getPeriodeImpositionEnFinDePeriodeFiscale(felicien, 2011, r);
-				assertNotNull(piFelicien);
-				assertEquals(date(2011, 1, 1), piFelicien.getDateDebut());
-				assertEquals(date(2011, 12, 31), piFelicien.getDateFin());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			final PeriodeImpositionPersonnesPhysiques piFelicien = processor.getPeriodeImpositionEnFinDePeriodeFiscale(felicien, 2011, r);
+			assertNotNull(piFelicien);
+			assertEquals(date(2011, 1, 1), piFelicien.getDateDebut());
+			assertEquals(date(2011, 12, 31), piFelicien.getDateFin());
+			return null;
 		});
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(bernard, 2011, r));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(bernard, 2011, r));
+			return null;
 		});
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(lamda, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(lamda, 2011, r));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(lamda, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+			assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(lamda, 2011, r));
+			return null;
 		});
 	}
 
@@ -142,92 +130,79 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 			long mdId;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
-				// Contribuable sans di 2011 -> 1
-				final PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
-				assertEquals(1, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(erich, anneeComplete));
+			// Contribuable sans di 2011 -> 1
+			final PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
+			assertEquals(1, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(erich, anneeComplete));
 
-				final Ids ids = new Ids();
-				ids.mdId = md.getId();
-				ids.pfId = pf.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.mdId = md.getId();
+			ids1.pfId = pf.getId();
+			return ids1;
 		});
 
 		// Contribuable avec une di 2011 annulée -> 2
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
-				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(maxwell, pf, anneeComplete.getDateDebut(), anneeComplete.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setAnnule(true);
-				assertEquals(1, (int) di.getNumero());
-				assertEquals(2, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(maxwell, anneeComplete));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
+			final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
+			final PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(maxwell, pf, anneeComplete.getDateDebut(), anneeComplete.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setAnnule(true);
+			assertEquals(1, (int) di.getNumero());
+			assertEquals(2, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(maxwell, anneeComplete));
+			return null;
 		});
 
 		// Contribuable avec deux di 2011 annulées -> 3
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
-				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final PersonnePhysique arthur = addNonHabitant("Arthur", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
-				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(arthur, pf, moitieAnnee1.getDateDebut(), moitieAnnee1.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di1.setAnnule(true);
-				assertEquals(1, (int) di1.getNumero());
-				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(arthur, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di2.setAnnule(true);
-				assertEquals(2, (int) di2.getNumero());
-				assertEquals(3, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(arthur, anneeComplete));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
+			final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
+			final PersonnePhysique arthur = addNonHabitant("Arthur", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(arthur, pf, moitieAnnee1.getDateDebut(), moitieAnnee1.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di1.setAnnule(true);
+			assertEquals(1, (int) di1.getNumero());
+			final DeclarationImpotOrdinaire di2 = addDeclarationImpot(arthur, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di2.setAnnule(true);
+			assertEquals(2, (int) di2.getNumero());
+			assertEquals(3, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(arthur, anneeComplete));
+			return null;
 		});
 
 		// Contribuable avec une di 2011 non-annulée qui ne touche pas la fin de l'année -> 2
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
-				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(felicien, pf, moitieAnnee1.getDateDebut(), moitieAnnee1.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				assertEquals(1, (int) di.getNumero());
-				assertEquals(2, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(felicien, anneeComplete));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
+			final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
+			final PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(felicien, pf, moitieAnnee1.getDateDebut(), moitieAnnee1.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			assertEquals(1, (int) di.getNumero());
+			assertEquals(2, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(felicien, anneeComplete));
+			return null;
 		});
 
 		// Contribuable avec une di 2011 non-annulée qui touche la fin de l'année -> 1 (reprise du numéro)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
-				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(bernard, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				assertEquals(1, (int) di.getNumero());
-				assertEquals(1, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(bernard, anneeComplete));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
+			final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
+			final PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(bernard, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			assertEquals(1, (int) di.getNumero());
+			assertEquals(1, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(bernard, anneeComplete));
+			return null;
 		});
 
 		// Contribuable avec une di 2011 non-annulée qui touche la fin de l'année -> 12 (reprise du numéro)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
-				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final PersonnePhysique albert = addNonHabitant("Albert", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(albert, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setNumero(12);
-				assertEquals(12, (int) di.getNumero());
-				assertEquals(12, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(albert, anneeComplete));
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
+			final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
+			final PersonnePhysique albert = addNonHabitant("Albert", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(albert, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setNumero(12);
+			assertEquals(12, (int) di.getNumero());
+			assertEquals(12, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(albert, anneeComplete));
+			return null;
 		});
 	}
 }

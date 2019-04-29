@@ -4,7 +4,6 @@ import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -57,18 +56,15 @@ public class ReinscriptionRCController extends AbstractProcessusComplexeRecherch
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(idEntreprise);
 
-		return doInReadOnlyTransaction(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
-				final EtatEntreprise etatRadie = entreprise.getEtatActuel();
-				if (etatRadie == null || etatRadie.getType() != TypeEtatEntreprise.RADIEE_RC) {
-					Flash.error("L'entreprise choisie n'est pas actuellement dans l'état 'Radiée du RC'");
-					return "redirect:list.do";
-				}
-				final RegDate dateRadiation = etatRadie.getDateObtention();
-				return showStart(model, new ReinscriptionRCView(idEntreprise, dateRadiation));
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
+			final EtatEntreprise etatRadie = entreprise.getEtatActuel();
+			if (etatRadie == null || etatRadie.getType() != TypeEtatEntreprise.RADIEE_RC) {
+				Flash.error("L'entreprise choisie n'est pas actuellement dans l'état 'Radiée du RC'");
+				return "redirect:list.do";
 			}
+			final RegDate dateRadiation = etatRadie.getDateObtention();
+			return showStart(model, new ReinscriptionRCView(idEntreprise, dateRadiation));
 		});
 	}
 

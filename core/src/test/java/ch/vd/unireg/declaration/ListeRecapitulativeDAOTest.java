@@ -5,9 +5,7 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CoreDAOTest;
@@ -106,122 +104,115 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		final int annee = 2010;
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setNom1("Débiteur de test");
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setNom1("Débiteur de test");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 
-				// LR émise pour janvier
-				{
-					final RegDate debut = date(annee, 1, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-				}
-
-				// LR émise et retournée pour février
-				{
-					final RegDate debut = date(annee, 2, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationRetournee(lr, fin);
-				}
-
-				// LR émise puis sommée pour mars
-				{
-					final RegDate debut = date(annee, 3, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-				}
-
-				// LR émise, sommée et finalement retournée pour avril
-				{
-					final RegDate debut = date(annee, 4, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate retour = sommation.addDays(15);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				// LR émise, sommée et échue pour mai
-				{
-					final RegDate debut = date(annee, 5, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-				}
-
-				// LR émise, sommée, échue et finalement retournée pour juin
-				{
-					final RegDate debut = date(annee, 6, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-					final RegDate retour = echeance.addDays(5);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				return null;
+			// LR émise pour janvier
+			{
+				final RegDate debut = date(annee, 1, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
 			}
+
+			// LR émise et retournée pour février
+			{
+				final RegDate debut = date(annee, 2, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationRetournee(lr, fin);
+			}
+
+			// LR émise puis sommée pour mars
+			{
+				final RegDate debut = date(annee, 3, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+			}
+
+			// LR émise, sommée et finalement retournée pour avril
+			{
+				final RegDate debut = date(annee, 4, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate retour = sommation.addDays(15);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+
+			// LR émise, sommée et échue pour mai
+			{
+				final RegDate debut = date(annee, 5, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+			}
+
+			// LR émise, sommée, échue et finalement retournée pour juin
+			{
+				final RegDate debut = date(annee, 6, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+				final RegDate retour = echeance.addDays(5);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+			return null;
 		});
 
 		// et maintenant, la recherche
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDocumentFiscal.RETOURNE);
+		doInNewTransaction(status -> {
+			final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
+			criterion.setEtat(TypeEtatDocumentFiscal.RETOURNE);
 
-				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
-				assertNotNull(lrs);
-				assertEquals(3, lrs.size());
+			final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
+			assertNotNull(lrs);
+			assertEquals(3, lrs.size());
 
-				final DeclarationImpotSource[] array = new DeclarationImpotSource[6];
-				for (DeclarationImpotSource lr : lrs) {
-					assertNotNull(lr);
-					final int index = lr.getDateDebut().month();
-					assertNull("Deux LR pour le même mois... : " + index, array[index - 1]);
-					array[index - 1] = lr;
-				}
-
-				// les LR retournées sont celles de février, avril et juin
-				assertNull("Janvier n'est pas retournée", array[0]);
-				assertNotNull("Février est retournée", array[1]);
-				assertNull("Mars n'est pas retournée", array[2]);
-				assertNotNull("Avril est retournée", array[3]);
-				assertNull("Mai n'est pas retournée", array[4]);
-				assertNotNull("Juin est retournée", array[5]);
-				return null;
+			final DeclarationImpotSource[] array = new DeclarationImpotSource[6];
+			for (DeclarationImpotSource lr : lrs) {
+				assertNotNull(lr);
+				final int index = lr.getDateDebut().month();
+				assertNull("Deux LR pour le même mois... : " + index, array[index - 1]);
+				array[index - 1] = lr;
 			}
+
+			// les LR retournées sont celles de février, avril et juin
+			assertNull("Janvier n'est pas retournée", array[0]);
+			assertNotNull("Février est retournée", array[1]);
+			assertNull("Mars n'est pas retournée", array[2]);
+			assertNotNull("Avril est retournée", array[3]);
+			assertNull("Mai n'est pas retournée", array[4]);
+			assertNotNull("Juin est retournée", array[5]);
+			return null;
 		});
 	}
 
@@ -231,110 +222,103 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		final int annee = 2010;
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setNom1("Débiteur de test");
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setNom1("Débiteur de test");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 
-				// LR émise pour janvier
-				{
-					final RegDate debut = date(annee, 1, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-				}
-
-				// LR émise et retournée pour février
-				{
-					final RegDate debut = date(annee, 2, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationRetournee(lr, fin);
-				}
-
-				// LR émise puis sommée pour mars
-				{
-					final RegDate debut = date(annee, 3, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-				}
-
-				// LR émise, sommée et finalement retournée pour avril
-				{
-					final RegDate debut = date(annee, 4, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate retour = sommation.addDays(15);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				// LR émise, sommée et échue pour mai
-				{
-					final RegDate debut = date(annee, 5, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-				}
-
-				// LR émise, sommée, échue et finalement retournée pour juin
-				{
-					final RegDate debut = date(annee, 6, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-					final RegDate retour = echeance.addDays(5);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				return null;
+			// LR émise pour janvier
+			{
+				final RegDate debut = date(annee, 1, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
 			}
+
+			// LR émise et retournée pour février
+			{
+				final RegDate debut = date(annee, 2, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationRetournee(lr, fin);
+			}
+
+			// LR émise puis sommée pour mars
+			{
+				final RegDate debut = date(annee, 3, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+			}
+
+			// LR émise, sommée et finalement retournée pour avril
+			{
+				final RegDate debut = date(annee, 4, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate retour = sommation.addDays(15);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+
+			// LR émise, sommée et échue pour mai
+			{
+				final RegDate debut = date(annee, 5, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+			}
+
+			// LR émise, sommée, échue et finalement retournée pour juin
+			{
+				final RegDate debut = date(annee, 6, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+				final RegDate retour = echeance.addDays(5);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+			return null;
 		});
 
 		// et maintenant, la recherche
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDocumentFiscal.EMIS);
+		doInNewTransaction(status -> {
+			final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
+			criterion.setEtat(TypeEtatDocumentFiscal.EMIS);
 
-				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = lrs.get(0);
-				assertNotNull(lr);
-				assertEquals(date(annee, 1, 1), lr.getDateDebut());     // celle de janvier seulement
-				return null;
-			}
+			final DeclarationImpotSource lr = lrs.get(0);
+			assertNotNull(lr);
+			assertEquals(date(annee, 1, 1), lr.getDateDebut());     // celle de janvier seulement;
+			return null;
 		});
 	}
 
@@ -344,110 +328,103 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		final int annee = 2010;
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setNom1("Débiteur de test");
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setNom1("Débiteur de test");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 
-				// LR émise pour janvier
-				{
-					final RegDate debut = date(annee, 1, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-				}
-
-				// LR émise et retournée pour février
-				{
-					final RegDate debut = date(annee, 2, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationRetournee(lr, fin);
-				}
-
-				// LR émise puis sommée pour mars
-				{
-					final RegDate debut = date(annee, 3, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-				}
-
-				// LR émise, sommée et finalement retournée pour avril
-				{
-					final RegDate debut = date(annee, 4, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate retour = sommation.addDays(15);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				// LR émise, sommée et échue pour mai
-				{
-					final RegDate debut = date(annee, 5, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-				}
-
-				// LR émise, sommée, échue et finalement retournée pour juin
-				{
-					final RegDate debut = date(annee, 6, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-					final RegDate retour = echeance.addDays(5);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				return null;
+			// LR émise pour janvier
+			{
+				final RegDate debut = date(annee, 1, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
 			}
+
+			// LR émise et retournée pour février
+			{
+				final RegDate debut = date(annee, 2, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationRetournee(lr, fin);
+			}
+
+			// LR émise puis sommée pour mars
+			{
+				final RegDate debut = date(annee, 3, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+			}
+
+			// LR émise, sommée et finalement retournée pour avril
+			{
+				final RegDate debut = date(annee, 4, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate retour = sommation.addDays(15);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+
+			// LR émise, sommée et échue pour mai
+			{
+				final RegDate debut = date(annee, 5, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+			}
+
+			// LR émise, sommée, échue et finalement retournée pour juin
+			{
+				final RegDate debut = date(annee, 6, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+				final RegDate retour = echeance.addDays(5);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+			return null;
 		});
 
 		// et maintenant, la recherche
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDocumentFiscal.SOMME);
+		doInNewTransaction(status -> {
+			final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
+			criterion.setEtat(TypeEtatDocumentFiscal.SOMME);
 
-				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = lrs.get(0);
-				assertNotNull(lr);
-				assertEquals(date(annee, 3, 1), lr.getDateDebut());     // celle de mars seulement
-				return null;
-			}
+			final DeclarationImpotSource lr = lrs.get(0);
+			assertNotNull(lr);
+			assertEquals(date(annee, 3, 1), lr.getDateDebut());     // celle de mars seulement;
+			return null;
 		});
 	}
 
@@ -457,110 +434,103 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		final int annee = 2010;
 
 		// mise en place
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setNom1("Débiteur de test");
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setNom1("Débiteur de test");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 
-				// LR émise pour janvier
-				{
-					final RegDate debut = date(annee, 1, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-				}
-
-				// LR émise et retournée pour février
-				{
-					final RegDate debut = date(annee, 2, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationRetournee(lr, fin);
-				}
-
-				// LR émise puis sommée pour mars
-				{
-					final RegDate debut = date(annee, 3, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-				}
-
-				// LR émise, sommée et finalement retournée pour avril
-				{
-					final RegDate debut = date(annee, 4, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate retour = sommation.addDays(15);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				// LR émise, sommée et échue pour mai
-				{
-					final RegDate debut = date(annee, 5, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-				}
-
-				// LR émise, sommée, échue et finalement retournée pour juin
-				{
-					final RegDate debut = date(annee, 6, 1);
-					final RegDate fin = debut.addMonths(1).getOneDayBefore();
-					final RegDate emission = debut.addDays(20);
-					final RegDate sommation = emission.addDays(50);
-					final RegDate echeance = sommation.addDays(45);
-					final RegDate retour = echeance.addDays(5);
-
-					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
-					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation, null);
-					addEtatDeclarationEchue(lr, echeance);
-					addEtatDeclarationRetournee(lr, retour);
-				}
-
-				return null;
+			// LR émise pour janvier
+			{
+				final RegDate debut = date(annee, 1, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
 			}
+
+			// LR émise et retournée pour février
+			{
+				final RegDate debut = date(annee, 2, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationRetournee(lr, fin);
+			}
+
+			// LR émise puis sommée pour mars
+			{
+				final RegDate debut = date(annee, 3, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+			}
+
+			// LR émise, sommée et finalement retournée pour avril
+			{
+				final RegDate debut = date(annee, 4, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate retour = sommation.addDays(15);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+
+			// LR émise, sommée et échue pour mai
+			{
+				final RegDate debut = date(annee, 5, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+			}
+
+			// LR émise, sommée, échue et finalement retournée pour juin
+			{
+				final RegDate debut = date(annee, 6, 1);
+				final RegDate fin = debut.addMonths(1).getOneDayBefore();
+				final RegDate emission = debut.addDays(20);
+				final RegDate sommation = emission.addDays(50);
+				final RegDate echeance = sommation.addDays(45);
+				final RegDate retour = echeance.addDays(5);
+
+				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
+				addEtatDeclarationEmise(lr, emission);
+				addEtatDeclarationSommee(lr, sommation, sommation, null);
+				addEtatDeclarationEchue(lr, echeance);
+				addEtatDeclarationRetournee(lr, retour);
+			}
+			return null;
 		});
 
 		// et maintenant, la recherche
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDocumentFiscal.ECHU);
+		doInNewTransaction(status -> {
+			final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
+			criterion.setEtat(TypeEtatDocumentFiscal.ECHU);
 
-				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = lrs.get(0);
-				assertNotNull(lr);
-				assertEquals(date(annee, 5, 1), lr.getDateDebut());     // celle de mai seulement
-				return null;
-			}
+			final DeclarationImpotSource lr = lrs.get(0);
+			assertNotNull(lr);
+			assertEquals(date(annee, 5, 1), lr.getDateDebut());     // celle de mai seulement;
+			return null;
 		});
 	}
 }

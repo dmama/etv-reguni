@@ -10,11 +10,8 @@ import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
@@ -252,27 +249,25 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 			AuthenticationHelper.pushPrincipal(getDefaultOperateurName());      // pour les tests qui veulent gérer l'authentification eux-mêmes, et surchargent setAuthentication()
 			try {
 				final Switchable oidInterceptor = getBean(Switchable.class, "officeImpotHibernateInterceptor");
-				doInNewTransactionAndSessionUnderSwitch(oidInterceptor, false, new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus status) {
-						for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
-							final CollectiviteAdministrative ca;
-							if (collAdm instanceof MockOfficeImpot) {
-								ca = addCollAdm((MockOfficeImpot) collAdm);
-							}
-							else {
-								ca = addCollAdm(collAdm);
-							}
+				doInNewTransactionAndSessionUnderSwitch(oidInterceptor, false, status -> {
+					for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
+						final CollectiviteAdministrative ca;
+						if (collAdm instanceof MockOfficeImpot) {
+							ca = addCollAdm((MockOfficeImpot) collAdm);
+						}
+						else {
+							ca = addCollAdm(collAdm);
+						}
 
-							// [SIFISC-20149] on va également créer les étiquettes qui vont bien si la bonne collectivité adminstrative est là
-							if (collAdm.getNoColAdm() == MockCollectiviteAdministrative.noNouvelleEntite) {
-								final Etiquette heritage = addEtiquette(CODE_ETIQUETTE_HERITAGE, "Héritage", TypeTiersEtiquette.PP, ca);
-								heritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
-								                                                   new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
-								addEtiquette(CODE_ETIQUETTE_COLLABORATEUR, "DS Collaborateur", TypeTiersEtiquette.PP, ca);
-							}
+						// [SIFISC-20149] on va également créer les étiquettes qui vont bien si la bonne collectivité adminstrative est là
+						if (collAdm.getNoColAdm() == MockCollectiviteAdministrative.noNouvelleEntite) {
+							final Etiquette heritage = addEtiquette(CODE_ETIQUETTE_HERITAGE, "Héritage", TypeTiersEtiquette.PP, ca);
+							heritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
+							                                                   new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+							addEtiquette(CODE_ETIQUETTE_COLLABORATEUR, "DS Collaborateur", TypeTiersEtiquette.PP, ca);
 						}
 					}
+					return null;
 				});
 			}
 			finally {
@@ -369,17 +364,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
-        return doInNewTransaction(new TransactionCallback<T>() {
-            @Override
-            public T doInTransaction(final TransactionStatus status) {
-                return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
-                    @Override
-                    public T doInHibernate(Session session) throws HibernateException, SQLException {
-                        return action.doInTransaction(status);
-                    }
-                });
-            }
-        });
+        return doInNewTransaction(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+	        @Override
+	        public T doInHibernate(Session session) throws HibernateException, SQLException {
+		        return action.doInTransaction(status);
+	        }
+        }));
     }
 
 	protected RapprochementRF addRapprochementRF(@NotNull PersonnePhysique ctb, @NotNull PersonnePhysiqueRF tiersRF, RegDate dateDebut, RegDate dateFin, TypeRapprochementRF type) {

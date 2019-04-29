@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -250,48 +249,46 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// on n'a rien fait, juste une remarque...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(1, entreprise.getBouclements().size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(1, entreprise.getBouclements().size());
 
-				// déclaration inchangée
-				final List<DeclarationImpotOrdinairePM> allDeclarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertEquals(1, allDeclarations.size());
-				final DeclarationImpotOrdinairePM declaration = allDeclarations.get(0);
-				Assert.assertFalse(declaration.isAnnule());
-				Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebut());
-				Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(annee, 3, 31), declaration.getDateFin());
-				Assert.assertEquals(date(annee, 3, 31), declaration.getDateFinExerciceCommercial());
-				Assert.assertEquals((Integer) annee, declaration.getPeriode().getAnnee());
+			// déclaration inchangée
+			final List<DeclarationImpotOrdinairePM> allDeclarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertEquals(1, allDeclarations.size());
+			final DeclarationImpotOrdinairePM declaration = allDeclarations.get(0);
+			Assert.assertFalse(declaration.isAnnule());
+			Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebut());
+			Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(annee, 3, 31), declaration.getDateFin());
+			Assert.assertEquals(date(annee, 3, 31), declaration.getDateFinExerciceCommercial());
+			Assert.assertEquals((Integer) annee, declaration.getPeriode().getAnnee());
 
-				// remarque
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals(String.format("Données de DI reçues sur la déclaration non-quittancée %d/1 :\n- date de fin d'exercice commercial : %s",
-				                                  annee,
-				                                  RegDateHelper.dateToDisplayString(nouvelleFinExerciceCommercial)),
-				                    remarque.getTexte());
+			// remarque
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals(String.format("Données de DI reçues sur la déclaration non-quittancée %d/1 :\n- date de fin d'exercice commercial : %s",
+			                                  annee,
+			                                  RegDateHelper.dateToDisplayString(nouvelleFinExerciceCommercial)),
+			                    remarque.getTexte());
 
-				// tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(id);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Déclaration non-quittancée", tache.getCommentaire());
-			}
+			// tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(id);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Déclaration non-quittancée", tache.getCommentaire());
+			return null;
 		});
 	}
 
@@ -336,48 +333,46 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// on n'a rien fait, juste une remarque...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(1, entreprise.getBouclements().size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(1, entreprise.getBouclements().size());
 
-				// déclaration inchangée
-				final List<DeclarationImpotOrdinairePM> allDeclarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertEquals(1, allDeclarations.size());
-				final DeclarationImpotOrdinairePM declaration = allDeclarations.get(0);
-				Assert.assertTrue(declaration.isAnnule());
-				Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebut());
-				Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(annee, 3, 31), declaration.getDateFin());
-				Assert.assertEquals(date(annee, 3, 31), declaration.getDateFinExerciceCommercial());
-				Assert.assertEquals((Integer) annee, declaration.getPeriode().getAnnee());
+			// déclaration inchangée
+			final List<DeclarationImpotOrdinairePM> allDeclarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertEquals(1, allDeclarations.size());
+			final DeclarationImpotOrdinairePM declaration = allDeclarations.get(0);
+			Assert.assertTrue(declaration.isAnnule());
+			Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebut());
+			Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(annee, 3, 31), declaration.getDateFin());
+			Assert.assertEquals(date(annee, 3, 31), declaration.getDateFinExerciceCommercial());
+			Assert.assertEquals((Integer) annee, declaration.getPeriode().getAnnee());
 
-				// remarque
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals(String.format("Données de DI reçues sur la déclaration annulée %d/1 :\n- date de fin d'exercice commercial : %s",
-				                                  annee,
-				                                  RegDateHelper.dateToDisplayString(nouvelleFinExerciceCommercial)),
-				                    remarque.getTexte());
+			// remarque
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals(String.format("Données de DI reçues sur la déclaration annulée %d/1 :\n- date de fin d'exercice commercial : %s",
+			                                  annee,
+			                                  RegDateHelper.dateToDisplayString(nouvelleFinExerciceCommercial)),
+			                    remarque.getTexte());
 
-				// tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(id);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Déclaration annulée", tache.getCommentaire());
-			}
+			// tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(id);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Déclaration annulée", tache.getCommentaire());
+			return null;
 		});
 	}
 
@@ -421,37 +416,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// on n'a rien fait, juste une remarque...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(1, entreprise.getBouclements().size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(1, entreprise.getBouclements().size());
 
-				// déclaration inchangée
-				final List<DeclarationImpotOrdinairePM> allDeclarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertEquals(1, allDeclarations.size());
-				final DeclarationImpotOrdinairePM declaration = allDeclarations.get(0);
-				Assert.assertFalse(declaration.isAnnule());
-				Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebut());
-				Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(annee, 3, 31), declaration.getDateFin());
-				Assert.assertEquals(date(annee, 3, 31), declaration.getDateFinExerciceCommercial());
-				Assert.assertEquals((Integer) annee, declaration.getPeriode().getAnnee());
+			// déclaration inchangée
+			final List<DeclarationImpotOrdinairePM> allDeclarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertEquals(1, allDeclarations.size());
+			final DeclarationImpotOrdinairePM declaration = allDeclarations.get(0);
+			Assert.assertFalse(declaration.isAnnule());
+			Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebut());
+			Assert.assertEquals(date(annee - 1, 4, 1), declaration.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(annee, 3, 31), declaration.getDateFin());
+			Assert.assertEquals(date(annee, 3, 31), declaration.getDateFinExerciceCommercial());
+			Assert.assertEquals((Integer) annee, declaration.getPeriode().getAnnee());
 
-				// remarque -> rien
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> rien
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> aucune
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(id);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> aucune
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(id);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -497,66 +490,64 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
-				// courante est maintenant échue
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertNull(tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
-				}
-				else {
-					Assert.assertEquals(Collections.emptyList(), taches);
-				}
-
-				// la déclaration
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare));
-				Assert.assertEquals(2, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(annee, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
+			// courante est maintenant échue
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertNull(tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
 			}
+			else {
+				Assert.assertEquals(Collections.emptyList(), taches);
+			}
+
+			// la déclaration
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(annee, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -602,66 +593,64 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
-				// courante est maintenant échue
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertNull(tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
-				}
-				else {
-					Assert.assertEquals(Collections.emptyList(), taches);
-				}
-
-				// la déclaration
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare));
-				Assert.assertEquals(2, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(annee, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
+			// courante est maintenant échue
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertNull(tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
 			}
+			else {
+				Assert.assertEquals(Collections.emptyList(), taches);
+			}
+
+			// la déclaration
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(annee, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -706,61 +695,59 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				// oui, une tâche a été créée, parce que la période se temine justement au 31.03, qui est passé
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			// oui, une tâche a été créée, parce que la période se temine justement au 31.03, qui est passé
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
 
-				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-				Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebut());
-				Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebutExercice());
-				Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFin());
-				Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFinExercice());
+			final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+			Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebut());
+			Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebutExercice());
+			Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFin());
+			Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFinExercice());
 
-				// la déclaration
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+			// la déclaration
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals((Integer) annee, di.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
 
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(2, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
 			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -816,61 +803,59 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				Assert.assertEquals(Collections.emptyList(), taches);
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			Assert.assertEquals(Collections.emptyList(), taches);
 
-				// la déclaration retournée
-				final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(disAnneeRetour);
-				Assert.assertEquals(1, disAnneeRetour.size());
-				final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
-				Assert.assertFalse(diRetournee.isAnnule());
-				Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
+			// la déclaration retournée
+			final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(disAnneeRetour);
+			Assert.assertEquals(1, disAnneeRetour.size());
+			final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
+			Assert.assertFalse(diRetournee.isAnnule());
+			Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
 
-				// la déclaration suivante
-				final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
-				Assert.assertNotNull(disAnneeSuivante);
-				Assert.assertEquals(1, disAnneeSuivante.size());
-				final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
-				Assert.assertFalse(diSuivante.isAnnule());
-				Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
+			// la déclaration suivante
+			final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
+			Assert.assertNotNull(disAnneeSuivante);
+			Assert.assertEquals(1, disAnneeSuivante.size());
+			final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
+			Assert.assertFalse(diSuivante.isAnnule());
+			Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
 
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(2, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
 			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -926,61 +911,59 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				Assert.assertEquals(Collections.emptyList(), taches);
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			Assert.assertEquals(Collections.emptyList(), taches);
 
-				// la déclaration retournée
-				final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(disAnneeRetour);
-				Assert.assertEquals(1, disAnneeRetour.size());
-				final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
-				Assert.assertFalse(diRetournee.isAnnule());
-				Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
+			// la déclaration retournée
+			final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(disAnneeRetour);
+			Assert.assertEquals(1, disAnneeRetour.size());
+			final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
+			Assert.assertFalse(diRetournee.isAnnule());
+			Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
 
-				// la déclaration suivante
-				final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
-				Assert.assertNotNull(disAnneeSuivante);
-				Assert.assertEquals(1, disAnneeSuivante.size());
-				final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
-				Assert.assertFalse(diSuivante.isAnnule());
-				Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
+			// la déclaration suivante
+			final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
+			Assert.assertNotNull(disAnneeSuivante);
+			Assert.assertEquals(1, disAnneeSuivante.size());
+			final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
+			Assert.assertFalse(diSuivante.isAnnule());
+			Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
 
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(2, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
 			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -1038,86 +1021,84 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
-				// courante est maintenant échue
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertNull(tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
-				}
-				else {
-					Assert.assertEquals(Collections.emptyList(), taches);
-				}
-
-				// la déclaration retournée
-				final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(disAnneeRetour);
-				Assert.assertEquals(1, disAnneeRetour.size());
-				final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
-				Assert.assertFalse(diRetournee.isAnnule());
-				Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
-
-				// la déclaration suivante
-				final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
-				Assert.assertNotNull(disAnneeSuivante);
-				Assert.assertEquals(1, disAnneeSuivante.size());
-				final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
-				Assert.assertFalse(diSuivante.isAnnule());
-				Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
-				Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
-				Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
-
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>((o1, o2) -> NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut())));
-				Assert.assertEquals(3, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(15, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(ancienneFinExerciceCommercial.addYears(2).getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(2);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
+			// courante est maintenant échue
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertNull(tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
 			}
+			else {
+				Assert.assertEquals(Collections.emptyList(), taches);
+			}
+
+			// la déclaration retournée
+			final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(disAnneeRetour);
+			Assert.assertEquals(1, disAnneeRetour.size());
+			final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
+			Assert.assertFalse(diRetournee.isAnnule());
+			Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
+
+			// la déclaration suivante
+			final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
+			Assert.assertNotNull(disAnneeSuivante);
+			Assert.assertEquals(1, disAnneeSuivante.size());
+			final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
+			Assert.assertFalse(diSuivante.isAnnule());
+			Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
+			Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
+			Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
+
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>((o1, o2) -> NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut())));
+			Assert.assertEquals(3, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(15, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(ancienneFinExerciceCommercial.addYears(2).getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(2);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -1174,69 +1155,67 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résulat...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
-				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				Assert.assertEquals(Collections.emptyList(), taches);
+			final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
+			Assert.assertEquals(Collections.emptyList(), taches);
 
-				// la déclaration retournée
-				final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
-				Assert.assertNotNull(disAnneeRetour);
-				Assert.assertEquals(1, disAnneeRetour.size());
-				final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
-				Assert.assertFalse(diRetournee.isAnnule());
-				Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
-				Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
+			// la déclaration retournée
+			final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
+			Assert.assertNotNull(disAnneeRetour);
+			Assert.assertEquals(1, disAnneeRetour.size());
+			final DeclarationImpotOrdinairePM diRetournee = disAnneeRetour.get(0);
+			Assert.assertFalse(diRetournee.isAnnule());
+			Assert.assertEquals((Integer) annee, diRetournee.getPeriode().getAnnee());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebutExerciceCommercial());
+			Assert.assertEquals(dateDebutEntreprise, diRetournee.getDateDebut());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFinExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial, diRetournee.getDateFin());
 
-				// la déclaration suivante
-				final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
-				Assert.assertNotNull(disAnneeSuivante);
-				Assert.assertEquals(1, disAnneeSuivante.size());
-				final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
-				Assert.assertFalse(diSuivante.isAnnule());
-				Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
-				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
-				Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
-				Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
+			// la déclaration suivante
+			final List<DeclarationImpotOrdinairePM> disAnneeSuivante = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee + 1, true);
+			Assert.assertNotNull(disAnneeSuivante);
+			Assert.assertEquals(1, disAnneeSuivante.size());
+			final DeclarationImpotOrdinairePM diSuivante = disAnneeSuivante.get(0);
+			Assert.assertFalse(diSuivante.isAnnule());
+			Assert.assertEquals((Integer) (annee + 1), diSuivante.getPeriode().getAnnee());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebutExerciceCommercial());
+			Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), diSuivante.getDateDebut());
+			Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFinExerciceCommercial());
+			Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), diSuivante.getDateFin());
 
-				// les bouclements
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(3, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(9, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(annee + 1, 3, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(2);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// les bouclements
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(3, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(nouvelleFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(9, bouclement.getPeriodeMois());
 			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(annee + 1, 3, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(2);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			return null;
 		});
 	}
 
@@ -1296,101 +1275,99 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("La déclaration 2016/1 a été transformée en 2015/43 suite au déplacement de la date de fin d'exercice commercial du 30.06.2016 au 31.12.2015 par retour de la DI.", remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("La déclaration 2016/1 a été transformée en 2015/43 suite au déplacement de la date de fin d'exercice commercial du 30.06.2016 au 31.12.2015 par retour de la DI.", remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(3, bouclements.size());
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(3, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(6, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 12, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(2);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+
+			// tâches de contrôle de dossier
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(entreprise);
+			criterion.setInclureTachesAnnulees(true);
+			criterion.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(criterion);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			final Tache tache = tachesControle.get(0);
+			Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+			Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertFalse(tache.isAnnule());
+
+			// et finalement les déclarations
+
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
+
+			// et deux déclarations sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(2, declarations.size());
 				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(6, bouclement.getPeriodeMois());
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFin());
+					Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 42, di.getNumero());
+					Assert.assertNull(di.getModeleDocument());
 				}
 				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 12, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(2);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-
-				// tâches de contrôle de dossier
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(entreprise);
-				criterion.setInclureTachesAnnulees(true);
-				criterion.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(criterion);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				final Tache tache = tachesControle.get(0);
-				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-				Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertFalse(tache.isAnnule());
-
-				// et finalement les déclarations
-
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
-
-				// et deux déclarations sur la période d'après
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(2, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFin());
-						Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 42, di.getNumero());
-						Assert.assertNull(di.getModeleDocument());
-					}
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(1);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebut());
-						Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 43, di.getNumero());
-						Assert.assertNull(di.getModeleDocument());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(1);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebut());
+					Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 43, di.getNumero());
+					Assert.assertNull(di.getModeleDocument());
 				}
 			}
+			return null;
 		});
 	}
 
@@ -1454,133 +1431,131 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("La déclaration 2014/1 a été transformée en 2013/1 suite au déplacement de la date de fin d'exercice commercial du 30.06.2014 au 31.12.2013 par retour de la DI.", remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("La déclaration 2014/1 a été transformée en 2013/1 suite au déplacement de la date de fin d'exercice commercial du 30.06.2014 au 31.12.2013 par retour de la DI.", remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(3, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(6, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 12, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(2);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(3, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(6, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 12, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(2);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
 
-				// tâches de contrôle de dossier
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(true);
-					criterion.setTypeTache(TypeTache.TacheControleDossier);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-					Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-				}
+			// tâches de contrôle de dossier
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+				Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+			}
 
-				// tâches d'envoi de DI
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(false);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertNull(tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFinExercice());
-				}
+			// tâches d'envoi de DI
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(false);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertNull(tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFinExercice());
+			}
 
-				// et finalement les déclarations
+			// et finalement les déclarations
 
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
 
-				// une sur la période d'après
+			// une sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(1, declarations.size());
 				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(1, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebut());
-						Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
-				}
-
-				// une sur la période suivante
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeSuivante, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(1, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebut());
-						Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(date(anneeSuivante, 12, 31), di.getDateFin());
-						Assert.assertEquals(date(anneeSuivante, 12, 31), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebut());
+					Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 			}
+
+			// une sur la période suivante
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeSuivante, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(1, declarations.size());
+				{
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebut());
+					Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(date(anneeSuivante, 12, 31), di.getDateFin());
+					Assert.assertEquals(date(anneeSuivante, 12, 31), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
+				}
+			}
+			return null;
 		});
 	}
 
@@ -1659,141 +1634,139 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("La déclaration 2014/1 a été transformée en 2013/1 suite au déplacement de la date de fin d'exercice commercial du 30.06.2014 au 31.12.2013 par retour de la DI.", remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("La déclaration 2014/1 a été transformée en 2013/1 suite au déplacement de la date de fin d'exercice commercial du 30.06.2014 au 31.12.2013 par retour de la DI.", remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(4, bouclements.size());
-				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(6, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeInitiale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(6, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(2);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(dateFaillite.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(3);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(4, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(6, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeInitiale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(6, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(2);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(dateFaillite.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(3);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
 
-				// tâches de contrôle de dossier
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(true);
-					criterion.setTypeTache(TypeTache.TacheControleDossier);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-					Assert.assertEquals("Retour DI - Changement de période fiscale avec déclaration retournée ultérieure", tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-				}
+			// tâches de contrôle de dossier
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+				Assert.assertEquals("Retour DI - Changement de période fiscale avec déclaration retournée ultérieure", tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+			}
 
-				// tâches d'envoi de DI
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(false);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
-					Assert.assertNull(tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFinExercice());
-				}
+			// tâches d'envoi de DI
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(false);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+				Assert.assertNull(tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(anneeInitiale, 1, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(anneeInitiale, 12, 31), tacheEnvoi.getDateFinExercice());
+			}
 
-				// et finalement les déclarations
+			// et finalement les déclarations
 
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
 
-				// une sur la période d'après
+			// une sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(1, declarations.size());
 				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(1, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebut());
-						Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
-				}
-
-				// une sur la période suivante
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeSuivante, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(1, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebut());
-						Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(date(anneeSuivante, 6, 30), di.getDateFin());
-						Assert.assertEquals(date(anneeSuivante, 6, 30), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebut());
+					Assert.assertEquals(date(anneeFinale, 7, 1), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 			}
+
+			// une sur la période suivante
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeSuivante, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(1, declarations.size());
+				{
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebut());
+					Assert.assertEquals(date(anneeSuivante, 1, 1), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(date(anneeSuivante, 6, 30), di.getDateFin());
+					Assert.assertEquals(date(anneeSuivante, 6, 30), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
+				}
+			}
+			return null;
 		});
 	}
 
@@ -1844,83 +1817,81 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("La déclaration 2015/1 a été transformée en 2016/1 suite au déplacement de la date de fin d'exercice commercial du 31.12.2015 au 30.06.2016 par retour de la DI.", remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("La déclaration 2015/1 a été transformée en 2016/1 suite au déplacement de la date de fin d'exercice commercial du 31.12.2015 au 30.06.2016 par retour de la DI.", remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(2, bouclements.size());
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+
+			// tâches de contrôle de dossier
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(entreprise);
+			criterion.setInclureTachesAnnulees(true);
+			criterion.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(criterion);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			final Tache tache = tachesControle.get(0);
+			Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+			Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertFalse(tache.isAnnule());
+
+			// et finalement les déclarations
+
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
+
+			// et une sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(1, declarations.size());
 				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-
-				// tâches de contrôle de dossier
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(entreprise);
-				criterion.setInclureTachesAnnulees(true);
-				criterion.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(criterion);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				final Tache tache = tachesControle.get(0);
-				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-				Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertFalse(tache.isAnnule());
-
-				// et finalement les déclarations
-
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
-
-				// et une sur la période d'après
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(1, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFin());
-						Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFin());
+					Assert.assertEquals(date(anneeFinale, 6, 30), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 			}
+			return null;
 		});
 	}
 
@@ -1981,119 +1952,117 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("La déclaration 2013/1 a été transformée en 2014/2 suite au déplacement de la date de fin d'exercice commercial du 31.12.2013 au 30.06.2014 par retour de la DI.", remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("La déclaration 2013/1 a été transformée en 2014/2 suite au déplacement de la date de fin d'exercice commercial du 31.12.2013 au 30.06.2014 par retour de la DI.", remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(2, bouclements.size());
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+
+			// tâches de contrôle de dossier
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+				Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+			}
+
+			// tâche d'annulation de DI (et oui, la DI 2014 initialement présente doit disparaître...)
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheAnnulationDeclarationImpot.class, tache.getClass());
+				Assert.assertNull(tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+				final TacheAnnulationDeclarationImpot tacheAnnulation = (TacheAnnulationDeclarationImpot) tache;
+				final DeclarationImpotOrdinaire declarationAAnnuler = tacheAnnulation.getDeclaration();
+				Assert.assertNotNull(declarationAAnnuler);
+				Assert.assertEquals((Integer) anneeFinale, declarationAAnnuler.getPeriode().getAnnee());
+				Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), declarationAAnnuler.getDateDebut());
+				Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), declarationAAnnuler.getDateFin());
+			}
+
+			// et finalement les déclarations
+
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
+
+			// et deux sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(2, declarations.size());
 				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 2, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-
-				// tâches de contrôle de dossier
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(true);
-					criterion.setTypeTache(TypeTache.TacheControleDossier);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-					Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-				}
-
-				// tâche d'annulation de DI (et oui, la DI 2014 initialement présente doit disparaître...)
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(true);
-					criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheAnnulationDeclarationImpot.class, tache.getClass());
-					Assert.assertNull(tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-					final TacheAnnulationDeclarationImpot tacheAnnulation = (TacheAnnulationDeclarationImpot) tache;
-					final DeclarationImpotOrdinaire declarationAAnnuler = tacheAnnulation.getDeclaration();
-					Assert.assertNotNull(declarationAAnnuler);
-					Assert.assertEquals((Integer) anneeFinale, declarationAAnnuler.getPeriode().getAnnee());
-					Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), declarationAAnnuler.getDateDebut());
-					Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), declarationAAnnuler.getDateFin());
-				}
-
-				// et finalement les déclarations
-
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
-
-				// et deux sur la période d'après
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(2, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 2, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(1);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebut());
-						Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFin());
-						Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(1);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebut());
+					Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFin());
+					Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 			}
+			return null;
 		});
 	}
 
@@ -2154,116 +2123,114 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("La déclaration 2013/1 a été transformée en 2014/2 suite au déplacement de la date de fin d'exercice commercial du 31.12.2013 au 30.06.2014 par retour de la DI.", remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("La déclaration 2013/1 a été transformée en 2014/2 suite au déplacement de la date de fin d'exercice commercial du 31.12.2013 au 30.06.2014 par retour de la DI.", remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(3, bouclements.size());
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(3, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(6, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(date(anneeFinale, 12, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(2);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+
+			// tâches de contrôle de dossier
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+				Assert.assertEquals("Retour DI - Changement de période fiscale avec déclaration retournée ultérieure", tache.getCommentaire());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertFalse(tache.isAnnule());
+			}
+
+			// aucune tâche d'annulation de DI (puisque la DI avait déjà été retournée, un exercice commercial 2014 - le deuxième, donc - a dû être conservé...)
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(0, taches.size());
+			}
+
+			// et finalement les déclarations
+
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
+
+			// et deux sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(2, declarations.size());
 				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 6, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(6, bouclement.getPeriodeMois());
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
+					Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
+					Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 2, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(anneeFinale, 12, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(2);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-
-				// tâches de contrôle de dossier
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(true);
-					criterion.setTypeTache(TypeTache.TacheControleDossier);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-					Assert.assertEquals("Retour DI - Changement de période fiscale avec déclaration retournée ultérieure", tache.getCommentaire());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertFalse(tache.isAnnule());
-				}
-
-				// aucune tâche d'annulation de DI (puisque la DI avait déjà été retournée, un exercice commercial 2014 - le deuxième, donc - a dû être conservé...)
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(entreprise);
-					criterion.setInclureTachesAnnulees(true);
-					criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(0, taches.size());
-				}
-
-				// et finalement les déclarations
-
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
-
-				// et deux sur la période d'après
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeFinale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(2, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebut());
-						Assert.assertEquals(dateDebutEntreprise, di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFin());
-						Assert.assertEquals(nouvelleFinExerciceCommercial, di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 2, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(1);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebut());
-						Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFin());
-						Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(1);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebut());
+					Assert.assertEquals(nouvelleFinExerciceCommercial.getOneDayAfter(), di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFin());
+					Assert.assertEquals(ancienneFinExerciceCommercial.addYears(1), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 			}
+			return null;
 		});
 	}
 
@@ -2307,39 +2274,37 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// pas d'adresse surchargée présente
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(0, surcharges.size());
+			// pas d'adresse surchargée présente
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(0, surcharges.size());
 
-				// mais une tâche de contrôle de dossier et une remarque doivent être là...
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+			// mais une tâche de contrôle de dossier et une remarque doivent être là...
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
 
-				// et la remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Les données d'adresse/raison sociale trouvées dans la DI 2015/1 n'ont pas pu être interprétées de manière concluante (Ma petite entreprise SARL / Avenue de Ratatatsointsoin 24 / 1003 / Lausanne).",
-				                    remarque.getTexte());
-			}
+			// et la remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("Les données d'adresse/raison sociale trouvées dans la DI 2015/1 n'ont pas pu être interprétées de manière concluante (Ma petite entreprise SARL / Avenue de Ratatatsointsoin 24 / 1003 / Lausanne).",
+			                    remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -2383,41 +2348,39 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// aucune tâche de contrôle de dossier ni remarque, mais une surcharge d'adresse courrier non-permanente depuis la date de quittance
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune tâche de contrôle de dossier ni remarque, mais une surcharge d'adresse courrier non-permanente depuis la date de quittance
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// l'adresse maintenant...
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				final AdresseTiers surcharge = surcharges.get(0);
-				Assert.assertNotNull(surcharge);
-				Assert.assertFalse(surcharge.isAnnule());
-				Assert.assertEquals(dateQuittance, surcharge.getDateDebut());
-				Assert.assertNull(surcharge.getDateFin());
-				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-				Assert.assertFalse(adresseSuisse.isPermanente());
-				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-				Assert.assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adresseSuisse.getNumeroRue());
-			}
+			// l'adresse maintenant...
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			final AdresseTiers surcharge = surcharges.get(0);
+			Assert.assertNotNull(surcharge);
+			Assert.assertFalse(surcharge.isAnnule());
+			Assert.assertEquals(dateQuittance, surcharge.getDateDebut());
+			Assert.assertNull(surcharge.getDateFin());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+			Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+			final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+			Assert.assertFalse(adresseSuisse.isPermanente());
+			Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			Assert.assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adresseSuisse.getNumeroRue());
+			return null;
 		});
 	}
 
@@ -2462,44 +2425,42 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals("Monsieur moi-même", entreprise.getPersonneContact());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals("Monsieur moi-même", entreprise.getPersonneContact());
 
-				// pas d'adresse surchargée présente
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				final AdresseTiers surcharge = surcharges.get(0);
-				Assert.assertNotNull(surcharge);
-				Assert.assertFalse(surcharge.isAnnule());
-				Assert.assertEquals(dateQuittance, surcharge.getDateDebut());
-				Assert.assertNull(surcharge.getDateFin());
-				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-				Assert.assertFalse(adresseSuisse.isPermanente());
-				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-				Assert.assertNull(adresseSuisse.getNumeroRue());
-				Assert.assertEquals("Avenue de Ratatatsointsoin", adresseSuisse.getRue());
-				Assert.assertEquals("24", adresseSuisse.getNumeroMaison());
+			// pas d'adresse surchargée présente
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			final AdresseTiers surcharge = surcharges.get(0);
+			Assert.assertNotNull(surcharge);
+			Assert.assertFalse(surcharge.isAnnule());
+			Assert.assertEquals(dateQuittance, surcharge.getDateDebut());
+			Assert.assertNull(surcharge.getDateFin());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+			Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+			final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+			Assert.assertFalse(adresseSuisse.isPermanente());
+			Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			Assert.assertNull(adresseSuisse.getNumeroRue());
+			Assert.assertEquals("Avenue de Ratatatsointsoin", adresseSuisse.getRue());
+			Assert.assertEquals("24", adresseSuisse.getNumeroMaison());
 
-				// aucune tâche de contrôle de dossier ni remarque
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune tâche de contrôle de dossier ni remarque
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+			return null;
 		});
 	}
 
@@ -2544,31 +2505,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals("Monsieur moi-même", entreprise.getPersonneContact());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals("Monsieur moi-même", entreprise.getPersonneContact());
 
-				// pas d'adresse surchargée présente
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(0, surcharges.size());
+			// pas d'adresse surchargée présente
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(0, surcharges.size());
 
-				// aucune tâche de contrôle de dossier ni remarque
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune tâche de contrôle de dossier ni remarque
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+			return null;
 		});
 	}
 
@@ -2617,43 +2576,41 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// aucune tâche de contrôle de dossier ni remarque, ni même une nouvelle surcharge d'adresse, car celle-ci était déjà connue
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune tâche de contrôle de dossier ni remarque, ni même une nouvelle surcharge d'adresse, car celle-ci était déjà connue
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// l'adresse maintenant... aucun changement
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertNull(surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.REPRESENTATION, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertFalse(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adresseSuisse.getNumeroRue());
-				}
+			// l'adresse maintenant... aucun changement
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertNull(surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.REPRESENTATION, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertFalse(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adresseSuisse.getNumeroRue());
 			}
+			return null;
 		});
 	}
 
@@ -2702,44 +2659,42 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// aucune tâche de contrôle de dossier ni remarque, ni même une nouvelle surcharge d'adresse, car celle-ci était déjà connue
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune tâche de contrôle de dossier ni remarque, ni même une nouvelle surcharge d'adresse, car celle-ci était déjà connue
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// l'adresse maintenant... aucun changement
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertNull(surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.REPRESENTATION, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertFalse(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertNull(adresseSuisse.getNumeroRue());
-					Assert.assertEquals("AVEnue dE beauLiEU 24", adresseSuisse.getRue());
-				}
+			// l'adresse maintenant... aucun changement
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertNull(surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.REPRESENTATION, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertFalse(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertNull(adresseSuisse.getNumeroRue());
+				Assert.assertEquals("AVEnue dE beauLiEU 24", adresseSuisse.getRue());
 			}
+			return null;
 		});
 	}
 
@@ -2788,56 +2743,54 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// aucune tâche de contrôle de dossier ni remarque, mais une surcharge d'adresse courrier non-permanente depuis la date de quittance
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune tâche de contrôle de dossier ni remarque, mais une surcharge d'adresse courrier non-permanente depuis la date de quittance
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// l'adresse maintenant...
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(2, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertEquals(dateQuittance.getOneDayBefore(), surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertFalse(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
-				}
-				{
-					final AdresseTiers surcharge = surcharges.get(1);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateQuittance, surcharge.getDateDebut());
-					Assert.assertNull(surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertFalse(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adresseSuisse.getNumeroRue());
-				}
+			// l'adresse maintenant...
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(2, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertEquals(dateQuittance.getOneDayBefore(), surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertFalse(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
 			}
+			{
+				final AdresseTiers surcharge = surcharges.get(1);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateQuittance, surcharge.getDateDebut());
+				Assert.assertNull(surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertFalse(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adresseSuisse.getNumeroRue());
+			}
+			return null;
 		});
 	}
 
@@ -2886,53 +2839,51 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// l'adresse permanente ne doit pas avoir été touchée
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertEquals(dateQuittance.addMonths(1), surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertFalse(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
-				}
-
-				// une tâche de contrôle de dossier et une remarque
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
-
-				// et la remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals(
-						"L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge fermée d'adresse courrier.",
-						remarque.getTexte());
+			// l'adresse permanente ne doit pas avoir été touchée
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertEquals(dateQuittance.addMonths(1), surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertFalse(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
 			}
+
+			// une tâche de contrôle de dossier et une remarque
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+
+			// et la remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals(
+					"L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge fermée d'adresse courrier.",
+					remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -2981,53 +2932,51 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// l'adresse permanente ne doit pas avoir été touchée
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertNull(surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertTrue(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
-				}
-
-				// une tâche de contrôle de dossier et une remarque
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
-
-				// et la remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals(
-						"L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
-						remarque.getTexte());
+			// l'adresse permanente ne doit pas avoir été touchée
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertNull(surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertTrue(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
 			}
+
+			// une tâche de contrôle de dossier et une remarque
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+
+			// et la remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals(
+					"L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
+					remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -3076,72 +3025,70 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// l'adresse permanente ne doit pas avoir été touchée
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertNull(surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertTrue(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
-				}
-
-				// deux tâches de contrôle de dossier et deux remarques (1 pour l'adresse permanente, 1 pour le changement de raison sociale)
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(2, taches.size());
-				final List<Tache> tachesTriees = new ArrayList<>(taches);
-				tachesTriees.sort(Comparator.comparingLong(Tache::getId));      // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
-				{
-					final Tache tache = tachesTriees.get(0);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
-				}
-				{
-					final Tache tache = tachesTriees.get(1);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Changement de raison sociale", tache.getCommentaire());
-				}
-
-				// et les remarques ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(2, remarques.size());
-				final List<Remarque> remarquesTriees = new ArrayList<>(remarques);
-				remarquesTriees.sort(Comparator.comparingLong(Remarque::getId));    // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
-				{
-					final Remarque remarque = remarquesTriees.get(0);
-					Assert.assertNotNull(remarque);
-					Assert.assertEquals(
-							"L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
-							remarque.getTexte());
-				}
-				{
-					final Remarque remarque = remarquesTriees.get(1);
-					Assert.assertNotNull(remarque);
-					Assert.assertEquals("Nouvelle raison sociale annoncée (Ma grande entreprise SARL) dans la DI 2015/1.", remarque.getTexte());
-				}
+			// l'adresse permanente ne doit pas avoir été touchée
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertNull(surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertTrue(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
 			}
+
+			// deux tâches de contrôle de dossier et deux remarques (1 pour l'adresse permanente, 1 pour le changement de raison sociale)
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(2, taches.size());
+			final List<Tache> tachesTriees = new ArrayList<>(taches);
+			tachesTriees.sort(Comparator.comparingLong(Tache::getId));      // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
+			{
+				final Tache tache = tachesTriees.get(0);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+			}
+			{
+				final Tache tache = tachesTriees.get(1);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Changement de raison sociale", tache.getCommentaire());
+			}
+
+			// et les remarques ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(2, remarques.size());
+			final List<Remarque> remarquesTriees = new ArrayList<>(remarques);
+			remarquesTriees.sort(Comparator.comparingLong(Remarque::getId));    // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
+			{
+				final Remarque remarque = remarquesTriees.get(0);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals(
+						"L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
+						remarque.getTexte());
+			}
+			{
+				final Remarque remarque = remarquesTriees.get(1);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals("Nouvelle raison sociale annoncée (Ma grande entreprise SARL) dans la DI 2015/1.", remarque.getTexte());
+			}
+			return null;
 		});
 	}
 
@@ -3190,72 +3137,70 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat obtenu
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// l'adresse permanente ne doit pas avoir été touchée
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				{
-					final AdresseTiers surcharge = surcharges.get(0);
-					Assert.assertNotNull(surcharge);
-					Assert.assertFalse(surcharge.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
-					Assert.assertNull(surcharge.getDateFin());
-					Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
-					Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
-					final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
-					Assert.assertTrue(adresseSuisse.isPermanente());
-					Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
-				}
-
-				// deux tâches de contrôle de dossier et deux remarques (1 pour l'adresse permanente, 1 pour le changement de raison sociale)
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(2, taches.size());
-				final List<Tache> tachesTriees = new ArrayList<>(taches);
-				tachesTriees.sort(Comparator.comparingLong(Tache::getId));      // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
-				{
-					final Tache tache = tachesTriees.get(0);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
-				}
-				{
-					final Tache tache = tachesTriees.get(1);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Changement de raison sociale", tache.getCommentaire());
-				}
-
-				// et les remarques ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(2, remarques.size());
-				final List<Remarque> remarquesTriees = new ArrayList<>(remarques);
-				remarquesTriees.sort(Comparator.comparingLong(Remarque::getId));    // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
-				{
-					final Remarque remarque = remarquesTriees.get(0);
-					Assert.assertNotNull(remarque);
-					Assert.assertEquals(
-							"L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
-							remarque.getTexte());
-				}
-				{
-					final Remarque remarque = remarquesTriees.get(1);
-					Assert.assertNotNull(remarque);
-					Assert.assertEquals("Nouvelle raison sociale annoncée (Ma grande entreprise SARL) dans la DI 2015/1.", remarque.getTexte());
-				}
+			// l'adresse permanente ne doit pas avoir été touchée
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			{
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, surcharge.getDateDebut());
+				Assert.assertNull(surcharge.getDateFin());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, surcharge.getUsage());
+				Assert.assertEquals(AdresseSuisse.class, surcharge.getClass());
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) surcharge;
+				Assert.assertTrue(adresseSuisse.isPermanente());
+				Assert.assertEquals(MockLocalite.Echallens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals(MockRue.Echallens.GrandRue.getNoRue(), adresseSuisse.getNumeroRue());
 			}
+
+			// deux tâches de contrôle de dossier et deux remarques (1 pour l'adresse permanente, 1 pour le changement de raison sociale)
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(2, taches.size());
+			final List<Tache> tachesTriees = new ArrayList<>(taches);
+			tachesTriees.sort(Comparator.comparingLong(Tache::getId));      // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
+			{
+				final Tache tache = tachesTriees.get(0);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+			}
+			{
+				final Tache tache = tachesTriees.get(1);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Changement de raison sociale", tache.getCommentaire());
+			}
+
+			// et les remarques ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(2, remarques.size());
+			final List<Remarque> remarquesTriees = new ArrayList<>(remarques);
+			remarquesTriees.sort(Comparator.comparingLong(Remarque::getId));    // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
+			{
+				final Remarque remarque = remarquesTriees.get(0);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals(
+						"L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
+						remarque.getTexte());
+			}
+			{
+				final Remarque remarque = remarquesTriees.get(1);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals("Nouvelle raison sociale annoncée (Ma grande entreprise SARL) dans la DI 2015/1.", remarque.getTexte());
+			}
+			return null;
 		});
 	}
 
@@ -3304,37 +3249,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege0 = sieges.get(0);
+			Assert.assertNotNull(siege0);
+			Assert.assertFalse(siege0.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege0.getDateDebut());
+			Assert.assertNull(siege0.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege0.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege0.getNumeroOfsAutoriteFiscale());
 
-				// aucune remarque ni tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune remarque ni tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+			return null;
 		});
 	}
 
@@ -3383,45 +3326,43 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege0 = sieges.get(0);
+			Assert.assertNotNull(siege0);
+			Assert.assertFalse(siege0.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege0.getDateDebut());
+			Assert.assertNull(siege0.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege0.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege0.getNumeroOfsAutoriteFiscale());
 
-				// 1 remarque et 1 tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Changement de siège", tache.getCommentaire());
+			// 1 remarque et 1 tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Changement de siège", tache.getCommentaire());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Nouveau siège déclaré dans la DI 2015/1 : Lausanne (VD).", remarque.getTexte());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("Nouveau siège déclaré dans la DI 2015/1 : Lausanne (VD).", remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -3469,45 +3410,43 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege0 = sieges.get(0);
+			Assert.assertNotNull(siege0);
+			Assert.assertFalse(siege0.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege0.getDateDebut());
+			Assert.assertNull(siege0.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege0.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege0.getNumeroOfsAutoriteFiscale());
 
-				// 1 remarque et 1 tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Changement de siège", tache.getCommentaire());
+			// 1 remarque et 1 tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Changement de siège", tache.getCommentaire());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Nouveau siège déclaré dans la DI 2015/1 : Stuttgart (Allemagne).", remarque.getTexte());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("Nouveau siège déclaré dans la DI 2015/1 : Stuttgart (Allemagne).", remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -3556,45 +3495,43 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege0 = sieges.get(0);
+			Assert.assertNotNull(siege0);
+			Assert.assertFalse(siege0.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege0.getDateDebut());
+			Assert.assertNull(siege0.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege0.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege0.getNumeroOfsAutoriteFiscale());
 
-				// 1 remarque et 1 tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Changement de siège", tache.getCommentaire());
+			// 1 remarque et 1 tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Changement de siège", tache.getCommentaire());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("L'information de siège présente dans la DI 2015/1 (Pétahouchnock) n'a pas pu être interprétée automatiquement.", remarque.getTexte());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("L'information de siège présente dans la DI 2015/1 (Pétahouchnock) n'a pas pu être interprétée automatiquement.", remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -3643,45 +3580,43 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege = sieges.get(0);
+			Assert.assertNotNull(siege);
+			Assert.assertFalse(siege.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
+			Assert.assertNull(siege.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
 
-				// for principal inchangé
-				final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			// for principal inchangé
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 
-				// aucune remarque ni tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
+			// aucune remarque ni tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+			return null;
 		});
 	}
 
@@ -3730,53 +3665,51 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege = sieges.get(0);
+			Assert.assertNotNull(siege);
+			Assert.assertFalse(siege.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
+			Assert.assertNull(siege.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
 
-				// for principal inchangé
-				final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			// for principal inchangé
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 
-				// 1 remarque et 1 tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Changement d'administration effective", tache.getCommentaire());
+			// 1 remarque et 1 tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Changement d'administration effective", tache.getCommentaire());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Nouvelle administration effective déclarée dans la DI 2015/1 : Lausanne (VD).", remarque.getTexte());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("Nouvelle administration effective déclarée dans la DI 2015/1 : Lausanne (VD).", remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -3824,53 +3757,51 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege = sieges.get(0);
+			Assert.assertNotNull(siege);
+			Assert.assertFalse(siege.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
+			Assert.assertNull(siege.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
 
-				// for principal inchangé
-				final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			// for principal inchangé
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 
-				// 1 remarque et 1 tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Changement d'administration effective", tache.getCommentaire());
+			// 1 remarque et 1 tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Changement d'administration effective", tache.getCommentaire());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Nouvelle administration effective déclarée dans la DI 2015/1 : Stuttgart (Allemagne).", remarque.getTexte());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("Nouvelle administration effective déclarée dans la DI 2015/1 : Stuttgart (Allemagne).", remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -3919,53 +3850,51 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résulats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				// siège inchangé
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
-				Assert.assertNotNull(sieges);
-				Assert.assertEquals(1, sieges.size());
-				final DomicileHisto siege = sieges.get(0);
-				Assert.assertNotNull(siege);
-				Assert.assertFalse(siege.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
-				Assert.assertNull(siege.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
+			// siège inchangé
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, true);
+			Assert.assertNotNull(sieges);
+			Assert.assertEquals(1, sieges.size());
+			final DomicileHisto siege = sieges.get(0);
+			Assert.assertNotNull(siege);
+			Assert.assertFalse(siege.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, siege.getDateDebut());
+			Assert.assertNull(siege.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, siege.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), siege.getNumeroOfsAutoriteFiscale());
 
-				// for principal inchangé
-				final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			// for principal inchangé
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 
-				// 1 remarque et 1 tâche de contrôle de dossier
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setInclureTachesAnnulees(true);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Changement d'administration effective", tache.getCommentaire());
+			// 1 remarque et 1 tâche de contrôle de dossier
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setInclureTachesAnnulees(true);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Changement d'administration effective", tache.getCommentaire());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("L'information d'administration effective présente dans la DI 2015/1 (Pétahouchnock) n'a pas pu être interprétée automatiquement.", remarque.getTexte());
-			}
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("L'information d'administration effective présente dans la DI 2015/1 (Pétahouchnock) n'a pas pu être interprétée automatiquement.", remarque.getTexte());
+			return null;
 		});
 	}
 
@@ -4015,30 +3944,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
-				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+			Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
-				// remarque -> rien
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> rien
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> aucune
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> aucune
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4091,30 +4018,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
-				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+			Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
-				// remarque -> rien
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> rien
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> aucune
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> aucune
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4144,30 +4069,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals("Ma petite Association qui va bien", coords.getTitulaire());
-				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals("Ma petite Association qui va bien", coords.getTitulaire());
+			Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
-				// remarque -> rien
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> rien
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> aucune
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> aucune
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4217,30 +4140,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
-				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+			Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
-				// remarque -> rien
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> rien
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> aucune
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> aucune
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4293,38 +4214,36 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals(titulaireCompteConnu, coords.getTitulaire());
-				Assert.assertEquals(ibanConnu, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals(titulaireCompteConnu, coords.getTitulaire());
+			Assert.assertEquals(ibanConnu, coords.getCompteBancaire().getIban());
 
-				// remarque -> 1
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Le numéro de compte bancaire (CH410023000123456789A) déclaré dans la DI 2015/1 est invalide, et n'a donc pas écrasé le numéro valide connu.", remarque.getTexte());
+			// remarque -> 1
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals("Le numéro de compte bancaire (CH410023000123456789A) déclaré dans la DI 2015/1 est invalide, et n'a donc pas écrasé le numéro valide connu.", remarque.getTexte());
 
-				// tâche de contrôle de dossier -> 1
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(1, taches.size());
-				final Tache tache = taches.get(0);
-				Assert.assertNotNull(tache);
-				Assert.assertFalse(tache.isAnnule());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertEquals("Retour DI - Compte bancaire", tache.getCommentaire());
-			}
+			// tâche de contrôle de dossier -> 1
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(1, taches.size());
+			final Tache tache = taches.get(0);
+			Assert.assertNotNull(tache);
+			Assert.assertFalse(tache.isAnnule());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertEquals("Retour DI - Compte bancaire", tache.getCommentaire());
+			return null;
 		});
 	}
 
@@ -4377,30 +4296,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
-				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+			Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
-				// remarque -> 0
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> 0
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> 0
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> 0
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4453,30 +4370,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals(titulaireCompteConnu, coords.getTitulaire());
-				Assert.assertEquals(ibanConnu, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals(titulaireCompteConnu, coords.getTitulaire());
+			Assert.assertEquals(ibanConnu, coords.getCompteBancaire().getIban());
 
-				// remarque -> 0
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> 0
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> 0
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> 0
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4529,30 +4444,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
-				Assert.assertNotNull(coords);
-				Assert.assertEquals(nouveauTitulaireCompte, coords.getTitulaire());
-				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+			final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+			Assert.assertNotNull(coords);
+			Assert.assertEquals(nouveauTitulaireCompte, coords.getTitulaire());
+			Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
-				// remarque -> 0
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			// remarque -> 0
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				// tâche de contrôle de dossier -> 0
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				tacheCriteria.setNumeroCTB(idEntreprise);
-				final List<Tache> taches = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(taches);
-				Assert.assertEquals(0, taches.size());
-			}
+			// tâche de contrôle de dossier -> 0
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			tacheCriteria.setNumeroCTB(idEntreprise);
+			final List<Tache> taches = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(taches);
+			Assert.assertEquals(0, taches.size());
+			return null;
 		});
 	}
 
@@ -4606,26 +4519,24 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				final Mandat mandat = mandats.get(0);
-				Assert.assertNotNull(mandat);
-				Assert.assertFalse(mandat.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-				Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
+			Assert.assertEquals(1, mandats.size());
+			final Mandat mandat = mandats.get(0);
+			Assert.assertNotNull(mandat);
+			Assert.assertFalse(mandat.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+			Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+			return null;
 		});
 	}
 
@@ -4678,26 +4589,24 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				final Mandat mandat = mandats.get(0);
-				Assert.assertNotNull(mandat);
-				Assert.assertTrue(mandat.isAnnule());
-				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-				Assert.assertNull(mandat.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
+			Assert.assertEquals(1, mandats.size());
+			final Mandat mandat = mandats.get(0);
+			Assert.assertNotNull(mandat);
+			Assert.assertTrue(mandat.isAnnule());
+			Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+			Assert.assertNull(mandat.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+			return null;
 		});
 	}
 
@@ -4760,43 +4669,41 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
-				}
-				Assert.assertEquals(2, mandats.size());
-				mandats.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertEquals("Alfonso Bertarello", mandat.getPersonneContact());
-					Assert.assertEquals("0525551247", mandat.getNoTelephoneContact());
-				}
-				{
-					final Mandat mandat = mandats.get(1);
-					Assert.assertNotNull(mandat);
-					Assert.assertTrue(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(dateTraitement, mandat.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertEquals("Alfonso Bertarello", mandat.getPersonneContact());
-					Assert.assertEquals("0525551247", mandat.getNoTelephoneContact());
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
 			}
+			Assert.assertEquals(2, mandats.size());
+			mandats.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertEquals("Alfonso Bertarello", mandat.getPersonneContact());
+				Assert.assertEquals("0525551247", mandat.getNoTelephoneContact());
+			}
+			{
+				final Mandat mandat = mandats.get(1);
+				Assert.assertNotNull(mandat);
+				Assert.assertTrue(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertEquals(dateTraitement, mandat.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertEquals("Alfonso Bertarello", mandat.getPersonneContact());
+				Assert.assertEquals("0525551247", mandat.getNoTelephoneContact());
+			}
+			return null;
 		});
 	}
 
@@ -4845,30 +4752,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				final AdresseMandataire adresse = adresses.iterator().next();
-				Assert.assertNotNull(adresse);
-				Assert.assertFalse(adresse.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-				Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			final AdresseMandataire adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
+			Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+			return null;
 		});
 	}
 
@@ -4917,30 +4822,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				final AdresseMandataire adresse = adresses.iterator().next();
-				Assert.assertNotNull(adresse);
-				Assert.assertTrue(adresse.isAnnule());
-				Assert.assertEquals(dateTraitement, adresse.getDateDebut());
-				Assert.assertNull(adresse.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			final AdresseMandataire adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertTrue(adresse.isAnnule());
+			Assert.assertEquals(dateTraitement, adresse.getDateDebut());
+			Assert.assertNull(adresse.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+			return null;
 		});
 	}
 
@@ -4993,42 +4896,40 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
-				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(2, adresses.size());
-				final List<AdresseMandataire> adressesTriees = new ArrayList<>(adresses);
-				adressesTriees.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
-				{
-					final AdresseMandataire adresse = adressesTriees.get(0);
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-					Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
-				}
-				{
-					final AdresseMandataire adresse = adressesTriees.get(1);
-					Assert.assertNotNull(adresse);
-					Assert.assertTrue(adresse.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-					Assert.assertEquals(dateTraitement, adresse.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(2, adresses.size());
+			final List<AdresseMandataire> adressesTriees = new ArrayList<>(adresses);
+			adressesTriees.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+			{
+				final AdresseMandataire adresse = adressesTriees.get(0);
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+			}
+			{
+				final AdresseMandataire adresse = adressesTriees.get(1);
+				Assert.assertNotNull(adresse);
+				Assert.assertTrue(adresse.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
+				Assert.assertEquals(dateTraitement, adresse.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+			}
+			return null;
 		});
 	}
 
@@ -5094,46 +4995,44 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(1, mandats.size());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -5201,46 +5100,44 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(1, mandats.size());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -5307,51 +5204,49 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				{
-					final AdresseMandataire adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertTrue(adresse.isWithCopy());
-					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
-					Assert.assertNull(adresse.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
-					Assert.assertNull(adresse.getCivilite());
-					Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
-					Assert.assertNull(adresse.getComplement());
-					Assert.assertEquals("42", adresse.getNumeroMaison());
-					Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
-					final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
-					Assert.assertEquals(MockRue.Zurich.VoltaStrasse.getNoRue(), adresseSuisse.getNumeroRue());
-					Assert.assertEquals(MockLocalite.Zurich8044.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-				}
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			{
+				final AdresseMandataire adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertTrue(adresse.isWithCopy());
+				Assert.assertEquals(dateTraitement, adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+				Assert.assertNull(adresse.getCivilite());
+				Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
+				Assert.assertNull(adresse.getComplement());
+				Assert.assertEquals("42", adresse.getNumeroMaison());
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+				Assert.assertEquals(MockRue.Zurich.VoltaStrasse.getNoRue(), adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Zurich8044.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			}
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -5418,51 +5313,49 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				{
-					final AdresseMandataire adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertTrue(adresse.isWithCopy());
-					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
-					Assert.assertNull(adresse.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
-					Assert.assertNull(adresse.getCivilite());
-					Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
-					Assert.assertEquals("Freundlicherweise AG", adresse.getComplement());
-					Assert.assertEquals("42", adresse.getNumeroMaison());
-					Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
-					final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
-					Assert.assertEquals(MockRue.Zurich.VoltaStrasse.getNoRue(), adresseSuisse.getNumeroRue());
-					Assert.assertEquals(MockLocalite.Zurich8044.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-				}
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			{
+				final AdresseMandataire adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertTrue(adresse.isWithCopy());
+				Assert.assertEquals(dateTraitement, adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+				Assert.assertNull(adresse.getCivilite());
+				Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
+				Assert.assertEquals("Freundlicherweise AG", adresse.getComplement());
+				Assert.assertEquals("42", adresse.getNumeroMaison());
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+				Assert.assertEquals(MockRue.Zurich.VoltaStrasse.getNoRue(), adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Zurich8044.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			}
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -5529,60 +5422,58 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
-				}
-				Assert.assertEquals(1, mandats.size());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				{
-					final Remarque remarque = remarques.iterator().next();
-					Assert.assertNotNull(remarque);
-					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals(
-							"Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante (Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD).",
-							remarque.getTexte());
-				}
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
 			}
+			Assert.assertEquals(1, mandats.size());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			{
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals(
+						"Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante (Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD).",
+						remarque.getTexte());
+			}
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			}
+			return null;
 		});
 	}
 
@@ -5648,48 +5539,46 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
-				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				{
-					final Remarque remarque = remarques.iterator().next();
-					Assert.assertNotNull(remarque);
-					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee +
-							                    "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD.", remarque.getTexte());
-				}
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			{
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee +
+						                    "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD.", remarque.getTexte());
+			}
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			}
+			return null;
 		});
 	}
 
@@ -5766,52 +5655,50 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
-				}
-				Assert.assertEquals(0, mandats.size());
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				{
-					final Remarque remarque = remarques.iterator().next();
-					Assert.assertNotNull(remarque);
-					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals(String.format("Identification du mandataire pointé par le numéro IDE %s dans la DI %d/1 imprécise (2 tiers trouvés : %s, %s).",
-					                                  FormatNumeroHelper.formatNumIDE(ideMandataire),
-					                                  annee,
-					                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idMandataire1),
-					                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idMandataire2)),
-					                    remarque.getTexte());
-				}
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
 			}
+			Assert.assertEquals(0, mandats.size());
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			{
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals(String.format("Identification du mandataire pointé par le numéro IDE %s dans la DI %d/1 imprécise (2 tiers trouvés : %s, %s).",
+				                                  FormatNumeroHelper.formatNumIDE(ideMandataire),
+				                                  annee,
+				                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idMandataire1),
+				                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idMandataire2)),
+				                    remarque.getTexte());
+			}
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			}
+			return null;
 		});
 	}
 
@@ -5871,62 +5758,60 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				{
-					final AdresseMandataire adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertFalse(adresse.isWithCopy());
-					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
-					Assert.assertNull(adresse.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
-					Assert.assertNull(adresse.getCivilite());
-					Assert.assertEquals("Freundlicherweise AG", adresse.getNomDestinataire());
-					Assert.assertNull(adresse.getComplement());
-					Assert.assertEquals("42", adresse.getNumeroMaison());
-					Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
-					final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
-					Assert.assertEquals(MockRue.Zurich.VoltaStrasse.getNoRue(), adresseSuisse.getNumeroRue());
-					Assert.assertEquals(MockLocalite.Zurich8044.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-				}
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(1, mandats.size());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			{
+				final AdresseMandataire adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertFalse(adresse.isWithCopy());
+				Assert.assertEquals(dateTraitement, adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+				Assert.assertNull(adresse.getCivilite());
+				Assert.assertEquals("Freundlicherweise AG", adresse.getNomDestinataire());
+				Assert.assertNull(adresse.getComplement());
+				Assert.assertEquals("42", adresse.getNumeroMaison());
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+				Assert.assertEquals(MockRue.Zurich.VoltaStrasse.getNoRue(), adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Zurich8044.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			}
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -5988,62 +5873,60 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				{
-					final AdresseMandataire adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertFalse(adresse.isWithCopy());
-					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-					Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
-					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
-					Assert.assertNull(adresse.getCivilite());
-					Assert.assertEquals("Chapi chapo", adresse.getNomDestinataire());
-					Assert.assertNull(adresse.getComplement());
-					Assert.assertEquals("17", adresse.getNumeroMaison());
-					Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
-					final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
-					Assert.assertEquals(MockRue.Lausanne.AvenueGabrielDeRumine.getNoRue(), adresseSuisse.getNumeroRue());
-					Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-				}
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(1, mandats.size());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			{
+				final AdresseMandataire adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertFalse(adresse.isWithCopy());
+				Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+				Assert.assertNull(adresse.getCivilite());
+				Assert.assertEquals("Chapi chapo", adresse.getNomDestinataire());
+				Assert.assertNull(adresse.getComplement());
+				Assert.assertEquals("17", adresse.getNumeroMaison());
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+				Assert.assertEquals(MockRue.Lausanne.AvenueGabrielDeRumine.getNoRue(), adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			}
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6111,59 +5994,57 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(2, mandats.size());
-				mandats.sort(new DateRangeComparator<>());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-				{
-					final Mandat mandat = mandats.get(1);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertFalse(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(2, mandats.size());
+			mandats.sort(new DateRangeComparator<>());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+			{
+				final Mandat mandat = mandats.get(1);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertFalse(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6234,59 +6115,57 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(2, mandats.size());
-				mandats.sort(new DateRangeComparator<>());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertEquals(oldTelContact, mandat.getNoTelephoneContact());
-				}
-				{
-					final Mandat mandat = mandats.get(1);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertEquals(newTelContact, mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(2, mandats.size());
+			mandats.sort(new DateRangeComparator<>());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertEquals(oldTelContact, mandat.getNoTelephoneContact());
+			}
+			{
+				final Mandat mandat = mandats.get(1);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertEquals(newTelContact, mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6353,47 +6232,45 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				mandats.sort(new DateRangeComparator<>());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
 			}
+			Assert.assertEquals(1, mandats.size());
+			mandats.sort(new DateRangeComparator<>());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6461,62 +6338,60 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
-				}
-				Assert.assertEquals(1, mandats.size());
-				mandats.sort(new DateRangeComparator<>());
-				{
-					final Mandat mandat = mandats.get(0);
-					Assert.assertNotNull(mandat);
-					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertNull(mandat.getDateFin());
-					Assert.assertTrue(mandat.getWithCopy());
-					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getPersonneContact());
-					Assert.assertNull(mandat.getNoTelephoneContact());
-				}
-
-				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(0, adresses.size());
-
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				{
-					final Remarque remarque = remarques.iterator().next();
-					Assert.assertNotNull(remarque);
-					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee +
-							                    "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Chapi chapo / Tralalo / Chapo chapi / Tralali / 1030 / Bussigny\n- copie mandataire : avec\n- téléphone contact : 0211234567.",
-					                    remarque.getTexte());
-				}
-
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
 			}
+			Assert.assertEquals(1, mandats.size());
+			mandats.sort(new DateRangeComparator<>());
+			{
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertTrue(mandat.getWithCopy());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+				Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+				Assert.assertNull(mandat.getPersonneContact());
+				Assert.assertNull(mandat.getNoTelephoneContact());
+			}
+
+			final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			{
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee +
+						                    "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Chapi chapo / Tralalo / Chapo chapi / Tralali / 1030 / Bussigny\n- copie mandataire : avec\n- téléphone contact : 0211234567.",
+				                    remarque.getTexte());
+			}
+
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Mandataire", tache.getCommentaire());
+			}
+			return null;
 		});
 	}
 
@@ -6560,24 +6435,22 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
+			Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6630,28 +6503,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
-				Assert.assertNull(entreprise.getNumeroTelephonePortable());
-				Assert.assertNull(entreprise.getNumeroTelephonePrive());
-				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
-				Assert.assertNull(entreprise.getNumeroTelecopie());
+			Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
+			Assert.assertNull(entreprise.getNumeroTelephonePortable());
+			Assert.assertNull(entreprise.getNumeroTelephonePrive());
+			Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
+			Assert.assertNull(entreprise.getNumeroTelecopie());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6704,29 +6575,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				// le nom a été repris, mais comme il est très semblable au précédent, on n'a pas effacé les numéros de téléphone
-				Assert.assertEquals("le chef", entreprise.getPersonneContact());
-				Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
-				Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
-				Assert.assertEquals("0213168888", entreprise.getNumeroTelephoneProfessionnel());
-				Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
+			// le nom a été repris, mais comme il est très semblable au précédent, on n'a pas effacé les numéros de téléphone
+			Assert.assertEquals("le chef", entreprise.getPersonneContact());
+			Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
+			Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
+			Assert.assertEquals("0213168888", entreprise.getNumeroTelephoneProfessionnel());
+			Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6779,28 +6648,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
-				Assert.assertNull(entreprise.getNumeroTelephonePortable());
-				Assert.assertNull(entreprise.getNumeroTelephonePrive());
-				Assert.assertEquals("0666666666", entreprise.getNumeroTelephoneProfessionnel());
-				Assert.assertNull(entreprise.getNumeroTelecopie());
+			Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
+			Assert.assertNull(entreprise.getNumeroTelephonePortable());
+			Assert.assertNull(entreprise.getNumeroTelephonePrive());
+			Assert.assertEquals("0666666666", entreprise.getNumeroTelephoneProfessionnel());
+			Assert.assertNull(entreprise.getNumeroTelecopie());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6853,28 +6720,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals("M. Le Chef", entreprise.getPersonneContact());
-				Assert.assertNull(entreprise.getNumeroTelephonePortable());
-				Assert.assertNull(entreprise.getNumeroTelephonePrive());
-				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
-				Assert.assertNull(entreprise.getNumeroTelecopie());
+			Assert.assertEquals("M. Le Chef", entreprise.getPersonneContact());
+			Assert.assertNull(entreprise.getNumeroTelephonePortable());
+			Assert.assertNull(entreprise.getNumeroTelephonePrive());
+			Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
+			Assert.assertNull(entreprise.getNumeroTelecopie());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -6927,28 +6792,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals("Le Chef", entreprise.getPersonneContact());
-				Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
-				Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
-				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
-				Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
+			Assert.assertEquals("Le Chef", entreprise.getPersonneContact());
+			Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
+			Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
+			Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
+			Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -7001,28 +6864,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				Assert.assertEquals("Le Chef", entreprise.getPersonneContact());
-				Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
-				Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
-				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
-				Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
+			Assert.assertEquals("Le Chef", entreprise.getPersonneContact());
+			Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
+			Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
+			Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
+			Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -7071,36 +6932,34 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adressesMandataires);
-				Assert.assertEquals(1, adressesMandataires.size());
-				final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
-				Assert.assertNotNull(adresseMandataire);
-				Assert.assertEquals(AdresseMandataireSuisse.class, adresseMandataire.getClass());
-				final AdresseMandataireSuisse adresseMandataireSuisse = (AdresseMandataireSuisse) adresseMandataire;
-				Assert.assertEquals(MockRue.Lausanne.CheminDeMornex.getNoRue(), adresseMandataireSuisse.getNumeroRue());
-				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseMandataireSuisse.getNumeroOrdrePoste());
-				Assert.assertNull(adresseMandataire.getCivilite());
-				Assert.assertEquals("Mon Mande-à-Terre", adresseMandataire.getNomDestinataire());
-				Assert.assertEquals("0213161111", adresseMandataire.getNoTelephoneContact());
-				Assert.assertEquals("Madame Delphine Rapon", adresseMandataire.getPersonneContact());
+			final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adressesMandataires);
+			Assert.assertEquals(1, adressesMandataires.size());
+			final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
+			Assert.assertNotNull(adresseMandataire);
+			Assert.assertEquals(AdresseMandataireSuisse.class, adresseMandataire.getClass());
+			final AdresseMandataireSuisse adresseMandataireSuisse = (AdresseMandataireSuisse) adresseMandataire;
+			Assert.assertEquals(MockRue.Lausanne.CheminDeMornex.getNoRue(), adresseMandataireSuisse.getNumeroRue());
+			Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseMandataireSuisse.getNumeroOrdrePoste());
+			Assert.assertNull(adresseMandataire.getCivilite());
+			Assert.assertEquals("Mon Mande-à-Terre", adresseMandataire.getNomDestinataire());
+			Assert.assertEquals("0213161111", adresseMandataire.getNoTelephoneContact());
+			Assert.assertEquals("Madame Delphine Rapon", adresseMandataire.getPersonneContact());
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
-			}
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
+			return null;
 		});
 	}
 
@@ -7154,58 +7013,56 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// - les bouclements n'ont pas été modifiés
 		// - une tâche de contrôle de dossier a été générée
 		// - une remarque a été ajoutée
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
-				                                  anneeInitiale,
-				                                  1,
-				                                  RegDateHelper.dateToDisplayString(date(anneeInitiale + 1, 6, 30)),
-				                                  anneeInitiale),
-				                    remarque.getTexte());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertFalse(remarque.isAnnule());
+			Assert.assertEquals(String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
+			                                  anneeInitiale,
+			                                  1,
+			                                  RegDateHelper.dateToDisplayString(date(anneeInitiale + 1, 6, 30)),
+			                                  anneeInitiale),
+			                    remarque.getTexte());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
-				}
-
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertNotNull(di);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals(date(dateDebut.year(), 7, 1), di.getDateDebut());
-				Assert.assertEquals(date(dateDebut.year(), 7, 1), di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFin());
-				Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFinExerciceCommercial());
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-
-				// je ne compare que les 3 premiers exercices, car un 4ème apparaît parfois dans le calcul (quand la date du jour est en fin d'année, i.e. après le 1.7 de l'année)
-				Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() == 3 || exercices.size() == 4);
-				Assert.assertEquals(new ExerciceCommercial(dateDebut, date(dateDebut.year(), 6, 30)), exercices.get(0));
-				Assert.assertEquals(new ExerciceCommercial(date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30)), exercices.get(1));
-				Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale, 7, 1), date(anneeInitiale + 1, 6, 30)), exercices.get(2));
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
 			}
+
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertNotNull(di);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals(date(dateDebut.year(), 7, 1), di.getDateDebut());
+			Assert.assertEquals(date(dateDebut.year(), 7, 1), di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFin());
+			Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFinExerciceCommercial());
+
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+
+			// je ne compare que les 3 premiers exercices, car un 4ème apparaît parfois dans le calcul (quand la date du jour est en fin d'année, i.e. après le 1.7 de l'année)
+			Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() == 3 || exercices.size() == 4);
+			Assert.assertEquals(new ExerciceCommercial(dateDebut, date(dateDebut.year(), 6, 30)), exercices.get(0));
+			Assert.assertEquals(new ExerciceCommercial(date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30)), exercices.get(1));
+			Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale, 7, 1), date(anneeInitiale + 1, 6, 30)), exercices.get(2));
+			return null;
 		});
 
 	}
@@ -7257,88 +7114,86 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification du résultat : tout s'est bien passé
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				// remarque ?
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertEquals(String.format("La déclaration %d/1 a été transformée en %d/1 suite au déplacement de la date de fin d'exercice commercial du 30.06.%d au 31.01.%d par retour de la DI.",
-				                                  anneeInitiale,
-				                                  anneeInitiale + 1,
-				                                  anneeInitiale,
-				                                  anneeInitiale + 1),
-				                    remarque.getTexte());
+			// remarque ?
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertEquals(String.format("La déclaration %d/1 a été transformée en %d/1 suite au déplacement de la date de fin d'exercice commercial du 30.06.%d au 31.01.%d par retour de la DI.",
+			                                  anneeInitiale,
+			                                  anneeInitiale + 1,
+			                                  anneeInitiale,
+			                                  anneeInitiale + 1),
+			                    remarque.getTexte());
 
-				// bouclements ?
-				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
-				Assert.assertEquals(2, bouclements.size());
+			// bouclements ?
+			final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+			bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+			Assert.assertEquals(2, bouclements.size());
+			{
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(RegDate.get(anneeInitiale + 1, 1, 1), bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(1, 31), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+			{
+				final Bouclement bouclement = bouclements.get(1);
+				Assert.assertNotNull(bouclement);
+				Assert.assertTrue(bouclement.isAnnule());
+				Assert.assertEquals(dateDebut, bouclement.getDateDebut());
+				Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+			}
+
+			// tâches de contrôle de dossier
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(entreprise);
+			criterion.setInclureTachesAnnulees(true);
+			criterion.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(criterion);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			final Tache tache = tachesControle.get(0);
+			Assert.assertEquals(TacheControleDossier.class, tache.getClass());
+			Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
+			Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			Assert.assertFalse(tache.isAnnule());
+
+			// et finalement les déclarations
+
+			// aucune déclaration sur la période d'avant
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(0, declarations.size());
+			}
+
+			// et une sur la période d'après
+			{
+				final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale + 1, true);
+				Assert.assertNotNull(declarations);
+				Assert.assertEquals(1, declarations.size());
 				{
-					final Bouclement bouclement = bouclements.get(0);
-					Assert.assertNotNull(bouclement);
-					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(RegDate.get(anneeInitiale + 1, 1, 1), bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(1, 31), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-				{
-					final Bouclement bouclement = bouclements.get(1);
-					Assert.assertNotNull(bouclement);
-					Assert.assertTrue(bouclement.isAnnule());
-					Assert.assertEquals(dateDebut, bouclement.getDateDebut());
-					Assert.assertEquals(DayMonth.get(6, 30), bouclement.getAncrage());
-					Assert.assertEquals(12, bouclement.getPeriodeMois());
-				}
-
-				// tâches de contrôle de dossier
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(entreprise);
-				criterion.setInclureTachesAnnulees(true);
-				criterion.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(criterion);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				final Tache tache = tachesControle.get(0);
-				Assert.assertEquals(TacheControleDossier.class, tache.getClass());
-				Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
-				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				Assert.assertFalse(tache.isAnnule());
-
-				// et finalement les déclarations
-
-				// aucune déclaration sur la période d'avant
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(0, declarations.size());
-				}
-
-				// et une sur la période d'après
-				{
-					final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, anneeInitiale + 1, true);
-					Assert.assertNotNull(declarations);
-					Assert.assertEquals(1, declarations.size());
-					{
-						final DeclarationImpotOrdinairePM di = declarations.get(0);
-						Assert.assertNotNull(di);
-						Assert.assertFalse(di.isAnnule());
-						Assert.assertEquals(dateDebut, di.getDateDebut());
-						Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
-						Assert.assertEquals(date(anneeInitiale + 1, 1, 31), di.getDateFin());
-						Assert.assertEquals(date(anneeInitiale + 1, 1, 31), di.getDateFinExerciceCommercial());
-						Assert.assertEquals((Integer) 1, di.getNumero());
-						Assert.assertNotNull(di.getModeleDocument());
-						Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
-					}
+					final DeclarationImpotOrdinairePM di = declarations.get(0);
+					Assert.assertNotNull(di);
+					Assert.assertFalse(di.isAnnule());
+					Assert.assertEquals(dateDebut, di.getDateDebut());
+					Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
+					Assert.assertEquals(date(anneeInitiale + 1, 1, 31), di.getDateFin());
+					Assert.assertEquals(date(anneeInitiale + 1, 1, 31), di.getDateFinExerciceCommercial());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+					Assert.assertNotNull(di.getModeleDocument());
+					Assert.assertSame(di.getPeriode(), di.getModeleDocument().getPeriodeFiscale());
 				}
 			}
+			return null;
 		});
 	}
 
@@ -7395,59 +7250,57 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// - les bouclements n'ont pas été modifiés
 		// - une tâche de contrôle de dossier a été générée
 		// - une remarque a été ajoutée
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
-				                                  anneeInitiale,
-				                                  1,
-				                                  RegDateHelper.dateToDisplayString(date(anneeInitiale + 2, 1, 31)),
-				                                  anneeInitiale + 1),
-				                    remarque.getTexte());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertFalse(remarque.isAnnule());
+			Assert.assertEquals(String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
+			                                  anneeInitiale,
+			                                  1,
+			                                  RegDateHelper.dateToDisplayString(date(anneeInitiale + 2, 1, 31)),
+			                                  anneeInitiale + 1),
+			                    remarque.getTexte());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
-				}
-
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertNotNull(di);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals(dateDebut, di.getDateDebut());
-				Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFin());
-				Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFinExerciceCommercial());
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-
-				// je ne compare que les 4 premiers exercices, car un 5ème apparaît parfois dans le calcul (quand la date du jour est en fin d'année, i.e. après le 1.7 de l'année)
-				Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() == 4 || exercices.size() == 5);
-				Assert.assertEquals(new ExerciceCommercial(dateDebut, date(dateDebut.year(), 6, 30)), exercices.get(0));
-				Assert.assertEquals(new ExerciceCommercial(date(dateDebut.year(), 7, 1), date(anneeInitiale + 1, 6, 30)), exercices.get(1));
-				Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale + 1, 7, 1), date(anneeInitiale + 2, 6, 30)), exercices.get(2));
-				Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale + 2, 7, 1), date(anneeInitiale + 3, 6, 30)), exercices.get(3));
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
 			}
+
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertNotNull(di);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals(dateDebut, di.getDateDebut());
+			Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFin());
+			Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFinExerciceCommercial());
+
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+
+			// je ne compare que les 4 premiers exercices, car un 5ème apparaît parfois dans le calcul (quand la date du jour est en fin d'année, i.e. après le 1.7 de l'année)
+			Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() == 4 || exercices.size() == 5);
+			Assert.assertEquals(new ExerciceCommercial(dateDebut, date(dateDebut.year(), 6, 30)), exercices.get(0));
+			Assert.assertEquals(new ExerciceCommercial(date(dateDebut.year(), 7, 1), date(anneeInitiale + 1, 6, 30)), exercices.get(1));
+			Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale + 1, 7, 1), date(anneeInitiale + 2, 6, 30)), exercices.get(2));
+			Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale + 2, 7, 1), date(anneeInitiale + 3, 6, 30)), exercices.get(3));
+			return null;
 		});
 	}
 
@@ -7499,57 +7352,55 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// vérification du résultat
 		// - la DI a été déplacée en 2017 (-> 31.12)
 		// - le premier bouclement est au 31.12.2017
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format("La déclaration %d/%d a été transformée en %d/%d suite au déplacement de la date de fin d'exercice commercial du 30.09.2016 au 31.12.2017 par retour de la DI.",
-				                                  dateDebut.year(),
-				                                  1,
-				                                  dateDebut.year() + 1,
-				                                  1),
-				                    remarque.getTexte());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertFalse(remarque.isAnnule());
+			Assert.assertEquals(String.format("La déclaration %d/%d a été transformée en %d/%d suite au déplacement de la date de fin d'exercice commercial du 30.09.2016 au 31.12.2017 par retour de la DI.",
+			                                  dateDebut.year(),
+			                                  1,
+			                                  dateDebut.year() + 1,
+			                                  1),
+			                    remarque.getTexte());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
-				}
-
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertNotNull(di);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals(dateDebut, di.getDateDebut());
-				Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(dateDebut.year() + 1, 12, 31), di.getDateFin());
-				Assert.assertEquals(date(dateDebut.year() + 1, 12, 31), di.getDateFinExerciceCommercial());
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() > 0);
-				final ExerciceCommercial exercice = exercices.get(0);
-				Assert.assertNotNull(exercice);
-				Assert.assertEquals(dateDebut, exercice.getDateDebut());
-				Assert.assertEquals(date(dateDebut.year() + 1, 12, 31), exercice.getDateFin());
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Changement de période fiscale", tache.getCommentaire());
 			}
+
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertNotNull(di);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals(dateDebut, di.getDateDebut());
+			Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(dateDebut.year() + 1, 12, 31), di.getDateFin());
+			Assert.assertEquals(date(dateDebut.year() + 1, 12, 31), di.getDateFinExerciceCommercial());
+
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+			Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() > 0);
+			final ExerciceCommercial exercice = exercices.get(0);
+			Assert.assertNotNull(exercice);
+			Assert.assertEquals(dateDebut, exercice.getDateDebut());
+			Assert.assertEquals(date(dateDebut.year() + 1, 12, 31), exercice.getDateFin());
+			return null;
 		});
 	}
 
@@ -7595,55 +7446,53 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// vérification du résultat
 		// - la DI n'a pas été déplacée en 2015
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format(
-						"Le retour de la DI %d/1 annonce une nouvelle fin d'exercice commercial au 31.12.2015, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (27.04.2016).",
-						dateDebut.year()),
-				                    remarque.getTexte());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertFalse(remarque.isAnnule());
+			Assert.assertEquals(String.format(
+					"Le retour de la DI %d/1 annonce une nouvelle fin d'exercice commercial au 31.12.2015, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (27.04.2016).",
+					dateDebut.year()),
+			                    remarque.getTexte());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
-				}
-
-				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
-				Assert.assertNotNull(dis);
-				Assert.assertEquals(1, dis.size());
-				final DeclarationImpotOrdinairePM di = dis.get(0);
-				Assert.assertNotNull(di);
-				Assert.assertFalse(di.isAnnule());
-				Assert.assertEquals(dateDebut, di.getDateDebut());
-				Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
-				Assert.assertEquals(date(dateDebut.year(), 9, 30), di.getDateFin());
-				Assert.assertEquals(date(dateDebut.year(), 9, 30), di.getDateFinExerciceCommercial());
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() > 0);
-				final ExerciceCommercial exercice = exercices.get(0);
-				Assert.assertNotNull(exercice);
-				Assert.assertEquals(dateDebut, exercice.getDateDebut());
-				Assert.assertEquals(date(dateDebut.year(), 9, 30), exercice.getDateFin());
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
 			}
+
+			final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+			Assert.assertNotNull(dis);
+			Assert.assertEquals(1, dis.size());
+			final DeclarationImpotOrdinairePM di = dis.get(0);
+			Assert.assertNotNull(di);
+			Assert.assertFalse(di.isAnnule());
+			Assert.assertEquals(dateDebut, di.getDateDebut());
+			Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
+			Assert.assertEquals(date(dateDebut.year(), 9, 30), di.getDateFin());
+			Assert.assertEquals(date(dateDebut.year(), 9, 30), di.getDateFinExerciceCommercial());
+
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+			Assert.assertNotNull(exercices);
+			Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() > 0);
+			final ExerciceCommercial exercice = exercices.get(0);
+			Assert.assertNotNull(exercice);
+			Assert.assertEquals(dateDebut, exercice.getDateDebut());
+			Assert.assertEquals(date(dateDebut.year(), 9, 30), exercice.getDateFin());
+			return null;
 		});
 	}
 
@@ -7686,43 +7535,41 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(1, remarques.size());
-				final Remarque remarque = remarques.iterator().next();
-				Assert.assertNotNull(remarque);
-				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format(
-						"L'adresse récupérée dans la DI %d/1 (Ma grande entreprise / Avenue du 14 avril 12 / 1020 / Renens VD) n'a pas été traitée en raison de la présence d'une surcharge d'adresse courrier existante à partir du 14.02.%d.",
-						dateDebut.year(), dateDebut.year() + 1),
-				                    remarque.getTexte());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			Assert.assertFalse(remarque.isAnnule());
+			Assert.assertEquals(String.format(
+					"L'adresse récupérée dans la DI %d/1 (Ma grande entreprise / Avenue du 14 avril 12 / 1020 / Renens VD) n'a pas été traitée en raison de la présence d'une surcharge d'adresse courrier existante à partir du 14.02.%d.",
+					dateDebut.year(), dateDebut.year() + 1),
+			                    remarque.getTexte());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(1, tachesControle.size());
-				{
-					final Tache tache = tachesControle.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
-				}
-
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(1, surcharges.size());
-				final AdresseTiers surcharge = surcharges.get(0);
-				Assert.assertNotNull(surcharge);
-				Assert.assertFalse(surcharge.isAnnule());
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(1, tachesControle.size());
+			{
+				final Tache tache = tachesControle.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
 			}
+
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(1, surcharges.size());
+			final AdresseTiers surcharge = surcharges.get(0);
+			Assert.assertNotNull(surcharge);
+			Assert.assertFalse(surcharge.isAnnule());
+			return null;
 		});
 	}
 
@@ -7765,53 +7612,51 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+			Assert.assertNotNull(entreprise);
 
-				final Set<Remarque> remarques = entreprise.getRemarques();
-				Assert.assertNotNull(remarques);
-				Assert.assertEquals(0, remarques.size());
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(0, remarques.size());
 
-				final TacheCriteria tacheCriteria = new TacheCriteria();
-				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
-				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
-				Assert.assertNotNull(tachesControle);
-				Assert.assertEquals(0, tachesControle.size());
+			final TacheCriteria tacheCriteria = new TacheCriteria();
+			tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+			final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+			Assert.assertNotNull(tachesControle);
+			Assert.assertEquals(0, tachesControle.size());
 
-				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
-				Assert.assertNotNull(surcharges);
-				Assert.assertEquals(0, surcharges.size());
+			final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+			Assert.assertNotNull(surcharges);
+			Assert.assertEquals(0, surcharges.size());
 
-				// une adresse mandataire a dû être créée
-				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
-				Assert.assertNotNull(adressesMandataires);
-				Assert.assertEquals(1, adressesMandataires.size());
-				final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
-				Assert.assertNotNull(adresseMandataire);
-				Assert.assertFalse(adresseMandataire.isAnnule());
-				Assert.assertTrue(adresseMandataire.isWithCopy());
-				Assert.assertEquals(RegDate.get(), adresseMandataire.getDateDebut());
-				Assert.assertNull(adresseMandataire.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, adresseMandataire.getTypeMandat());
-				Assert.assertEquals("Gérance", adresseMandataire.getCivilite());
-				Assert.assertEquals("François Morin", adresseMandataire.getNomDestinataire());
-				Assert.assertEquals("3ème étage droite", adresseMandataire.getComplement());
-				Assert.assertEquals("25", adresseMandataire.getNumeroMaison());
-				Assert.assertEquals(AdresseMandataireSuisse.class, adresseMandataire.getClass());
-				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresseMandataire;
-				Assert.assertEquals(MockRue.Renens.QuatorzeAvril.getNoRue(), adresseSuisse.getNumeroRue());
-				Assert.assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+			// une adresse mandataire a dû être créée
+			final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+			Assert.assertNotNull(adressesMandataires);
+			Assert.assertEquals(1, adressesMandataires.size());
+			final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
+			Assert.assertNotNull(adresseMandataire);
+			Assert.assertFalse(adresseMandataire.isAnnule());
+			Assert.assertTrue(adresseMandataire.isWithCopy());
+			Assert.assertEquals(RegDate.get(), adresseMandataire.getDateDebut());
+			Assert.assertNull(adresseMandataire.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, adresseMandataire.getTypeMandat());
+			Assert.assertEquals("Gérance", adresseMandataire.getCivilite());
+			Assert.assertEquals("François Morin", adresseMandataire.getNomDestinataire());
+			Assert.assertEquals("3ème étage droite", adresseMandataire.getComplement());
+			Assert.assertEquals("25", adresseMandataire.getNumeroMaison());
+			Assert.assertEquals(AdresseMandataireSuisse.class, adresseMandataire.getClass());
+			final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresseMandataire;
+			Assert.assertEquals(MockRue.Renens.QuatorzeAvril.getNoRue(), adresseSuisse.getNumeroRue());
+			Assert.assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
 
-				// et pas de lien de mandat
-				final List<Mandat> mandats = entreprise.getRapportsSujet().stream()
-						.filter(Mandat.class::isInstance)
-						.map(Mandat.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(Collections.emptyList(), mandats);
-			}
+			// et pas de lien de mandat
+			final List<Mandat> mandats = entreprise.getRapportsSujet().stream()
+					.filter(Mandat.class::isInstance)
+					.map(Mandat.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(Collections.emptyList(), mandats);
+			return null;
 		});
 	}
 
@@ -7862,26 +7707,24 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				final Mandat mandat = mandats.get(0);
-				Assert.assertNotNull(mandat);
-				Assert.assertFalse(mandat.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-				Assert.assertNull(mandat.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
+			Assert.assertEquals(1, mandats.size());
+			final Mandat mandat = mandats.get(0);
+			Assert.assertNotNull(mandat);
+			Assert.assertFalse(mandat.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+			Assert.assertNull(mandat.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+			return null;
 		});
 	}
 
@@ -7905,26 +7748,24 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+			Assert.assertNotNull(entreprise);
 
-				final List<Mandat> mandats = new ArrayList<>();
-				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
-					if (ret instanceof Mandat) {
-						mandats.add((Mandat) ret);
-					}
+			final List<Mandat> mandats = new ArrayList<>();
+			for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+				if (ret instanceof Mandat) {
+					mandats.add((Mandat) ret);
 				}
-				Assert.assertEquals(1, mandats.size());
-				final Mandat mandat = mandats.get(0);
-				Assert.assertNotNull(mandat);
-				Assert.assertFalse(mandat.isAnnule());
-				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-				Assert.assertNotNull(mandat.getDateFin());
-				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
+			Assert.assertEquals(1, mandats.size());
+			final Mandat mandat = mandats.get(0);
+			Assert.assertNotNull(mandat);
+			Assert.assertFalse(mandat.isAnnule());
+			Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+			Assert.assertNotNull(mandat.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+			return null;
 		});
 	}
 

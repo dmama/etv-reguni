@@ -8,21 +8,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -97,15 +96,12 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		// mise en place ces contribuables
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique monsieur = tiersService.createNonHabitantFromIndividu(noIndMonsieur);
-				addForPrincipal(monsieur, date(2008, 1, 1), MotifFor.DEPART_HS, MockPays.France);
+		doInNewTransaction(status -> {
+			final PersonnePhysique monsieur = tiersService.createNonHabitantFromIndividu(noIndMonsieur);
+			addForPrincipal(monsieur, date(2008, 1, 1), MotifFor.DEPART_HS, MockPays.France);
 
-				ids.idMonsieur = monsieur.getNumero();
-				return null;
-			}
+			ids.idMonsieur = monsieur.getNumero();
+			return null;
 		});
 
 		final MessageCollector collector = buildMessageCollector();
@@ -467,21 +463,18 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		});
 
 		// on s'assure que rien n'a changé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				assertNotNull(monsieur);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			assertNotNull(monsieur);
 
-				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
-				assertNotNull(madame);
+			final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+			assertNotNull(madame);
 
-				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(madame, dateMariage);
-				assertNotNull(ensemble);
-				assertSame(monsieur, ensemble.getPrincipal());
-				assertSame(madame, ensemble.getConjoint());
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(madame, dateMariage);
+			assertNotNull(ensemble);
+			assertSame(monsieur, ensemble.getPrincipal());
+			assertSame(madame, ensemble.getConjoint());
+			return null;
 		});
 	}
 

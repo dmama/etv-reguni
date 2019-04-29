@@ -13,8 +13,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -154,18 +152,16 @@ public class TiersEditManagerTest extends WebTest {
 			assertEquals(ModeCommunication.ELECTRONIQUE, view.getModeCommunication());
 
 			// [SIFISC-12197] vérifions l'insertion de la remarque
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final List<Remarque> remarques = remarqueDAO.getRemarques(dpiId);
-					assertNotNull(remarques);
-					assertEquals(1, remarques.size());
+			doInNewTransactionAndSession(status -> {
+				final List<Remarque> remarques = remarqueDAO.getRemarques(dpiId);
+				assertNotNull(remarques);
+				assertEquals(1, remarques.size());
 
-					final Remarque remarque = remarques.get(0);
-					assertNotNull(remarque);
-					assertEquals("Changement de mode de communication :\n'Papier' --> 'Echange de fichier'", remarque.getTexte());
-					assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
-				}
+				final Remarque remarque = remarques.get(0);
+				assertNotNull(remarque);
+				assertEquals("Changement de mode de communication :\n'Papier' --> 'Echange de fichier'", remarque.getTexte());
+				assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
+				return null;
 			});
 		}
 		{
@@ -175,34 +171,32 @@ public class TiersEditManagerTest extends WebTest {
 			assertEquals(ModeCommunication.SITE_WEB, view.getModeCommunication());
 
 			// [SIFISC-12197] vérifions l'insertion de la remarque
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final List<Remarque> remarques = remarqueDAO.getRemarques(dpiId);
-					assertNotNull(remarques);
-					assertEquals(2, remarques.size());
+			doInNewTransactionAndSession(status -> {
+				final List<Remarque> remarques = remarqueDAO.getRemarques(dpiId);
+				assertNotNull(remarques);
+				assertEquals(2, remarques.size());
 
-					final List<Remarque> sorted = new ArrayList<>(remarques);
-					Collections.sort(sorted, new Comparator<Remarque>() {
-						@Override
-						public int compare(Remarque o1, Remarque o2) {
-							return Long.compare(o1.getId(), o2.getId());
-						}
-					});
+				final List<Remarque> sorted = new ArrayList<>(remarques);
+				Collections.sort(sorted, new Comparator<Remarque>() {
+					@Override
+					public int compare(Remarque o1, Remarque o2) {
+						return Long.compare(o1.getId(), o2.getId());
+					}
+				});
 
-					{
-						final Remarque remarque = sorted.get(0);
-						assertNotNull(remarque);
-						assertEquals("Changement de mode de communication :\n'Papier' --> 'Echange de fichier'", remarque.getTexte());
-						assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
-					}
-					{
-						final Remarque remarque = sorted.get(1);
-						assertNotNull(remarque);
-						assertEquals("Changement de mode de communication :\n'Echange de fichier' --> 'Saisie en ligne'", remarque.getTexte());
-						assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
-					}
+				{
+					final Remarque remarque = sorted.get(0);
+					assertNotNull(remarque);
+					assertEquals("Changement de mode de communication :\n'Papier' --> 'Echange de fichier'", remarque.getTexte());
+					assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
 				}
+				{
+					final Remarque remarque = sorted.get(1);
+					assertNotNull(remarque);
+					assertEquals("Changement de mode de communication :\n'Echange de fichier' --> 'Saisie en ligne'", remarque.getTexte());
+					assertTrue(remarque.getLogCreationUser(), remarque.getLogCreationUser().endsWith("-auto"));
+				}
+				return null;
 			});
 		}
 	}
@@ -244,17 +238,14 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testChangePeriodiciteDebiteurSansLR() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
-				addForDebiteur(dpi, date(2010, 11, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aigle);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
+			addForDebiteur(dpi, date(2010, 11, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aigle);
+			return dpi.getNumero();
 		});
 
 		DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
@@ -287,52 +278,49 @@ public class TiersEditManagerTest extends WebTest {
 		}
 
 		// petite vérification en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+			assertNotNull(dpi);
 
-				// on trie les périodicité par leur ordre de création
-				final List<Periodicite> periodicites = new ArrayList<>(dpi.getPeriodicites());
-				Collections.sort(periodicites, new Comparator<Periodicite>() {
-					@Override
-					public int compare(Periodicite o1, Periodicite o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+			// on trie les périodicité par leur ordre de création
+			final List<Periodicite> periodicites = new ArrayList<>(dpi.getPeriodicites());
+			Collections.sort(periodicites, new Comparator<Periodicite>() {
+				@Override
+				public int compare(Periodicite o1, Periodicite o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				assertEquals(4, periodicites.size());
-				{
-					final Periodicite p = periodicites.get(0);
-					assertEquals(PeriodiciteDecompte.MENSUEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 1, 1), p.getDateDebut());
-					assertEquals(date(2010, 6, 30), p.getDateFin());        // assignée au 30.9.2010 par la périodicité trimestrielle puis au 30.6.2010 par la périodicité semestrielle
-					assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annulelle
-				}
-				{
-					final Periodicite p = periodicites.get(1);
-					assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 10, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité semestrielle
-				}
-				{
-					final Periodicite p = periodicites.get(2);
-					assertEquals(PeriodiciteDecompte.SEMESTRIEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 7, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annuelle
-				}
-				{
-					final Periodicite p = periodicites.get(3);
-					assertEquals(PeriodiciteDecompte.ANNUEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 1, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertFalse(p.isAnnule());
-				}
-				return null;
+			assertEquals(4, periodicites.size());
+			{
+				final Periodicite p = periodicites.get(0);
+				assertEquals(PeriodiciteDecompte.MENSUEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), p.getDateDebut());
+				assertEquals(date(2010, 6, 30), p.getDateFin());        // assignée au 30.9.2010 par la périodicité trimestrielle puis au 30.6.2010 par la périodicité semestrielle
+				assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annulelle
 			}
+			{
+				final Periodicite p = periodicites.get(1);
+				assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 10, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité semestrielle
+			}
+			{
+				final Periodicite p = periodicites.get(2);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 7, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annuelle
+			}
+			{
+				final Periodicite p = periodicites.get(3);
+				assertEquals(PeriodiciteDecompte.ANNUEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertFalse(p.isAnnule());
+			}
+			return null;
 		});
 
 		{
@@ -358,73 +346,70 @@ public class TiersEditManagerTest extends WebTest {
 		}
 
 		// petite vérification en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+			assertNotNull(dpi);
 
-				// on trie les périodicité par leur ordre de création
-				final List<Periodicite> periodicites = new ArrayList<>(dpi.getPeriodicites());
-				Collections.sort(periodicites, new Comparator<Periodicite>() {
-					@Override
-					public int compare(Periodicite o1, Periodicite o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+			// on trie les périodicité par leur ordre de création
+			final List<Periodicite> periodicites = new ArrayList<>(dpi.getPeriodicites());
+			Collections.sort(periodicites, new Comparator<Periodicite>() {
+				@Override
+				public int compare(Periodicite o1, Periodicite o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				assertEquals(7, periodicites.size());
-				{
-					final Periodicite p = periodicites.get(0);
-					assertEquals(PeriodiciteDecompte.MENSUEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 1, 1), p.getDateDebut());
-					assertEquals(date(2010, 6, 30), p.getDateFin());        // assignée au 30.9.2010 par la périodicité trimestrielle puis au 30.6.2010 par la périodicité semestrielle
-					assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annulelle
-				}
-				{
-					final Periodicite p = periodicites.get(1);
-					assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 10, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité semestrielle
-				}
-				{
-					final Periodicite p = periodicites.get(2);
-					assertEquals(PeriodiciteDecompte.SEMESTRIEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 7, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annuelle
-				}
-				{
-					final Periodicite p = periodicites.get(3);
-					assertEquals(PeriodiciteDecompte.ANNUEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 1, 1), p.getDateDebut());
-					assertEquals(date(2010, 6, 30), p.getDateFin());        // date de fin "bizarre" (= non conforme à la périodicité annoncée) en raison de l'arrivée ultérieure de la périodicité S sans LR présente
-					assertFalse(p.isAnnule());
-				}
-				{
-					final Periodicite p = periodicites.get(4);
-					assertEquals(PeriodiciteDecompte.SEMESTRIEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 7, 1), p.getDateDebut());
-					assertEquals(date(2010, 9, 30), p.getDateFin());        // date de fin "bizarre" (= non conforme à la périodicité annoncée) en raison de l'arrivée ultérieure de la périodicité T sans LR présente
-					assertFalse(p.isAnnule());
-				}
-				{
-					final Periodicite p = periodicites.get(5);
-					assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 10, 1), p.getDateDebut());
-					assertEquals(date(2010, 10, 31), p.getDateFin());        // date de fin "bizarre" (= non conforme à la périodicité annoncée) en raison de l'arrivée ultérieure de la périodicité M sans LR présente
-					assertFalse(p.isAnnule());
-				}
-				{
-					final Periodicite p = periodicites.get(6);
-					assertEquals(PeriodiciteDecompte.MENSUEL, p.getPeriodiciteDecompte());
-					assertEquals(date(2010, 11, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertFalse(p.isAnnule());
-				}
-				return null;
+			assertEquals(7, periodicites.size());
+			{
+				final Periodicite p = periodicites.get(0);
+				assertEquals(PeriodiciteDecompte.MENSUEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), p.getDateDebut());
+				assertEquals(date(2010, 6, 30), p.getDateFin());        // assignée au 30.9.2010 par la périodicité trimestrielle puis au 30.6.2010 par la périodicité semestrielle
+				assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annulelle
 			}
+			{
+				final Periodicite p = periodicites.get(1);
+				assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 10, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité semestrielle
+			}
+			{
+				final Periodicite p = periodicites.get(2);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 7, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertTrue(p.isAnnule());                               // annulée par l'avénement de la périodicité annuelle
+			}
+			{
+				final Periodicite p = periodicites.get(3);
+				assertEquals(PeriodiciteDecompte.ANNUEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), p.getDateDebut());
+				assertEquals(date(2010, 6, 30), p.getDateFin());        // date de fin "bizarre" (= non conforme à la périodicité annoncée) en raison de l'arrivée ultérieure de la périodicité S sans LR présente
+				assertFalse(p.isAnnule());
+			}
+			{
+				final Periodicite p = periodicites.get(4);
+				assertEquals(PeriodiciteDecompte.SEMESTRIEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 7, 1), p.getDateDebut());
+				assertEquals(date(2010, 9, 30), p.getDateFin());        // date de fin "bizarre" (= non conforme à la périodicité annoncée) en raison de l'arrivée ultérieure de la périodicité T sans LR présente
+				assertFalse(p.isAnnule());
+			}
+			{
+				final Periodicite p = periodicites.get(5);
+				assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 10, 1), p.getDateDebut());
+				assertEquals(date(2010, 10, 31), p.getDateFin());        // date de fin "bizarre" (= non conforme à la périodicité annoncée) en raison de l'arrivée ultérieure de la périodicité M sans LR présente
+				assertFalse(p.isAnnule());
+			}
+			{
+				final Periodicite p = periodicites.get(6);
+				assertEquals(PeriodiciteDecompte.MENSUEL, p.getPeriodiciteDecompte());
+				assertEquals(date(2010, 11, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertFalse(p.isAnnule());
+			}
+			return null;
 		});
 	}
 
@@ -443,23 +428,19 @@ public class TiersEditManagerTest extends WebTest {
 		final int year = today.year();
 		final RegDate endOfYear = date(year, 12, 31);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null));
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null));
 
-				addForDebiteur(dpi, date(year, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			addForDebiteur(dpi, date(year, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(year);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, date(year, 1, 1), date(year, 3, 31), md);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(year);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, date(year, 1, 1), date(year, 3, 31), md);
+			return dpi.getNumero();
 		});
 
 		// cas mensuel (= périodicité plus petite)
@@ -491,15 +472,12 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testGetDatesPossiblesPourDebutNouvellePeriodiciteSansPeriodiciteExistante() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			return dpi.getNumero();
 		});
 
 		for (PeriodiciteDecompte nvelle : PeriodiciteDecompte.values()) {
@@ -513,16 +491,13 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testGetDatesPossiblesPourDebutNouvellePeriodiciteAvecPeriodiciteExistanteActive() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null));
+			return dpi.getNumero();
 		});
 
 		final RegDate oneYearFromNow = RegDate.get().addYears(1);
@@ -602,16 +577,13 @@ public class TiersEditManagerTest extends WebTest {
 
 		final int year = RegDate.get().year();
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(year, 1, 1), null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, date(year, 1, 1), null));
+			return dpi.getNumero();
 		});
 
 		final RegDate oneYearFromNow = RegDate.get().addYears(1);
@@ -693,17 +665,14 @@ public class TiersEditManagerTest extends WebTest {
 		final int year = today.year();
 		final RegDate nextFirstOfJanuary = date(year + 1, 1, 1);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), nextFirstOfJanuary.getOneDayBefore()));
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, nextFirstOfJanuary, null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), nextFirstOfJanuary.getOneDayBefore()));
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, nextFirstOfJanuary, null));
+			return dpi.getNumero();
 		});
 
 		final RegDate oneYearFromNow = today.addYears(1);
@@ -800,17 +769,14 @@ public class TiersEditManagerTest extends WebTest {
 		final RegDate oneYearFromNow = today.addYears(1);
 		final RegDate nextNewYear = date(year + 1, 1, 1);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), nextNewYear.getOneDayBefore()));
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, nextNewYear, null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), nextNewYear.getOneDayBefore()));
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, nextNewYear, null));
+			return dpi.getNumero();
 		});
 
 		// passage en MENSUEL / supergra
@@ -967,16 +933,13 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testConservationMemePeriodiciteAvecDateDifferente() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), null));
+			return dpi.getNumero();
 		});
 
 		// on reste en SEMESTRIEL
@@ -997,24 +960,21 @@ public class TiersEditManagerTest extends WebTest {
 		}
 
 		// et en base, rien ne devrait avoir changé non plus
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
-				assertNotNull(allPeriodicites);
-				assertEquals(1, allPeriodicites.size());
+			final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
+			assertNotNull(allPeriodicites);
+			assertEquals(1, allPeriodicites.size());
 
-				final Periodicite periodicite = allPeriodicites.iterator().next();
-				assertNotNull(periodicite);
-				assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
-				assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
-				assertNull(periodicite.getDateFin());
-				assertFalse(periodicite.isAnnule());
-				return null;
-			}
+			final Periodicite periodicite = allPeriodicites.iterator().next();
+			assertNotNull(periodicite);
+			assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
+			assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+			assertNull(periodicite.getDateFin());
+			assertFalse(periodicite.isAnnule());
+			return null;
 		});
 	}
 
@@ -1024,16 +984,13 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testDateDebutPeriodiciteNulle() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2010, 1, 1), null));
+			return dpi.getNumero();
 		});
 
 		// on reste en SEMESTRIEL
@@ -1054,24 +1011,21 @@ public class TiersEditManagerTest extends WebTest {
 		}
 
 		// et en base, rien ne devrait avoir changé non plus
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
-				assertNotNull(allPeriodicites);
-				assertEquals(1, allPeriodicites.size());
+			final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
+			assertNotNull(allPeriodicites);
+			assertEquals(1, allPeriodicites.size());
 
-				final Periodicite periodicite = allPeriodicites.iterator().next();
-				assertNotNull(periodicite);
-				assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
-				assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
-				assertNull(periodicite.getDateFin());
-				assertFalse(periodicite.isAnnule());
-				return null;
-			}
+			final Periodicite periodicite = allPeriodicites.iterator().next();
+			assertNotNull(periodicite);
+			assertEquals(PeriodiciteDecompte.SEMESTRIEL, periodicite.getPeriodiciteDecompte());
+			assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+			assertNull(periodicite.getDateFin());
+			assertFalse(periodicite.isAnnule());
+			return null;
 		});
 	}
 
@@ -1083,17 +1037,14 @@ public class TiersEditManagerTest extends WebTest {
 		assertEquals(1, debutTrimestriel.month() % 3);                  // vérification que la date calculée est bien un début de trimestre
 		final RegDate retourMensuel = debutTrimestriel.addMonths(3);    // un seul trimestre
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), debutTrimestriel.getOneDayBefore()));
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, debutTrimestriel, null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), debutTrimestriel.getOneDayBefore()));
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, debutTrimestriel, null));
+			return dpi.getNumero();
 		});
 
 		// on retourne en mensuel
@@ -1114,45 +1065,42 @@ public class TiersEditManagerTest extends WebTest {
 		}
 
 		// et en base, on devrait voir les trois périodicités : mensuelle, trimestrielle puis mensuelle à nouveau
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
-				assertNotNull(allPeriodicites);
-				assertEquals(3, allPeriodicites.size());
+			final Set<Periodicite> allPeriodicites = dpi.getPeriodicites();
+			assertNotNull(allPeriodicites);
+			assertEquals(3, allPeriodicites.size());
 
-				final List<Periodicite> sortedPeriodicites = new ArrayList<>(allPeriodicites);
-				Collections.sort(sortedPeriodicites, new DateRangeComparator<Periodicite>());
+			final List<Periodicite> sortedPeriodicites = new ArrayList<>(allPeriodicites);
+			Collections.sort(sortedPeriodicites, new DateRangeComparator<Periodicite>());
 
-				{
-					final Periodicite periodicite = sortedPeriodicites.get(0);
-					assertNotNull(periodicite);
-					assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
-					assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
-					assertEquals(debutTrimestriel.getOneDayBefore(), periodicite.getDateFin());
-					assertFalse(periodicite.isAnnule());
-				}
-				{
-					final Periodicite periodicite = sortedPeriodicites.get(1);
-					assertNotNull(periodicite);
-					assertEquals(PeriodiciteDecompte.TRIMESTRIEL, periodicite.getPeriodiciteDecompte());
-					assertEquals(debutTrimestriel, periodicite.getDateDebut());
-					assertEquals(retourMensuel.getOneDayBefore(), periodicite.getDateFin());
-					assertFalse(periodicite.isAnnule());
-				}
-				{
-					final Periodicite periodicite = sortedPeriodicites.get(2);
-					assertNotNull(periodicite);
-					assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
-					assertEquals(retourMensuel, periodicite.getDateDebut());
-					assertNull(periodicite.getDateFin());
-					assertFalse(periodicite.isAnnule());
-				}
-				return null;
+			{
+				final Periodicite periodicite = sortedPeriodicites.get(0);
+				assertNotNull(periodicite);
+				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+				assertEquals(date(2010, 1, 1), periodicite.getDateDebut());
+				assertEquals(debutTrimestriel.getOneDayBefore(), periodicite.getDateFin());
+				assertFalse(periodicite.isAnnule());
 			}
+			{
+				final Periodicite periodicite = sortedPeriodicites.get(1);
+				assertNotNull(periodicite);
+				assertEquals(PeriodiciteDecompte.TRIMESTRIEL, periodicite.getPeriodiciteDecompte());
+				assertEquals(debutTrimestriel, periodicite.getDateDebut());
+				assertEquals(retourMensuel.getOneDayBefore(), periodicite.getDateFin());
+				assertFalse(periodicite.isAnnule());
+			}
+			{
+				final Periodicite periodicite = sortedPeriodicites.get(2);
+				assertNotNull(periodicite);
+				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+				assertEquals(retourMensuel, periodicite.getDateDebut());
+				assertNull(periodicite.getDateFin());
+				assertFalse(periodicite.isAnnule());
+			}
+			return null;
 		});
 	}
 
@@ -1164,28 +1112,26 @@ public class TiersEditManagerTest extends WebTest {
 		final RegDate dateDebut = date(2012, 1, 1);
 		final RegDate dateChangement = date(2013, 1, 1);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
-				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
+			addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
 
-				// les périodicités
-				dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangement.getOneDayBefore()),
-				                                                new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateChangement, null))));
+			// les périodicités
+			dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangement.getOneDayBefore()),
+			                                                new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateChangement, null))));
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2012);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final PeriodeFiscale pf = addPeriodeFiscale(2012);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 
-				// les LRs sur 2012
-				for (int i = 0 ; i < 4 ; ++ i) {
-					final RegDate debutLr = date(2012, i * 3 + 1, 1);
-					final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
-					addListeRecapitulative(dpi, pf, debutLr, finLr, md);
-				}
-				return dpi.getNumero();
+			// les LRs sur 2012
+			for (int i = 0; i < 4; ++i) {
+				final RegDate debutLr = date(2012, i * 3 + 1, 1);
+				final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
+				addListeRecapitulative(dpi, pf, debutLr, finLr, md);
 			}
+			;
+			return dpi.getNumero();
 		});
 
 		final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.TRIMESTRIEL, date(2015, 1, 1), false);
@@ -1207,28 +1153,26 @@ public class TiersEditManagerTest extends WebTest {
 		final int lastPfWithLrs = 2012;
 		final RegDate dateChangementAnnuel = date(lastPfWithLrs + 1, 1, 1);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
-				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
+			addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
 
-				// les périodicités
-				dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangementAnnuel.getOneDayBefore()),
-				                                                new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateChangementAnnuel, null))));
+			// les périodicités
+			dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangementAnnuel.getOneDayBefore()),
+			                                                new Periodicite(PeriodiciteDecompte.ANNUEL, null, dateChangementAnnuel, null))));
 
-				final PeriodeFiscale pf = addPeriodeFiscale(lastPfWithLrs);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final PeriodeFiscale pf = addPeriodeFiscale(lastPfWithLrs);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 
-				// les LRs sur 2012
-				for (int i = 0 ; i < 4 ; ++ i) {
-					final RegDate debutLr = date(lastPfWithLrs, i * 3 + 1, 1);
-					final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
-					addListeRecapitulative(dpi, pf, debutLr, finLr, md);
-				}
-				return dpi.getNumero();
+			// les LRs sur 2012
+			for (int i = 0; i < 4; ++i) {
+				final RegDate debutLr = date(lastPfWithLrs, i * 3 + 1, 1);
+				final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
+				addListeRecapitulative(dpi, pf, debutLr, finLr, md);
 			}
+			;
+			return dpi.getNumero();
 		});
 
 		final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.MENSUEL, date(2015, 1, 1), false);
@@ -1246,29 +1190,26 @@ public class TiersEditManagerTest extends WebTest {
 		final RegDate dateDebut = date(anneeCourante, 1, 1);
 		final RegDate dateChangementMensuel = date(anneeCourante + 1, 1, 1);
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
+			addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
 
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
-				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+			final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeCourante);
+			final ModeleDocument mdCourante = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pfCourante);
 
-				final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeCourante);
-				final ModeleDocument mdCourante = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pfCourante);
+			// les périodicités
+			dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangementMensuel.getOneDayBefore()),
+			                                                new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateChangementMensuel, null))));
 
-				// les périodicités
-				dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangementMensuel.getOneDayBefore()),
-				                                                new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateChangementMensuel, null))));
-
-				// les LR de l'année courante
-				for (int i = 0 ; i < 4 ; ++ i) {
-					final RegDate debutLr = date(anneeCourante, i * 3 + 1, 1);
-					final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
-					addListeRecapitulative(dpi, pfCourante, debutLr, finLr, mdCourante);
-				}
-				return dpi.getNumero();
+			// les LR de l'année courante
+			for (int i = 0; i < 4; ++i) {
+				final RegDate debutLr = date(anneeCourante, i * 3 + 1, 1);
+				final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
+				addListeRecapitulative(dpi, pfCourante, debutLr, finLr, mdCourante);
 			}
+			;
+			return dpi.getNumero();
 		});
 
 		// quelles sont les périodicités proposées ?
@@ -1291,15 +1232,13 @@ public class TiersEditManagerTest extends WebTest {
 		}
 
 		// maintenant on ajoute une LR sur l'année suivante (mensuelle, donc)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeCourante + 1);
-				final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pfSuivante);
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeCourante + 1);
+			final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pfSuivante);
 
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				addListeRecapitulative(dpi, pfSuivante, date(anneeCourante + 1, 1, 1), date(anneeCourante + 1, 1, 31), mdSuivante);
-			}
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			addListeRecapitulative(dpi, pfSuivante, date(anneeCourante + 1, 1, 1), date(anneeCourante + 1, 1, 31), mdSuivante);
+			return null;
 		});
 
 		// quelles sont les périodicités proposées ?
@@ -1332,22 +1271,19 @@ public class TiersEditManagerTest extends WebTest {
 		final int lastYear = RegDate.get().year() - 1;
 
 		// Création du DPI, de son for, de sa périodicité unique (juin) et de sa LR
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
 
-				addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+			addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(lastYear);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, date(lastYear, 6, 1), date(lastYear, 6, 30), md);
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(lastYear);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, date(lastYear, 6, 1), date(lastYear, 6, 30), md);
+			return dpi.getNumero();
 		});
 
 		// modification dans l'écran de la périodicité dès le 1.1, en restant unique mais en changeant de période de décompte (s1)
@@ -1358,33 +1294,31 @@ public class TiersEditManagerTest extends WebTest {
 		tiersEditManager.save(view);
 
 		// on vérifie maintenant qu'une nouvelle périodicité a bien été créée dès la date demandée (et que la précédente a bien été conservée)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
-				assertEquals(2, periodicites.size());
-				{
-					final Periodicite p = periodicites.get(0);
-					assertNotNull(p);
-					assertEquals(date(lastYear, 1, 1), p.getDateDebut());
-					assertEquals(date(lastYear, 12, 31), p.getDateFin());
-					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
-					assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
-					assertFalse(p.isAnnule());
-				}
-				{
-					final Periodicite p = periodicites.get(1);
-					assertNotNull(p);
-					assertEquals(date(lastYear + 1, 1, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
-					assertEquals(PeriodeDecompte.S1, p.getPeriodeDecompte());
-					assertFalse(p.isAnnule());
-				}
+			final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+			assertEquals(2, periodicites.size());
+			{
+				final Periodicite p = periodicites.get(0);
+				assertNotNull(p);
+				assertEquals(date(lastYear, 1, 1), p.getDateDebut());
+				assertEquals(date(lastYear, 12, 31), p.getDateFin());
+				assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
+				assertFalse(p.isAnnule());
 			}
+			{
+				final Periodicite p = periodicites.get(1);
+				assertNotNull(p);
+				assertEquals(date(lastYear + 1, 1, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.S1, p.getPeriodeDecompte());
+				assertFalse(p.isAnnule());
+			}
+			return null;
 		});
 	}
 
@@ -1399,18 +1333,15 @@ public class TiersEditManagerTest extends WebTest {
 		final int lastYear = RegDate.get().year() - 1;
 
 		// Création du DPI, de son for, de sa périodicité unique (juin) et de sa LR
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
 
-				addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
-				return dpi.getNumero();
-			}
+			addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+			return dpi.getNumero();
 		});
 
 		// modification dans l'écran de la périodicité dès le 1.1, en restant unique mais en changeant de période de décompte (s1)
@@ -1421,33 +1352,31 @@ public class TiersEditManagerTest extends WebTest {
 		tiersEditManager.save(view);
 
 		// on vérifie maintenant qu'une nouvelle périodicité a bien été créée dès la date demandée (et que la précédente a bien été conservée)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
-				assertEquals(2, periodicites.size());
-				{
-					final Periodicite p = periodicites.get(0);
-					assertNotNull(p);
-					assertEquals(date(lastYear, 1, 1), p.getDateDebut());
-					assertEquals(date(lastYear, 12, 31), p.getDateFin());
-					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
-					assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
-					assertFalse(p.isAnnule());
-				}
-				{
-					final Periodicite p = periodicites.get(1);
-					assertNotNull(p);
-					assertEquals(date(lastYear + 1, 1, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
-					assertEquals(PeriodeDecompte.S1, p.getPeriodeDecompte());
-					assertFalse(p.isAnnule());
-				}
+			final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+			assertEquals(2, periodicites.size());
+			{
+				final Periodicite p = periodicites.get(0);
+				assertNotNull(p);
+				assertEquals(date(lastYear, 1, 1), p.getDateDebut());
+				assertEquals(date(lastYear, 12, 31), p.getDateFin());
+				assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
+				assertFalse(p.isAnnule());
 			}
+			{
+				final Periodicite p = periodicites.get(1);
+				assertNotNull(p);
+				assertEquals(date(lastYear + 1, 1, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.S1, p.getPeriodeDecompte());
+				assertFalse(p.isAnnule());
+			}
+			return null;
 		});
 	}
 
@@ -1462,18 +1391,15 @@ public class TiersEditManagerTest extends WebTest {
 		final int lastYear = RegDate.get().year() - 1;
 
 		// Création du DPI, de son for, de sa périodicité unique (juin) et de sa LR
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
 
-				addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
-				return dpi.getNumero();
-			}
+			addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+			return dpi.getNumero();
 		});
 
 		// modification dans l'écran de la périodicité dès le 1.1, en restant unique et en conservant la période de décompte
@@ -1484,24 +1410,22 @@ public class TiersEditManagerTest extends WebTest {
 		tiersEditManager.save(view);
 
 		// on vérifie maintenant qu'aucune nouvelle périodicité n'a été créée
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
-				assertEquals(1, periodicites.size());
-				{
-					final Periodicite p = periodicites.get(0);
-					assertNotNull(p);
-					assertEquals(date(lastYear, 1, 1), p.getDateDebut());
-					assertNull(p.getDateFin());
-					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
-					assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
-					assertFalse(p.isAnnule());
-				}
+			final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+			assertEquals(1, periodicites.size());
+			{
+				final Periodicite p = periodicites.get(0);
+				assertNotNull(p);
+				assertEquals(date(lastYear, 1, 1), p.getDateDebut());
+				assertNull(p.getDateFin());
+				assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+				assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
+				assertFalse(p.isAnnule());
 			}
+			return null;
 		});
 	}
 }

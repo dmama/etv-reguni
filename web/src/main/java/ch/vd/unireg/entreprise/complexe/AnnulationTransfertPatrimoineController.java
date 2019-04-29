@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -54,14 +53,11 @@ public class AnnulationTransfertPatrimoineController extends AbstractProcessusCo
 	@RequestMapping(value = "/dates-transfert.do", method = RequestMethod.GET)
 	@ResponseBody
 	public List<RegDate> getDatesTransfertExistantes(@RequestParam("idEntreprise") final long idEntreprise) {
-		return doInReadOnlyTransaction(new TransactionCallback<List<RegDate>>() {
-			@Override
-			public List<RegDate> doInTransaction(TransactionStatus status) {
-				final Entreprise emettrice = getTiers(Entreprise.class, idEntreprise);
-				final List<RegDate> datesTransfert = new ArrayList<>(TransfertPatrimoineHelper.getTransferts(emettrice, tiersService).keySet());
-				datesTransfert.sort(Collections.reverseOrder());
-				return datesTransfert;
-			}
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise emettrice = getTiers(Entreprise.class, idEntreprise);
+			final List<RegDate> datesTransfert = new ArrayList<>(TransfertPatrimoineHelper.getTransferts(emettrice, tiersService).keySet());
+			datesTransfert.sort(Collections.reverseOrder());
+			return datesTransfert;
 		});
 	}
 

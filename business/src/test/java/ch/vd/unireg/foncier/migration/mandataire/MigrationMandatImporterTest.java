@@ -7,8 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseMandataireSuisse;
@@ -155,13 +153,11 @@ public class MigrationMandatImporterTest extends BusinessTest {
 		}
 
 		// ... et en base ?
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) idPP);
-				Assert.assertNotNull(pp);
-				Assert.assertEquals(Collections.emptySet(), pp.getAdressesMandataires());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) idPP);
+			Assert.assertNotNull(pp);
+			Assert.assertEquals(Collections.emptySet(), pp.getAdressesMandataires());
+			return null;
 		});
 	}
 
@@ -197,41 +193,39 @@ public class MigrationMandatImporterTest extends BusinessTest {
 		}
 
 		// et en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) idPP);
-				Assert.assertNotNull(pp);
-				final Set<AdresseMandataire> adresses = pp.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				{
-					final AdresseMandataire adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertEquals("Madame", adresse.getCivilite());
-					Assert.assertEquals(MockGenreImpotMandataire.IFONC.getCode(), adresse.getCodeGenreImpot());
-					Assert.assertEquals("Sa maman", adresse.getComplement());
-					Assert.assertEquals(date(2011, 1, 1), adresse.getDateDebut());
-					Assert.assertNull(adresse.getDateFin());
-					Assert.assertEquals("Albertine Durant Dufour", adresse.getNomDestinataire());
-					Assert.assertEquals("021/8748741", adresse.getNoTelephoneContact());
-					Assert.assertNull(adresse.getNumeroCasePostale());
-					Assert.assertNull(adresse.getNumeroMaison());
-					Assert.assertNull(adresse.getPersonneContact());
-					Assert.assertEquals("Avenue de la gare 42", adresse.getRue());
-					Assert.assertNull(adresse.getTexteCasePostale());
-					Assert.assertEquals(TypeMandat.SPECIAL, adresse.getTypeMandat());
-					Assert.assertTrue(adresse.isPermanente());
-					Assert.assertTrue(adresse.isWithCopy());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) idPP);
+			Assert.assertNotNull(pp);
+			final Set<AdresseMandataire> adresses = pp.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			{
+				final AdresseMandataire adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals("Madame", adresse.getCivilite());
+				Assert.assertEquals(MockGenreImpotMandataire.IFONC.getCode(), adresse.getCodeGenreImpot());
+				Assert.assertEquals("Sa maman", adresse.getComplement());
+				Assert.assertEquals(date(2011, 1, 1), adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals("Albertine Durant Dufour", adresse.getNomDestinataire());
+				Assert.assertEquals("021/8748741", adresse.getNoTelephoneContact());
+				Assert.assertNull(adresse.getNumeroCasePostale());
+				Assert.assertNull(adresse.getNumeroMaison());
+				Assert.assertNull(adresse.getPersonneContact());
+				Assert.assertEquals("Avenue de la gare 42", adresse.getRue());
+				Assert.assertNull(adresse.getTexteCasePostale());
+				Assert.assertEquals(TypeMandat.SPECIAL, adresse.getTypeMandat());
+				Assert.assertTrue(adresse.isPermanente());
+				Assert.assertTrue(adresse.isWithCopy());
 
-					Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
-					final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
-					Assert.assertNull(adresseSuisse.getNpaCasePostale());
-					Assert.assertEquals(MockLocalite.Vallorbe.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertNull(adresseSuisse.getNumeroRue());
-				}
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+				Assert.assertNull(adresseSuisse.getNpaCasePostale());
+				Assert.assertEquals(MockLocalite.Vallorbe.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertNull(adresseSuisse.getNumeroRue());
 			}
+			return null;
 		});
 	}
 
@@ -267,41 +261,39 @@ public class MigrationMandatImporterTest extends BusinessTest {
 		}
 
 		// et en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) idPP);
-				Assert.assertNotNull(pp);
-				final Set<AdresseMandataire> adresses = pp.getAdressesMandataires();
-				Assert.assertNotNull(adresses);
-				Assert.assertEquals(1, adresses.size());
-				{
-					final AdresseMandataire adresse = adresses.iterator().next();
-					Assert.assertNotNull(adresse);
-					Assert.assertFalse(adresse.isAnnule());
-					Assert.assertEquals("Madame", adresse.getCivilite());
-					Assert.assertEquals(MockGenreImpotMandataire.IFONC.getCode(), adresse.getCodeGenreImpot());
-					Assert.assertEquals("Sa maman", adresse.getComplement());
-					Assert.assertEquals(date(2011, 1, 1), adresse.getDateDebut());
-					Assert.assertNull(adresse.getDateFin());
-					Assert.assertEquals("Albertine Durant Dufour", adresse.getNomDestinataire());
-					Assert.assertEquals("021/8748741", adresse.getNoTelephoneContact());
-					Assert.assertNull(adresse.getNumeroCasePostale());
-					Assert.assertNull(adresse.getNumeroMaison());
-					Assert.assertNull(adresse.getPersonneContact());
-					Assert.assertEquals("Avenue de la gare 42", adresse.getRue());
-					Assert.assertNull(adresse.getTexteCasePostale());
-					Assert.assertEquals(TypeMandat.SPECIAL, adresse.getTypeMandat());
-					Assert.assertTrue(adresse.isPermanente());
-					Assert.assertFalse(adresse.isWithCopy());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long) idPP);
+			Assert.assertNotNull(pp);
+			final Set<AdresseMandataire> adresses = pp.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+			{
+				final AdresseMandataire adresse = adresses.iterator().next();
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals("Madame", adresse.getCivilite());
+				Assert.assertEquals(MockGenreImpotMandataire.IFONC.getCode(), adresse.getCodeGenreImpot());
+				Assert.assertEquals("Sa maman", adresse.getComplement());
+				Assert.assertEquals(date(2011, 1, 1), adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals("Albertine Durant Dufour", adresse.getNomDestinataire());
+				Assert.assertEquals("021/8748741", adresse.getNoTelephoneContact());
+				Assert.assertNull(adresse.getNumeroCasePostale());
+				Assert.assertNull(adresse.getNumeroMaison());
+				Assert.assertNull(adresse.getPersonneContact());
+				Assert.assertEquals("Avenue de la gare 42", adresse.getRue());
+				Assert.assertNull(adresse.getTexteCasePostale());
+				Assert.assertEquals(TypeMandat.SPECIAL, adresse.getTypeMandat());
+				Assert.assertTrue(adresse.isPermanente());
+				Assert.assertFalse(adresse.isWithCopy());
 
-					Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
-					final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
-					Assert.assertNull(adresseSuisse.getNpaCasePostale());
-					Assert.assertEquals(MockLocalite.Vallorbe.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
-					Assert.assertNull(adresseSuisse.getNumeroRue());
-				}
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+				Assert.assertNull(adresseSuisse.getNpaCasePostale());
+				Assert.assertEquals(MockLocalite.Vallorbe.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertNull(adresseSuisse.getNumeroRue());
 			}
+			return null;
 		});
 	}
 }

@@ -10,8 +10,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -182,22 +180,17 @@ public class EnvoiLRsEnMasseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> i = template.execute(new TransactionCallback<List<Long>>() {
+		final List<Long> i = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final String queryDPI =
-								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
-										"WHERE dpi.annulationDate IS NULL AND dpi.sansListeRecapitulative = false";
-						final Query queryObject = session.createQuery(queryDPI);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
+			public List<Long> doInHibernate(Session session) throws HibernateException {
+				final String queryDPI =
+						"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
+								"WHERE dpi.annulationDate IS NULL AND dpi.sansListeRecapitulative = false";
+				final Query queryObject = session.createQuery(queryDPI);
+				//noinspection unchecked
+				return queryObject.list();
 			}
-		});
+		}));
 
 		return i;
 	}

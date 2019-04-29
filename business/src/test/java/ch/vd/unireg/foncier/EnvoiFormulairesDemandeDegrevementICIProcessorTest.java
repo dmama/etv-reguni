@@ -13,8 +13,6 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -302,31 +300,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -404,16 +400,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -490,31 +484,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, false);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, false);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 3, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 3, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -588,16 +580,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -672,16 +662,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -764,16 +752,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -849,44 +835,42 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(2, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(2, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					Assert.assertEquals(dateDebutDroit.addDays(10), demande.getDateEnvoi());
-					Assert.assertEquals(dateDebutDroit.addMonths(2), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) dateDebutDroit.year(), demande.getPeriodeFiscale());
-				}
-				{
-					final DemandeDegrevementICI demande = demandes.get(1);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
-
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				Assert.assertEquals(dateDebutDroit.addDays(10), demande.getDateEnvoi());
+				Assert.assertEquals(dateDebutDroit.addMonths(2), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) dateDebutDroit.year(), demande.getPeriodeFiscale());
 			}
+			{
+				final DemandeDegrevementICI demande = demandes.get(1);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
+
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -967,16 +951,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());            // la demande déjà posée en entrée
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());            // la demande déjà posée en entrée;
+			return null;
 		});
 	}
 
@@ -1054,44 +1036,42 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(2, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(2, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					Assert.assertEquals(dateDebutDroit.addYears(1), demande.getDateEnvoi());
-					Assert.assertEquals(dateDebutDroit.addMonths(14), demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) dateDebutDroit.year(), demande.getPeriodeFiscale());
-				}
-				{
-					final DemandeDegrevementICI demande = demandes.get(1);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
-
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (anneeDerniereEstimationFiscale + 1), demande.getPeriodeFiscale());
-				}
+				Assert.assertEquals(dateDebutDroit.addYears(1), demande.getDateEnvoi());
+				Assert.assertEquals(dateDebutDroit.addMonths(14), demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) dateDebutDroit.year(), demande.getPeriodeFiscale());
 			}
+			{
+				final DemandeDegrevementICI demande = demandes.get(1);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
+
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (anneeDerniereEstimationFiscale + 1), demande.getPeriodeFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -1172,16 +1152,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());        // demande déjà posée en entrée
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());        // demande déjà posée en entrée;
+			return null;
 		});
 	}
 
@@ -1256,16 +1234,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -1338,31 +1314,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -1434,31 +1408,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -1529,31 +1501,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -1642,46 +1612,44 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(2, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(2, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
-				{
-					final DemandeDegrevementICI demande = demandes.get(1);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
-
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 2, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			{
+				final DemandeDegrevementICI demande = demandes.get(1);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
+
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 2, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -1771,46 +1739,44 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(2, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(2, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
-				{
-					final DemandeDegrevementICI demande = demandes.get(1);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
-
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 2, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			{
+				final DemandeDegrevementICI demande = demandes.get(1);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
+
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 2, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -1887,31 +1853,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -2006,16 +1970,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -2119,31 +2081,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -2286,16 +2246,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());        // la demande précédemment présente
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());        // la demande précédemment présente;
+			return null;
 		});
 	}
 
@@ -2371,34 +2329,32 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 		// vérification en base...
 		final Mutable<RegDate> dateEmission = new MutableObject<>();
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 
-					Assert.assertNotNull(demande.getDateEnvoi());
-					dateEmission.setValue(demande.getDateEnvoi());
-				}
+				Assert.assertNotNull(demande.getDateEnvoi());
+				dateEmission.setValue(demande.getDateEnvoi());
 			}
+			return null;
 		});
 
 		// et rebelotte !!
@@ -2595,16 +2551,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.pm);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.pm);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 
@@ -2682,16 +2636,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 
 	}
@@ -2765,31 +2717,29 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(1, demandes.size());
+			{
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
 
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateFinExoneration.year() + 1), demande.getPeriodeFiscale());
-				}
+				final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+				final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+				Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+				Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+				Assert.assertNull(demande.getDateRetour());
+				Assert.assertNull(demande.getDateRappel());
+				Assert.assertNotNull(demande.getCodeControle());
+				Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+				Assert.assertEquals((Integer) (dateFinExoneration.year() + 1), demande.getPeriodeFiscale());
 			}
+			return null;
 		});
 	}
 
@@ -2869,16 +2819,14 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		}
 
 		// vérification en base...
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
-				Assert.assertNotNull(e);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+			Assert.assertNotNull(e);
 
-				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
-				Assert.assertNotNull(demandes);
-				Assert.assertEquals(0, demandes.size());
-			}
+			final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+			Assert.assertNotNull(demandes);
+			Assert.assertEquals(0, demandes.size());
+			return null;
 		});
 	}
 

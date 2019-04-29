@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.common.BusinessTest;
@@ -76,30 +75,24 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 		assertEquals(0, globalIndex.getApproxDocCount());
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(status -> {
+			// Ajout des entités
+			{
 
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+				int nbDocs = 10;
+				LOGGER.info("Begin indexing of " + nbDocs + " documents");
 
-				// Ajout des entités
-				{
+				for (int i = 0; i < nbDocs; i++) {
 
-					int nbDocs = 10;
-					LOGGER.info("Begin indexing of "+nbDocs+" documents");
+					Data d = new Data((long) i, TYPE, null, "Duchmol-" + i, "Christian-" + i, "200801" + i);
+					globalIndex.indexEntity(d);
 
-					for (int i=0;i<nbDocs;i++) {
-
-						Data d = new Data((long) i, TYPE, null, "Duchmol-" + i, "Christian-" + i, "200801" + i);
-						globalIndex.indexEntity(d);
-
-						if (i % 1000 == 0) {
-							LOGGER.info("Indexation: "+i);
-						}
+					if (i % 1000 == 0) {
+						LOGGER.info("Indexation: " + i);
 					}
 				}
-				return null;
 			}
-
+			return null;
 		});
 		assertEquals(10, globalIndex.getExactDocCount());
 
@@ -118,28 +111,23 @@ public class IndexerTransactionalTest extends BusinessTest {
 			assertHits(10, "PRENOM:Chri*");
 		}
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				// Remplace une entité
-				{
-					Data d = new Data(5L, TYPE, null, "Blanc", "Marcel", "20071212");
-					globalIndex.removeThenIndexEntity(d);
-				}
-
-				// On doit en avoir une de moins
-				{
-					assertHits(9, "PRENOM:Chri*");
-				}
-
-				// On doit trouver la nouvelle
-				{
-					assertHits(1, "PRENOM:Marcel");
-				}
-				return null;
+		doInNewTransaction(status -> {
+			// Remplace une entité
+			{
+				Data d = new Data(5L, TYPE, null, "Blanc", "Marcel", "20071212");
+				globalIndex.removeThenIndexEntity(d);
 			}
 
+			// On doit en avoir une de moins
+			{
+				assertHits(9, "PRENOM:Chri*");
+			}
+
+			// On doit trouver la nouvelle
+			{
+				assertHits(1, "PRENOM:Marcel");
+			}
+			return null;
 		});
 
 		// Apres le commit, idem

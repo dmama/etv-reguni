@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.EntityValidator;
@@ -449,17 +448,14 @@ public class CoupleManagerImplTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// fiscal de départ
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique mr = addHabitant(noMr);
-				final PersonnePhysique mme = addHabitant(noMme);
-				addForPrincipal(mr, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
-				addForPrincipal(mme, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
-				ids.noHabMr = mr.getNumero();
-				ids.noHabMme = mme.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique mr = addHabitant(noMr);
+			final PersonnePhysique mme = addHabitant(noMme);
+			addForPrincipal(mr, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+			addForPrincipal(mme, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
+			ids.noHabMr = mr.getNumero();
+			ids.noHabMme = mme.getNumero();
+			return null;
 		});
 
 		// re-création du couple

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -75,21 +74,16 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 		final int annee = 2015;
 
 		// mise en place
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
 
-				final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, RegDate.get().addMonths(-1));
-				addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
-
-				return di.getId();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, RegDate.get().addMonths(-1));
+			addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			return di.getId();
 		});
 
 		// demande d'impression de confirmation de délai
@@ -115,25 +109,20 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 		final int annee = 2015;
 
 		// mise en place
-		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
 
-				final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, RegDate.get().addMonths(-1));
+			addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, RegDate.get().addMonths(-1));
-				addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
-
-				final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
-				Assert.assertNotNull(collaborateur);
-				addEtiquetteTiers(collaborateur, pp, date(annee + 1, 6, 1), null);
-
-				return di.getId();
-			}
+			final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
+			Assert.assertNotNull(collaborateur);
+			addEtiquetteTiers(collaborateur, pp, date(annee + 1, 6, 1), null);
+			return di.getId();
 		});
 
 		// demande d'impression de confirmation de délai

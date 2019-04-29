@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
@@ -167,36 +166,32 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 
 		// réception des données
 		final Message retour = buildRetour(2016, idpm, 4321L, RegDate.get());
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				try {
-					handler.onRetourDegrevement(retour, null);
-					Assert.fail("L'appel aurait dû échouer par manque de formulaire de demande de dégrèvement initial");
-				}
-				catch (EsbBusinessException e) {
-					Assert.assertEquals(EsbBusinessCode.DECLARATION_ABSENTE, e.getCode());
-					Assert.assertEquals("Formulaire de demande de dégrèvement introuvable pour la PF 2016 et le numéro de séquence 4321", e.getMessage());
-
-					// on ne relance pas l'exception pour committer la transaction quand-même
-					// (c'est ce qui se passe dans le cas d'une EsbBusinessException)
-				}
+		doInNewTransactionAndSession(status -> {
+			try {
+				handler.onRetourDegrevement(retour, null);
+				Assert.fail("L'appel aurait dû échouer par manque de formulaire de demande de dégrèvement initial");
 			}
+			catch (EsbBusinessException e) {
+				Assert.assertEquals(EsbBusinessCode.DECLARATION_ABSENTE, e.getCode());
+				Assert.assertEquals("Formulaire de demande de dégrèvement introuvable pour la PF 2016 et le numéro de séquence 4321", e.getMessage());
+
+				// on ne relance pas l'exception pour committer la transaction quand-même
+				// (c'est ce qui se passe dans le cas d'une EsbBusinessException)
+			}
+			return null;
 		});
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get((long) idpm);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get((long) idpm);
+			Assert.assertNotNull(entreprise);
 
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(0, degrevements.size());
-			}
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(0, degrevements.size());
+			return null;
 		});
 	}
 
@@ -291,52 +286,50 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+			Assert.assertNotNull(entreprise);
 
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(1, degrevements.size());
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, degrevements.size());
 
-				final DegrevementICI degrevement = degrevements.get(0);
-				Assert.assertNotNull(degrevement);
-				Assert.assertFalse(degrevement.isAnnule());
-				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-				Assert.assertNull(degrevement.getDateFin());
+			final DegrevementICI degrevement = degrevements.get(0);
+			Assert.assertNotNull(degrevement);
+			Assert.assertFalse(degrevement.isAnnule());
+			Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+			Assert.assertNull(degrevement.getDateFin());
 
-				// vérification des valeurs sauvegardées
-				Assert.assertNotNull(degrevement.getLocation());
-				Assert.assertNotNull(degrevement.getPropreUsage());
-				Assert.assertNotNull(degrevement.getLoiLogement());
-				Assert.assertEquals((Long) 1L, degrevement.getLocation().getRevenu());
-				Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
-				Assert.assertEquals((Long) 3L, degrevement.getLocation().getSurface());
-				Assert.assertEquals(0, BigDecimal.valueOf(10L).compareTo(degrevement.getLocation().getPourcentage()));
-				Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
-				Assert.assertEquals((Long) 4L, degrevement.getPropreUsage().getRevenu());
-				Assert.assertEquals((Long) 5L, degrevement.getPropreUsage().getVolume());
-				Assert.assertEquals((Long) 6L, degrevement.getPropreUsage().getSurface());
-				Assert.assertEquals(0, BigDecimal.valueOf(20L).compareTo(degrevement.getPropreUsage().getPourcentage()));
-				Assert.assertNull(degrevement.getPropreUsage().getPourcentageArrete());
-				Assert.assertEquals(dateOctroi, degrevement.getLoiLogement().getDateOctroi());
-				Assert.assertEquals(dateEcheanceOctroi, degrevement.getLoiLogement().getDateEcheance());
-				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+			// vérification des valeurs sauvegardées
+			Assert.assertNotNull(degrevement.getLocation());
+			Assert.assertNotNull(degrevement.getPropreUsage());
+			Assert.assertNotNull(degrevement.getLoiLogement());
+			Assert.assertEquals((Long) 1L, degrevement.getLocation().getRevenu());
+			Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
+			Assert.assertEquals((Long) 3L, degrevement.getLocation().getSurface());
+			Assert.assertEquals(0, BigDecimal.valueOf(10L).compareTo(degrevement.getLocation().getPourcentage()));
+			Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
+			Assert.assertEquals((Long) 4L, degrevement.getPropreUsage().getRevenu());
+			Assert.assertEquals((Long) 5L, degrevement.getPropreUsage().getVolume());
+			Assert.assertEquals((Long) 6L, degrevement.getPropreUsage().getSurface());
+			Assert.assertEquals(0, BigDecimal.valueOf(20L).compareTo(degrevement.getPropreUsage().getPourcentage()));
+			Assert.assertNull(degrevement.getPropreUsage().getPourcentageArrete());
+			Assert.assertEquals(dateOctroi, degrevement.getLoiLogement().getDateOctroi());
+			Assert.assertEquals(dateEcheanceOctroi, degrevement.getLoiLogement().getDateEcheance());
+			Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
 
-				// vérification de la quittance du formulaire de demande
-				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertEquals(1, formulaires.size());
+			// vérification de la quittance du formulaire de demande
+			final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertEquals(1, formulaires.size());
 
-				final DemandeDegrevementICI formulaire = formulaires.get(0);
-				Assert.assertNotNull(formulaire);
-				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
-				Assert.assertFalse(formulaire.isAnnule());
-				Assert.assertEquals(dateReception, formulaire.getDateRetour());
-			}
+			final DemandeDegrevementICI formulaire = formulaires.get(0);
+			Assert.assertNotNull(formulaire);
+			Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+			Assert.assertFalse(formulaire.isAnnule());
+			Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			return null;
 		});
 	}
 
@@ -418,45 +411,43 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		});
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+			Assert.assertNotNull(entreprise);
 
-				// vérification de l'absence de dégrèvement entré
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(1, degrevements.size());
+			// vérification de l'absence de dégrèvement entré
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, degrevements.size());
 
-				final DegrevementICI degrevement = degrevements.get(0);
-				Assert.assertNotNull(degrevement);
-				Assert.assertFalse(degrevement.isAnnule());
-				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-				Assert.assertNull(degrevement.getDateFin());
+			final DegrevementICI degrevement = degrevements.get(0);
+			Assert.assertNotNull(degrevement);
+			Assert.assertFalse(degrevement.isAnnule());
+			Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+			Assert.assertNull(degrevement.getDateFin());
 
-				// vérification des valeurs sauvegardées (valeur invalide -> rien n'a été conservé)
-				Assert.assertNull(degrevement.getLocation());
-				Assert.assertNull(degrevement.getPropreUsage());
-				Assert.assertNotNull(degrevement.getLoiLogement());
-				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-				Assert.assertTrue(degrevement.getNonIntegrable());
+			// vérification des valeurs sauvegardées (valeur invalide -> rien n'a été conservé)
+			Assert.assertNull(degrevement.getLocation());
+			Assert.assertNull(degrevement.getPropreUsage());
+			Assert.assertNotNull(degrevement.getLoiLogement());
+			Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+			Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+			Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+			Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+			Assert.assertTrue(degrevement.getNonIntegrable());
 
-				// vérification de la quittance du formulaire de demande (= doit avoir eu lieu quand-même...)
-				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertEquals(1, formulaires.size());
+			// vérification de la quittance du formulaire de demande (= doit avoir eu lieu quand-même...)
+			final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertEquals(1, formulaires.size());
 
-				final DemandeDegrevementICI formulaire = formulaires.get(0);
-				Assert.assertNotNull(formulaire);
-				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
-				Assert.assertFalse(formulaire.isAnnule());
-				Assert.assertEquals(dateReception, formulaire.getDateRetour());
-			}
+			final DemandeDegrevementICI formulaire = formulaires.get(0);
+			Assert.assertNotNull(formulaire);
+			Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+			Assert.assertFalse(formulaire.isAnnule());
+			Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			return null;
 		});
 	}
 
@@ -551,44 +542,42 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+			Assert.assertNotNull(entreprise);
 
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(1, degrevements.size());
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, degrevements.size());
 
-				final DegrevementICI degrevement = degrevements.get(0);
-				Assert.assertNotNull(degrevement);
-				Assert.assertFalse(degrevement.isAnnule());
-				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-				Assert.assertNull(degrevement.getDateFin());
+			final DegrevementICI degrevement = degrevements.get(0);
+			Assert.assertNotNull(degrevement);
+			Assert.assertFalse(degrevement.isAnnule());
+			Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+			Assert.assertNull(degrevement.getDateFin());
 
-				// vérification des valeurs sauvegardées (tout était invalide -> rien n'est présent)
-				Assert.assertNull(degrevement.getLocation());
-				Assert.assertNull(degrevement.getPropreUsage());
-				Assert.assertNotNull(degrevement.getLoiLogement());
-				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-				Assert.assertTrue(degrevement.getNonIntegrable());
+			// vérification des valeurs sauvegardées (tout était invalide -> rien n'est présent)
+			Assert.assertNull(degrevement.getLocation());
+			Assert.assertNull(degrevement.getPropreUsage());
+			Assert.assertNotNull(degrevement.getLoiLogement());
+			Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+			Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+			Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+			Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+			Assert.assertTrue(degrevement.getNonIntegrable());
 
-				// vérification de la quittance du formulaire de demande
-				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertEquals(1, formulaires.size());
+			// vérification de la quittance du formulaire de demande
+			final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertEquals(1, formulaires.size());
 
-				final DemandeDegrevementICI formulaire = formulaires.get(0);
-				Assert.assertNotNull(formulaire);
-				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
-				Assert.assertFalse(formulaire.isAnnule());
-				Assert.assertEquals(dateReception, formulaire.getDateRetour());
-			}
+			final DemandeDegrevementICI formulaire = formulaires.get(0);
+			Assert.assertNotNull(formulaire);
+			Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+			Assert.assertFalse(formulaire.isAnnule());
+			Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			return null;
 		});
 	}
 
@@ -683,44 +672,42 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+			Assert.assertNotNull(entreprise);
 
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(1, degrevements.size());
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, degrevements.size());
 
-				final DegrevementICI degrevement = degrevements.get(0);
-				Assert.assertNotNull(degrevement);
-				Assert.assertFalse(degrevement.isAnnule());
-				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-				Assert.assertNull(degrevement.getDateFin());
+			final DegrevementICI degrevement = degrevements.get(0);
+			Assert.assertNotNull(degrevement);
+			Assert.assertFalse(degrevement.isAnnule());
+			Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+			Assert.assertNull(degrevement.getDateFin());
 
-				// vérification des valeurs sauvegardées (tout était invalide -> rien n'est présent)
-				Assert.assertNull(degrevement.getLocation());
-				Assert.assertNull(degrevement.getPropreUsage());
-				Assert.assertNotNull(degrevement.getLoiLogement());
-				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-				Assert.assertTrue(degrevement.getNonIntegrable());
+			// vérification des valeurs sauvegardées (tout était invalide -> rien n'est présent)
+			Assert.assertNull(degrevement.getLocation());
+			Assert.assertNull(degrevement.getPropreUsage());
+			Assert.assertNotNull(degrevement.getLoiLogement());
+			Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+			Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+			Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+			Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+			Assert.assertTrue(degrevement.getNonIntegrable());
 
-				// vérification de la quittance du formulaire de demande
-				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertEquals(1, formulaires.size());
+			// vérification de la quittance du formulaire de demande
+			final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertEquals(1, formulaires.size());
 
-				final DemandeDegrevementICI formulaire = formulaires.get(0);
-				Assert.assertNotNull(formulaire);
-				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
-				Assert.assertFalse(formulaire.isAnnule());
-				Assert.assertEquals(dateReception, formulaire.getDateRetour());
-			}
+			final DemandeDegrevementICI formulaire = formulaires.get(0);
+			Assert.assertNotNull(formulaire);
+			Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+			Assert.assertFalse(formulaire.isAnnule());
+			Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			return null;
 		});
 	}
 
@@ -823,145 +810,143 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+			Assert.assertNotNull(entreprise);
 
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.sorted(Comparator.comparing(AllegementFoncier::getDateDebut).thenComparingLong(AllegementFoncier::getId))
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(5, degrevements.size());
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.sorted(Comparator.comparing(AllegementFoncier::getDateDebut).thenComparingLong(AllegementFoncier::getId))
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(5, degrevements.size());
 
-				{
-					final DegrevementICI degrevement = degrevements.get(0);
-					Assert.assertNotNull(degrevement);
-					Assert.assertFalse(degrevement.isAnnule());
-					Assert.assertEquals(date(pf - 3, 1, 1), degrevement.getDateDebut());
-					Assert.assertEquals(date(pf - 3, 12, 31), degrevement.getDateFin());
+			{
+				final DegrevementICI degrevement = degrevements.get(0);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf - 3, 1, 1), degrevement.getDateDebut());
+				Assert.assertEquals(date(pf - 3, 12, 31), degrevement.getDateFin());
 
-					// vérification des valeurs présentes
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNull(degrevement.getPropreUsage());
-					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-					Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentageArrete()));
-				}
-				{
-					final DegrevementICI degrevement = degrevements.get(1);
-					Assert.assertNotNull(degrevement);
-					Assert.assertTrue(degrevement.isAnnule());
-					Assert.assertEquals(date(pf - 2, 1, 1), degrevement.getDateDebut());
-					Assert.assertEquals(date(pf, 12, 31), degrevement.getDateFin());
-
-					// vérification des valeurs présentes
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNull(degrevement.getPropreUsage());
-					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-					Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Long) 100000L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 750L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 75L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentageArrete()));
-				}
-				{
-					final DegrevementICI degrevement = degrevements.get(2);
-					Assert.assertNotNull(degrevement);
-					Assert.assertFalse(degrevement.isAnnule());
-					Assert.assertEquals(date(pf - 2, 1, 1), degrevement.getDateDebut());
-					Assert.assertEquals(date(pf - 1, 12, 31), degrevement.getDateFin());
-
-					// vérification des valeurs présentes
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNull(degrevement.getPropreUsage());
-					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-					Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Long) 100000L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 750L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 75L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentageArrete()));
-				}
-				{
-					final DegrevementICI degrevement = degrevements.get(3);
-					Assert.assertNotNull(degrevement);
-					Assert.assertFalse(degrevement.isAnnule());
-					Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-					Assert.assertEquals(date(pf, 12, 31), degrevement.getDateFin());
-
-					// nouvelles données
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNotNull(degrevement.getPropreUsage());
-					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertEquals((Long) 1L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 3L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(10L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
-					Assert.assertEquals((Long) 4L, degrevement.getPropreUsage().getRevenu());
-					Assert.assertEquals((Long) 5L, degrevement.getPropreUsage().getVolume());
-					Assert.assertEquals((Long) 6L, degrevement.getPropreUsage().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(20L).compareTo(degrevement.getPropreUsage().getPourcentage()));
-					Assert.assertNull(degrevement.getPropreUsage().getPourcentageArrete());
-					Assert.assertTrue(degrevement.getLoiLogement().getControleOfficeLogement());
-					Assert.assertEquals(dateOctroi, degrevement.getLoiLogement().getDateOctroi());
-					Assert.assertEquals(dateEcheanceOctroi, degrevement.getLoiLogement().getDateEcheance());
-					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-					Assert.assertFalse(degrevement.getNonIntegrable());
-				}
-				{
-					final DegrevementICI degrevement = degrevements.get(4);
-					Assert.assertNotNull(degrevement);
-					Assert.assertFalse(degrevement.isAnnule());
-					Assert.assertEquals(date(pf + 1, 1, 1), degrevement.getDateDebut());
-					Assert.assertNull(degrevement.getDateFin());
-
-					// vérification des valeurs présentes
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNull(degrevement.getPropreUsage());
-					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-					Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Long) 5L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 20L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(1L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertEquals(0, BigDecimal.valueOf(1L).compareTo(degrevement.getLocation().getPourcentageArrete()));
-				}
-
-				// vérification de la quittance du formulaire de demande
-				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertEquals(1, formulaires.size());
-
-				final DemandeDegrevementICI formulaire = formulaires.get(0);
-				Assert.assertNotNull(formulaire);
-				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
-				Assert.assertFalse(formulaire.isAnnule());
-				Assert.assertEquals(dateReception, formulaire.getDateRetour());
+				// vérification des valeurs présentes
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertFalse(degrevement.getNonIntegrable());
+				Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 			}
+			{
+				final DegrevementICI degrevement = degrevements.get(1);
+				Assert.assertNotNull(degrevement);
+				Assert.assertTrue(degrevement.isAnnule());
+				Assert.assertEquals(date(pf - 2, 1, 1), degrevement.getDateDebut());
+				Assert.assertEquals(date(pf, 12, 31), degrevement.getDateFin());
+
+				// vérification des valeurs présentes
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertFalse(degrevement.getNonIntegrable());
+				Assert.assertEquals((Long) 100000L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 750L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 75L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentageArrete()));
+			}
+			{
+				final DegrevementICI degrevement = degrevements.get(2);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf - 2, 1, 1), degrevement.getDateDebut());
+				Assert.assertEquals(date(pf - 1, 12, 31), degrevement.getDateFin());
+
+				// vérification des valeurs présentes
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertFalse(degrevement.getNonIntegrable());
+				Assert.assertEquals((Long) 100000L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 750L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 75L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentageArrete()));
+			}
+			{
+				final DegrevementICI degrevement = degrevements.get(3);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+				Assert.assertEquals(date(pf, 12, 31), degrevement.getDateFin());
+
+				// nouvelles données
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNotNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertEquals((Long) 1L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 3L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(10L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
+				Assert.assertEquals((Long) 4L, degrevement.getPropreUsage().getRevenu());
+				Assert.assertEquals((Long) 5L, degrevement.getPropreUsage().getVolume());
+				Assert.assertEquals((Long) 6L, degrevement.getPropreUsage().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(20L).compareTo(degrevement.getPropreUsage().getPourcentage()));
+				Assert.assertNull(degrevement.getPropreUsage().getPourcentageArrete());
+				Assert.assertTrue(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertEquals(dateOctroi, degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertEquals(dateEcheanceOctroi, degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertFalse(degrevement.getNonIntegrable());
+			}
+			{
+				final DegrevementICI degrevement = degrevements.get(4);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf + 1, 1, 1), degrevement.getDateDebut());
+				Assert.assertNull(degrevement.getDateFin());
+
+				// vérification des valeurs présentes
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertFalse(degrevement.getNonIntegrable());
+				Assert.assertEquals((Long) 5L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 20L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(1L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertEquals(0, BigDecimal.valueOf(1L).compareTo(degrevement.getLocation().getPourcentageArrete()));
+			}
+
+			// vérification de la quittance du formulaire de demande
+			final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertEquals(1, formulaires.size());
+
+			final DemandeDegrevementICI formulaire = formulaires.get(0);
+			Assert.assertNotNull(formulaire);
+			Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+			Assert.assertFalse(formulaire.isAnnule());
+			Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			return null;
 		});
 	}
 
@@ -1057,69 +1042,67 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+			Assert.assertNotNull(entreprise);
 
-				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(DegrevementICI.class::isInstance)
-						.sorted(Comparator.comparing(AllegementFoncier::getDateDebut).thenComparingLong(AllegementFoncier::getId))
-						.map(DegrevementICI.class::cast)
-						.collect(Collectors.toList());
-				Assert.assertEquals(2, degrevements.size());
+			final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+					.filter(DegrevementICI.class::isInstance)
+					.sorted(Comparator.comparing(AllegementFoncier::getDateDebut).thenComparingLong(AllegementFoncier::getId))
+					.map(DegrevementICI.class::cast)
+					.collect(Collectors.toList());
+			Assert.assertEquals(2, degrevements.size());
 
-				{
-					final DegrevementICI degrevement = degrevements.get(0);
-					Assert.assertNotNull(degrevement);
-					Assert.assertFalse(degrevement.isAnnule());
-					Assert.assertEquals(date(pf - 3, 1, 1), degrevement.getDateDebut());
-					Assert.assertEquals(date(pf - 1, 12, 31), degrevement.getDateFin());
+			{
+				final DegrevementICI degrevement = degrevements.get(0);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf - 3, 1, 1), degrevement.getDateDebut());
+				Assert.assertEquals(date(pf - 1, 12, 31), degrevement.getDateFin());
 
-					// vérification des valeurs présentes
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNull(degrevement.getPropreUsage());
-					Assert.assertNull(degrevement.getLoiLogement());
-					Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentageArrete()));
-				}
-				{
-					final DegrevementICI degrevement = degrevements.get(1);
-					Assert.assertNotNull(degrevement);
-					Assert.assertFalse(degrevement.isAnnule());
-					Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-					Assert.assertNull(degrevement.getDateFin());
-
-					// vérification des valeurs présentes
-					Assert.assertNotNull(degrevement.getLocation());
-					Assert.assertNull(degrevement.getPropreUsage());
-					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
-					Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
-					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
-					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
-					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
-					Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
-				}
-
-				// vérification de la quittance du formulaire de demande
-				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
-				Assert.assertEquals(1, formulaires.size());
-
-				final DemandeDegrevementICI formulaire = formulaires.get(0);
-				Assert.assertNotNull(formulaire);
-				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
-				Assert.assertFalse(formulaire.isAnnule());
-				Assert.assertEquals(dateReception, formulaire.getDateRetour());
+				// vérification des valeurs présentes
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNull(degrevement.getLoiLogement());
+				Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 			}
+			{
+				final DegrevementICI degrevement = degrevements.get(1);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+				Assert.assertNull(degrevement.getDateFin());
+
+				// vérification des valeurs présentes
+				Assert.assertNotNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertFalse(degrevement.getNonIntegrable());
+				Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
+				Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
+				Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
+			}
+
+			// vérification de la quittance du formulaire de demande
+			final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+			Assert.assertEquals(1, formulaires.size());
+
+			final DemandeDegrevementICI formulaire = formulaires.get(0);
+			Assert.assertNotNull(formulaire);
+			Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+			Assert.assertFalse(formulaire.isAnnule());
+			Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			return null;
 		});
 	}
 

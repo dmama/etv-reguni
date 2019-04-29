@@ -3,8 +3,6 @@ package ch.vd.unireg.mouvement;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -81,16 +79,11 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final DeterminerMouvementsDossiersEnMasseRapport rapport = template.execute(new TransactionCallback<DeterminerMouvementsDossiersEnMasseRapport>() {
-			@Override
-			public DeterminerMouvementsDossiersEnMasseRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final DeterminerMouvementsDossiersEnMasseRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success(String.format("La détermination des mouvements de dossiers en masse pour l'année %d au %s est terminée",
-				dateTraitement.year() - 1, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
+		                            dateTraitement.year() - 1, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
 	}
 
 }

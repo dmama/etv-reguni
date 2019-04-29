@@ -7,31 +7,19 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.xml.common.v1.Date;
-import ch.vd.unireg.xml.event.rt.common.v1.IdentifiantRapportTravail;
-import ch.vd.unireg.xml.event.rt.request.v1.CreationProlongationRapportTravail;
-import ch.vd.unireg.xml.event.rt.request.v1.FermetureRapportTravail;
-import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravail;
-import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravailType;
-import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
-import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -45,6 +33,16 @@ import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypePermis;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.Date;
+import ch.vd.unireg.xml.event.rt.common.v1.IdentifiantRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.CreationProlongationRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.FermetureRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravailType;
+import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
+import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -584,9 +582,9 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
 				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
-				ids.idDebiteur= debiteur.getNumero();
+				ids.idDebiteur = debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
-				ids.idSourcier= sourcier.getNumero();
+				ids.idSourcier = sourcier.getNumero();
 
 				addRapportPrestationImposable(debiteur, sourcier, date(2011, 1, 1), date(2012, 3, 30), false);
 				return null;
@@ -596,45 +594,43 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateDebutPeriode = date(2012, 4, 1);
 		final RegDate dateFinPeriode = date(2012, 12, 31);
 		final RegDate dateDebutVersementSalaire = date(2012, 4, 1);
-		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode);
 
-		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, periodeDeclaration, dateDebutVersementSalaire, null);
 
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 
-				final List<RapportEntreTiers> rapportPrestations = new ArrayList<>(dpi.getRapportsObjet());
-				assertEquals(2, rapportPrestations.size());
+			final List<RapportEntreTiers> rapportPrestations = new ArrayList<>(dpi.getRapportsObjet());
+			assertEquals(2, rapportPrestations.size());
 
-				Collections.sort(rapportPrestations, new DateRangeComparator<>());
+			Collections.sort(rapportPrestations, new DateRangeComparator<>());
 
-				// rapport existant conservé ...
-				{
-					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
-					assertEquals(date(2011, 1, 1), rapportPrestationImposable.getDateDebut());
-					assertEquals(date(2012, 3, 30), rapportPrestationImposable.getDateFin());
-					assertFalse(rapportPrestationImposable.isAnnule());
-				}
-
-				// ... et nouveau rapport créé
-				{
-					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
-					assertEquals(date(2012, 4, 1), rapportPrestationImposable.getDateDebut());
-					assertEquals(null, rapportPrestationImposable.getDateFin());
-					assertFalse(rapportPrestationImposable.isAnnule());
-				}
-				return null;
+			// rapport existant conservé ...
+			{
+				final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+				assertEquals(date(2011, 1, 1), rapportPrestationImposable.getDateDebut());
+				assertEquals(date(2012, 3, 30), rapportPrestationImposable.getDateFin());
+				assertFalse(rapportPrestationImposable.isAnnule());
 			}
+
+			// ... et nouveau rapport créé
+			{
+				final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
+				assertEquals(date(2012, 4, 1), rapportPrestationImposable.getDateDebut());
+				assertEquals(null, rapportPrestationImposable.getDateFin());
+				assertFalse(rapportPrestationImposable.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -655,9 +651,9 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable debiteur = addDebiteur();
 				addForDebiteur(debiteur, date(2011, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
-				ids.idDebiteur= debiteur.getNumero();
+				ids.idDebiteur = debiteur.getNumero();
 				PersonnePhysique sourcier = addHabitant(12365478L);
-				ids.idSourcier= sourcier.getNumero();
+				ids.idSourcier = sourcier.getNumero();
 
 				addRapportPrestationImposable(debiteur, sourcier, date(2011, 1, 1), date(2012, 3, 31), false);
 				return null;
@@ -667,45 +663,43 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateDebutPeriode = date(2012, 4, 1);
 		final RegDate dateFinPeriode = date(2012, 12, 31);
 		final RegDate dateDebutVersementSalaire = date(2012, 4, 1);
-		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode);
 
-		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, periodeDeclaration, dateDebutVersementSalaire, null);
 
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(request, null));
 			}
 		});
-		assertEquals(DataHelper.coreToXMLv1(RegDate.get()),response.getDatePriseEnCompte());
+		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 
-				final List<RapportEntreTiers> rapportPrestations = new ArrayList<>(dpi.getRapportsObjet());
-				assertEquals(2, rapportPrestations.size());
+			final List<RapportEntreTiers> rapportPrestations = new ArrayList<>(dpi.getRapportsObjet());
+			assertEquals(2, rapportPrestations.size());
 
-				Collections.sort(rapportPrestations, new DateRangeComparator<>());
+			Collections.sort(rapportPrestations, new DateRangeComparator<>());
 
-				// rapport existant annulé ...
-				{
-					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
-					assertEquals(date(2011, 1, 1), rapportPrestationImposable.getDateDebut());
-					assertEquals(date(2012, 3, 31), rapportPrestationImposable.getDateFin());
-					assertTrue(rapportPrestationImposable.isAnnule());
-				}
-
-				// ... et remplacé
-				{
-					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
-					assertEquals(date(2011, 1, 1), rapportPrestationImposable.getDateDebut());
-					assertEquals(null, rapportPrestationImposable.getDateFin());
-					assertFalse(rapportPrestationImposable.isAnnule());
-				}
-				return null;
+			// rapport existant annulé ...
+			{
+				final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+				assertEquals(date(2011, 1, 1), rapportPrestationImposable.getDateDebut());
+				assertEquals(date(2012, 3, 31), rapportPrestationImposable.getDateFin());
+				assertTrue(rapportPrestationImposable.isAnnule());
 			}
+
+			// ... et remplacé
+			{
+				final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
+				assertEquals(date(2011, 1, 1), rapportPrestationImposable.getDateDebut());
+				assertEquals(null, rapportPrestationImposable.getDateFin());
+				assertFalse(rapportPrestationImposable.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1234,28 +1228,25 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividu);
-				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividu);
+			addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+			addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
-				addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
-				addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), null, false);
 
-				final Ids ids = new Ids();
-				ids.idDebiteur = dpi.getNumero();
-				ids.idSourcier = sourcier.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idDebiteur = dpi.getNumero();
+			ids1.idSourcier = sourcier.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
 		req.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1265,32 +1256,30 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
-				assertEquals(2,rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
+			assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2005, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2006, 4, 12), rapport.getDateFin());      // <-- cette date ne doit pas être modifiée !
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2008, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2012, 12, 31), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				return null;
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2005, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2006, 4, 12), rapport.getDateFin());      // <-- cette date ne doit pas être modifiée !
+				assertFalse(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2008, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2012, 12, 31), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1319,30 +1308,27 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividu);
-				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividu);
+			addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+			addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
-				addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
-				addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), null, false);
 
-				final Ids ids = new Ids();
-				ids.idDebiteur = dpi.getNumero();
-				ids.idSourcier = sourcier.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idDebiteur = dpi.getNumero();
+			ids1.idSourcier = sourcier.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
 		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 1, 12))));
 		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 1)));
 		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 12)));
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1352,32 +1338,30 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertEquals(2,rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2005, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2006, 4, 12), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2008, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 1, 12), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				return null;
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2005, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2006, 4, 12), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2008, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 1, 12), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1406,30 +1390,27 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividu);
-				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividu);
+			addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+			addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
-				addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
-				addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), date(2012, 12, 31), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2005, 1, 1), date(2006, 4, 12), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2008, 1, 1), date(2012, 12, 31), false);
 
-				final Ids ids = new Ids();
-				ids.idDebiteur = dpi.getNumero();
-				ids.idSourcier = sourcier.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idDebiteur = dpi.getNumero();
+			ids1.idSourcier = sourcier.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
 		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 1, 10))));
 		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 1)));
 		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 10)));
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1439,39 +1420,37 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertEquals(3,rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertEquals(3, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2005, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2006, 4, 12), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2008, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2012, 12, 31), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(2);
-					assertNotNull(rapport);
-					assertEquals(date(2008, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 1, 10), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				return null;
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2005, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2006, 4, 12), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2008, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2012, 12, 31), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(2);
+				assertNotNull(rapport);
+				assertEquals(date(2008, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 1, 10), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1503,23 +1482,20 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividu);
-				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividu);
+			addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+			addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
-				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
-				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
 
-				final Ids ids = new Ids();
-				ids.idDebiteur = dpi.getNumero();
-				ids.idSourcier = sourcier.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idDebiteur = dpi.getNumero();
+			ids1.idSourcier = sourcier.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
@@ -1527,7 +1503,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		req.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
 		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 10)));
 		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 20)));
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1537,32 +1513,30 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertEquals(2,rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2011, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 1, 20), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2011, 1, 1), rapport.getDateDebut());
-					assertEquals(null, rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-				return null;
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2011, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 1, 20), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2011, 1, 1), rapport.getDateDebut());
+				assertEquals(null, rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1589,24 +1563,21 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividu);
-				addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividu);
+			addForPrincipal(sourcier, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
-				addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2005, 1, 1));
+			addForDebiteur(dpi, date(2005, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
-				addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
-				addRapportPrestationImposable(dpi, sourcier, date(2010, 1, 1), null, false);
-				addRapportPrestationImposable(dpi, sourcier, date(2012, 3, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2011, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2010, 1, 1), null, false);
+			addRapportPrestationImposable(dpi, sourcier, date(2012, 3, 1), null, false);
 
-				final Ids ids = new Ids();
-				ids.idDebiteur = dpi.getNumero();
-				ids.idSourcier = sourcier.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idDebiteur = dpi.getNumero();
+			ids1.idSourcier = sourcier.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 1, 1), date(2013, 1, 31)), null, null);
@@ -1614,7 +1585,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		req.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
 		req.setDateDebutVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 10)));
 		req.setDateFinVersementSalaire(DataHelper.coreToXMLv1(date(2013, 1, 20)));
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1624,41 +1595,38 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification du résultat...
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertEquals(3,rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertEquals(3, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2010, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 1, 20), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2011, 1, 1), rapport.getDateDebut());
-					assertEquals(null, rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(2);
-					assertNotNull(rapport);
-					assertEquals(date(2012, 3, 1), rapport.getDateDebut());
-					assertEquals(null, rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-
-				return null;
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2010, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 1, 20), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
 			}
+
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2011, 1, 1), rapport.getDateDebut());
+				assertEquals(null, rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(2);
+				assertNotNull(rapport);
+				assertEquals(date(2012, 3, 1), rapport.getDateDebut());
+				assertEquals(null, rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1685,27 +1653,24 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addNonHabitant("Harry", "Miettinnen", date(1980, 6, 30), Sexe.MASCULIN);
-				addForPrincipal(sourcier, date(2010, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Nyon, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addNonHabitant("Harry", "Miettinnen", date(1980, 6, 30), Sexe.MASCULIN);
+			addForPrincipal(sourcier, date(2010, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Nyon, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
-				addForDebiteur(dpi, date(2013, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aubonne);
-				addRapportPrestationImposable(dpi, sourcier, date(2013, 1, 1), date(2013, 4, 1), false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2013, 1, 1));
+			addForDebiteur(dpi, date(2013, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aubonne);
+			addRapportPrestationImposable(dpi, sourcier, date(2013, 1, 1), date(2013, 4, 1), false);
 
-				final Ids ids = new Ids();
-				ids.idSourcier = sourcier.getNumero();
-				ids.idDebiteur = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idSourcier = sourcier.getNumero();
+			ids1.idDebiteur = dpi.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, new DateRangeHelper.Range(date(2013, 4, 1), date(2013, 4, 30)), null, null);
 		req.setFermetureRapportTravail(new FermetureRapportTravail());
 
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1715,34 +1680,31 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// allons voir en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.idDebiteur);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.idSourcier);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertNotNull(rapports);
-				assertEquals(2, rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertNotNull(rapports);
+			assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2013, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 3, 31), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2013, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 4, 1), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-
-				return null;
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2013, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 3, 31), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2013, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 4, 1), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1768,28 +1730,25 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
-				addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
+			addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
-				addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2012, 12, 31), false);
-				addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2012, 12, 31), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
 
-				final Ids ids = new Ids();
-				ids.pp = sourcier.getNumero();
-				ids.dpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = sourcier.getNumero();
+			ids1.dpi = dpi.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), date(2013, 5, 1), date(2013, 5, 31));
 		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 5, 15))));
 
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1799,39 +1758,38 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertNotNull(rapports);
-				assertEquals(3, rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertNotNull(rapports);
+			assertEquals(3, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
-					assertEquals(date(2012, 12, 31), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 5, 10), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(2);
-					assertNotNull(rapport);
-					assertEquals(date(2012, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 5, 10), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+				assertEquals(date(2012, 12, 31), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 5, 10), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
+			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(2);
+				assertNotNull(rapport);
+				assertEquals(date(2012, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 5, 10), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1857,28 +1815,25 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
-				addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
+			addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
-				addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2013, 5, 10), false);
-				addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2013, 5, 10), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
 
-				final Ids ids = new Ids();
-				ids.pp = sourcier.getNumero();
-				ids.dpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = sourcier.getNumero();
+			ids1.dpi = dpi.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), date(2013, 5, 1), date(2013, 5, 31));
 		req.setFinRapportTravail(new FinRapportTravail(FinRapportTravailType.SORTIE, DataHelper.coreToXMLv1(date(2013, 5, 15))));
 
-		final MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+		final MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
 			@Override
 			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
 				return handler.handle(MiseAjourRapportTravail.get(req, null));
@@ -1888,32 +1843,31 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertNotNull(rapports);
-				assertEquals(2, rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertNotNull(rapports);
+			assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 5, 10), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2012, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 5, 10), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 5, 10), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2012, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 5, 10), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -1936,22 +1890,19 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
-				addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique sourcier = addHabitant(noIndividuSourcier);
+			addForPrincipal(sourcier, date(2009, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
-				addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2012, 12, 31), false);
-				addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			addRapportPrestationImposable(dpi, sourcier, date(2009, 6, 1), date(2012, 12, 31), false);
+			addRapportPrestationImposable(dpi, sourcier, date(2012, 1, 1), date(2013, 5, 10), false);
 
-				final Ids ids = new Ids();
-				ids.pp = sourcier.getNumero();
-				ids.dpi = dpi.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = sourcier.getNumero();
+			ids1.dpi = dpi.getNumero();
+			return ids1;
 		});
 
 		final MiseAJourRapportTravailRequest req = createMiseAJourRapportTravailRequest(ids.dpi, ids.pp, new DateRangeHelper.Range(date(2013, 5, 1), date(2013, 5, 31)), null, null);
@@ -1967,39 +1918,38 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertNull(response.getExceptionInfo());
 
 		// vérification des rapports au final -> les deux existants doivent avoir été annulés et remplacé par leur fusion, sans autre modification
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
-				final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+			final PersonnePhysique sourcier = (PersonnePhysique) tiersDAO.get(ids.pp);
 
-				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
-				assertNotNull(rapports);
-				assertEquals(3, rapports.size());
+			final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
+			assertNotNull(rapports);
+			assertEquals(3, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<>());
-				{
-					final RapportPrestationImposable rapport = rapports.get(0);
-					assertNotNull(rapport);
-					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
-					assertEquals(date(2012, 12, 31), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(1);
-					assertNotNull(rapport);
-					assertEquals(date(2009, 6, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 4, 30), rapport.getDateFin());
-					assertFalse(rapport.isAnnule());
-				}
-				{
-					final RapportPrestationImposable rapport = rapports.get(2);
-					assertNotNull(rapport);
-					assertEquals(date(2012, 1, 1), rapport.getDateDebut());
-					assertEquals(date(2013, 5, 10), rapport.getDateFin());
-					assertTrue(rapport.isAnnule());
-				}
+			Collections.sort(rapports, new DateRangeComparator<>());
+			{
+				final RapportPrestationImposable rapport = rapports.get(0);
+				assertNotNull(rapport);
+				assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+				assertEquals(date(2012, 12, 31), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
 			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(1);
+				assertNotNull(rapport);
+				assertEquals(date(2009, 6, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 4, 30), rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
+			}
+			{
+				final RapportPrestationImposable rapport = rapports.get(2);
+				assertNotNull(rapport);
+				assertEquals(date(2012, 1, 1), rapport.getDateDebut());
+				assertEquals(date(2013, 5, 10), rapport.getDateFin());
+				assertTrue(rapport.isAnnule());
+			}
+			;
+			return null;
 		});
 	}
 }

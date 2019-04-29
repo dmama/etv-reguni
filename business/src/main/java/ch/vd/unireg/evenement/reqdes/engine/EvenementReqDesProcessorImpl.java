@@ -30,8 +30,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -42,11 +40,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseException;
@@ -63,8 +56,13 @@ import ch.vd.unireg.common.BlockingQueuePollingThread;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.metier.MetierServiceException;
@@ -335,72 +333,70 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			}
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+			template.execute(status -> {
+				final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
 
-					// si l'unité de traitement est déjà dans un état final, on ne fait rien ici
-					if (ETATS_FINAUX.contains(ut.getEtat())) {
-						if (LOGGER.isInfoEnabled()) {
-							LOGGER.info(String.format("Unité de traitement %d déjà dans un état final (%s) ; aucun traitement supplémentaire n'est donc entrepris ici.", ut.getId(), ut.getEtat()));
-						}
-						return;
+				// si l'unité de traitement est déjà dans un état final, on ne fait rien ici
+				if (ETATS_FINAUX.contains(ut.getEtat())) {
+					if (LOGGER.isInfoEnabled()) {
+						LOGGER.info(String.format("Unité de traitement %d déjà dans un état final (%s) ; aucun traitement supplémentaire n'est donc entrepris ici.", ut.getId(), ut.getEtat()));
 					}
+					return null;
+				}
 
-					// au boulot !
-					final String visaPrincipal = extractVisaPrincipal(ut.getEvenement());
-					AuthenticationHelper.pushPrincipal(String.format("%s-reqdes", visaPrincipal));
-					try {
-						final Set<ErreurTraitement> erreurs = ut.getErreurs();
-						erreurs.clear();
+				// au boulot !
+				final String visaPrincipal = extractVisaPrincipal(ut.getEvenement());
+				AuthenticationHelper.pushPrincipal(String.format("%s-reqdes", visaPrincipal));
+				try {
+					final Set<ErreurTraitement> erreurs = ut.getErreurs();
+					erreurs.clear();
 
-						final MessageCollector errorCollector = new MessageCollector(ErreurTraitement.TypeErreur.ERROR);
-						final MessageCollector warningCollector = new MessageCollector(ErreurTraitement.TypeErreur.WARNING);
+					final MessageCollector errorCollector = new MessageCollector(ErreurTraitement.TypeErreur.ERROR);
+					final MessageCollector warningCollector = new MessageCollector(ErreurTraitement.TypeErreur.WARNING);
 
-						processUniteTraitement(ut, errorCollector, warningCollector);         // <-- c'est ici que tout est fait
+					processUniteTraitement(ut, errorCollector, warningCollector);         // <-- c'est ici que tout est fait
 
-						// récupération des erreurs, log...
-						if (errorCollector.hasCollectedMessages() || warningCollector.hasCollectedMessages()) {
-							final List<ErrorInfo> infos = new LinkedList<>();
-							infos.addAll(errorCollector.getCollectedMessages());
-							infos.addAll(warningCollector.getCollectedMessages());
+					// récupération des erreurs, log...
+					if (errorCollector.hasCollectedMessages() || warningCollector.hasCollectedMessages()) {
+						final List<ErrorInfo> infos = new LinkedList<>();
+						infos.addAll(errorCollector.getCollectedMessages());
+						infos.addAll(warningCollector.getCollectedMessages());
 
-							final StringBuilder b = new StringBuilder("Message(s) signalé(s) lors du traitement de l'unité de traitement ").append(ut.getId()).append(" :");
+						final StringBuilder b = new StringBuilder("Message(s) signalé(s) lors du traitement de l'unité de traitement ").append(ut.getId()).append(" :");
 
-							// recopie des erreurs collectées dans l'unité de traitement
-							for (ErrorInfo info : infos) {
-								b.append("\n- <").append(info.typeErreur).append("> ").append(info.message);
-								erreurs.add(new ErreurTraitement(info.typeErreur, info.message));
-							}
-
-							if (errorCollector.hasCollectedMessages()) {
-								LOGGER.error(b.toString());
-							}
-							else {
-								LOGGER.warn(b.toString());
-							}
+						// recopie des erreurs collectées dans l'unité de traitement
+						for (ErrorInfo info : infos) {
+							b.append("\n- <").append(info.typeErreur).append("> ").append(info.message);
+							erreurs.add(new ErreurTraitement(info.typeErreur, info.message));
 						}
 
-						final EtatTraitement nouvelEtat = errorCollector.hasCollectedMessages() ? EtatTraitement.EN_ERREUR : EtatTraitement.TRAITE;
-						ut.setDateTraitement(DateHelper.getCurrentDate());
-						ut.setEtat(nouvelEtat);
-
-						// un petit flush avant de partir (histoire que les visas utilisés soient les bons)
-						hibernateTemplate.flush();
-
-						// log après le flush pour que les éventuels problèmes de validation soient pris en compte
-						if (LOGGER.isInfoEnabled()) {
-							LOGGER.info(String.format("Traitement de l'unité de traitement %d terminé dans l'état %s", idUniteTraitement, nouvelEtat));
+						if (errorCollector.hasCollectedMessages()) {
+							LOGGER.error(b.toString());
+						}
+						else {
+							LOGGER.warn(b.toString());
 						}
 					}
-					catch (EvenementReqDesException e) {
-						throw new ExceptionReqDesWrappingException(e);
-					}
-					finally {
-						AuthenticationHelper.popPrincipal();
+
+					final EtatTraitement nouvelEtat = errorCollector.hasCollectedMessages() ? EtatTraitement.EN_ERREUR : EtatTraitement.TRAITE;
+					ut.setDateTraitement(DateHelper.getCurrentDate());
+					ut.setEtat(nouvelEtat);
+
+					// un petit flush avant de partir (histoire que les visas utilisés soient les bons)
+					hibernateTemplate.flush();
+
+					// log après le flush pour que les éventuels problèmes de validation soient pris en compte
+					if (LOGGER.isInfoEnabled()) {
+						LOGGER.info(String.format("Traitement de l'unité de traitement %d terminé dans l'état %s", idUniteTraitement, nouvelEtat));
 					}
 				}
+				catch (EvenementReqDesException e) {
+					throw new ExceptionReqDesWrappingException(e);
+				}
+				finally {
+					AuthenticationHelper.popPrincipal();
+				}
+				return null;
 			});
 		}
 		catch (Exception ex) {
@@ -418,22 +414,20 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			// le traitement a explosé dans la transaction -> rollback et mise en erreur de l'unité de traitement
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
-					ut.setDateTraitement(DateHelper.getCurrentDate());
-					ut.setEtat(EtatTraitement.EN_ERREUR);
+			template.execute(status -> {
+				final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+				ut.setDateTraitement(DateHelper.getCurrentDate());
+				ut.setEtat(EtatTraitement.EN_ERREUR);
 
 					final ErreurTraitement erreur = new ErreurTraitement();
 					erreur.setCallstack(ExceptionUtils.extractCallStack(e));
 					erreur.setMessage(e.getMessage());
 					erreur.setType(ErreurTraitement.TypeErreur.ERROR);
 
-					final Set<ErreurTraitement> erreurs = ut.getErreurs();
-					erreurs.clear();
-					erreurs.add(erreur);
-				}
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				erreurs.clear();
+				erreurs.add(erreur);
+				return null;
 			});
 
 			if (LOGGER.isInfoEnabled()) {

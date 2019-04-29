@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationMessage;
@@ -43,13 +42,10 @@ public class ValidationInterceptorTest extends BusinessTest {
 	@Test
 	public void testValidationEntiteValide() throws Exception {
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
-				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
+			AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
+			return null;
 		});
 	}
 
@@ -60,17 +56,14 @@ public class ValidationInterceptorTest extends BusinessTest {
 	public void testValidationEntiteInvalide() throws Exception {
 
 		try {
-			doInNewTransaction(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
-					jean.setNom(null); // le nom est obligatoire
+			doInNewTransaction(status -> {
+				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
+				jean.setNom(null); // le nom est obligatoire
 
-					final ValidationResults results = validationService.validate(jean);
-					Assert.assertEquals(1, results.errorsCount());
-					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
-					return null;
-				}
+				final ValidationResults results = validationService.validate(jean);
+				Assert.assertEquals(1, results.errorsCount());
+				Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
+				return null;
 			});
 			Assert.fail("Une exception de validation aurait dû être levée.");
 		}
@@ -87,17 +80,14 @@ public class ValidationInterceptorTest extends BusinessTest {
 	@Test
 	public void testValidationSousEntiteValideEtParentValide() throws Exception {
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
-				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
+		doInNewTransaction(status -> {
+			final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
+			AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
 
-				final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Aigle, MotifRattachement.DOMICILE);
-				AbstractSpringTest.assertEmpty(validationService.validate(ffp).getErrors());
-				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Aigle, MotifRattachement.DOMICILE);
+			AbstractSpringTest.assertEmpty(validationService.validate(ffp).getErrors());
+			AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
+			return null;
 		});
 	}
 
@@ -110,20 +100,16 @@ public class ValidationInterceptorTest extends BusinessTest {
 		final Long jeanId = addInvalidePP();
 
 		try {
-			doInNewTransaction(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+			doInNewTransaction(status -> {
+				// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
+				final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, jeanId);
+				final ValidationResults results = validationService.validate(jean);
+				Assert.assertEquals(1, results.errorsCount());
+				Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
 
-					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
-					final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, jeanId);
-					final ValidationResults results = validationService.validate(jean);
-					Assert.assertEquals(1, results.errorsCount());
-					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
-
-					final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE);
-					AbstractSpringTest.assertEmpty(validationService.validate(ffp).getErrors()); // la sous-entité elle-même est valide
-					return null;
-				}
+				final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE);
+				AbstractSpringTest.assertEmpty(validationService.validate(ffp).getErrors()); // la sous-entité elle-même est valide;
+				return null;
 			});
 			Assert.fail("Une exception de validation aurait dû être levée.");
 		}
@@ -140,21 +126,18 @@ public class ValidationInterceptorTest extends BusinessTest {
 	@Test
 	public void testValidationJoinEntiteValideEtParentsValides() throws Exception {
 
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(1985, 2, 2), Sexe.MASCULIN);
-				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
+		doInNewTransaction(status -> {
+			final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(1985, 2, 2), Sexe.MASCULIN);
+			AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
 
-				final PersonnePhysique olga = addNonHabitant("Olga", "Dupneu", date(1992, 2, 2), Sexe.FEMININ);
-				AbstractSpringTest.assertEmpty(validationService.validate(olga).getErrors());
+			final PersonnePhysique olga = addNonHabitant("Olga", "Dupneu", date(1992, 2, 2), Sexe.FEMININ);
+			AbstractSpringTest.assertEmpty(validationService.validate(olga).getErrors());
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jean, olga, date(2011, 3, 12), null);
-				AbstractSpringTest.assertEmpty(validationService.validate(ensemble.getMenage()).getErrors());
-				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
-				AbstractSpringTest.assertEmpty(validationService.validate(olga).getErrors());
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jean, olga, date(2011, 3, 12), null);
+			AbstractSpringTest.assertEmpty(validationService.validate(ensemble.getMenage()).getErrors());
+			AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
+			AbstractSpringTest.assertEmpty(validationService.validate(olga).getErrors());
+			return null;
 		});
 	}
 
@@ -167,25 +150,20 @@ public class ValidationInterceptorTest extends BusinessTest {
 		final Long jeanId = addInvalidePP();
 
 		try {
-			doInNewTransaction(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+			doInNewTransaction(status -> {
+				// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
+				final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, jeanId);
+				final ValidationResults results = validationService.validate(jean);
+				Assert.assertEquals(1, results.errorsCount());
+				Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
 
-					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
-					final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, jeanId);
-					final ValidationResults results = validationService.validate(jean);
-					Assert.assertEquals(1, results.errorsCount());
-					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
+				MenageCommun menage = new MenageCommun();
+				menage = hibernateTemplate.merge(menage);
 
-					MenageCommun menage = new MenageCommun();
-					menage = hibernateTemplate.merge(menage);
-
-					AppartenanceMenage rapport = new AppartenanceMenage(date(2011, 3, 12), null, jean, menage);
-					rapport = hibernateTemplate.merge(rapport);
-					AbstractSpringTest.assertEmpty(validationService.validate(rapport).getErrors()); // la join-entité elle-même est valide
-					
-					return null;
-				}
+				AppartenanceMenage rapport = new AppartenanceMenage(date(2011, 3, 12), null, jean, menage);
+				rapport = hibernateTemplate.merge(rapport);
+				AbstractSpringTest.assertEmpty(validationService.validate(rapport).getErrors()); // la join-entité elle-même est valide;
+				return null;
 			});
 			Assert.fail("Une exception de validation aurait dû être levée.");
 		}
@@ -204,19 +182,15 @@ public class ValidationInterceptorTest extends BusinessTest {
 	private Long addInvalidePP() throws Exception {
 
 		// on désactive temporairement l'interception pour permettre de sauver un tiers invalide
-		return doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
-				jean.setNom(null); // le nom est obligatoire
+		return doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
+			jean.setNom(null); // le nom est obligatoire
 
-				// On s'assure que le tiers est bien invalide
-				final ValidationResults results = validationService.validate(jean);
-				Assert.assertEquals(1, results.errorsCount());
-				Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
-
-				return jean.getId();
-			}
+			// On s'assure que le tiers est bien invalide
+			final ValidationResults results = validationService.validate(jean);
+			Assert.assertEquals(1, results.errorsCount());
+			Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
+			return jean.getId();
 		});
 	}
 

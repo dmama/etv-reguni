@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
@@ -117,12 +115,9 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				return dpi.getNumero();
-			}
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			return dpi.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -154,12 +149,9 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				return pp.getNumero();
-			}
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+			return pp.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -190,16 +182,13 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
-				di.setCodeSegment(4);
-				return pp.getNumero();
-			}
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+			di.setCodeSegment(4);
+			return pp.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -219,14 +208,11 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		Assert.assertEquals("Le contribuable est déjà assigné au bon segment", ignore.cause);
 
 		// on vérifie tout de même que le code segment est toujours le bon
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
-				Assert.assertEquals(4, (int) di.getCodeSegment());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
+			final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
+			Assert.assertEquals(4, (int) di.getCodeSegment());
+			return null;
 		});
 	}
 
@@ -241,16 +227,13 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
-				di.setCodeSegment(null);
-				return pp.getNumero();
-			}
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+			di.setCodeSegment(null);
+			return pp.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -270,14 +253,11 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		Assert.assertEquals(4, traite.codeSegment);
 
 		// on vérifie tout de même que le travail a aussi été fait en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
-				Assert.assertEquals(4, (int) di.getCodeSegment());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
+			final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
+			Assert.assertEquals(4, (int) di.getCodeSegment());
+			return null;
 		});
 	}
 
@@ -292,16 +272,13 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
-				di.setCodeSegment(2);
-				return pp.getNumero();
-			}
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+			di.setCodeSegment(2);
+			return pp.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -321,14 +298,11 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		Assert.assertEquals(4, traite.codeSegment);
 
 		// on vérifie tout de même que le travail a aussi été fait en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
-				Assert.assertEquals(4, (int) di.getCodeSegment());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
+			final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
+			Assert.assertEquals(4, (int) di.getCodeSegment());
+			return null;
 		});
 	}
 
@@ -343,16 +317,13 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
-				di.setAnnule(true);
-				return pp.getNumero();
-			}
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+			di.setAnnule(true);
+			return pp.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -383,21 +354,18 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		final long noTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument mdHc = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final ModeleDocument mdDepense = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, pf);
+		final long noTiers = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final ModeleDocument mdHc = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+			final ModeleDocument mdDepense = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, pf);
 
-				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, mdHc);
-				diAnnulee.setAnnule(true);
+			final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, mdHc);
+			diAnnulee.setAnnule(true);
 
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 10, 31), TypeContribuable.VAUDOIS_DEPENSE, mdDepense);
-				di.setCodeSegment(3);
-				return pp.getNumero();
-			}
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 10, 31), TypeContribuable.VAUDOIS_DEPENSE, mdDepense);
+			di.setCodeSegment(3);
+			return pp.getNumero();
 		});
 
 		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
@@ -417,15 +385,12 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		Assert.assertEquals(4, traite.codeSegment);
 
 		// on vérifie tout de même que le travail a aussi été fait en base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
-				Assert.assertEquals(date(2009, 10, 31), di.getDateFin());
-				Assert.assertEquals(4, (int) di.getCodeSegment());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
+			final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
+			Assert.assertEquals(date(2009, 10, 31), di.getDateFin());
+			Assert.assertEquals(4, (int) di.getCodeSegment());
+			return null;
 		});
 	}
 }

@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -87,12 +85,9 @@ public class EditiqueListeRecapJobTest extends JobTest {
 	 * Execution en transaction: pour permettre l'initialisation LAZY des collections
 	 */
 	private void checkLRs() throws Exception {
-		this.doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				checkLRsInTransaction();
-				return null;
-			}
+		this.doInNewTransaction(status -> {
+			checkLRsInTransaction();
+			return null;
 		});
 	}
 

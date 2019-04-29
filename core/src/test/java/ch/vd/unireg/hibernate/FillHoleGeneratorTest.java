@@ -9,7 +9,6 @@ import org.hibernate.internal.SessionImpl;
 import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.common.CoreDAOTest;
 import ch.vd.unireg.migreg.MigrationError;
@@ -132,17 +131,14 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * Ajoute les ids spécifié dans la table TIERs
 	 */
 	private void addIds(final Long... ids) throws Exception {
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				for (Long id : ids) {
-					final PersonnePhysique pp = new PersonnePhysique(false);
-					pp.setNumero(id);
-					pp.setNom(buildNomTiers(id));
-					hibernateTemplate.merge(pp);
-				}
-				return null;
+		doInNewTransaction(status -> {
+			for (Long id : ids) {
+				final PersonnePhysique pp = new PersonnePhysique(false);
+				pp.setNumero(id);
+				pp.setNom(buildNomTiers(id));
+				hibernateTemplate.merge(pp);
 			}
+			return null;
 		});
 	}
 
@@ -159,17 +155,14 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * Ajoute les ids spécifié dans la table MIGREG_ERROR
 	 */
 	private void addErrorIds(final Long... ids) throws Exception {
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				for (Long id : ids) {
-					MigrationError e = new MigrationError();
-					e.setNoContribuable(id);
-					e.setMessage("PP-" + id);
-					hibernateTemplate.merge(e);
-				}
-				return null;
+		doInNewTransaction(status -> {
+			for (Long id : ids) {
+				MigrationError e = new MigrationError();
+				e.setNoContribuable(id);
+				e.setMessage("PP-" + id);
+				hibernateTemplate.merge(e);
 			}
+			return null;
 		});
 	}
 

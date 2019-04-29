@@ -7,8 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -80,17 +78,15 @@ public class ImportLienAssociesSNCEnmasseProcessorTest extends BusinessTest {
 			Assert.assertEquals("une relation associe SNC a bien été établi en base", 1, res.getLiensCrees().size());
 
 			//Vérification du lien créé
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final Tiers tiersObjet = tiersService.getTiers(Long.valueOf(pairSncAssocie.getKey()));
-					Assert.assertNotNull(tiersObjet.getRapportsSujet());
-					final RapportEntreTiers rapportEntreTiers = tiersObjet.getRapportsSujet().iterator().next();
-					Assert.assertEquals("le rapport est de type associe SNC", TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, rapportEntreTiers.getType());
-					Assert.assertEquals("le tier sujet est la SNC", Long.valueOf(pairSncAssocie.getKey()), rapportEntreTiers.getSujetId());
-					Assert.assertEquals("le tier objet est l'associe", Long.valueOf(pairSncAssocie.getValue()), rapportEntreTiers.getObjetId());
-					Assert.assertEquals("La date de début du lien doit être au 01.01.2018", date(2018, 1, 1), rapportEntreTiers.getDateDebut());
-				}
+			doInNewTransactionAndSession(status -> {
+				final Tiers tiersObjet = tiersService.getTiers(Long.valueOf(pairSncAssocie.getKey()));
+				Assert.assertNotNull(tiersObjet.getRapportsSujet());
+				final RapportEntreTiers rapportEntreTiers = tiersObjet.getRapportsSujet().iterator().next();
+				Assert.assertEquals("le rapport est de type associe SNC", TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, rapportEntreTiers.getType());
+				Assert.assertEquals("le tier sujet est la SNC", Long.valueOf(pairSncAssocie.getKey()), rapportEntreTiers.getSujetId());
+				Assert.assertEquals("le tier objet est l'associe", Long.valueOf(pairSncAssocie.getValue()), rapportEntreTiers.getObjetId());
+				Assert.assertEquals("La date de début du lien doit être au 01.01.2018", date(2018, 1, 1), rapportEntreTiers.getDateDebut());
+				return null;
 			});
 		}
 		catch (Exception e) {
@@ -127,17 +123,15 @@ public class ImportLienAssociesSNCEnmasseProcessorTest extends BusinessTest {
 			Assert.assertEquals("une relation associe SNC a bien été établi en base", 1, res.getLiensCrees().size());
 
 			//Vérification du lien créé
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final Tiers tiersObjet = tiersService.getTiers(Long.valueOf(pairSncAssocie.getKey()));
-					Assert.assertNotNull(tiersObjet.getRapportsSujet());
-					final RapportEntreTiers rapportEntreTiers = tiersObjet.getRapportsSujet().iterator().next();
-					Assert.assertEquals("le rapport est de type associe SNC", TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, rapportEntreTiers.getType());
-					Assert.assertEquals("le tier sujet est la SNC", Long.valueOf(pairSncAssocie.getKey()), rapportEntreTiers.getSujetId());
-					Assert.assertEquals("le tier objet est l'associe", Long.valueOf(pairSncAssocie.getValue()), rapportEntreTiers.getObjetId());
-					Assert.assertEquals("La date de début du lien doit être celle du 1er For sur 2018", dateDebut, rapportEntreTiers.getDateDebut());
-				}
+			doInNewTransactionAndSession(status -> {
+				final Tiers tiersObjet = tiersService.getTiers(Long.valueOf(pairSncAssocie.getKey()));
+				Assert.assertNotNull(tiersObjet.getRapportsSujet());
+				final RapportEntreTiers rapportEntreTiers = tiersObjet.getRapportsSujet().iterator().next();
+				Assert.assertEquals("le rapport est de type associe SNC", TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, rapportEntreTiers.getType());
+				Assert.assertEquals("le tier sujet est la SNC", Long.valueOf(pairSncAssocie.getKey()), rapportEntreTiers.getSujetId());
+				Assert.assertEquals("le tier objet est l'associe", Long.valueOf(pairSncAssocie.getValue()), rapportEntreTiers.getObjetId());
+				Assert.assertEquals("La date de début du lien doit être celle du 1er For sur 2018", dateDebut, rapportEntreTiers.getDateDebut());
+				return null;
 			});
 		}
 		catch (Exception e) {

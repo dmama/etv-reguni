@@ -5,16 +5,15 @@ import java.util.Collections;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -74,12 +73,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -111,12 +107,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -148,12 +141,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -184,13 +174,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, datePermis.addMonths(2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, datePermis.addMonths(2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -222,13 +209,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, datePermis.addMonths(2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, datePermis.addMonths(2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -260,13 +244,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, datePermis.addMonths(2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, datePermis.addMonths(2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -300,15 +281,12 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -345,16 +323,13 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique mme = addHabitant(noIndividuMme);
-				final PersonnePhysique mr = addHabitant(noIndividuMr);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(mme, mr, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return mme.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique mme = addHabitant(noIndividuMme);
+			final PersonnePhysique mr = addHabitant(noIndividuMr);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(mme, mr, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return mme.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -391,15 +366,12 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique mme = addHabitant(noIndividuMme);
-				final PersonnePhysique mr = addHabitant(noIndividuMr);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(mme, mr, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				return mme.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique mme = addHabitant(noIndividuMme);
+			final PersonnePhysique mr = addHabitant(noIndividuMr);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(mme, mr, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			return mme.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -437,15 +409,12 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique mme = addHabitant(noIndividuMme);
-				final PersonnePhysique mr = addHabitant(noIndividuMr);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(mme, mr, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				return mme.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique mme = addHabitant(noIndividuMme);
+			final PersonnePhysique mr = addHabitant(noIndividuMr);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(mme, mr, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			return mme.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -476,12 +445,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -513,12 +479,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
@@ -550,12 +513,9 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis

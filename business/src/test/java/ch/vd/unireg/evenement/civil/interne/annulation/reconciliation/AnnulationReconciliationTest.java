@@ -4,15 +4,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -47,19 +46,18 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, null, dateMariage, dateSeparation);
-				final MenageCommun mc = couple.getMenage();
-				addAppartenanceMenage(mc, lui, dateReconciliation, null, false);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, null, dateMariage, dateSeparation);
+			final MenageCommun mc = couple.getMenage();
+			addAppartenanceMenage(mc, lui, dateReconciliation, null, false);
 
-				addForPrincipal(lui, date(1980, 1, 3), MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(lui, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(mc, dateReconciliation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
-			}
+			addForPrincipal(lui, date(1980, 1, 3), MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(lui, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne,
+			                ModeImposition.SOURCE);
+			addForPrincipal(mc, dateReconciliation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+			return null;
 		});
 
 		// lancement du traitement de l'annulation de réconciliation
@@ -77,50 +75,48 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(noIndividu);
-				assertNotNull("Pierre n'as pas été trouvé", pierre);
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(noIndividu);
+			assertNotNull("Pierre n'as pas été trouvé", pierre);
 
-				// Vérification des fors fiscaux
-				assertNotNull("Pierre doit avoir un for principal actif après l'annulation de réconciliation", pierre.getForFiscalPrincipalAt(null));
-				for (ForFiscal forFiscal : pierre.getForsFiscaux()) {
-					if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-							(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
-						assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
-					}
+			// Vérification des fors fiscaux
+			assertNotNull("Pierre doit avoir un for principal actif après l'annulation de réconciliation", pierre.getForFiscalPrincipalAt(null));
+			for (ForFiscal forFiscal : pierre.getForsFiscaux()) {
+				if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
+						(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
+					assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
 				}
-
-				// Vérification de la présence d'un tiers MenageCommun annulé
-				MenageCommun menageCommun = null;
-				int nbMenagesCommuns = 0;
-				for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
-					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateReconciliation.equals(rapport.getDateDebut())) {
-						nbMenagesCommuns++;
-						menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-						assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
-					}
-				}
-				assertEquals("Il aurait dû y avoir 1 rapport entre tiers annulé", 1, nbMenagesCommuns);
-
-				// Vérification du for principal du tiers MenageCommun
-				ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-				assertNull("Aucun for fiscal principal actif aurait dû être trouvé sur le tiers MenageCommun", forCommun);
-				for (ForFiscal forFiscal : menageCommun.getForsFiscaux()) {
-					if (forFiscal.getDateFin() == null && dateReconciliation.equals(forFiscal.getDateDebut())) {
-						assertEquals("Les fors fiscaux du ménage créés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
-					}
-				}
-
-		/*
-		 * Evénements fiscaux devant être générés :
-		 *  - annulation du for fermé
-		 *  - réouverture for fiscal principal de Pierre
-		 */
-				assertEquals(2, eventSender.getCount());
-				assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 			}
+
+			// Vérification de la présence d'un tiers MenageCommun annulé
+			MenageCommun menageCommun = null;
+			int nbMenagesCommuns = 0;
+			for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
+				if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateReconciliation.equals(rapport.getDateDebut())) {
+					nbMenagesCommuns++;
+					menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+					assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
+				}
+			}
+			assertEquals("Il aurait dû y avoir 1 rapport entre tiers annulé", 1, nbMenagesCommuns);
+
+			// Vérification du for principal du tiers MenageCommun
+			ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+			assertNull("Aucun for fiscal principal actif aurait dû être trouvé sur le tiers MenageCommun", forCommun);
+			for (ForFiscal forFiscal : menageCommun.getForsFiscaux()) {
+				if (forFiscal.getDateFin() == null && dateReconciliation.equals(forFiscal.getDateDebut())) {
+					assertEquals("Les fors fiscaux du ménage créés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
+				}
+			}
+
+			/*
+			 * Evénements fiscaux devant être générés :
+			 *  - annulation du for fermé
+			 *  - réouverture for fiscal principal de Pierre
+			 */
+			assertEquals(2, eventSender.getCount());
+			assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
+			return null;
 		});
 	}
 
@@ -139,26 +135,24 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuMarie);
-				final PersonnePhysique elle = addHabitant(noIndividuConjoint);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation);
-				final MenageCommun mc = couple.getMenage();
-				addAppartenanceMenage(mc, lui, dateReconciliation, null, false);
-				addAppartenanceMenage(mc, elle, dateReconciliation, null, false);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuMarie);
+			final PersonnePhysique elle = addHabitant(noIndividuConjoint);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation);
+			final MenageCommun mc = couple.getMenage();
+			addAppartenanceMenage(mc, lui, dateReconciliation, null, false);
+			addAppartenanceMenage(mc, elle, dateReconciliation, null, false);
 
-				addForPrincipal(lui, date(1977, 3, 1), MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(elle, date(1975, 2, 1), MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(lui, date(1977, 3, 1), MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(elle, date(1975, 2, 1), MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				addForPrincipal(lui, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(elle, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(lui, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(elle, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateReconciliation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				addForPrincipal(mc, dateReconciliation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-			}
+			addForPrincipal(mc, dateReconciliation, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// lancement du traitement de l'annulation de réconciliation
@@ -177,62 +171,60 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(noIndividuMarie);
-				assertNotNull("Le tiers n'as pas été trouvé", momo);
-				// Vérification des fors fiscaux de momo
-				assertNotNull("Maurice doit avoir un for principal actif après l'annulation de réconciliation", momo.getForFiscalPrincipalAt(null));
-				for (ForFiscal forFiscal : momo.getForsFiscaux()) {
-					if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-							(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
-						assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
-					}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(noIndividuMarie);
+			assertNotNull("Le tiers n'as pas été trouvé", momo);
+			// Vérification des fors fiscaux de momo
+			assertNotNull("Maurice doit avoir un for principal actif après l'annulation de réconciliation", momo.getForFiscalPrincipalAt(null));
+			for (ForFiscal forFiscal : momo.getForsFiscaux()) {
+				if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
+						(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
+					assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
 				}
-
-				PersonnePhysique bea = tiersDAO.getHabitantByNumeroIndividu(noIndividuConjoint);
-				assertNotNull("Le tiers n'as pas été trouvé", bea);
-				// Vérification des fors fiscaux de bea
-				assertNotNull("Béatrice doit avoir un for principal actif après l'annulation de réconciliation", bea.getForFiscalPrincipalAt(null));
-				for (ForFiscal forFiscal : bea.getForsFiscaux()) {
-					if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
-							(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
-						assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
-					}
-				}
-
-				// Vérification de la présence d'un tiers MenageCommun annulé
-				MenageCommun menageCommun = null;
-				int nbMenagesCommuns = 0;
-				for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
-					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateReconciliation.equals(rapport.getDateDebut())) {
-						nbMenagesCommuns++;
-						menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-						assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
-					}
-				}
-				assertEquals("Il aurait dû y avoir 1 rapport entre tiers annulé", 1, nbMenagesCommuns);
-
-				// Vérification du for principal du tiers MenageCommun
-				ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-				assertNull("Aucun for fiscal principal actif aurait dû être trouvé sur le tiers MenageCommun", forCommun);
-				for (ForFiscal forFiscal : menageCommun.getForsFiscaux()) {
-					if (forFiscal.getDateFin() == null && dateReconciliation.equals(forFiscal.getDateDebut())) {
-						assertEquals("Les fors fiscaux du ménage créés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
-					}
-				}
-
-				/*
-				 * Evénements fiscaux devant être générés :
-				 *  - annulation des fors fermés (1 pour chacun)
-		         *  - réouverture for fiscal principal de Maurice
-		         *  - réouverture for fiscal principal de Béatrice
-		         */
-				assertEquals(4, eventSender.getCount());
-				assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
-				assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 			}
+
+			PersonnePhysique bea = tiersDAO.getHabitantByNumeroIndividu(noIndividuConjoint);
+			assertNotNull("Le tiers n'as pas été trouvé", bea);
+			// Vérification des fors fiscaux de bea
+			assertNotNull("Béatrice doit avoir un for principal actif après l'annulation de réconciliation", bea.getForFiscalPrincipalAt(null));
+			for (ForFiscal forFiscal : bea.getForsFiscaux()) {
+				if (forFiscal.getDateFin() != null && dateReconciliation.getOneDayBefore().equals(forFiscal.getDateFin()) &&
+						(forFiscal instanceof ForFiscalRevenuFortune && MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
+					assertEquals("Les fors fiscaux fermés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
+				}
+			}
+
+			// Vérification de la présence d'un tiers MenageCommun annulé
+			MenageCommun menageCommun = null;
+			int nbMenagesCommuns = 0;
+			for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
+				if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && dateReconciliation.equals(rapport.getDateDebut())) {
+					nbMenagesCommuns++;
+					menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+					assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
+				}
+			}
+			assertEquals("Il aurait dû y avoir 1 rapport entre tiers annulé", 1, nbMenagesCommuns);
+
+			// Vérification du for principal du tiers MenageCommun
+			ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+			assertNull("Aucun for fiscal principal actif aurait dû être trouvé sur le tiers MenageCommun", forCommun);
+			for (ForFiscal forFiscal : menageCommun.getForsFiscaux()) {
+				if (forFiscal.getDateFin() == null && dateReconciliation.equals(forFiscal.getDateDebut())) {
+					assertEquals("Les fors fiscaux du ménage créés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
+				}
+			}
+
+			/*
+			 * Evénements fiscaux devant être générés :
+			 *  - annulation des fors fermés (1 pour chacun)
+			 *  - réouverture for fiscal principal de Maurice
+			 *  - réouverture for fiscal principal de Béatrice
+			 */
+			assertEquals(4, eventSender.getCount());
+			assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
+			assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
+			return null;
 		});
 	}
 
@@ -248,12 +240,10 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(1998, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(1998, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+			return null;
 		});
 
 		// lancement du processus d'annulation de réconciliation

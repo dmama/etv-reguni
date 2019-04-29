@@ -3,8 +3,6 @@ package ch.vd.unireg.acomptes;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -74,12 +72,7 @@ public class AcomptesJob  extends JobDefinition {
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final AcomptesRapport rapport = template.execute(new TransactionCallback<AcomptesRapport>() {
-			@Override
-			public AcomptesRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final AcomptesRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		audit.success("La production des populations pour les bases acomptes en date du " + dateTraitement + " est terminée.", rapport);

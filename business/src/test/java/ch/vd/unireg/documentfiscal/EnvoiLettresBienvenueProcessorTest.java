@@ -5,9 +5,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -75,18 +72,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2000, 4, 1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -98,13 +92,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTraites().size());
 
 		// vérification de la non-émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -115,19 +107,16 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateAchatImmeuble = date(2016, 2, 1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addForSecondaire(entreprise, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addForSecondaire(entreprise, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -145,13 +134,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de la non-émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -163,20 +150,17 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateRetourHS = date(2016, 1, 6);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(entreprise, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.RoyaumeUni);
-				addForPrincipal(entreprise, dateRetourHS, MotifFor.ARRIVEE_HS, MockCommune.Leysin);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(entreprise, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.RoyaumeUni);
+			addForPrincipal(entreprise, dateRetourHS, MotifFor.ARRIVEE_HS, MockCommune.Leysin);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -194,13 +178,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de la non-émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -210,18 +192,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -239,13 +218,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de la non-émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -255,24 +232,20 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 
-				final RegDate dateEnvoi = dateDebut.addDays(5);
-				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.HS_HC_ETABLISSEMENT);// peu importe le type de la lettre déjà envoyée
-				addDelaiAutreDocumentFiscal(lb, dateEnvoi, dateEnvoi.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatAutreDocumentFiscalEmis(lb, dateEnvoi);
-
-				return entreprise.getNumero();
-			}
+			final RegDate dateEnvoi = dateDebut.addDays(5);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.HS_HC_ETABLISSEMENT);// peu importe le type de la lettre déjà envoyée
+			addDelaiAutreDocumentFiscal(lb, dateEnvoi, dateEnvoi.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoi);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -290,13 +263,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de la non-émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(1, entreprise.getAutresDocumentsFiscaux().size());      // = celle qui existait déjà
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(1, entreprise.getAutresDocumentsFiscaux().size());      // = celle qui existait déjà;
+			return null;
 		});
 	}
 
@@ -325,16 +296,13 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -353,28 +321,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -398,16 +364,13 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -426,28 +389,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -457,19 +418,16 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -488,28 +446,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -533,16 +489,13 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -561,28 +514,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -592,18 +543,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-				addRaisonSociale(entreprise, dateDebut, null, "Titi");
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRaisonSociale(entreprise, dateDebut, null, "Titi");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -622,28 +570,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -653,17 +599,14 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
+			addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -682,28 +625,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -713,17 +654,14 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
+			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -742,28 +680,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_ETABLISSEMENT, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_ETABLISSEMENT, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -773,18 +709,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
+			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -803,28 +736,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -834,17 +765,14 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
+			addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -863,28 +791,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -894,17 +820,14 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
+			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -923,28 +846,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_ETABLISSEMENT, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_ETABLISSEMENT, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -954,18 +875,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
+			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur
@@ -984,28 +902,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -1016,18 +932,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = dateDebut.addDays(2);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
+			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processeur (rien ne doit être traité car le début d'assujettissement est occulté par le délai de carence)
@@ -1045,13 +958,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de la non-émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
+			return null;
 		});
 
 		// nouveau lancement du processeur (cette fois-ci, la lettre doit partir car le début d'assujettissement n'est plus occulté par le délai de carence)
@@ -1069,28 +980,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 
@@ -1106,18 +1015,15 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2016, 8, 1);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(e, dateAchat, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(e, dateAchat, null, "Le petit butineur");
-				addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, dateAchat, null, MockCommune.Conthey, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
-				return e.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise e = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(e, dateAchat, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(e, dateAchat, null, "Le petit butineur");
+			addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(e, dateAchat, null, MockCommune.Conthey, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			return e.getNumero();
 		});
 
 		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 4, null);
@@ -1134,28 +1040,26 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		}
 
 		// vérification de l'émission de lettre
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				Assert.assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			Assert.assertNotNull(entreprise);
 
-				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
-				Assert.assertNotNull(adfs);
-				Assert.assertEquals(1, adfs.size());
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
 
-				final AutreDocumentFiscal adf = adfs.iterator().next();
-				Assert.assertNotNull(adf);
-				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
 
-				final LettreBienvenue lb = (LettreBienvenue) adf;
-				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
-				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
-				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
-				Assert.assertNull(lb.getDateRappel());
-				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
-			}
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+			Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+			Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertNull(lb.getDateRetour());
+			Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
+			return null;
 		});
 	}
 }

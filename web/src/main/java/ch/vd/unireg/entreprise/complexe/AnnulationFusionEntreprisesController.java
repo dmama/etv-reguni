@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -66,18 +65,15 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 	@RequestMapping(value = "/dates-bilan.do", method = RequestMethod.GET)
 	@ResponseBody
 	public List<RegDate> getDatesBilanFusionExistantes(@RequestParam("idEntreprise") final long idEntreprise) {
-		return doInReadOnlyTransaction(new TransactionCallback<List<RegDate>>() {
-			@Override
-			public List<RegDate> doInTransaction(TransactionStatus status) {
-				final Entreprise absorbante = getTiers(Entreprise.class, idEntreprise);
-				final List<Pair<RegDate, RegDate>> dates = getDatesFusionExistantes(absorbante);
-				final List<RegDate> datesBilans = new ArrayList<>(dates.size());
-				for (Pair<RegDate, RegDate> pair : dates) {
-					datesBilans.add(pair.getLeft());
-				}
-				datesBilans.sort(Collections.reverseOrder());
-				return datesBilans;
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise absorbante = getTiers(Entreprise.class, idEntreprise);
+			final List<Pair<RegDate, RegDate>> dates = getDatesFusionExistantes(absorbante);
+			final List<RegDate> datesBilans = new ArrayList<>(dates.size());
+			for (Pair<RegDate, RegDate> pair : dates) {
+				datesBilans.add(pair.getLeft());
 			}
+			datesBilans.sort(Collections.reverseOrder());
+			return datesBilans;
 		});
 	}
 
@@ -94,21 +90,19 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 			return Collections.emptyList();
 		}
 
-		return doInReadOnlyTransaction(new TransactionCallback<List<RegDate>>() {
-			@Override
-			public List<RegDate> doInTransaction(TransactionStatus status) {
-				final Entreprise absorbante = getTiers(Entreprise.class, idEntreprise);
-				final Set<RegDate> contratsPourBilan = getDatesContratsParDateBilan(absorbante).get(dateBilan);
-				final List<RegDate> contrats;
-				if (contratsPourBilan != null) {
-					contrats = new ArrayList<>(contratsPourBilan);
-					contrats.sort(Collections.reverseOrder());
-				}
-				else {
-					contrats = Collections.emptyList();
-				}
-				return contrats;
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise absorbante = getTiers(Entreprise.class, idEntreprise);
+			final Set<RegDate> contratsPourBilan = getDatesContratsParDateBilan(absorbante).get(dateBilan);
+			final List<RegDate> contrats;
+			if (contratsPourBilan != null) {
+				contrats = new ArrayList<>(contratsPourBilan);
+				contrats.sort(Collections.reverseOrder());
 			}
+			else {
+				contrats = Collections.emptyList();
+			}
+			;
+			return contrats;
 		});
 	}
 

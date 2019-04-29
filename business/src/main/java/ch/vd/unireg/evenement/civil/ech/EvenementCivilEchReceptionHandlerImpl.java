@@ -7,8 +7,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.audit.AuditManager;
@@ -140,25 +138,20 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	public EvenementCivilEch saveIncomingEvent(final EvenementCivilEch event) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TransactionCallback<EvenementCivilEch>() {
-			@Nullable
-            @Override
-			public EvenementCivilEch doInTransaction(TransactionStatus status) {
-
-				// si un événement civil existe déjà avec l'ID donné, on log un warning et on s'arrête là...
-				final long id = event.getId();
-				if (evtCivilDAO.exists(id)) {
-					audit.warn(id, String.format("L'événement civil %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
-					return null;
-				}
-
-				// pour les stats
-				nombreEvenementsNonIgnores.incrementAndGet();
-
-				final EvenementCivilEch saved = evtCivilDAO.save(event);
-				audit.info(id, String.format("L'événement civil %d est inséré en base de données", id));
-				return saved;
+		return template.execute(status -> {
+			// si un événement civil existe déjà avec l'ID donné, on log un warning et on s'arrête là...
+			final long id = event.getId();
+			if (evtCivilDAO.exists(id)) {
+				audit.warn(id, String.format("L'événement civil %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
+				return null;
 			}
+
+			// pour les stats
+			nombreEvenementsNonIgnores.incrementAndGet();
+
+			final EvenementCivilEch saved = evtCivilDAO.save(event);
+			audit.info(id, String.format("L'événement civil %d est inséré en base de données", id));
+			return saved;
 		});
 	}
 
@@ -172,12 +165,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			final EvenementCivilEch oldEvent = event;
-			event = template.execute(new TransactionCallback<EvenementCivilEch>() {
-				@Override
-				public EvenementCivilEch doInTransaction(TransactionStatus status) {
-					return evtCivilService.assigneNumeroIndividu(oldEvent, noIndividu);
-				}
-			});
+			event = template.execute(status -> evtCivilService.assigneNumeroIndividu(oldEvent, noIndividu));
 		}
 
 		// notification du moteur de traitement

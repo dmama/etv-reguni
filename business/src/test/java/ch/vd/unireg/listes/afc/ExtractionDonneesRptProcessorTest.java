@@ -2,8 +2,6 @@ package ch.vd.unireg.listes.afc;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -87,29 +85,24 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
+			addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+			final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
+			addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+			final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
+			addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
+			addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
+			final PersonnePhysique ppDepense = addHabitant(noIndDepense);
+			addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
 
-				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
-				addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
-				addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-				final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
-				addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
-				final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
-				addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
-				final PersonnePhysique ppDepense = addHabitant(noIndDepense);
-				addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
-
-				ids.idOrdinaire = ppOrd.getNumero();
-				ids.idMixte1 = ppMixte1.getNumero();
-				ids.idMixte2 = ppMixte2.getNumero();
-				ids.idIndigent = ppIndigent.getNumero();
-				ids.idDepense = ppDepense.getNumero();
-
-				return null;
-			}
+			ids.idOrdinaire = ppOrd.getNumero();
+			ids.idMixte1 = ppMixte1.getNumero();
+			ids.idMixte2 = ppMixte2.getNumero();
+			ids.idIndigent = ppIndigent.getNumero();
+			ids.idDepense = ppDepense.getNumero();
+			return null;
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -246,22 +239,18 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-
-				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
-				addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
-				addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-				final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
-				addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
-				final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
-				addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
-				final PersonnePhysique ppDepense = addHabitant(noIndDepense);
-				addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
+			addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+			final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
+			addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+			final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
+			addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
+			addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
+			final PersonnePhysique ppDepense = addHabitant(noIndDepense);
+			addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
+			return null;
 		});
 
 		// même pas pris en compte par la requête initiale
@@ -313,29 +302,24 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
+			addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+			final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
+			addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+			final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
+			addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
+			addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
+			final PersonnePhysique ppDepense = addHabitant(noIndDepense);
+			addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
 
-				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
-				addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
-				addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-				final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
-				addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
-				final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
-				addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
-				final PersonnePhysique ppDepense = addHabitant(noIndDepense);
-				addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
-
-				ids.idOrdinaire = ppOrd.getNumero();
-				ids.idMixte1 = ppMixte1.getNumero();
-				ids.idMixte2 = ppMixte2.getNumero();
-				ids.idIndigent = ppIndigent.getNumero();
-				ids.idDepense = ppDepense.getNumero();
-
-				return null;
-			}
+			ids.idOrdinaire = ppOrd.getNumero();
+			ids.idMixte1 = ppMixte1.getNumero();
+			ids.idMixte2 = ppMixte2.getNumero();
+			ids.idIndigent = ppIndigent.getNumero();
+			ids.idDepense = ppDepense.getNumero();
+			return null;
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -460,13 +444,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// même pas vu dans l'extraction initiale
@@ -511,13 +492,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -546,13 +524,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HC, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -581,13 +556,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -629,13 +601,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 12), MotifFor.DEPART_HS, MockCommune.Bussigny);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -664,13 +633,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// même pas extrait par la requête initiale
@@ -695,13 +661,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// même pas extrait par la requête initiale
@@ -723,14 +686,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -769,14 +729,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -806,14 +763,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -852,14 +806,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -885,14 +836,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -931,14 +879,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -992,21 +937,18 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 
-				final Ids ids = new Ids();
-				ids.mcId = mc.getNumero();
-				ids.mId = toto.getNumero();
-				ids.mmeId = tata.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.mcId = mc.getNumero();
+			ids1.mId = toto.getNumero();
+			ids1.mmeId = tata.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1064,21 +1006,18 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 
-				final Ids ids = new Ids();
-				ids.mcId = mc.getNumero();
-				ids.mId = toto.getNumero();
-				ids.mmeId = tata.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.mcId = mc.getNumero();
+			ids1.mId = toto.getNumero();
+			ids1.mmeId = tata.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1138,23 +1077,20 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 6, 30));
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 6, 30), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
-				addForPrincipal(toto, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
-				addForPrincipal(tata, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.CheseauxSurLausanne);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 6, 30));
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 6, 30), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
+			addForPrincipal(toto, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
+			addForPrincipal(tata, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.CheseauxSurLausanne);
 
-				final Ids ids = new Ids();
-				ids.idToto = toto.getNumero();
-				ids.idTata = tata.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idToto = toto.getNumero();
+			ids1.idTata = tata.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1241,23 +1177,20 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 6, 30));
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 6, 30), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
-				addForPrincipal(toto, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
-				addForPrincipal(tata, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.CheseauxSurLausanne);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 6, 30));
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 6, 30), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
+			addForPrincipal(toto, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Aubonne);
+			addForPrincipal(tata, date(2008, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.CheseauxSurLausanne);
 
-				final Ids ids = new Ids();
-				ids.idToto = toto.getNumero();
-				ids.idTata = tata.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idToto = toto.getNumero();
+			ids1.idTata = tata.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1345,22 +1278,19 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 10, 24));
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 10, 24), MotifFor.VEUVAGE_DECES, MockCommune.Bussigny);
-				addForPrincipal(tata, date(2008, 10, 25), MotifFor.VEUVAGE_DECES, MockCommune.CheseauxSurLausanne);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 10, 24));
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 10, 24), MotifFor.VEUVAGE_DECES, MockCommune.Bussigny);
+			addForPrincipal(tata, date(2008, 10, 25), MotifFor.VEUVAGE_DECES, MockCommune.CheseauxSurLausanne);
 
-				final Ids ids = new Ids();
-				ids.idToto = toto.getNumero();
-				ids.idTata = tata.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idToto = toto.getNumero();
+			ids1.idTata = tata.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1440,22 +1370,19 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 10, 24));
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 10, 24), MotifFor.VEUVAGE_DECES, MockCommune.Bussigny);
-				addForPrincipal(tata, date(2008, 10, 25), MotifFor.VEUVAGE_DECES, MockCommune.CheseauxSurLausanne);
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2000, 4, 1), date(2008, 10, 24));
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 10, 24), MotifFor.VEUVAGE_DECES, MockCommune.Bussigny);
+			addForPrincipal(tata, date(2008, 10, 25), MotifFor.VEUVAGE_DECES, MockCommune.CheseauxSurLausanne);
 
-				final Ids ids = new Ids();
-				ids.idToto = toto.getNumero();
-				ids.idTata = tata.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idToto = toto.getNumero();
+			ids1.idTata = tata.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1522,24 +1449,21 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2008, 4, 1), null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2008, 4, 1), null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(toto, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(tata, date(2006, 6, 15), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.CheseauxSurLausanne);
-				addForPrincipal(mc, date(2008, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			addForPrincipal(toto, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(tata, date(2006, 6, 15), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.CheseauxSurLausanne);
+			addForPrincipal(mc, date(2008, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
 
-				final Ids ids = new Ids();
-				ids.idToto = toto.getNumero();
-				ids.idTata = tata.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idToto = toto.getNumero();
+			ids1.idTata = tata.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1611,24 +1535,21 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique toto = addHabitant(noIndToto);
-				final PersonnePhysique tata = addHabitant(noIndTata);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2008, 4, 1), null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique toto = addHabitant(noIndToto);
+			final PersonnePhysique tata = addHabitant(noIndTata);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(toto, tata, date(2008, 4, 1), null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(toto, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForPrincipal(tata, date(2006, 6, 15), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.CheseauxSurLausanne);
-				addForPrincipal(mc, date(2008, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			addForPrincipal(toto, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForPrincipal(tata, date(2006, 6, 15), MotifFor.ARRIVEE_HC, date(2008, 3, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.CheseauxSurLausanne);
+			addForPrincipal(mc, date(2008, 4, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
 
-				final Ids ids = new Ids();
-				ids.idToto = toto.getNumero();
-				ids.idTata = tata.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idToto = toto.getNumero();
+			ids1.idTata = tata.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNotNull(ids);
@@ -1690,13 +1611,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -1729,13 +1647,10 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Fraction.LesCharbonnieres);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -1768,14 +1683,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -1819,14 +1731,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
@@ -1870,14 +1779,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -1922,14 +1828,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// même pas vu dans la requête initiale
@@ -1954,14 +1857,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
@@ -2024,14 +1924,11 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			return pp.getNumero();
 		});
 
 		// même pas vu dans la requête initiale
@@ -2056,15 +1953,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HS, date(2008, 9, 25), MotifFor.ARRIVEE_HS, MockPays.Danemark);
-				addForPrincipal(pp, date(2008, 9, 26), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HS, date(2008, 9, 25), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+			addForPrincipal(pp, date(2008, 9, 26), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -2127,15 +2021,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HS, date(2008, 9, 25), MotifFor.ARRIVEE_HS, MockPays.Danemark);
-				addForPrincipal(pp, date(2008, 9, 26), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HS, date(2008, 9, 25), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+			addForPrincipal(pp, date(2008, 9, 26), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		// même pas vu dans la requête initiale
@@ -2160,15 +2051,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HS, date(2008, 9, 25), MotifFor.ARRIVEE_HS, MockPays.Danemark);
-				addForPrincipal(pp, date(2008, 9, 26), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HS, date(2008, 9, 25), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+			addForPrincipal(pp, date(2008, 9, 26), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -2213,15 +2101,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -2265,15 +2150,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// même pas vu dans l'extraction initiale
@@ -2298,15 +2180,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place
-		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+			addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -2350,15 +2229,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				final RegDate dateOuverture = date(2004, 2, 1);
-				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			final RegDate dateOuverture = date(2004, 2, 1);
+			addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
+			addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_ORDINAIRE, 1, null);
@@ -2401,15 +2277,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				final RegDate dateOuverture = date(2004, 2, 1);
-				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			final RegDate dateOuverture = date(2004, 2, 1);
+			addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
+			addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
@@ -2432,15 +2305,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noInd);
-				final RegDate dateOuverture = date(2004, 2, 1);
-				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			final RegDate dateOuverture = date(2004, 2, 1);
+			addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
+			addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2008, TypeExtractionDonneesRpt.FORTUNE, 1, null);
@@ -2493,15 +2363,12 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, dateArriveeVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateArriveeVD, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
-				addEnsembleTiersCouple(pp, null, dateMariage, null);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, dateArriveeVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateArriveeVD, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+			addEnsembleTiersCouple(pp, null, dateMariage, null);
+			return pp.getNumero();
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2011, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
@@ -2558,22 +2425,19 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, ModeImposition.SOURCE);
-				addForPrincipal(pp, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, ModeImposition.SOURCE);
+			addForPrincipal(pp, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay, ModeImposition.SOURCE);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation.getOneDayBefore());
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay, ModeImposition.SOURCE);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation.getOneDayBefore());
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay, ModeImposition.SOURCE);
 
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.mcId = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.mcId = mc.getNumero();
+			return ids1;
 		});
 
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), dateSeparation.year(), TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
@@ -2594,7 +2458,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,  elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2011, 8, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2011, 12, 31), elt.finPeriodeImposition);

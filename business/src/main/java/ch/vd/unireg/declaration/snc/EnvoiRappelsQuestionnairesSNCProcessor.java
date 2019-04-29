@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -160,42 +158,41 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
-			@Override
-			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<Object[]> rows = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-					@Override
-					public List<Object[]> doInHibernate(Session session) throws HibernateException {
-						final StringBuilder b = new StringBuilder();
-						b.append("SELECT qsnc.id, qsnc.tiers.id FROM QuestionnaireSNC AS qsnc");
-						b.append(" WHERE qsnc.annulationDate IS NULL");
-						if (periodeFiscale != null) {
-							b.append(" AND qsnc.periode.annee = :pf");
-						}
-						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
-						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE qsnc.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
-						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
-						b.append(" ORDER BY qsnc.tiers.id ASC, qsnc.dateDebut ASC");
-						final String sql = b.toString();
-						final Query query = session.createQuery(sql);
-						query.setParameter("dateLimite", dateTraitement);
-						if (periodeFiscale != null) {
-							query.setParameter("pf", periodeFiscale);
-						}
-						//noinspection unchecked
-						return query.list();
+		return template.execute(status -> {
+			final List<Object[]> rows = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+				@Override
+				public List<Object[]> doInHibernate(Session session) throws HibernateException {
+					final StringBuilder b = new StringBuilder();
+					b.append("SELECT qsnc.id, qsnc.tiers.id FROM QuestionnaireSNC AS qsnc");
+					b.append(" WHERE qsnc.annulationDate IS NULL");
+					if (periodeFiscale != null) {
+						b.append(" AND qsnc.periode.annee = :pf");
 					}
-				});
-				final List<IdentifiantDeclaration> identifiants = new ArrayList<>(rows.size());
-				for (Object[] objects : rows) {
-					final Number idQuestionnaire = (Number) objects[0];
-					final Number idTiers = (Number) objects[1];
-					final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(idQuestionnaire.longValue(), idTiers.longValue());
-					identifiants.add(identifiantDeclaration);
+					b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+					b.append(
+							" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
+					b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE qsnc.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
+					b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+					b.append(" ORDER BY qsnc.tiers.id ASC, qsnc.dateDebut ASC");
+					final String sql = b.toString();
+					final Query query = session.createQuery(sql);
+					query.setParameter("dateLimite", dateTraitement);
+					if (periodeFiscale != null) {
+						query.setParameter("pf", periodeFiscale);
+					}
+					//noinspection unchecked
+					return query.list();
 				}
-				return identifiants;
+			});
+			final List<IdentifiantDeclaration> identifiants = new ArrayList<>(rows.size());
+			for (Object[] objects : rows) {
+				final Number idQuestionnaire = (Number) objects[0];
+				final Number idTiers = (Number) objects[1];
+				final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(idQuestionnaire.longValue(), idTiers.longValue());
+				identifiants.add(identifiantDeclaration);
 			}
+			;
+			return identifiants;
 		});
 	}
 }

@@ -12,8 +12,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -96,23 +94,20 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividuSans = 2433L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR);
-				addEvenementCivil(5L, noIndividu, date(1999, 2, 5), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				addEvenementCivil(3L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
-				addEvenementCivil(2L, noIndividu, date(1999, 4, 2), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE);
-				addEvenementCivil(6L, noIndividu, date(1999, 5, 6), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_VERIFIER);
-				addEvenementCivil(4L, noIndividu, date(1999, 6, 4), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.FORCE);
-				addEvenementCivil(8L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
-				addEvenementCivil(7L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR);
+			addEvenementCivil(5L, noIndividu, date(1999, 2, 5), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			addEvenementCivil(3L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+			addEvenementCivil(2L, noIndividu, date(1999, 4, 2), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE);
+			addEvenementCivil(6L, noIndividu, date(1999, 5, 6), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_VERIFIER);
+			addEvenementCivil(4L, noIndividu, date(1999, 6, 4), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.FORCE);
+			addEvenementCivil(8L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+			addEvenementCivil(7L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+			return null;
 		});
 
 		// envois dans la queue (avec une seconde de délai afin d'être certain de pouvoir compter les éléments insérés avant qu'ils passent dans la queue finale)
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
 			@Override
 			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
@@ -192,23 +187,20 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividuSans = 2433L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR);
-				addEvenementCivil(5L, noIndividu, date(1999, 2, 5), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				addEvenementCivil(3L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
-				addEvenementCivil(2L, noIndividu, date(1999, 4, 2), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE);
-				addEvenementCivil(6L, noIndividu, date(1999, 5, 6), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_VERIFIER);
-				addEvenementCivil(4L, noIndividu, date(1999, 6, 4), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.FORCE);
-				addEvenementCivil(8L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
-				addEvenementCivil(7L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ERREUR);
+			addEvenementCivil(5L, noIndividu, date(1999, 2, 5), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			addEvenementCivil(3L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+			addEvenementCivil(2L, noIndividu, date(1999, 4, 2), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.TRAITE);
+			addEvenementCivil(6L, noIndividu, date(1999, 5, 6), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_VERIFIER);
+			addEvenementCivil(4L, noIndividu, date(1999, 6, 4), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.FORCE);
+			addEvenementCivil(8L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+			addEvenementCivil(7L, noIndividu, date(1999, 3, 3), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.EN_ATTENTE);
+			return null;
 		});
 
 		// envois dans la queue (avec une seconde de délai afin d'être certain de pouvoir compter les éléments insérés avant qu'ils passent dans la queue finale)
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
 			@Override
 			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
@@ -284,16 +276,13 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividu = 243523L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
 			@Override
 			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
@@ -319,16 +308,13 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividu = 243523L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback(){
+		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 			@Override
 			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
@@ -348,12 +334,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividu = 243523L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue
@@ -379,16 +362,13 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividuTemoin = 99999L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				long l = 1;
-				for (; l <= nbEvtsBatch; l++) {
-					addEvenementCivil(l, noIndividuBase + l , date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				}
-				addEvenementCivil(l + 1, noIndividuTemoin, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
+		doInNewTransactionAndSession(status -> {
+			long l = 1;
+			for (; l <= nbEvtsBatch; l++) {
+				addEvenementCivil(l, noIndividuBase + l, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
 			}
+			addEvenementCivil(l + 1, noIndividuTemoin, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue
@@ -421,12 +401,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividu = 243523L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue
@@ -621,12 +598,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividu = 243523L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue
@@ -657,12 +631,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		final long noIndividu = 243523L;
 
 		// préparation des événements dans la base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+			return null;
 		});
 
 		// envois dans la queue

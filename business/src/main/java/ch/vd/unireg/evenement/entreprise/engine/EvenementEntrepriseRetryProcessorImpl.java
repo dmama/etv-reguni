@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.LoggingStatusManager;
@@ -58,13 +56,8 @@ public class EvenementEntrepriseRetryProcessorImpl implements EvenementEntrepris
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);
-		final Set<Long> nosEntreprisesCiviles = template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				return evtEntrepriseDAO.getNosEntreprisesCivilesConcerneesParEvenementsPourRetry();
-			}
-		});
-		
+		final Set<Long> nosEntreprisesCiviles = template.execute(s -> evtEntrepriseDAO.getNosEntreprisesCivilesConcerneesParEvenementsPourRetry());
+
 		if (nosEntreprisesCiviles != null && nosEntreprisesCiviles.size() > 0) {
 			final Set<Long> remaining = new HashSet<>(nosEntreprisesCiviles);
 			final MutableBoolean processorStopping = new MutableBoolean(false);
@@ -84,14 +77,14 @@ public class EvenementEntrepriseRetryProcessorImpl implements EvenementEntrepris
 			try {
 				// on peut maintenant tout envoyer dans la queue
 				notificationQueue.postAll(nosEntreprisesCiviles);
-				
+
 				// et on attend la fin
 				final String msg = "Relance des événements entreprise en erreur";
 				final int initialSize = nosEntreprisesCiviles.size();
 				while (remaining.size() > 0 && !status.isInterrupted() && !processorStopping.booleanValue()) {
 					final int progress = getProgress(initialSize, remaining.size());
 					status.setMessage(msg, progress);
-					
+
 					try {
 						Thread.sleep(500L);
 					}

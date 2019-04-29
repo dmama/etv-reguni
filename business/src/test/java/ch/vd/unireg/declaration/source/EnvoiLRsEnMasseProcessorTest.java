@@ -6,14 +6,11 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.StatusManager;
@@ -25,6 +22,7 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.MotifFor;
@@ -223,16 +221,13 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	@Test
 	public void testEnvoiPeriodiciteUniqueEnvoiReel() throws Exception {
 		final int anneeReference = RegDate.get().year();
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M04, date(anneeReference, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aigle);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M04, date(anneeReference, 1, 1), null);
+			addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aigle);
 
-				addPeriodeFiscale(anneeReference);
-				return dpi.getNumero();
-			}
+			addPeriodeFiscale(anneeReference);
+			return dpi.getNumero();
 		});
 
 		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrService);
@@ -247,27 +242,25 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		Assert.assertEquals(date(anneeReference, 4, 1), traitee.dateDebut);
 		Assert.assertEquals(date(anneeReference, 4, 30), traitee.dateFin);
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			Assert.assertNotNull(dpi);
 
-				final List<Declaration> lrs = dpi.getDeclarationsDansPeriode(Declaration.class, anneeReference, true);
-				Assert.assertNotNull(lrs);
-				Assert.assertEquals(1, lrs.size());
+			final List<Declaration> lrs = dpi.getDeclarationsDansPeriode(Declaration.class, anneeReference, true);
+			Assert.assertNotNull(lrs);
+			Assert.assertEquals(1, lrs.size());
 
-				final Declaration lr = lrs.get(0);
-				Assert.assertNotNull(lr);
-				Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
-				Assert.assertEquals(date(anneeReference, 4, 1), lr.getDateDebut());
-				Assert.assertEquals(date(anneeReference, 4, 30), lr.getDateFin());
+			final Declaration lr = lrs.get(0);
+			Assert.assertNotNull(lr);
+			Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
+			Assert.assertEquals(date(anneeReference, 4, 1), lr.getDateDebut());
+			Assert.assertEquals(date(anneeReference, 4, 30), lr.getDateFin());
 
-				final DelaiDeclaration delai = lr.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(RegDate.get(), delai.getDateTraitement());
-				Assert.assertEquals(RegDate.get(), delai.getDateDemande());
-			}
+			final DelaiDeclaration delai = lr.getDernierDelaiDeclarationAccorde();
+			Assert.assertNotNull(delai);
+			Assert.assertEquals(RegDate.get(), delai.getDateTraitement());
+			Assert.assertEquals(RegDate.get(), delai.getDateDemande());
+			return null;
 		});
 	}
 
@@ -275,14 +268,11 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	public void testEnvoiEffeuilleuseEnMilieuDePeriode() throws Exception {
 
 		final int annee = 2010;
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.SEMESTRIEL, date(annee, 1, 1));
-				addForDebiteur(dpi, date(annee, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				addPeriodeFiscale(annee);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.EFFEUILLEUSES, PeriodiciteDecompte.SEMESTRIEL, date(annee, 1, 1));
+			addForDebiteur(dpi, date(annee, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			addPeriodeFiscale(annee);
+			return dpi.getNumero();
 		});
 
 		final List<Pair<Long, DateRange>> imprimees = new ArrayList<>();
@@ -348,16 +338,13 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	public void testEnvoiEffeuilleuseEnMilieuDePeriodeUnique() throws Exception {
 
 		final int annee = 2015;
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setCategorieImpotSource(CategorieImpotSource.EFFEUILLEUSES);
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.T1, date(annee, 1, 1), null);
-				addForDebiteur(dpi, date(annee, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				addPeriodeFiscale(annee);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setCategorieImpotSource(CategorieImpotSource.EFFEUILLEUSES);
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.T1, date(annee, 1, 1), null);
+			addForDebiteur(dpi, date(annee, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			addPeriodeFiscale(annee);
+			return dpi.getNumero();
 		});
 
 		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrService);
@@ -387,22 +374,20 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 			Assert.assertEquals(date(annee, 1, 1), traitee.dateDebut);
 			Assert.assertEquals(date(annee, 3, 31), traitee.dateFin);
 
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-					Assert.assertNotNull(dpi);
+			doInNewTransactionAndSession(status -> {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				Assert.assertNotNull(dpi);
 
-					final List<Declaration> lrs = dpi.getDeclarationsDansPeriode(Declaration.class, annee, true);
-					Assert.assertNotNull(lrs);
-					Assert.assertEquals(1, lrs.size());
+				final List<Declaration> lrs = dpi.getDeclarationsDansPeriode(Declaration.class, annee, true);
+				Assert.assertNotNull(lrs);
+				Assert.assertEquals(1, lrs.size());
 
-					final Declaration lr = lrs.get(0);
-					Assert.assertNotNull(lr);
-					Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
-					Assert.assertEquals(date(annee, 1, 1), lr.getDateDebut());
-					Assert.assertEquals(date(annee, 3, 31), lr.getDateFin());
-				}
+				final Declaration lr = lrs.get(0);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
+				Assert.assertEquals(date(annee, 1, 1), lr.getDateDebut());
+				Assert.assertEquals(date(annee, 3, 31), lr.getDateFin());
+				return null;
 			});
 		}
 	}

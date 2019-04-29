@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.CoreDAOTest;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -34,98 +32,83 @@ public class OptimisticLockingTest extends CoreDAOTest {
 	public void testLocking() throws Exception {
 
 		// Créée un Habitant dans le base
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				Session session = sessionFactory.getCurrentSession();
-				PersonnePhysique hab = new PersonnePhysique(true);
-				hab.setNumero(12345678L);
-				hab.setNumeroIndividu(12345L);
-				session.save(hab);
-			}
+		doInNewTransaction(status -> {
+			Session session = sessionFactory.getCurrentSession();
+			PersonnePhysique hab = new PersonnePhysique(true);
+			hab.setNumero(12345678L);
+			hab.setNumeroIndividu(12345L);
+			session.save(hab);
+			return null;
 		});
 
 		// Teste que l'Habitant est bien dans la base
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-
-				Session session = sessionFactory.getCurrentSession();
-				Query q = session.createQuery("from PersonnePhysique");
-				List<?> list = q.list();
-				PersonnePhysique hab = (PersonnePhysique) list.get(0);
-				assertEquals(new Long(12345L), hab.getNumeroIndividu());
-			}
+		doInNewReadOnlyTransaction(status -> {
+			Session session = sessionFactory.getCurrentSession();
+			Query q = session.createQuery("from PersonnePhysique");
+			List<?> list = q.list();
+			PersonnePhysique hab = (PersonnePhysique) list.get(0);
+			assertEquals(new Long(12345L), hab.getNumeroIndividu());
+			return null;
 		});
 
 		// On recupère l'Habitant dans la session1
 		// Puis on le modifie dans la session2
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				Session session = sessionFactory.getCurrentSession();
-				Query q1 = session.createQuery("from PersonnePhysique");
-				List<?> list1 = q1.list();
-				PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
-				assertEquals(new Long(12345L), hab1.getNumeroIndividu());
-			}
+		doInNewTransaction(status -> {
+			Session session = sessionFactory.getCurrentSession();
+			Query q1 = session.createQuery("from PersonnePhysique");
+			List<?> list1 = q1.list();
+			PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
+			assertEquals(new Long(12345L), hab1.getNumeroIndividu());
+			return null;
 		});
 
-		doInNewTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				Session session = sessionFactory.getCurrentSession();
-				Query q2 = session.createQuery("from PersonnePhysique");
-				List<?> list = q2.list();
-				PersonnePhysique hab = (PersonnePhysique) list.get(0);
-				assertEquals(new Long(12345L), hab.getNumeroIndividu());
+		doInNewTransaction(status -> {
+			Session session = sessionFactory.getCurrentSession();
+			Query q2 = session.createQuery("from PersonnePhysique");
+			List<?> list = q2.list();
+			PersonnePhysique hab = (PersonnePhysique) list.get(0);
+			assertEquals(new Long(12345L), hab.getNumeroIndividu());
 
-				// On modifie le numero IND
-				hab.setNumeroIndividu(12346L);
-			}
+			// On modifie le numero IND
+			hab.setNumeroIndividu(12346L);
+			return null;
 		});
 
 		// Teste que l'Habitant a bien été modifié
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				Session session = sessionFactory.getCurrentSession();
-				Query q = session.createQuery("from PersonnePhysique");
-				List<?> list = q.list();
-				PersonnePhysique hab = (PersonnePhysique) list.get(0);
-				assertEquals(new Long(12346L), hab.getNumeroIndividu());
-			}
+		doInNewReadOnlyTransaction(status -> {
+			Session session = sessionFactory.getCurrentSession();
+			Query q = session.createQuery("from PersonnePhysique");
+			List<?> list = q.list();
+			PersonnePhysique hab = (PersonnePhysique) list.get(0);
+			assertEquals(new Long(12346L), hab.getNumeroIndividu());
+			return null;
 		});
 
 		// Modification après coup => Exception
 		try {
-			doInNewTransaction(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-					Session session = sessionFactory.getCurrentSession();
-					Query q1 = session.createQuery("from PersonnePhysique");
-					List<?> list1 = q1.list();
-					PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
-					assertEquals(new Long(12346L), hab1.getNumeroIndividu());
+			doInNewTransaction(status -> {
+				Session session = sessionFactory.getCurrentSession();
+				Query q1 = session.createQuery("from PersonnePhysique");
+				List<?> list1 = q1.list();
+				PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
+				assertEquals(new Long(12346L), hab1.getNumeroIndividu());
 
-					try {
-						doInNewTransaction(new TransactionCallbackWithoutResult() {
-							@Override
-							protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-								Session session = sessionFactory.getCurrentSession();
-								Query q1 = session.createQuery("from PersonnePhysique");
-								List<?> list1 = q1.list();
-								PersonnePhysique hab2 = (PersonnePhysique) list1.get(0);
-								assertEquals(new Long(12346L), hab2.getNumeroIndividu());
-								hab2.setNumeroIndividu(12347L);
-							}
-						});
-					}
-					catch (Exception e) {
-						fail();
-					}
-					hab1.setNumeroIndividu(12341L);
+				try {
+					doInNewTransaction(status2 -> {
+						Session session2 = sessionFactory.getCurrentSession();
+						Query q2 = session2.createQuery("from PersonnePhysique");
+						List<?> list2 = q2.list();
+						PersonnePhysique hab2 = (PersonnePhysique) list2.get(0);
+						assertEquals(new Long(12346L), hab2.getNumeroIndividu());
+						hab2.setNumeroIndividu(12347L);
+						return null;
+					});
 				}
+				catch (Exception e) {
+					fail();
+				}
+				hab1.setNumeroIndividu(12341L);
+				return null;
 			});
 			fail();
 		}
@@ -136,15 +119,13 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		}
 
 		// Teste que l'Habitant a le bon numéro
-		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				Session session = sessionFactory.getCurrentSession();
-				Query q = session.createQuery("from PersonnePhysique");
-				List<?> list = q.list();
-				PersonnePhysique hab = (PersonnePhysique) list.get(0);
-				assertEquals(new Long(12347L), hab.getNumeroIndividu());
-			}
+		doInNewReadOnlyTransaction(status -> {
+			Session session = sessionFactory.getCurrentSession();
+			Query q = session.createQuery("from PersonnePhysique");
+			List<?> list = q.list();
+			PersonnePhysique hab = (PersonnePhysique) list.get(0);
+			assertEquals(new Long(12347L), hab.getNumeroIndividu());
+			return null;
 		});
 	}
 }

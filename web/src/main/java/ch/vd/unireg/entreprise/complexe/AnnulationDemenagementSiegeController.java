@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -81,90 +79,83 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(idEntreprise);
 
-		return doInReadOnlyTransaction(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
-				final ForFiscalPrincipalPM dernierFor = entreprise.getDernierForFiscalPrincipal();
-				if (dernierFor == null || dernierFor.getDateFin() != null) {
-					Flash.error("Le dernier for fiscal principal de cette entreprise est fermé.");
-					return "redirect:list.do";
-				}
-
-				return showStart(model, new AnnulationDemenagementSiegeView(idEntreprise, dernierFor.getDateDebut()));
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
+			final ForFiscalPrincipalPM dernierFor = entreprise.getDernierForFiscalPrincipal();
+			if (dernierFor == null || dernierFor.getDateFin() != null) {
+				Flash.error("Le dernier for fiscal principal de cette entreprise est fermé.");
+				return "redirect:list.do";
 			}
+			;
+			return showStart(model, new AnnulationDemenagementSiegeView(idEntreprise, dernierFor.getDateDebut()));
 		});
 	}
 
 	private String showStart(final Model model, final AnnulationDemenagementSiegeView view) {
 		model.addAttribute(ACTION_COMMAND, view);
-		return doInReadOnlyTransaction(new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				model.addAttribute(CONNUE_CIVILEMENT, entreprise.isConnueAuCivil());
+		return doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			model.addAttribute(CONNUE_CIVILEMENT, entreprise.isConnueAuCivil());
 
-				// données de for fiscal principal
+			// données de for fiscal principal
 
-				final ForFiscalPrincipalPM forActuel = entreprise.getDernierForFiscalPrincipal();
-				if (forActuel == null || forActuel.getDateFin() != null) {
-					Flash.error("Le dernier for fiscal principal de cette entreprise est fermé.");
-					return "redirect:list.do";
-				}
-
-				final Set<MotifFor> motifsDemenagement = EnumSet.of(MotifFor.DEMENAGEMENT_VD, MotifFor.ARRIVEE_HC, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, MotifFor.DEPART_HS);
-				if (!motifsDemenagement.contains(forActuel.getMotifOuverture())) {
-					Flash.error("Le for principal actif de cette entreprise n'a pas été ouvert pour un motif correspondant à un déménagement de siège.");
-					return "redirect:list.do";
-				}
-
-				model.addAttribute(DEBUT_FOR_PRINCIPAL_ACTUEL, forActuel.getDateDebut());
-				model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_ACTUEL, forActuel.getTypeAutoriteFiscale());
-				model.addAttribute(OFS_FOR_PRINCIPAL_ACTUEL, forActuel.getNumeroOfsAutoriteFiscale());
-
-				final ForFiscalPrincipalPM forPrecedent = entreprise.getDernierForFiscalPrincipalAvant(forActuel.getDateDebut().getOneDayBefore());
-				if (forPrecedent != null) {
-					model.addAttribute(DEBUT_FOR_PRINCIPAL_PRECEDENT, forPrecedent.getDateDebut());
-					model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_PRECEDENT, forPrecedent.getTypeAutoriteFiscale());
-					model.addAttribute(OFS_FOR_PRINCIPAL_PRECEDENT, forPrecedent.getNumeroOfsAutoriteFiscale());
-				}
-				else {
-					Flash.error("Cette entreprise ne possède qu'un seul for principal non-annulé (pas de déménagement de siège à annuler).");
-					return "redirect:list.do";
-				}
-
-				// données de siege
-
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
-				if (sieges == null || sieges.isEmpty()) {
-					Flash.error("Cette entreprise ne possède aucun siège civil.");
-					return "redirect:list.do";
-				}
-				final DomicileHisto dernierSiege = CollectionsUtils.getLastElement(sieges);
-				if (dernierSiege.getDateFin() != null) {
-					Flash.error("Le dernier siège de cette entreprise est fermé.");
-					return "redirect:list.do";
-				}
-
-				model.addAttribute(DEBUT_SIEGE_ACTUEL, dernierSiege.getDateDebut());
-				model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getTypeAutoriteFiscale());
-				model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getNumeroOfsAutoriteFiscale());
-
-				final DomicileHisto siegePrecedent = DateRangeHelper.rangeAt(sieges, dernierSiege.getDateDebut().getOneDayBefore());
-				if (siegePrecedent != null) {
-					model.addAttribute(DEBUT_SIEGE_PRECEDENT, siegePrecedent.getDateDebut());
-					model.addAttribute(TYPE_AUTORITE_SIEGE_PRECEDENT, siegePrecedent.getTypeAutoriteFiscale());
-					model.addAttribute(OFS_SIEGE_PRECEDENT, siegePrecedent.getNumeroOfsAutoriteFiscale());
-				}
-				else if (!entreprise.isConnueAuCivil()) {
-					// n'avoir qu'un seul siège n'est une erreur que si les sièges sont fiscaux
-					// (pour être cohérent avec le processus complexe de déménagement d'une entreprise connue au civil)
-					Flash.error("Cette entreprise ne possède qu'un seul siège (pas de déménagement de siège à annuler).");
-					return "redirect:list.do";
-				}
-
-				return "entreprise/annulation-demenagement/start";
+			final ForFiscalPrincipalPM forActuel = entreprise.getDernierForFiscalPrincipal();
+			if (forActuel == null || forActuel.getDateFin() != null) {
+				Flash.error("Le dernier for fiscal principal de cette entreprise est fermé.");
+				return "redirect:list.do";
 			}
+
+			final Set<MotifFor> motifsDemenagement = EnumSet.of(MotifFor.DEMENAGEMENT_VD, MotifFor.ARRIVEE_HC, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, MotifFor.DEPART_HS);
+			if (!motifsDemenagement.contains(forActuel.getMotifOuverture())) {
+				Flash.error("Le for principal actif de cette entreprise n'a pas été ouvert pour un motif correspondant à un déménagement de siège.");
+				return "redirect:list.do";
+			}
+
+			model.addAttribute(DEBUT_FOR_PRINCIPAL_ACTUEL, forActuel.getDateDebut());
+			model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_ACTUEL, forActuel.getTypeAutoriteFiscale());
+			model.addAttribute(OFS_FOR_PRINCIPAL_ACTUEL, forActuel.getNumeroOfsAutoriteFiscale());
+
+			final ForFiscalPrincipalPM forPrecedent = entreprise.getDernierForFiscalPrincipalAvant(forActuel.getDateDebut().getOneDayBefore());
+			if (forPrecedent != null) {
+				model.addAttribute(DEBUT_FOR_PRINCIPAL_PRECEDENT, forPrecedent.getDateDebut());
+				model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_PRECEDENT, forPrecedent.getTypeAutoriteFiscale());
+				model.addAttribute(OFS_FOR_PRINCIPAL_PRECEDENT, forPrecedent.getNumeroOfsAutoriteFiscale());
+			}
+			else {
+				Flash.error("Cette entreprise ne possède qu'un seul for principal non-annulé (pas de déménagement de siège à annuler).");
+				return "redirect:list.do";
+			}
+
+			// données de siege
+
+			final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
+			if (sieges == null || sieges.isEmpty()) {
+				Flash.error("Cette entreprise ne possède aucun siège civil.");
+				return "redirect:list.do";
+			}
+			final DomicileHisto dernierSiege = CollectionsUtils.getLastElement(sieges);
+			if (dernierSiege.getDateFin() != null) {
+				Flash.error("Le dernier siège de cette entreprise est fermé.");
+				return "redirect:list.do";
+			}
+
+			model.addAttribute(DEBUT_SIEGE_ACTUEL, dernierSiege.getDateDebut());
+			model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getTypeAutoriteFiscale());
+			model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getNumeroOfsAutoriteFiscale());
+
+			final DomicileHisto siegePrecedent = DateRangeHelper.rangeAt(sieges, dernierSiege.getDateDebut().getOneDayBefore());
+			if (siegePrecedent != null) {
+				model.addAttribute(DEBUT_SIEGE_PRECEDENT, siegePrecedent.getDateDebut());
+				model.addAttribute(TYPE_AUTORITE_SIEGE_PRECEDENT, siegePrecedent.getTypeAutoriteFiscale());
+				model.addAttribute(OFS_SIEGE_PRECEDENT, siegePrecedent.getNumeroOfsAutoriteFiscale());
+			}
+			else if (!entreprise.isConnueAuCivil()) {
+				// n'avoir qu'un seul siège n'est une erreur que si les sièges sont fiscaux
+				// (pour être cohérent avec le processus complexe de déménagement d'une entreprise connue au civil)
+				Flash.error("Cette entreprise ne possède qu'un seul siège (pas de déménagement de siège à annuler).");
+				return "redirect:list.do";
+			}
+			return "entreprise/annulation-demenagement/start";
 		});
 	}
 
@@ -188,14 +179,12 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 		// tout s'est bien passé... mais si le contribuable est sous le coup d'une décision ACI
 		// (et que l'utilisateur courant a le droit de modification, ce qui est le cas si nous sommes
 		// arrivés jusqu'ici), il faut lui laisser un petit mot...
-		doInReadOnlyTransaction(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				if (tiersService.isSousInfluenceDecisions(entreprise)) {
-					Flash.warning("Cette entreprise est actuellement sous l'influence d'une décision ACI. Veuillez en vérifier la pertinence après cette opération.");
-				}
+		doInReadOnlyTransaction(status -> {
+			final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+			if (tiersService.isSousInfluenceDecisions(entreprise)) {
+				Flash.warning("Cette entreprise est actuellement sous l'influence d'une décision ACI. Veuillez en vérifier la pertinence après cette opération.");
 			}
+			return null;
 		});
 
 		return "redirect:/tiers/visu.do?id=" + view.getIdEntreprise();

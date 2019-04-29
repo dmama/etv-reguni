@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationResults;
@@ -866,35 +864,28 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
-				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
-				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+			final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+			final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
 
-				ids.idTuteur = tuteur.getNumero();
-				ids.idCurateur = curateur.getNumero();
-				ids.idPupille = pupille.getNumero();
-				return null;
-			}
+			ids.idTuteur = tuteur.getNumero();
+			ids.idCurateur = curateur.getNumero();
+			ids.idPupille = pupille.getNumero();
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+			final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+			final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+			addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2000, 12, 31));
+			addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
 
-				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2000, 12, 31));
-				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
-
-				final ValidationResults vr = validate(pupille);
-				assertFalse(vr.hasErrors());
-				return null;
-			}
+			final ValidationResults vr = validate(pupille);
+			assertFalse(vr.hasErrors());
+			return null;
 		});
 	}
 
@@ -910,39 +901,31 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
-				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
-				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+			final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+			final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
 
-				ids.idTuteur = tuteur.getNumero();
-				ids.idCurateur = curateur.getNumero();
-				ids.idPupille = pupille.getNumero();
-				return null;
-			}
+			ids.idTuteur = tuteur.getNumero();
+			ids.idCurateur = curateur.getNumero();
+			ids.idPupille = pupille.getNumero();
+			return null;
 		});
 
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+			final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+			final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+			addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));
+			addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
 
-				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));
-				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));
+			final ValidationResults vr = validate(pupille);
+			assertTrue(vr.hasErrors());
 
-				final ValidationResults vr = validate(pupille);
-				assertTrue(vr.hasErrors());
-
-				assertEquals(1, vr.getErrors().size());
-				assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
-
-				return null;
-			}
+			assertEquals(1, vr.getErrors().size());
+			assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+			return null;
 		});
 	}
 
@@ -958,44 +941,36 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
-				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
-				final PersonnePhysique conseiller = addNonHabitant(null, "Conseiller", null, Sexe.FEMININ);
-				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+			final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+			final PersonnePhysique conseiller = addNonHabitant(null, "Conseiller", null, Sexe.FEMININ);
+			final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
 
-				ids.idTuteur = tuteur.getNumero();
-				ids.idCurateur = curateur.getNumero();
-				ids.idConseiller = conseiller.getNumero();
-				ids.idPupille = pupille.getNumero();
-				return null;
-			}
+			ids.idTuteur = tuteur.getNumero();
+			ids.idCurateur = curateur.getNumero();
+			ids.idConseiller = conseiller.getNumero();
+			ids.idPupille = pupille.getNumero();
+			return null;
 		});
 
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+			final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+			final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
+			final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-				final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
-				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+			addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));         // |-----------------------|
+			addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));           //                      |-----------------|
+			addConseilLegal(pupille, conseiller, date(2001, 6, 1), null);                   //                                     |---------------...
 
-				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));         // |-----------------------|
-				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));           //                      |-----------------|
-				addConseilLegal(pupille, conseiller, date(2001, 6, 1), null);                   //                                     |---------------...
+			final ValidationResults vr = validate(pupille);
+			assertTrue(vr.hasErrors());
 
-				final ValidationResults vr = validate(pupille);
-				assertTrue(vr.hasErrors());
-
-				assertEquals(2, vr.getErrors().size());
-				assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
-				assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
-
-				return null;
-			}
+			assertEquals(2, vr.getErrors().size());
+			assertEquals("La période [01.01.2001 ; 31.01.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+			assertEquals("La période [01.06.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
+			return null;
 		});
 	}
 
@@ -1011,45 +986,37 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
-				final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
-				final PersonnePhysique conseiller = addNonHabitant(null, "Conseiller", null, Sexe.FEMININ);
-				final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique tuteur = addNonHabitant(null, "Tuteur", null, Sexe.MASCULIN);
+			final PersonnePhysique curateur = addNonHabitant(null, "Curateur", null, Sexe.FEMININ);
+			final PersonnePhysique conseiller = addNonHabitant(null, "Conseiller", null, Sexe.FEMININ);
+			final PersonnePhysique pupille = addNonHabitant(null, "Pupille", null, Sexe.MASCULIN);
 
-				ids.idTuteur = tuteur.getNumero();
-				ids.idCurateur = curateur.getNumero();
-				ids.idConseiller = conseiller.getNumero();
-				ids.idPupille = pupille.getNumero();
-				return null;
-			}
+			ids.idTuteur = tuteur.getNumero();
+			ids.idCurateur = curateur.getNumero();
+			ids.idConseiller = conseiller.getNumero();
+			ids.idPupille = pupille.getNumero();
+			return null;
 		});
 
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
+			final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
+			final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
+			final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
 
-				final PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(ids.idTuteur);
-				final PersonnePhysique curateur = (PersonnePhysique) tiersDAO.get(ids.idCurateur);
-				final PersonnePhysique conseiller = (PersonnePhysique) tiersDAO.get(ids.idConseiller);
-				final PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(ids.idPupille);
+			addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));                 // |----------------------------|
+			addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));                   //                          |--------------------|
+			addConseilLegal(pupille, conseiller, date(2000, 6, 1), date(2001, 3, 31));              //                |---------------------|
+			addConseilLegal(pupille, tuteur, date(2001, 5, 1), null);                               //                                            |-----------...
 
-				addTutelle(pupille, tuteur, null, date(2000, 1, 1), date(2001, 1, 31));                 // |----------------------------|
-				addCuratelle(pupille, curateur, date(2001, 1, 1), date(2001, 6, 30));                   //                          |--------------------|
-				addConseilLegal(pupille, conseiller, date(2000, 6, 1), date(2001, 3, 31));              //                |---------------------|
-				addConseilLegal(pupille, tuteur, date(2001, 5, 1), null);                               //                                            |-----------...
+			final ValidationResults vr = validate(pupille);
+			assertTrue(vr.hasErrors());
 
-				final ValidationResults vr = validate(pupille);
-				assertTrue(vr.hasErrors());
-
-				assertEquals(2, vr.getErrors().size());
-				assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
-				assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
-
-				return null;
-			}
+			assertEquals(2, vr.getErrors().size());
+			assertEquals("La période [01.06.2000 ; 31.03.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(0));
+			assertEquals("La période [01.05.2001 ; 30.06.2001] est couverte par plusieurs mesures tutélaires", vr.getErrors().get(1));
+			return null;
 		});
 	}
 

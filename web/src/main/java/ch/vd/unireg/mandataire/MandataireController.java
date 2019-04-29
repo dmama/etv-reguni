@@ -27,8 +27,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -593,72 +591,71 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	private void ajouterMandat(final AddMandatView view) {
 
-		transactionHelper.doInTransaction(false, new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				checkAccessDossierEnEcriture(view.getIdMandant());
+		transactionHelper.doInTransaction(false, status -> {
+			checkAccessDossierEnEcriture(view.getIdMandant());
 
-				final Contribuable mandant = hibernateTemplate.get(Contribuable.class, view.getIdMandant());
-				if (mandant == null) {
-					throw new ActionException("Le contribuable mandant " + FormatNumeroHelper.numeroCTBToDisplay(view.getIdMandant()) + " n'existe pas.");
-				}
-
-				if (view.getIdTiersMandataire() != null) {
-					final Contribuable mandataire = hibernateTemplate.get(Contribuable.class, view.getIdTiersMandataire());
-					if (mandataire == null) {
-						throw new ActionException("Le contribuable mandataire " + FormatNumeroHelper.numeroCTBToDisplay(view.getIdTiersMandataire()) + " n'existe pas.");
-					}
-
-					// on va générer un vrai mandat...
-					final Mandat mandat;
-					switch (view.getTypeMandat()) {
-					case GENERAL:
-						mandat = Mandat.general(view.getDateDebut(), view.getDateFin(), mandant, mandataire, view.isWithCopy());
-						break;
-					case SPECIAL:
-						mandat = Mandat.special(view.getDateDebut(), view.getDateFin(), mandant, mandataire, view.isWithCopy(), view.getCodeGenreImpot());
-						break;
-					case TIERS:
-						mandat = Mandat.tiers(view.getDateDebut(), view.getDateFin(), mandant, mandataire, new CompteBancaire(IbanHelper.normalize(view.getIban()), null));
-						break;
-					default:
-						throw new ActionException("Type de mandat invalide (" + view.getTypeMandat() + ") !");
-					}
-
-					if (mandat.getTypeMandat() != TypeMandat.TIERS) {
-						mandat.setPersonneContact(view.getPersonneContact());
-						mandat.setNoTelephoneContact(view.getNoTelContact());
-					}
-					tiersService.addMandat(mandant, mandat);
-				}
-				else {
-					// on va générer une adresse de mandataire
-					if (view.getTypeMandat() == TypeMandat.TIERS) {
-						throw new ActionException("Tiers mandataire obligatoire pour les mandats tiers...");
-					}
-
-					final AdresseMandataireSuisse adresse = new AdresseMandataireSuisse();
-					adresse.setCodeGenreImpot(view.getCodeGenreImpot());
-					adresse.setComplement(view.getAdresse().getComplements());
-					adresse.setDateDebut(view.getDateDebut());
-					adresse.setDateFin(view.getDateFin());
-					adresse.setCivilite(view.getCivilite());
-					adresse.setNomDestinataire(view.getRaisonSociale());
-					adresse.setNoTelephoneContact(view.getNoTelContact());
-					adresse.setNpaCasePostale(view.getAdresse().getNpaCasePostale());
-					adresse.setNumeroCasePostale(view.getAdresse().getNumeroCasePostale());
-					adresse.setNumeroMaison(view.getAdresse().getNumeroMaison());
-					adresse.setNumeroOrdrePoste(Integer.parseInt(view.getAdresse().getNumeroOrdrePoste()));
-					adresse.setNumeroRue(view.getAdresse().getNumeroRue());
-					adresse.setPersonneContact(view.getPersonneContact());
-					adresse.setRue(view.getAdresse().getRue());
-					adresse.setTexteCasePostale(view.getAdresse().getTexteCasePostale());
-					adresse.setTypeMandat(view.getTypeMandat());
-					adresse.setWithCopy(view.isWithCopy());
-
-					tiersService.addMandat(mandant, adresse);
-				}
+			final Contribuable mandant = hibernateTemplate.get(Contribuable.class, view.getIdMandant());
+			if (mandant == null) {
+				throw new ActionException("Le contribuable mandant " + FormatNumeroHelper.numeroCTBToDisplay(view.getIdMandant()) + " n'existe pas.");
 			}
+
+			if (view.getIdTiersMandataire() != null) {
+				final Contribuable mandataire = hibernateTemplate.get(Contribuable.class, view.getIdTiersMandataire());
+				if (mandataire == null) {
+					throw new ActionException("Le contribuable mandataire " + FormatNumeroHelper.numeroCTBToDisplay(view.getIdTiersMandataire()) + " n'existe pas.");
+				}
+
+				// on va générer un vrai mandat...
+				final Mandat mandat;
+				switch (view.getTypeMandat()) {
+				case GENERAL:
+					mandat = Mandat.general(view.getDateDebut(), view.getDateFin(), mandant, mandataire, view.isWithCopy());
+					break;
+				case SPECIAL:
+					mandat = Mandat.special(view.getDateDebut(), view.getDateFin(), mandant, mandataire, view.isWithCopy(), view.getCodeGenreImpot());
+					break;
+				case TIERS:
+					mandat = Mandat.tiers(view.getDateDebut(), view.getDateFin(), mandant, mandataire, new CompteBancaire(IbanHelper.normalize(view.getIban()), null));
+					break;
+				default:
+					throw new ActionException("Type de mandat invalide (" + view.getTypeMandat() + ") !");
+				}
+
+				if (mandat.getTypeMandat() != TypeMandat.TIERS) {
+					mandat.setPersonneContact(view.getPersonneContact());
+					mandat.setNoTelephoneContact(view.getNoTelContact());
+				}
+				tiersService.addMandat(mandant, mandat);
+			}
+			else {
+				// on va générer une adresse de mandataire
+				if (view.getTypeMandat() == TypeMandat.TIERS) {
+					throw new ActionException("Tiers mandataire obligatoire pour les mandats tiers...");
+				}
+
+				final AdresseMandataireSuisse adresse = new AdresseMandataireSuisse();
+				adresse.setCodeGenreImpot(view.getCodeGenreImpot());
+				adresse.setComplement(view.getAdresse().getComplements());
+				adresse.setDateDebut(view.getDateDebut());
+				adresse.setDateFin(view.getDateFin());
+				adresse.setCivilite(view.getCivilite());
+				adresse.setNomDestinataire(view.getRaisonSociale());
+				adresse.setNoTelephoneContact(view.getNoTelContact());
+				adresse.setNpaCasePostale(view.getAdresse().getNpaCasePostale());
+				adresse.setNumeroCasePostale(view.getAdresse().getNumeroCasePostale());
+				adresse.setNumeroMaison(view.getAdresse().getNumeroMaison());
+				adresse.setNumeroOrdrePoste(Integer.parseInt(view.getAdresse().getNumeroOrdrePoste()));
+				adresse.setNumeroRue(view.getAdresse().getNumeroRue());
+				adresse.setPersonneContact(view.getPersonneContact());
+				adresse.setRue(view.getAdresse().getRue());
+				adresse.setTexteCasePostale(view.getAdresse().getTexteCasePostale());
+				adresse.setTypeMandat(view.getTypeMandat());
+				adresse.setWithCopy(view.isWithCopy());
+
+				tiersService.addMandat(mandant, adresse);
+			}
+			;
+			return null;
 		});
 	}
 

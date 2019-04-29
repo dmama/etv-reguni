@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -224,22 +222,19 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final String hql = "SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiQuestionnaireSNC AS tache WHERE tache.annulationDate IS NULL AND tache.dateFin BETWEEN :debut AND :fin AND tache.etat = :etat ORDER BY tache.contribuable.id ASC";
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final Query query = session.createQuery(hql);
-						query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
-						query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-						query.setParameter("etat", TypeEtatTache.EN_INSTANCE);
-						//noinspection unchecked
-						return query.list();
-					}
-				});
-			}
+		return template.execute(status -> {
+			final String hql = "SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiQuestionnaireSNC AS tache WHERE tache.annulationDate IS NULL AND tache.dateFin BETWEEN :debut AND :fin AND tache.etat = :etat ORDER BY tache.contribuable.id ASC";
+			return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+				@Override
+				public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+					final Query query = session.createQuery(hql);
+					query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
+					query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
+					query.setParameter("etat", TypeEtatTache.EN_INSTANCE);
+					//noinspection unchecked
+					return query.list();
+				}
+			});
 		});
 	}
 }

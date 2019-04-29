@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.adresse.AdresseService;
@@ -81,22 +79,19 @@ public class EvenementReqDesRetryProcessorTest extends AbstractEvenementReqDesPr
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zianotaire", "Mourlin", "Stéphane"), null, date(2014, 5, 26), "16478432567");
-				final UniteTraitement force = addUniteTraitement(evt, EtatTraitement.FORCE, DateHelper.getDateTime(2014, 6, 22, 10, 54, 12));
-				final UniteTraitement atraiter = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
-				final UniteTraitement enErreur = addUniteTraitement(evt, EtatTraitement.EN_ERREUR, DateHelper.getDateTime(2014, 6, 22, 10, 54, 12));
-				final UniteTraitement traite = addUniteTraitement(evt, EtatTraitement.TRAITE, DateHelper.getDateTime(2014, 6, 22, 10, 54, 12));
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zianotaire", "Mourlin", "Stéphane"), null, date(2014, 5, 26), "16478432567");
+			final UniteTraitement force = addUniteTraitement(evt, EtatTraitement.FORCE, DateHelper.getDateTime(2014, 6, 22, 10, 54, 12));
+			final UniteTraitement atraiter = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+			final UniteTraitement enErreur = addUniteTraitement(evt, EtatTraitement.EN_ERREUR, DateHelper.getDateTime(2014, 6, 22, 10, 54, 12));
+			final UniteTraitement traite = addUniteTraitement(evt, EtatTraitement.TRAITE, DateHelper.getDateTime(2014, 6, 22, 10, 54, 12));
 
-				final Ids ids = new Ids();
-				ids.idForce = force.getId();
-				ids.idATraite = atraiter.getId();
-				ids.idEnErreur = enErreur.getId();
-				ids.idTraite = traite.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idForce = force.getId();
+			ids1.idATraite = atraiter.getId();
+			ids1.idEnErreur = enErreur.getId();
+			ids1.idTraite = traite.getId();
+			return ids1;
 		});
 
 		// lancement de l'analyse

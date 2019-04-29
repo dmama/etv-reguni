@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.util.StringUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -143,23 +142,21 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que le for principal ouvert sur le ménage est bien hors-canton
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(menage);
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(menage);
 
-				final ForsParType fors = menage.getForsParType(true);
-				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
-				assertEquals(1, fors.secondaires.size());
-				assertForPrincipal(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_HC,
-				                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-				assertForSecondaire(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE,
-				                    fors.secondaires.get(0));
-			}
+			final ForsParType fors = menage.getForsParType(true);
+			assertNotNull(fors);
+			assertEquals(1, fors.principauxPP.size());
+			assertEquals(0, fors.principauxPM.size());
+			assertEquals(1, fors.secondaires.size());
+			assertForPrincipal(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_HC,
+			                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+			assertForSecondaire(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE,
+			                    fors.secondaires.get(0));
+			return null;
 		});
 	}
 
@@ -210,32 +207,29 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les fors principals ouvert sur les contribuables sont bien hors-canton
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
 
-				{
-					final ForsParType fors = fabrice.getForsParType(true);
-					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
-					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
-					                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-				}
-				{
-					final ForsParType fors = georgette.getForsParType(true);
-					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
-					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
-					                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-				}
-
+			{
+				final ForsParType fors = fabrice.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(1, fors.principauxPP.size());
+				assertEquals(0, fors.principauxPM.size());
+				assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
+				                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
 			}
+			{
+				final ForsParType fors = georgette.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(1, fors.principauxPP.size());
+				assertEquals(0, fors.principauxPM.size());
+				assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
+				                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+			}
+			return null;
 		});
 	}
 
@@ -286,31 +280,29 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les fors principals ouvert sur les contribuables sont bien hors-Suisse
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
 
-				{
-					final ForsParType fors = fabrice.getForsParType(true);
-					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
-					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
-					                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-				}
-				{
-					final ForsParType fors = georgette.getForsParType(true);
-					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
-					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
-					                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-				}
+			{
+				final ForsParType fors = fabrice.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(1, fors.principauxPP.size());
+				assertEquals(0, fors.principauxPM.size());
+				assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
+				                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
 			}
+			{
+				final ForsParType fors = georgette.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(1, fors.principauxPP.size());
+				assertEquals(0, fors.principauxPM.size());
+				assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
+				                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+			}
+			return null;
 		});
 	}
 
@@ -431,19 +423,17 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les fors principals ouvert sur le contribuable survivant est bien hors-canton
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
 
-				final ForsParType fors = georgette.getForsParType(true);
-				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
-				assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-			}
+			final ForsParType fors = georgette.getForsParType(true);
+			assertNotNull(fors);
+			assertEquals(1, fors.principauxPP.size());
+			assertEquals(0, fors.principauxPM.size());
+			assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
+			                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+			return null;
 		});
 	}
 
@@ -625,19 +615,17 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les fors principals ouvert sur le contribuable survivant est bien hors-Suisse
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
 
-				final ForsParType fors = georgette.getForsParType(true);
-				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
-				assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-			}
+			final ForsParType fors = georgette.getForsParType(true);
+			assertNotNull(fors);
+			assertEquals(1, fors.principauxPP.size());
+			assertEquals(0, fors.principauxPM.size());
+			assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS(),
+			                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+			return null;
 		});
 	}
 
@@ -686,19 +674,17 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que les fors principals ouvert sur le contribuable survivant est bien hors-canton
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
 
-				final ForsParType fors = georgette.getForsParType(true);
-				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
-				assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
-			}
+			final ForsParType fors = georgette.getForsParType(true);
+			assertNotNull(fors);
+			assertEquals(1, fors.principauxPP.size());
+			assertEquals(0, fors.principauxPM.size());
+			assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
+			                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+			return null;
 		});
 	}
 
@@ -802,51 +788,49 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Fabrice à Bex, Georgette à Lausanne
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// For fermé sur le couple
-				{
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			// For fermé sur le couple
+			{
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
 
-					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateMariage, ffp.getDateDebut());
-					assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
-					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
-					assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// For ouvert sur Fabrice : à Bex, car son adresse de domicile est là-bas
-				{
-					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-					assertNotNull(fabrice);
-
-					final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateSeparation, ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-					assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// For ouvert sur Georgette : à Genève, car l'adresse courrier est utilisée en lieu et place de l'adresse de domicile, inconnue
-				{
-					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-					assertNotNull(georgette);
-
-					final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateSeparation, ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-					assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-				}
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			}
+
+			// For ouvert sur Fabrice : à Bex, car son adresse de domicile est là-bas
+			{
+				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+				assertNotNull(fabrice);
+
+				final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateSeparation, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+				assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			}
+
+			// For ouvert sur Georgette : à Genève, car l'adresse courrier est utilisée en lieu et place de l'adresse de domicile, inconnue
+			{
+				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+				assertNotNull(georgette);
+
+				final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateSeparation, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+				assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -1175,51 +1159,49 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Fabrice à Bex, Georgette à Paris
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// For fermé sur le couple
-				{
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			// For fermé sur le couple
+			{
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
 
-					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateMariage, ffp.getDateDebut());
-					assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
-					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
-					assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// For ouvert sur Fabrice : à Bex, car son adresse de domicile est là-bas
-				{
-					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-					assertNotNull(fabrice);
-
-					final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateSeparation, ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-					assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// For ouvert sur Georgette : à Paris, car le goes-to de sa dernière adresse de domicile connue est utilisée -> France
-				{
-					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-					assertNotNull(georgette);
-
-					final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateSeparation, ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-					assertEquals(MockPays.France.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
-				}
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			}
+
+			// For ouvert sur Fabrice : à Bex, car son adresse de domicile est là-bas
+			{
+				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+				assertNotNull(fabrice);
+
+				final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateSeparation, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+				assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			}
+
+			// For ouvert sur Georgette : à Paris, car le goes-to de sa dernière adresse de domicile connue est utilisée -> France
+			{
+				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+				assertNotNull(georgette);
+
+				final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateSeparation, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
+				assertEquals(MockPays.France.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -1314,37 +1296,34 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Fabrice à Bex, Georgette sans for
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			// For fermé sur le couple
+			{
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
 
-				// For fermé sur le couple
-				{
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
-
-					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-					assertNull(ffp);
-				}
-
-				// For ouvert sur Fabrice : aucun, car aucun for n'existait sur le ménage commun
-				{
-					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-					assertNotNull(fabrice);
-
-					final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-					assertNull(ffp);
-				}
-
-				// For ouvert sur Georgette : aucun, car son adresse de domicile est inconnue, et aucun for n'existe sur le ménage commun
-				{
-					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-					assertNotNull(georgette);
-
-					final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
-					assertNull(ffp);
-				}
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNull(ffp);
 			}
+
+			// For ouvert sur Fabrice : aucun, car aucun for n'existait sur le ménage commun
+			{
+				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+				assertNotNull(fabrice);
+
+				final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+				assertNull(ffp);
+			}
+
+			// For ouvert sur Georgette : aucun, car son adresse de domicile est inconnue, et aucun for n'existe sur le ménage commun
+			{
+				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+				assertNotNull(georgette);
+
+				final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+				assertNull(ffp);
+			}
+			return null;
 		});
 	}
 
@@ -1421,37 +1400,35 @@ public class MetiersServiceTest extends BusinessTest {
 			});
 
 			// vérifie les fors principaux ouverts sur les séparés : Monsieur à Riex, Madame à Grandvaux
-			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					// For fermé sur le couple
-					{
-						final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-						assertNotNull(mc);
+			doInNewTransactionAndSession(status -> {
+				// For fermé sur le couple
+				{
+					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+					assertNotNull(mc);
 
-						final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
-						assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						                   MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-					}
-
-					// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
-					{
-						final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-						assertNotNull(fabrice);
-
-						final ForFiscalPrincipalPP ffp = fabrice.getDernierForFiscalPrincipal();
-						assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Riex, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-					}
-
-					// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
-					{
-						final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-						assertNotNull(georgette);
-
-						final ForFiscalPrincipalPP ffp = georgette.getDernierForFiscalPrincipal();
-						assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-					}
+					final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+					assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+					                   MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 				}
+
+				// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
+				{
+					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+					assertNotNull(fabrice);
+
+					final ForFiscalPrincipalPP ffp = fabrice.getDernierForFiscalPrincipal();
+					assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Riex, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+				}
+
+				// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
+				{
+					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+					assertNotNull(georgette);
+
+					final ForFiscalPrincipalPP ffp = georgette.getDernierForFiscalPrincipal();
+					assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+				}
+				return null;
 			});
 		}
 		finally {
@@ -1530,38 +1507,36 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Monsieur à Bourg-en-Lavaux (anciennement Riex), Madame à Bourg-en-Lavaux (anciennement Grandvaux)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// For fermé sur le couple
-				{
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			// For fermé sur le couple
+			{
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
 
-					final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
-					assertForPrincipal(MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, dateSeparation.getOneDayBefore(),
-					                   MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-					                   MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-				}
-
-				// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
-				{
-					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-					assertNotNull(fabrice);
-
-					final ForFiscalPrincipalPP ffp = fabrice.getDernierForFiscalPrincipal();
-					assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-				}
-
-				// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
-				{
-					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-					assertNotNull(georgette);
-
-					final ForFiscalPrincipalPP ffp = georgette.getDernierForFiscalPrincipal();
-					assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-				}
+				final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+				assertForPrincipal(MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, dateSeparation.getOneDayBefore(),
+				                   MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				                   MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 			}
+
+			// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
+			{
+				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+				assertNotNull(fabrice);
+
+				final ForFiscalPrincipalPP ffp = fabrice.getDernierForFiscalPrincipal();
+				assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+			}
+
+			// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
+			{
+				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+				assertNotNull(georgette);
+
+				final ForFiscalPrincipalPP ffp = georgette.getDernierForFiscalPrincipal();
+				assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+			}
+			return null;
 		});
 	}
 
@@ -1652,46 +1627,44 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérifie les fors principaux ouverts sur les contribuables : Fabrice est mort, Georgette est à Genève
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// For fermé sur le couple
-				{
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			// For fermé sur le couple
+			{
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
 
-					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateMariage, ffp.getDateDebut());
-					assertEquals(dateDeces, ffp.getDateFin());
-					assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
-					assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// For ouvert sur Fabrice : aucun, car il est mort
-				{
-					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-					assertNotNull(fabrice);
-
-					final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-					assertNull(ffp);
-				}
-
-				// For ouvert sur Georgette : passe hors-canton à Genève
-				{
-					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-					assertNotNull(georgette);
-
-					final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
-					assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-				}
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(dateDeces, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			}
+
+			// For ouvert sur Fabrice : aucun, car il est mort
+			{
+				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+				assertNotNull(fabrice);
+
+				final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+				assertNull(ffp);
+			}
+
+			// For ouvert sur Georgette : passe hors-canton à Genève
+			{
+				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+				assertNotNull(georgette);
+
+				final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
+				assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -1782,46 +1755,44 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérifie les fors principaux ouverts sur les contribuables : Fabrice est mort, Georgette est à Genève
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// For fermé sur le couple
-				{
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			// For fermé sur le couple
+			{
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
 
-					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateMariage, ffp.getDateDebut());
-					assertEquals(dateDeces, ffp.getDateFin());
-					assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
-					assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// For ouvert sur Fabrice : aucun, car il est mort
-				{
-					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-					assertNotNull(fabrice);
-
-					final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-					assertNull(ffp);
-				}
-
-				// For ouvert sur Georgette : passe hors-canton à Genève
-				{
-					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-					assertNotNull(georgette);
-
-					final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
-					assertEquals(MockPays.France.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
-				}
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(dateDeces, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			}
+
+			// For ouvert sur Fabrice : aucun, car il est mort
+			{
+				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+				assertNotNull(fabrice);
+
+				final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+				assertNull(ffp);
+			}
+
+			// For ouvert sur Georgette : passe hors-canton à Genève
+			{
+				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+				assertNotNull(georgette);
+
+				final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
+				assertEquals(MockPays.France.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			}
+			return null;
 		});
 	}
 
@@ -2415,23 +2386,22 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// on vérifie maintenant que tous les rapports sont fermés à la date de décès
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
-				Assert.assertEquals(1, objets.size());
-				for (RapportEntreTiers ret : objets) {
-					Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					Assert.assertFalse(ret.toString(), ret.isAnnule());
-				}
-				final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
-				Assert.assertEquals(1, sujets.size());
-				for (RapportEntreTiers ret : sujets) {
-					Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					Assert.assertFalse(ret.toString(), ret.isAnnule());
-				}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
+			Assert.assertEquals(1, objets.size());
+			for (RapportEntreTiers ret : objets) {
+				Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
+				Assert.assertFalse(ret.toString(), ret.isAnnule());
 			}
+			final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
+			Assert.assertEquals(1, sujets.size());
+			for (RapportEntreTiers ret : sujets) {
+				Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
+				Assert.assertFalse(ret.toString(), ret.isAnnule());
+			}
+			;
+			return null;
 		});
 
 		// maintenant, on annule le décès
@@ -2444,56 +2414,52 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// et on vérifie que tous les rapports précédemment fermés à la date de décès sont bien ré-ouverts
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				int decompte = 0;
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			int decompte = 0;
 
-				final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
-				Assert.assertEquals(2, objets.size());
-				for (RapportEntreTiers ret : objets) {
-					if (ret.isAnnule()) {
-						++ decompte;
-						Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					}
-					else {
-						-- decompte;
-						Assert.assertNull(ret.toString(), ret.getDateFin());
-					}
+			final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
+			Assert.assertEquals(2, objets.size());
+			for (RapportEntreTiers ret : objets) {
+				if (ret.isAnnule()) {
+					++decompte;
+					Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
 				}
-				Assert.assertEquals(0, decompte);
-
-				final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
-				Assert.assertEquals(2, sujets.size());
-				for (RapportEntreTiers ret : sujets) {
-					if (ret.isAnnule()) {
-						++ decompte;
-						Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					}
-					else {
-						-- decompte;
-						Assert.assertNull(ret.toString(), ret.getDateFin());
-					}
+				else {
+					--decompte;
+					Assert.assertNull(ret.toString(), ret.getDateFin());
 				}
-				Assert.assertEquals(0, decompte);
 			}
+			Assert.assertEquals(0, decompte);
+
+			final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
+			Assert.assertEquals(2, sujets.size());
+			for (RapportEntreTiers ret : sujets) {
+				if (ret.isAnnule()) {
+					++decompte;
+					Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
+				}
+				else {
+					--decompte;
+					Assert.assertNull(ret.toString(), ret.getDateFin());
+				}
+			}
+			Assert.assertEquals(0, decompte);
+			return null;
 		});
 
 		// vérification sur l'épouse, le rapport de prestation imposable ne doit pas avoir bougé (= pas de ré-ouverture!)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateDeces.getOneDayAfter());      // le couple revit, normalement
-				Assert.assertNotNull(couple);
-				final PersonnePhysique epouse = couple.getConjoint(pp);
-				Assert.assertNotNull("Le rapport d'appartenance ménage n'aurait-il pas été ré-ouvert ?", epouse);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateDeces.getOneDayAfter());      // le couple revit, normalement
+			Assert.assertNotNull(couple);
+			final PersonnePhysique epouse = couple.getConjoint(pp);
+			Assert.assertNotNull("Le rapport d'appartenance ménage n'aurait-il pas été ré-ouvert ?", epouse);
 
-				final RapportEntreTiers rt = epouse.getDernierRapportSujet(TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
-				Assert.assertNotNull(rt);
-				Assert.assertEquals(dateDeces, rt.getDateFin());
-			}
+			final RapportEntreTiers rt = epouse.getDernierRapportSujet(TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
+			Assert.assertNotNull(rt);
+			Assert.assertEquals(dateDeces, rt.getDateFin());
+			return null;
 		});
 	}
 
@@ -2540,39 +2506,37 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification des liens sur le décédé
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
-				Assert.assertNotNull(defunt);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
+			Assert.assertNotNull(defunt);
 
-				{
-					// le défunt était déjà héritier -> ce rapport-là doit être fermé
-					final Set<RapportEntreTiers> asSujet = defunt.getRapportsSujet();
-					Assert.assertNotNull(asSujet);
-					Assert.assertEquals(1, asSujet.size());
-					final RapportEntreTiers ret = asSujet.iterator().next();
-					Assert.assertNotNull(ret);
-					Assert.assertEquals((Long) ids.legateur, ret.getObjetId());
-					Assert.assertEquals(datePremierHeritage, ret.getDateDebut());
-					Assert.assertEquals(dateDeces, ret.getDateFin());
-					Assert.assertFalse(ret.isAnnule());
-					Assert.assertEquals(TypeRapportEntreTiers.HERITAGE, ret.getType());
-				}
-				{
-					// le défunt avait déjà un héritier -> ce rapport-là ne doit pas être fermé
-					final Set<RapportEntreTiers> asObjet = defunt.getRapportsObjet();
-					Assert.assertNotNull(asObjet);
-					Assert.assertEquals(1, asObjet.size());
-					final RapportEntreTiers ret = asObjet.iterator().next();
-					Assert.assertNotNull(ret);
-					Assert.assertEquals((Long) ids.heritier, ret.getSujetId());
-					Assert.assertEquals(dateDeces.getOneDayAfter(), ret.getDateDebut());
-					Assert.assertNull(ret.getDateFin());
-					Assert.assertFalse(ret.isAnnule());
-					Assert.assertEquals(TypeRapportEntreTiers.HERITAGE, ret.getType());
-				}
+			{
+				// le défunt était déjà héritier -> ce rapport-là doit être fermé
+				final Set<RapportEntreTiers> asSujet = defunt.getRapportsSujet();
+				Assert.assertNotNull(asSujet);
+				Assert.assertEquals(1, asSujet.size());
+				final RapportEntreTiers ret = asSujet.iterator().next();
+				Assert.assertNotNull(ret);
+				Assert.assertEquals((Long) ids.legateur, ret.getObjetId());
+				Assert.assertEquals(datePremierHeritage, ret.getDateDebut());
+				Assert.assertEquals(dateDeces, ret.getDateFin());
+				Assert.assertFalse(ret.isAnnule());
+				Assert.assertEquals(TypeRapportEntreTiers.HERITAGE, ret.getType());
 			}
+			{
+				// le défunt avait déjà un héritier -> ce rapport-là ne doit pas être fermé
+				final Set<RapportEntreTiers> asObjet = defunt.getRapportsObjet();
+				Assert.assertNotNull(asObjet);
+				Assert.assertEquals(1, asObjet.size());
+				final RapportEntreTiers ret = asObjet.iterator().next();
+				Assert.assertNotNull(ret);
+				Assert.assertEquals((Long) ids.heritier, ret.getSujetId());
+				Assert.assertEquals(dateDeces.getOneDayAfter(), ret.getDateDebut());
+				Assert.assertNull(ret.getDateFin());
+				Assert.assertFalse(ret.isAnnule());
+				Assert.assertEquals(TypeRapportEntreTiers.HERITAGE, ret.getType());
+			}
+			return null;
 		});
 	}
 
@@ -3931,44 +3895,42 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification du couple créé
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
 
-				assertTrue(lui.getBlocageRemboursementAutomatique());
-				assertTrue(elle.getBlocageRemboursementAutomatique());
+			assertTrue(lui.getBlocageRemboursementAutomatique());
+			assertTrue(elle.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
-				assertNotNull(ffpLui);
-				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
-				assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
+			final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
+			assertNotNull(ffpLui);
+			assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
+			assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
 
-				final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
-				assertNotNull(ffpElle);
-				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
-				assertEquals(ModeImposition.ORDINAIRE, ffpElle.getModeImposition());
+			final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
+			assertNotNull(ffpElle);
+			assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
+			assertEquals(ModeImposition.ORDINAIRE, ffpElle.getModeImposition());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
-				assertNotNull(couple);
-				assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
-				assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
+			assertNotNull(couple);
+			assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
+			assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				assertNotNull(mc);
-				assertFalse(mc.getBlocageRemboursementAutomatique());
+			final MenageCommun mc = couple.getMenage();
+			assertNotNull(mc);
+			assertFalse(mc.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMc);
-				assertEquals(dateMariage, ffpMc.getDateDebut());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
-				assertNull(ffpMc.getDateFin());
-				assertNull(ffpMc.getMotifFermeture());
-				assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
-			}
+			final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMc);
+			assertEquals(dateMariage, ffpMc.getDateDebut());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
+			assertNull(ffpMc.getDateFin());
+			assertNull(ffpMc.getMotifFermeture());
+			assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
+			return null;
 		});
 	}
 
@@ -4025,45 +3987,43 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification du couple créé
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
 
-				// PIIS source pure -> pas bloqué
-				assertFalse(lui.getBlocageRemboursementAutomatique());
-				assertFalse(elle.getBlocageRemboursementAutomatique());
+			// PIIS source pure -> pas bloqué
+			assertFalse(lui.getBlocageRemboursementAutomatique());
+			assertFalse(elle.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
-				assertNotNull(ffpLui);
-				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffpLui.getModeImposition());
+			final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
+			assertNotNull(ffpLui);
+			assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffpLui.getModeImposition());
 
-				final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
-				assertNotNull(ffpElle);
-				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffpElle.getModeImposition());
+			final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
+			assertNotNull(ffpElle);
+			assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffpElle.getModeImposition());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
-				assertNotNull(couple);
-				assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
-				assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
+			assertNotNull(couple);
+			assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
+			assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				assertNotNull(mc);
-				assertFalse(mc.getBlocageRemboursementAutomatique());
+			final MenageCommun mc = couple.getMenage();
+			assertNotNull(mc);
+			assertFalse(mc.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMc);
-				assertEquals(dateMariage, ffpMc.getDateDebut());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
-				assertNull(ffpMc.getDateFin());
-				assertNull(ffpMc.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffpMc.getModeImposition());
-			}
+			final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMc);
+			assertEquals(dateMariage, ffpMc.getDateDebut());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
+			assertNull(ffpMc.getDateFin());
+			assertNull(ffpMc.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffpMc.getModeImposition());
+			return null;
 		});
 	}
 
@@ -4120,45 +4080,43 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification du couple créé
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
 
-				// Lui est à l'ordinaire -> bloqué... Elle était à la source, mais ses PIIS ne sont plus "source pure" seulement -> bloqué
-				assertTrue(lui.getBlocageRemboursementAutomatique());
-				assertTrue(elle.getBlocageRemboursementAutomatique());
+			// Lui est à l'ordinaire -> bloqué... Elle était à la source, mais ses PIIS ne sont plus "source pure" seulement -> bloqué
+			assertTrue(lui.getBlocageRemboursementAutomatique());
+			assertTrue(elle.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
-				assertNotNull(ffpLui);
-				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
-				assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
+			final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
+			assertNotNull(ffpLui);
+			assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
+			assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
 
-				final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
-				assertNotNull(ffpElle);
-				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
-				assertEquals(ModeImposition.SOURCE, ffpElle.getModeImposition());
+			final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
+			assertNotNull(ffpElle);
+			assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
+			assertEquals(ModeImposition.SOURCE, ffpElle.getModeImposition());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
-				assertNotNull(couple);
-				assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
-				assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, null);
+			assertNotNull(couple);
+			assertEquals((Long) ids.lui, couple.getPrincipal().getNumero());
+			assertEquals((Long) ids.elle, couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				assertNotNull(mc);
-				assertFalse(mc.getBlocageRemboursementAutomatique());
+			final MenageCommun mc = couple.getMenage();
+			assertNotNull(mc);
+			assertFalse(mc.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMc);
-				assertEquals(dateMariage, ffpMc.getDateDebut());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
-				assertNull(ffpMc.getDateFin());
-				assertNull(ffpMc.getMotifFermeture());
-				assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
-			}
+			final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMc);
+			assertEquals(dateMariage, ffpMc.getDateDebut());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
+			assertNull(ffpMc.getDateFin());
+			assertNull(ffpMc.getMotifFermeture());
+			assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
+			return null;
 		});
 	}
 
@@ -4169,37 +4127,35 @@ public class MetiersServiceTest extends BusinessTest {
 		final RegDate dateDecesConjoint = dateDecesPrincipal.addDays(54);
 
 		// mise en place d'étiquettes qui réagissent au décès, et d'autres qui ne réagissent pas
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on enlève d'abord toutes les étiquettes "automatiques" générées dans la construction par défaut des tests
-				etiquetteDAO.getAll().forEach(hibernateTemplate::delete);
+		doInNewTransactionAndSession(status -> {
+			// on enlève d'abord toutes les étiquettes "automatiques" générées dans la construction par défaut des tests
+			etiquetteDAO.getAll().forEach(hibernateTemplate::delete);
 
-				// ajout des étiquettes qui nous intéressent
-				{
-					final Etiquette etiquette = addEtiquette("TOTO", "Décès PP 2Y fin mois", TypeTiersEtiquette.PP, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
-					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_MOIS)));
-				}
-				{
-					final Etiquette etiquette = addEtiquette("TITI", "Décès PM (aucun sens)", TypeTiersEtiquette.PM, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
-					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
-				}
-				{
-					final Etiquette etiquette = addEtiquette("TATA", "Décès PP sans date de fin", TypeTiersEtiquette.PP_MC, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.SEMAINE), null));
-				}
-				{
-					final Etiquette etiquette = addEtiquette("TÉTÉ", "inactive", TypeTiersEtiquette.PP_MC, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
-					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
-					etiquette.setActive(false);
-				}
-				{
-					addEtiquette("TUTU", "Sans décès", TypeTiersEtiquette.PP_MC_PM, null);
-				}
+			// ajout des étiquettes qui nous intéressent
+			{
+				final Etiquette etiquette = addEtiquette("TOTO", "Décès PP 2Y fin mois", TypeTiersEtiquette.PP, null);
+				etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
+				                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_MOIS)));
 			}
+			{
+				final Etiquette etiquette = addEtiquette("TITI", "Décès PM (aucun sens)", TypeTiersEtiquette.PM, null);
+				etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
+				                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+			}
+			{
+				final Etiquette etiquette = addEtiquette("TATA", "Décès PP sans date de fin", TypeTiersEtiquette.PP_MC, null);
+				etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.SEMAINE), null));
+			}
+			{
+				final Etiquette etiquette = addEtiquette("TÉTÉ", "inactive", TypeTiersEtiquette.PP_MC, null);
+				etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
+				                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+				etiquette.setActive(false);
+			}
+			{
+				addEtiquette("TUTU", "Sans décès", TypeTiersEtiquette.PP_MC_PM, null);
+			}
+			return null;
 		});
 
 		final class Ids {
@@ -4233,66 +4189,65 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification des étiquettes assignées aux différents tiers concernés
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// rien sur le ménage
-				final MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.mc);
-				Assert.assertNotNull(menage);
-				Assert.assertEquals(0, menage.getEtiquettes().size());
+		doInNewTransactionAndSession(status -> {
+			// rien sur le ménage
+			final MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.mc);
+			Assert.assertNotNull(menage);
+			Assert.assertEquals(0, menage.getEtiquettes().size());
 
-				// 2 étiquettes sur le principal (= défunt)
-				final PersonnePhysique prn = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals(2, prn.getEtiquettes().size());
-				final List<EtiquetteTiers> etiquettesPrincipal = prn.getEtiquettes().stream()
-						.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
-						.collect(Collectors.toList());
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(0);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TATA", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
-					Assert.assertNull(etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(1);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TOTO", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
-					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-
-				// 2 étiquettes (= les mêmes) sur le conjoint survivant
-				final PersonnePhysique cjt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
-				Assert.assertNotNull(cjt);
-				Assert.assertEquals(2, cjt.getEtiquettes().size());
-				final List<EtiquetteTiers> etiquettesConjoint = cjt.getEtiquettes().stream()
-						.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
-						.collect(Collectors.toList());
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(0);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TATA", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
-					Assert.assertNull(etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(1);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TOTO", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
-					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
+			// 2 étiquettes sur le principal (= défunt)
+			final PersonnePhysique prn = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals(2, prn.getEtiquettes().size());
+			final List<EtiquetteTiers> etiquettesPrincipal = prn.getEtiquettes().stream()
+					.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
+					.collect(Collectors.toList());
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(0);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TATA", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+				Assert.assertNull(etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
 			}
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(1);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TOTO", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+				Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+
+			// 2 étiquettes (= les mêmes) sur le conjoint survivant
+			final PersonnePhysique cjt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
+			Assert.assertNotNull(cjt);
+			Assert.assertEquals(2, cjt.getEtiquettes().size());
+			final List<EtiquetteTiers> etiquettesConjoint = cjt.getEtiquettes().stream()
+					.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
+					.collect(Collectors.toList());
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(0);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TATA", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+				Assert.assertNull(etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(1);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TOTO", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+				Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+			;
+			return null;
 		});
 
 		// traitement du décès du conjoint quelques jours après
@@ -4306,82 +4261,81 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification des étiquettes assignées aux différents tiers concernés
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// toujours rien sur le ménage
-				final MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.mc);
-				Assert.assertNotNull(menage);
-				Assert.assertEquals(0, menage.getEtiquettes().size());
+		doInNewTransactionAndSession(status -> {
+			// toujours rien sur le ménage
+			final MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.mc);
+			Assert.assertNotNull(menage);
+			Assert.assertEquals(0, menage.getEtiquettes().size());
 
-				// aucune différence sur le défunt précédent
-				final PersonnePhysique prn = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
-				Assert.assertNotNull(prn);
-				Assert.assertEquals(2, prn.getEtiquettes().size());
-				final List<EtiquetteTiers> etiquettesPrincipal = prn.getEtiquettes().stream()
-						.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
-						.collect(Collectors.toList());
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(0);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TATA", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
-					Assert.assertNull(etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(1);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TOTO", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
-					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-
-				// petit changement sur le nouveau défunt
-				final PersonnePhysique cjt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
-				Assert.assertNotNull(cjt);
-				Assert.assertEquals(3, cjt.getEtiquettes().size());
-				final Comparator<EtiquetteTiers> comparator = (et1, et2) -> {
-					int comparison = et1.getEtiquette().getCode().compareTo(et2.getEtiquette().getCode());
-					if (comparison == 0) {
-						comparison = DateRangeComparator.compareRanges(et1, et2);
-					}
-					return comparison;
-				};
-				final List<EtiquetteTiers> etiquettesConjoint = cjt.getEtiquettes().stream()
-						.sorted(comparator)
-						.collect(Collectors.toList());
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(0);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TATA", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
-					Assert.assertNull(etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(1);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TOTO", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
-					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
-				{
-					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(2);
-					final Etiquette etiquette = etiquetteTiers.getEtiquette();
-					Assert.assertEquals("TOTO", etiquette.getCode());
-					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth().getOneDayAfter(), etiquetteTiers.getDateDebut());
-					Assert.assertEquals(dateDecesConjoint.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
-					Assert.assertFalse(etiquetteTiers.isAnnule());
-					Assert.assertNull(etiquetteTiers.getCommentaire());
-				}
+			// aucune différence sur le défunt précédent
+			final PersonnePhysique prn = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
+			Assert.assertNotNull(prn);
+			Assert.assertEquals(2, prn.getEtiquettes().size());
+			final List<EtiquetteTiers> etiquettesPrincipal = prn.getEtiquettes().stream()
+					.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
+					.collect(Collectors.toList());
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(0);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TATA", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+				Assert.assertNull(etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
 			}
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(1);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TOTO", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+				Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+
+			// petit changement sur le nouveau défunt
+			final PersonnePhysique cjt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
+			Assert.assertNotNull(cjt);
+			Assert.assertEquals(3, cjt.getEtiquettes().size());
+			final Comparator<EtiquetteTiers> comparator = (et1, et2) -> {
+				int comparison = et1.getEtiquette().getCode().compareTo(et2.getEtiquette().getCode());
+				if (comparison == 0) {
+					comparison = DateRangeComparator.compareRanges(et1, et2);
+				}
+				return comparison;
+			};
+			final List<EtiquetteTiers> etiquettesConjoint = cjt.getEtiquettes().stream()
+					.sorted(comparator)
+					.collect(Collectors.toList());
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(0);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TATA", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+				Assert.assertNull(etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(1);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TOTO", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+				Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+			{
+				final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(2);
+				final Etiquette etiquette = etiquetteTiers.getEtiquette();
+				Assert.assertEquals("TOTO", etiquette.getCode());
+				Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth().getOneDayAfter(), etiquetteTiers.getDateDebut());
+				Assert.assertEquals(dateDecesConjoint.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+				Assert.assertFalse(etiquetteTiers.isAnnule());
+				Assert.assertNull(etiquetteTiers.getCommentaire());
+			}
+			;
+			return null;
 		});
 	}
 }

@@ -20,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -186,12 +184,7 @@ public class RecalculTachesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				return extractCtbIds(existingTasksCleanup, scope);
-			}
-		});
+		return template.execute(status -> extractCtbIds(existingTasksCleanup, scope));
 	}
 
 	private List<Long> extractCtbIds(boolean existingTasksCleanup, Scope scope) {

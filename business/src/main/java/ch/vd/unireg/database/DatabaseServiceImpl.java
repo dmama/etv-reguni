@@ -44,9 +44,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
@@ -78,20 +76,16 @@ public class DatabaseServiceImpl implements DatabaseService {
 	}
 
 	private void sendTruncateDatabaseEvent() {
-		doInNewTransaction(false, new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				dataEventService.onTruncateDatabase();
-			}
+		doInNewTransaction(false, status -> {
+			dataEventService.onTruncateDatabase();
+			return null;
 		});
 	}
 
 	private void sendLoadDatabaseEvent() {
-		doInNewTransaction(false, new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				dataEventService.onLoadDatabase();
-			}
+		doInNewTransaction(false, status -> {
+			dataEventService.onLoadDatabase();
+			return null;
 		});
 	}
 
@@ -284,12 +278,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			template.setIgnoreWarnings(false);
 
 			final TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
-			final List<Map<String, Object>> rs = tmpl.execute(new TransactionCallback<List<Map<String, Object>>>() {
-				@Override
-				public List<Map<String, Object>> doInTransaction(TransactionStatus status) {
-					return template.queryForList(sql);
-				}
-			});
+			final List<Map<String, Object>> rs = tmpl.execute(status -> template.queryForList(sql));
 
 			List<String> list = new ArrayList<>();
 			for (Map<String, Object> map : rs) {

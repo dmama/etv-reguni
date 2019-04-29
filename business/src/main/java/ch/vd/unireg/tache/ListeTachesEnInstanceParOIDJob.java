@@ -3,8 +3,6 @@ package ch.vd.unireg.tache;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -45,26 +43,20 @@ public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 
 		// Exécution de l'envoi dans une transaction.
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final ListeTachesEnInstanceParOID results = template.execute(new TransactionCallback<ListeTachesEnInstanceParOID>() {
-			@Override
-			public ListeTachesEnInstanceParOID doInTransaction(TransactionStatus status) {
-				try {
-					return service.produireListeTachesEnInstanceParOID(dateTraitement, getStatusManager());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+		final ListeTachesEnInstanceParOID results = template.execute(status -> {
+			try {
+				return service.produireListeTachesEnInstanceParOID(dateTraitement, getStatusManager());
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
-		final Document report = template.execute(new TransactionCallback<Document>() {
-			@Override
-			public Document doInTransaction(TransactionStatus status) {
-				try {
-					return rapportService.generateRapport(results, getStatusManager());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+		final Document report = template.execute(status -> {
+			try {
+				return rapportService.generateRapport(results, getStatusManager());
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 		setLastRunReport(report);

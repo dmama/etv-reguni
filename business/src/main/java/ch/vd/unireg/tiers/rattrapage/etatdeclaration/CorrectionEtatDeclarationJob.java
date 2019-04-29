@@ -15,8 +15,6 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -276,13 +274,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 
 	private List<Long> retrieveIdsDeclarations() {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				//noinspection unchecked
-				return hibernateTemplate.find(QUERY_STRING, null);
-			}
-		});
+		final List<Long> ids = template.execute(status -> hibernateTemplate.find(QUERY_STRING, null));
 		Collections.sort(ids);
 		return ids;
 	}

@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -152,27 +151,25 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 	 */
 	private void sendEvent(final boolean saute, final MutableLong ppId) throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			// Création du message
+			final PersonnePhysique pp = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2009, 12, 9), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			final EvenementFiscalFor event = hibernateTemplate.merge(new EvenementFiscalFor(ffp.getDateDebut(), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE));
+			ppId.setValue(pp.getNumero());
 
-				// Création du message
-				final PersonnePhysique pp = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2009, 12, 9), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				final EvenementFiscalFor event = hibernateTemplate.merge(new EvenementFiscalFor(ffp.getDateDebut(), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE));
-				ppId.setValue(pp.getNumero());
-
-				try {
-					sender.sendEvent(event);
-				}
-				catch (EvenementFiscalException e) {
-					throw new RuntimeException("Exception inattendue", e);
-				}
-
-				if (saute) {
-					throw new RuntimeException("Exception de test");
-				}
+			try {
+				sender.sendEvent(event);
 			}
+			catch (EvenementFiscalException e) {
+				throw new RuntimeException("Exception inattendue", e);
+			}
+
+			if (saute) {
+				throw new RuntimeException("Exception de test");
+			}
+			;
+			return null;
 		});
 	}
 

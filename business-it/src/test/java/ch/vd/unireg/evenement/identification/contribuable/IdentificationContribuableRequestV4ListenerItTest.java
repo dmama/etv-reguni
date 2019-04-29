@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -223,29 +222,26 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 			int pm;
 		}
 
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
-				final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
-				final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, date(1883, 6, 1), null, "Banque cantonale vaudoise");
-				addFormeJuridique(pm, date(1883, 6, 1), null, FormeJuridiqueEntreprise.CORP_DP_ENT);
-				addCapitalEntreprise(pm, date(1883, 6, 1), null, new MontantMonetaire(1000000000L, MontantMonetaire.CHF));
+		final Ids ids = doInNewTransaction(status -> {
+			final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+			final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
+			final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, date(1883, 6, 1), null, "Banque cantonale vaudoise");
+			addFormeJuridique(pm, date(1883, 6, 1), null, FormeJuridiqueEntreprise.CORP_DP_ENT);
+			addCapitalEntreprise(pm, date(1883, 6, 1), null, new MontantMonetaire(1000000000L, MontantMonetaire.CHF));
 
-				// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
-				for (int i = 0; i < 150; ++i) {
-					addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
-				}
-
-				final Ids ids = new Ids();
-				ids.ppUn = ppUn.getNumero().intValue();
-				ids.ppDeux = ppDeux.getNumero().intValue();
-				ids.ppTrois = ppTrois.getNumero().intValue();
-				ids.pm = pm.getNumero().intValue();
-				return ids;
+			// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
+			for (int i = 0; i < 150; ++i) {
+				addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
 			}
+
+			final Ids ids1 = new Ids();
+			ids1.ppUn = ppUn.getNumero().intValue();
+			ids1.ppDeux = ppDeux.getNumero().intValue();
+			ids1.ppTrois = ppTrois.getNumero().intValue();
+			ids1.pm = pm.getNumero().intValue();
+			return ids1;
 		});
 
 		globalTiersIndexer.sync();

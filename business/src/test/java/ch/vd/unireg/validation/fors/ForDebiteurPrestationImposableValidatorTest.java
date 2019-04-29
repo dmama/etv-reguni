@@ -9,9 +9,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -344,132 +341,127 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		final RegDate dateFinFor = date(2013, 10, 31);
 
 		// mise en place du débiteur
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutFor);
-				addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, dateFinFor, MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Aigle);
-				return dpi.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutFor);
+			addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, dateFinFor, MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Aigle);
+			return dpi.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			Assert.assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(dateFinFor, ff.getDateFin());
+			final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
+			Assert.assertNotNull(ff);
+			Assert.assertEquals(dateFinFor, ff.getDateFin());
 
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(max), dates);
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
-					                             dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(3).getOneDayBefore(),
-					                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
-				}
-				// date max après la date de fin du for
-				{
-					final RegDate max = dateFinFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateFinFor), dates);
-				}
-				// date max après la date de fin du for
-				{
-					final RegDate max = dateFinFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-
-					final Set<RegDate> expected = new HashSet<>();
-					for (RegDate cursor = dateDebutFor.addMonths(1).getOneDayBefore() ; cursor.isBeforeOrEqual(max) ; cursor = cursor.getOneDayAfter().addMonths(1).getOneDayBefore()) {
-						expected.add(cursor);
-					}
-					Assert.assertEquals(expected, dates);
-				}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
 			}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(max), dates);
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
+				                             dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(3).getOneDayBefore(),
+				                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
+			}
+			// date max après la date de fin du for
+			{
+				final RegDate max = dateFinFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateFinFor), dates);
+			}
+			// date max après la date de fin du for
+			{
+				final RegDate max = dateFinFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+
+				final Set<RegDate> expected = new HashSet<>();
+				for (RegDate cursor = dateDebutFor.addMonths(1).getOneDayBefore(); cursor.isBeforeOrEqual(max); cursor = cursor.getOneDayAfter().addMonths(1).getOneDayBefore()) {
+					expected.add(cursor);
+				}
+				Assert.assertEquals(expected, dates);
+			}
+			return null;
 		});
 	}
 
@@ -479,116 +471,111 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		final RegDate dateDebutFor = date(2013, 4, 1);
 
 		// mise en place du débiteur
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutFor);
-				addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
-				return dpi.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutFor);
+			addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+			return dpi.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			Assert.assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getDateFin());
+			final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
+			Assert.assertNotNull(ff);
+			Assert.assertNull(ff.getDateFin());
 
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(max), dates);
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(max), dates);
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
-					                             dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(3).getOneDayBefore(),
-					                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
-					                             dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(3).getOneDayBefore(),
-					                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
-				}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
 			}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(max), dates);
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(max), dates);
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
+				                             dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(3).getOneDayBefore(),
+				                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
+				                             dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(3).getOneDayBefore(),
+				                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
+			}
+			return null;
 		});
 	}
 
@@ -598,120 +585,114 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		final RegDate dateDebutFor = date(2013, 4, 1);
 
 		// mise en place du débiteur
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutFor);
-				addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+		final long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutFor);
+			addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(dateDebutFor.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, dateDebutFor, dateDebutFor.addMonths(1).getOneDayBefore(), md);
-				addListeRecapitulative(dpi, pf, dateDebutFor.addMonths(1), dateDebutFor.addMonths(2).getOneDayBefore(), md);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(dateDebutFor.year());
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, dateDebutFor, dateDebutFor.addMonths(1).getOneDayBefore(), md);
+			addListeRecapitulative(dpi, pf, dateDebutFor.addMonths(1), dateDebutFor.addMonths(2).getOneDayBefore(), md);
+			return dpi.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			Assert.assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getDateFin());
+			final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
+			Assert.assertNotNull(ff);
+			Assert.assertNull(ff.getDateFin());
 
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(3).getOneDayBefore(),
-					                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(4);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(3).getOneDayBefore(),
-					                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
-				}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
 			}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(3).getOneDayBefore(),
+				                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(4);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(3).getOneDayBefore(),
+				                             dateDebutFor.addMonths(4).getOneDayBefore()), dates);
+			}
+			return null;
 		});
 	}
 
@@ -723,125 +704,119 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		final RegDate dateDebutSemestriel = date(2013, 7, 1);
 
 		// mise en place du débiteur
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateDebutFor, dateDebutTrimestriel.getOneDayBefore()));
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebutTrimestriel, dateDebutSemestriel.getOneDayBefore()));
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, dateDebutSemestriel, null));
-				addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+		final long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateDebutFor, dateDebutTrimestriel.getOneDayBefore()));
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebutTrimestriel, dateDebutSemestriel.getOneDayBefore()));
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, dateDebutSemestriel, null));
+			addForDebiteur(dpi, dateDebutFor, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(dateDebutFor.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, dateDebutFor, dateDebutFor.addMonths(1).getOneDayBefore(), md);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(dateDebutFor.year());
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, dateDebutFor, dateDebutFor.addMonths(1).getOneDayBefore(), md);
+			return dpi.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			Assert.assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getDateFin());
+			final ForDebiteurPrestationImposable ff = dpi.getDernierForDebiteur();
+			Assert.assertNotNull(ff);
+			Assert.assertNull(ff.getDateFin());
 
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la date de début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(-1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la date de début du for
-				{
-					final RegDate max = dateDebutFor;
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max avant la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(0, dates.size());
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(max), dates);
-				}
-				// date max à la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(max), dates);
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
-				}
-				// date max au lendemain de la première échéance mensuelle depuis le début du for
-				{
-					final RegDate max = dateDebutFor.addMonths(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addYears(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
-					                             dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(5).getOneDayBefore(),
-					                             dateDebutFor.addMonths(11).getOneDayBefore()), dates);
-				}
-				// date max quelques mois après la date de début du for
-				{
-					final RegDate max = dateDebutFor.addYears(1);
-					final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
-					Assert.assertNotNull(dates);
-					Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
-					                             dateDebutFor.addMonths(2).getOneDayBefore(),
-					                             dateDebutFor.addMonths(5).getOneDayBefore(),
-					                             dateDebutFor.addMonths(11).getOneDayBefore()), dates);
-				}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
 			}
+			// date max avant la date de début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(-1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la date de début du for
+			{
+				final RegDate max = dateDebutFor;
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max avant la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).addDays(-2);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(0, dates.size());
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(max), dates);
+			}
+			// date max à la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1).getOneDayBefore();
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(max), dates);
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
+			}
+			// date max au lendemain de la première échéance mensuelle depuis le début du for
+			{
+				final RegDate max = dateDebutFor.addMonths(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(Collections.singleton(dateDebutFor.addMonths(1).getOneDayBefore()), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addYears(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, false);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
+				                             dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(5).getOneDayBefore(),
+				                             dateDebutFor.addMonths(11).getOneDayBefore()), dates);
+			}
+			// date max quelques mois après la date de début du for
+			{
+				final RegDate max = dateDebutFor.addYears(1);
+				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, ff, max, true);
+				Assert.assertNotNull(dates);
+				Assert.assertEquals(buildSet(dateDebutFor.addMonths(1).getOneDayBefore(),
+				                             dateDebutFor.addMonths(2).getOneDayBefore(),
+				                             dateDebutFor.addMonths(5).getOneDayBefore(),
+				                             dateDebutFor.addMonths(11).getOneDayBefore()), dates);
+			}
+			return null;
 		});
 	}
 
@@ -854,35 +829,29 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		final RegDate dateDebutForFutur = date(2009, 9, 1);
 
 		// mise en place du débiteur
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateDebutForExistantPasse, null));
-				addForDebiteur(dpi, dateDebutForExistantPasse, MotifFor.DEBUT_PRESTATION_IS, dateFinForExistantPasse, MotifFor.FIN_PRESTATION_IS, MockCommune.Aigle);
-				addForDebiteur(dpi, dateDebutForFutur, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+		final long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateDebutForExistantPasse, null));
+			addForDebiteur(dpi, dateDebutForExistantPasse, MotifFor.DEBUT_PRESTATION_IS, dateFinForExistantPasse, MotifFor.FIN_PRESTATION_IS, MockCommune.Aigle);
+			addForDebiteur(dpi, dateDebutForFutur, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(dateDebutForExistantPasse.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, dateDebutForExistantPasse, dateDebutForExistantPasse.addMonths(1).getOneDayBefore(), md);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(dateDebutForExistantPasse.year());
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, dateDebutForExistantPasse, dateDebutForExistantPasse.addMonths(1).getOneDayBefore(), md);
+			return dpi.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			Assert.assertNotNull(dpi);
 
-				final RegDate max = dateDebutForExistantPasse.addYears(1);
-				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, dateDebutTrou, max, dpi.getPeriodicitesNonAnnulees(true));
-				Assert.assertNotNull(dates);
+			final RegDate max = dateDebutForExistantPasse.addYears(1);
+			final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, dateDebutTrou, max, dpi.getPeriodicitesNonAnnulees(true));
+			Assert.assertNotNull(dates);
 
-				Assert.assertEquals(buildSet(date(2009, 4, 30), date(2009, 5, 31), date(2009, 6, 30), date(2009, 7, 31), date(2009, 8, 31)), dates);
-			}
+			Assert.assertEquals(buildSet(date(2009, 4, 30), date(2009, 5, 31), date(2009, 6, 30), date(2009, 7, 31), date(2009, 8, 31)), dates);
+			return null;
 		});
 	}
 
@@ -898,36 +867,30 @@ public class ForDebiteurPrestationImposableValidatorTest extends AbstractValidat
 		final RegDate dateDebutForFutur = date(2009, 11, 1);     // 4 mois de trou, alors que la périodicité est trimestrielle
 
 		// mise en place du débiteur
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebutForExistantPasse, null));
-				addForDebiteur(dpi, dateDebutForExistantPasse, MotifFor.DEBUT_PRESTATION_IS, dateFinForExistantPasse, MotifFor.FIN_PRESTATION_IS, MockCommune.Aigle);
-				addForDebiteur(dpi, dateDebutForFutur, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+		final long id = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebutForExistantPasse, null));
+			addForDebiteur(dpi, dateDebutForExistantPasse, MotifFor.DEBUT_PRESTATION_IS, dateFinForExistantPasse, MotifFor.FIN_PRESTATION_IS, MockCommune.Aigle);
+			addForDebiteur(dpi, dateDebutForFutur, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(dateDebutForExistantPasse.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, dateDebutForExistantPasse, dateDebutForExistantPasse.addMonths(3).getOneDayBefore(), md);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(dateDebutForExistantPasse.year());
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, dateDebutForExistantPasse, dateDebutForExistantPasse.addMonths(3).getOneDayBefore(), md);
+			return dpi.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
-				Assert.assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+			Assert.assertNotNull(dpi);
 
-				final RegDate max = dateDebutForExistantPasse.addYears(1);
-				final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, dateDebutTrou, max, dpi.getPeriodicitesNonAnnulees(true));
-				Assert.assertNotNull(dates);
+			final RegDate max = dateDebutForExistantPasse.addYears(1);
+			final Set<RegDate> dates = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, dateDebutTrou, max, dpi.getPeriodicitesNonAnnulees(true));
+			Assert.assertNotNull(dates);
 
-				// une fin qui colle aux périodicités, et l'autre qui ferme le trou
-				Assert.assertEquals(buildSet(date(2009, 9, 30), date(2009, 10, 31)), dates);
-			}
+			// une fin qui colle aux périodicités, et l'autre qui ferme le trou
+			Assert.assertEquals(buildSet(date(2009, 9, 30), date(2009, 10, 31)), dates);
+			return null;
 		});
 	}
 }

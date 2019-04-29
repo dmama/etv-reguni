@@ -17,8 +17,6 @@ import ch.ech.ech0011.v5.PlaceOfOrigin;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -172,111 +170,109 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		Assert.assertNotNull(collectedIds);
 		Assert.assertEquals(1, collectedIds.size());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final UniteTraitement ut = hibernateTemplate.get(UniteTraitement.class, collectedIds.get(0));
-				Assert.assertNotNull(ut);
+		doInNewTransactionAndSession(status -> {
+			final UniteTraitement ut = hibernateTemplate.get(UniteTraitement.class, collectedIds.get(0));
+			Assert.assertNotNull(ut);
 
-				// l'événement
-				final EvenementReqDes evt = ut.getEvenement();
-				Assert.assertNotNull(evt);
-				Assert.assertFalse(evt.isDoublon());
-				Assert.assertFalse(evt.isAnnule());
-				Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
-				Assert.assertNotNull(evt.getXml());
-				Assert.assertEquals(noMinute, evt.getNumeroMinute());
-				Assert.assertNotNull(evt.getNotaire());
-				Assert.assertNull(evt.getOperateur());
-				Assert.assertEquals("fr32ghs", evt.getNotaire().getVisa());
-				Assert.assertEquals("Garibaldi", evt.getNotaire().getNom());
-				Assert.assertEquals("Alfredo", evt.getNotaire().getPrenom());
-				Assert.assertEquals(dateActe, evt.getDateActe());
-				Assert.assertNotNull(evt.getTransactions());
-				Assert.assertEquals(2, evt.getTransactions().size());
+			// l'événement
+			final EvenementReqDes evt = ut.getEvenement();
+			Assert.assertNotNull(evt);
+			Assert.assertFalse(evt.isDoublon());
+			Assert.assertFalse(evt.isAnnule());
+			Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
+			Assert.assertNotNull(evt.getXml());
+			Assert.assertEquals(noMinute, evt.getNumeroMinute());
+			Assert.assertNotNull(evt.getNotaire());
+			Assert.assertNull(evt.getOperateur());
+			Assert.assertEquals("fr32ghs", evt.getNotaire().getVisa());
+			Assert.assertEquals("Garibaldi", evt.getNotaire().getNom());
+			Assert.assertEquals("Alfredo", evt.getNotaire().getPrenom());
+			Assert.assertEquals(dateActe, evt.getDateActe());
+			Assert.assertNotNull(evt.getTransactions());
+			Assert.assertEquals(2, evt.getTransactions().size());
 
-				final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
-				sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));    // d'abord Aigle, puis Leysin
-				{
-					final TransactionImmobiliere ti = sortedTransactions.get(0);
-					Assert.assertNotNull(ti);
-					Assert.assertFalse(ti.isAnnule());
-					Assert.assertEquals(MockCommune.Aigle.getNoOFS(), ti.getOfsCommune());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
-					Assert.assertEquals("Une transaction", ti.getDescription());
-				}
-				{
-					final TransactionImmobiliere ti = sortedTransactions.get(1);
-					Assert.assertNotNull(ti);
-					Assert.assertFalse(ti.isAnnule());
-					Assert.assertEquals(MockCommune.Leysin.getNoOFS(), ti.getOfsCommune());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
-					Assert.assertEquals("Une transaction", ti.getDescription());
-				}
-
-				// l'unité de traitement elle-même
-				Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
-				Assert.assertNull(ut.getDateTraitement());
-				Assert.assertFalse(ut.isAnnule());
-				Assert.assertNotNull(ut.getErreurs());
-				Assert.assertEquals(0, ut.getErreurs().size());
-				Assert.assertNotNull(ut.getPartiesPrenantes());
-				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
-
-				// la partie prenante
-				final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isAnnule());
-				Assert.assertEquals("De la campagnole", pp.getNom());
-				Assert.assertEquals("Della Campagnola", pp.getNomNaissance());
-				Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
-				Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
-				Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
-				Assert.assertEquals(EtatCivil.MARIE, pp.getEtatCivil());
-				Assert.assertEquals(date(2000, 1, 1), pp.getDateEtatCivil());
-				Assert.assertEquals("Crettaz", pp.getNomMere());
-				Assert.assertEquals("Gladys Henriette", pp.getPrenomsMere());
-				Assert.assertNull(pp.getNomPere());
-				Assert.assertNull(pp.getPrenomsPere());
-				Assert.assertEquals("De la campagnola", pp.getNomConjoint());
-				Assert.assertEquals("Philippine", pp.getPrenomConjoint());
-				Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPaysNationalite());
-				Assert.assertNotNull(pp.getOrigine());
-				Assert.assertEquals(MockCommune.Bale.getNomOfficiel(), pp.getOrigine().getLibelle());
-				Assert.assertEquals(MockCanton.BaleVille.getSigleOFS(), pp.getOrigine().getSigleCanton());
-
-				Assert.assertEquals("Place du château", pp.getRue());
-				Assert.assertEquals("1a", pp.getNumeroMaison());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
-				Assert.assertEquals("Château Hautesrives", pp.getTitre());
-				Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPays());
-				Assert.assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), pp.getOfsCommune());
-
-				// ... et ses rôles
-				final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
-				Assert.assertNotNull(roles);
-				Assert.assertEquals(2, roles.size());
-				roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
-				{
-					final RolePartiePrenante role = roles.get(0);
-					Assert.assertNotNull(role);
-					Assert.assertFalse(role.isAnnule());
-					Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
-					Assert.assertSame(sortedTransactions.get(0), role.getTransaction());
-				}
-				{
-					final RolePartiePrenante role = roles.get(1);
-					Assert.assertNotNull(role);
-					Assert.assertFalse(role.isAnnule());
-					Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
-					Assert.assertSame(sortedTransactions.get(1), role.getTransaction());
-				}
+			final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
+			sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));    // d'abord Aigle, puis Leysin
+			{
+				final TransactionImmobiliere ti = sortedTransactions.get(0);
+				Assert.assertNotNull(ti);
+				Assert.assertFalse(ti.isAnnule());
+				Assert.assertEquals(MockCommune.Aigle.getNoOFS(), ti.getOfsCommune());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
+				Assert.assertEquals("Une transaction", ti.getDescription());
 			}
+			{
+				final TransactionImmobiliere ti = sortedTransactions.get(1);
+				Assert.assertNotNull(ti);
+				Assert.assertFalse(ti.isAnnule());
+				Assert.assertEquals(MockCommune.Leysin.getNoOFS(), ti.getOfsCommune());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
+				Assert.assertEquals("Une transaction", ti.getDescription());
+			}
+
+			// l'unité de traitement elle-même
+			Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
+			Assert.assertNull(ut.getDateTraitement());
+			Assert.assertFalse(ut.isAnnule());
+			Assert.assertNotNull(ut.getErreurs());
+			Assert.assertEquals(0, ut.getErreurs().size());
+			Assert.assertNotNull(ut.getPartiesPrenantes());
+			Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+			// la partie prenante
+			final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isAnnule());
+			Assert.assertEquals("De la campagnole", pp.getNom());
+			Assert.assertEquals("Della Campagnola", pp.getNomNaissance());
+			Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
+			Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+			Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
+			Assert.assertEquals(EtatCivil.MARIE, pp.getEtatCivil());
+			Assert.assertEquals(date(2000, 1, 1), pp.getDateEtatCivil());
+			Assert.assertEquals("Crettaz", pp.getNomMere());
+			Assert.assertEquals("Gladys Henriette", pp.getPrenomsMere());
+			Assert.assertNull(pp.getNomPere());
+			Assert.assertNull(pp.getPrenomsPere());
+			Assert.assertEquals("De la campagnola", pp.getNomConjoint());
+			Assert.assertEquals("Philippine", pp.getPrenomConjoint());
+			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPaysNationalite());
+			Assert.assertNotNull(pp.getOrigine());
+			Assert.assertEquals(MockCommune.Bale.getNomOfficiel(), pp.getOrigine().getLibelle());
+			Assert.assertEquals(MockCanton.BaleVille.getSigleOFS(), pp.getOrigine().getSigleCanton());
+
+			Assert.assertEquals("Place du château", pp.getRue());
+			Assert.assertEquals("1a", pp.getNumeroMaison());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
+			Assert.assertEquals("Château Hautesrives", pp.getTitre());
+			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPays());
+			Assert.assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), pp.getOfsCommune());
+
+			// ... et ses rôles
+			final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
+			Assert.assertNotNull(roles);
+			Assert.assertEquals(2, roles.size());
+			roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
+			{
+				final RolePartiePrenante role = roles.get(0);
+				Assert.assertNotNull(role);
+				Assert.assertFalse(role.isAnnule());
+				Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
+				Assert.assertSame(sortedTransactions.get(0), role.getTransaction());
+			}
+			{
+				final RolePartiePrenante role = roles.get(1);
+				Assert.assertNotNull(role);
+				Assert.assertFalse(role.isAnnule());
+				Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
+				Assert.assertSame(sortedTransactions.get(1), role.getTransaction());
+			}
+			return null;
 		});
 	}
 
@@ -314,17 +310,15 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 		// sauvegarde en base d'un événement avec un numéro d'affaire, un numéro de minute et un visa de notaire identiques à ce qui arrive maintenant
 		// (seul le numéro d'affaire est important, mais le numéro de minute l'a un jour été)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final EvenementReqDes evt = new EvenementReqDes();
-				evt.setDateActe(RegDate.get());
-				evt.setNoAffaire(noAffaire);
-				evt.setNumeroMinute(noMinute);
-				evt.setNotaire(new InformationsActeur("fr32ghs", "Garibaldo", "Alessandro"));
-				evt.setXml("<bidon/>");
-				hibernateTemplate.merge(evt);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementReqDes evt = new EvenementReqDes();
+			evt.setDateActe(RegDate.get());
+			evt.setNoAffaire(noAffaire);
+			evt.setNumeroMinute(noMinute);
+			evt.setNotaire(new InformationsActeur("fr32ghs", "Garibaldo", "Alessandro"));
+			evt.setXml("<bidon/>");
+			hibernateTemplate.merge(evt);
+			return null;
 		});
 
 		// génération et envoi du message XML
@@ -338,113 +332,111 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		Assert.assertNotNull(collectedIds);
 		Assert.assertEquals(1, collectedIds.size());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final UniteTraitement ut = hibernateTemplate.get(UniteTraitement.class, collectedIds.get(0));
-				Assert.assertNotNull(ut);
+		doInNewTransactionAndSession(status -> {
+			final UniteTraitement ut = hibernateTemplate.get(UniteTraitement.class, collectedIds.get(0));
+			Assert.assertNotNull(ut);
 
-				// l'événement
-				final EvenementReqDes evt = ut.getEvenement();
-				Assert.assertNotNull(evt);
-				Assert.assertTrue(evt.isDoublon());     // c'est un doublon (mais tout doit être sauvegardé quand-même) !
-				Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
-				Assert.assertFalse(evt.isAnnule());
-				Assert.assertNotNull(evt.getXml());
-				Assert.assertEquals(noMinute, evt.getNumeroMinute());
-				Assert.assertNotNull(evt.getNotaire());
-				Assert.assertNull(evt.getOperateur());
-				Assert.assertEquals("fr32ghs", evt.getNotaire().getVisa());
-				Assert.assertEquals("Garibaldi", evt.getNotaire().getNom());
-				Assert.assertEquals("Alfredo", evt.getNotaire().getPrenom());
-				Assert.assertEquals(dateActe, evt.getDateActe());
-				Assert.assertNotNull(evt.getTransactions());
-				Assert.assertEquals(2, evt.getTransactions().size());
+			// l'événement
+			final EvenementReqDes evt = ut.getEvenement();
+			Assert.assertNotNull(evt);
+			Assert.assertTrue(evt.isDoublon());     // c'est un doublon (mais tout doit être sauvegardé quand-même) !
+			Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
+			Assert.assertFalse(evt.isAnnule());
+			Assert.assertNotNull(evt.getXml());
+			Assert.assertEquals(noMinute, evt.getNumeroMinute());
+			Assert.assertNotNull(evt.getNotaire());
+			Assert.assertNull(evt.getOperateur());
+			Assert.assertEquals("fr32ghs", evt.getNotaire().getVisa());
+			Assert.assertEquals("Garibaldi", evt.getNotaire().getNom());
+			Assert.assertEquals("Alfredo", evt.getNotaire().getPrenom());
+			Assert.assertEquals(dateActe, evt.getDateActe());
+			Assert.assertNotNull(evt.getTransactions());
+			Assert.assertEquals(2, evt.getTransactions().size());
 
-				final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
-				// d'abord Aigle, puis Leysin
-				sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));
-				{
-					final TransactionImmobiliere ti = sortedTransactions.get(0);
-					Assert.assertNotNull(ti);
-					Assert.assertFalse(ti.isAnnule());
-					Assert.assertEquals(MockCommune.Aigle.getNoOFS(), ti.getOfsCommune());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
-					Assert.assertEquals("Une transaction", ti.getDescription());
-				}
-				{
-					final TransactionImmobiliere ti = sortedTransactions.get(1);
-					Assert.assertNotNull(ti);
-					Assert.assertFalse(ti.isAnnule());
-					Assert.assertEquals(MockCommune.Leysin.getNoOFS(), ti.getOfsCommune());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
-					Assert.assertEquals("Une transaction", ti.getDescription());
-				}
-
-				// l'unité de traitement elle-même
-				Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
-				Assert.assertNull(ut.getDateTraitement());
-				Assert.assertFalse(ut.isAnnule());
-				Assert.assertNotNull(ut.getErreurs());
-				Assert.assertEquals(0, ut.getErreurs().size());
-				Assert.assertNotNull(ut.getPartiesPrenantes());
-				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
-
-				// la partie prenante
-				final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isAnnule());
-				Assert.assertEquals("De la campagnole", pp.getNom());
-				Assert.assertEquals("De la campagnole", pp.getNomNaissance());
-				Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
-				Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
-				Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
-				Assert.assertEquals(EtatCivil.MARIE, pp.getEtatCivil());
-				Assert.assertEquals(date(2000, 1, 1), pp.getDateEtatCivil());
-				Assert.assertEquals("Crettaz", pp.getNomMere());
-				Assert.assertEquals("Gladys Henriette", pp.getPrenomsMere());
-				Assert.assertNull(pp.getNomPere());
-				Assert.assertNull(pp.getPrenomsPere());
-				Assert.assertEquals("De la campagnola", pp.getNomConjoint());
-				Assert.assertEquals("Philippine", pp.getPrenomConjoint());
-				Assert.assertNotNull(pp.getOrigine());
-				Assert.assertEquals(MockCommune.Zurich.getNomOfficiel(), pp.getOrigine().getLibelle());
-				Assert.assertEquals(MockCanton.Zurich.getSigleOFS(), pp.getOrigine().getSigleCanton());
-
-				Assert.assertEquals("Place du château", pp.getRue());
-				Assert.assertEquals("1a", pp.getNumeroMaison());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
-				Assert.assertEquals("Château Hautesrives", pp.getTitre());
-				Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPays());
-				Assert.assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), pp.getOfsCommune());
-
-				// ... et ses rôles
-				final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
-				Assert.assertNotNull(roles);
-				Assert.assertEquals(2, roles.size());
-
-				// d'abord Aigle, puis Leysin
- 				roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
-				{
-					final RolePartiePrenante role = roles.get(0);
-					Assert.assertNotNull(role);
-					Assert.assertFalse(role.isAnnule());
-					Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
-					Assert.assertSame(sortedTransactions.get(0), role.getTransaction());
-				}
-				{
-					final RolePartiePrenante role = roles.get(1);
-					Assert.assertNotNull(role);
-					Assert.assertFalse(role.isAnnule());
-					Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
-					Assert.assertSame(sortedTransactions.get(1), role.getTransaction());
-				}
+			final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
+			// d'abord Aigle, puis Leysin
+			sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));
+			{
+				final TransactionImmobiliere ti = sortedTransactions.get(0);
+				Assert.assertNotNull(ti);
+				Assert.assertFalse(ti.isAnnule());
+				Assert.assertEquals(MockCommune.Aigle.getNoOFS(), ti.getOfsCommune());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
+				Assert.assertEquals("Une transaction", ti.getDescription());
 			}
+			{
+				final TransactionImmobiliere ti = sortedTransactions.get(1);
+				Assert.assertNotNull(ti);
+				Assert.assertFalse(ti.isAnnule());
+				Assert.assertEquals(MockCommune.Leysin.getNoOFS(), ti.getOfsCommune());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
+				Assert.assertEquals("Une transaction", ti.getDescription());
+			}
+
+			// l'unité de traitement elle-même
+			Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
+			Assert.assertNull(ut.getDateTraitement());
+			Assert.assertFalse(ut.isAnnule());
+			Assert.assertNotNull(ut.getErreurs());
+			Assert.assertEquals(0, ut.getErreurs().size());
+			Assert.assertNotNull(ut.getPartiesPrenantes());
+			Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+			// la partie prenante
+			final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isAnnule());
+			Assert.assertEquals("De la campagnole", pp.getNom());
+			Assert.assertEquals("De la campagnole", pp.getNomNaissance());
+			Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
+			Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+			Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
+			Assert.assertEquals(EtatCivil.MARIE, pp.getEtatCivil());
+			Assert.assertEquals(date(2000, 1, 1), pp.getDateEtatCivil());
+			Assert.assertEquals("Crettaz", pp.getNomMere());
+			Assert.assertEquals("Gladys Henriette", pp.getPrenomsMere());
+			Assert.assertNull(pp.getNomPere());
+			Assert.assertNull(pp.getPrenomsPere());
+			Assert.assertEquals("De la campagnola", pp.getNomConjoint());
+			Assert.assertEquals("Philippine", pp.getPrenomConjoint());
+			Assert.assertNotNull(pp.getOrigine());
+			Assert.assertEquals(MockCommune.Zurich.getNomOfficiel(), pp.getOrigine().getLibelle());
+			Assert.assertEquals(MockCanton.Zurich.getSigleOFS(), pp.getOrigine().getSigleCanton());
+
+			Assert.assertEquals("Place du château", pp.getRue());
+			Assert.assertEquals("1a", pp.getNumeroMaison());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
+			Assert.assertEquals("Château Hautesrives", pp.getTitre());
+			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPays());
+			Assert.assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), pp.getOfsCommune());
+
+			// ... et ses rôles
+			final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
+			Assert.assertNotNull(roles);
+			Assert.assertEquals(2, roles.size());
+
+			// d'abord Aigle, puis Leysin
+			roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
+			{
+				final RolePartiePrenante role = roles.get(0);
+				Assert.assertNotNull(role);
+				Assert.assertFalse(role.isAnnule());
+				Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
+				Assert.assertSame(sortedTransactions.get(0), role.getTransaction());
+			}
+			{
+				final RolePartiePrenante role = roles.get(1);
+				Assert.assertNotNull(role);
+				Assert.assertFalse(role.isAnnule());
+				Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
+				Assert.assertSame(sortedTransactions.get(1), role.getTransaction());
+			}
+			return null;
 		});
 	}
 
@@ -483,17 +475,15 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 		// sauvegarde en base d'un événement avec un numéro d'affaire différent, mais un numéro de minute et un visa de notaire identiques à ce qui arrive maintenant
 		// (seul le numéro d'affaire est important, mais le numéro de minute l'a un jour été, on veut tester que ce n'est pas vu comme un doublon)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final EvenementReqDes evt = new EvenementReqDes();
-				evt.setDateActe(RegDate.get());
-				evt.setNoAffaire(noAffaireExistant);
-				evt.setNumeroMinute(noMinute);
-				evt.setNotaire(new InformationsActeur("fr32ghs", "Garibaldo", "Alessandro"));
-				evt.setXml("<bidon/>");
-				hibernateTemplate.merge(evt);
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementReqDes evt = new EvenementReqDes();
+			evt.setDateActe(RegDate.get());
+			evt.setNoAffaire(noAffaireExistant);
+			evt.setNumeroMinute(noMinute);
+			evt.setNotaire(new InformationsActeur("fr32ghs", "Garibaldo", "Alessandro"));
+			evt.setXml("<bidon/>");
+			hibernateTemplate.merge(evt);
+			return null;
 		});
 
 		// génération et envoi du message XML
@@ -507,113 +497,111 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		Assert.assertNotNull(collectedIds);
 		Assert.assertEquals(1, collectedIds.size());
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final UniteTraitement ut = hibernateTemplate.get(UniteTraitement.class, collectedIds.get(0));
-				Assert.assertNotNull(ut);
+		doInNewTransactionAndSession(status -> {
+			final UniteTraitement ut = hibernateTemplate.get(UniteTraitement.class, collectedIds.get(0));
+			Assert.assertNotNull(ut);
 
-				// l'événement
-				final EvenementReqDes evt = ut.getEvenement();
-				Assert.assertNotNull(evt);
-				Assert.assertFalse(evt.isDoublon());     // ce n'est pas un doublon (même si le numéro de minute et le visa sont les mêmes, c'est maintenant le numéro d'affaire qui compte) !
-				Assert.assertEquals((Long) noAffaireNouveau, evt.getNoAffaire());
-				Assert.assertFalse(evt.isAnnule());
-				Assert.assertNotNull(evt.getXml());
-				Assert.assertEquals(noMinute, evt.getNumeroMinute());
-				Assert.assertNotNull(evt.getNotaire());
-				Assert.assertNull(evt.getOperateur());
-				Assert.assertEquals("fr32ghs", evt.getNotaire().getVisa());
-				Assert.assertEquals("Garibaldi", evt.getNotaire().getNom());
-				Assert.assertEquals("Alfredo", evt.getNotaire().getPrenom());
-				Assert.assertEquals(dateActe, evt.getDateActe());
-				Assert.assertNotNull(evt.getTransactions());
-				Assert.assertEquals(2, evt.getTransactions().size());
+			// l'événement
+			final EvenementReqDes evt = ut.getEvenement();
+			Assert.assertNotNull(evt);
+			Assert.assertFalse(evt.isDoublon());     // ce n'est pas un doublon (même si le numéro de minute et le visa sont les mêmes, c'est maintenant le numéro d'affaire qui compte) !
+			Assert.assertEquals((Long) noAffaireNouveau, evt.getNoAffaire());
+			Assert.assertFalse(evt.isAnnule());
+			Assert.assertNotNull(evt.getXml());
+			Assert.assertEquals(noMinute, evt.getNumeroMinute());
+			Assert.assertNotNull(evt.getNotaire());
+			Assert.assertNull(evt.getOperateur());
+			Assert.assertEquals("fr32ghs", evt.getNotaire().getVisa());
+			Assert.assertEquals("Garibaldi", evt.getNotaire().getNom());
+			Assert.assertEquals("Alfredo", evt.getNotaire().getPrenom());
+			Assert.assertEquals(dateActe, evt.getDateActe());
+			Assert.assertNotNull(evt.getTransactions());
+			Assert.assertEquals(2, evt.getTransactions().size());
 
-				final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
-				// d'abord Aigle, puis Leysin
-				sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));
-				{
-					final TransactionImmobiliere ti = sortedTransactions.get(0);
-					Assert.assertNotNull(ti);
-					Assert.assertFalse(ti.isAnnule());
-					Assert.assertEquals(MockCommune.Aigle.getNoOFS(), ti.getOfsCommune());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
-					Assert.assertEquals("Une transaction", ti.getDescription());
-				}
-				{
-					final TransactionImmobiliere ti = sortedTransactions.get(1);
-					Assert.assertNotNull(ti);
-					Assert.assertFalse(ti.isAnnule());
-					Assert.assertEquals(MockCommune.Leysin.getNoOFS(), ti.getOfsCommune());
-					Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
-					Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
-					Assert.assertEquals("Une transaction", ti.getDescription());
-				}
-
-				// l'unité de traitement elle-même
-				Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
-				Assert.assertNull(ut.getDateTraitement());
-				Assert.assertFalse(ut.isAnnule());
-				Assert.assertNotNull(ut.getErreurs());
-				Assert.assertEquals(0, ut.getErreurs().size());
-				Assert.assertNotNull(ut.getPartiesPrenantes());
-				Assert.assertEquals(1, ut.getPartiesPrenantes().size());
-
-				// la partie prenante
-				final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.isAnnule());
-				Assert.assertEquals("De la campagnole", pp.getNom());
-				Assert.assertEquals("De la campagnole", pp.getNomNaissance());
-				Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
-				Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
-				Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
-				Assert.assertEquals(EtatCivil.MARIE, pp.getEtatCivil());
-				Assert.assertEquals(date(2000, 1, 1), pp.getDateEtatCivil());
-				Assert.assertEquals("Crettaz", pp.getNomMere());
-				Assert.assertEquals("Gladys Henriette", pp.getPrenomsMere());
-				Assert.assertNull(pp.getNomPere());
-				Assert.assertNull(pp.getPrenomsPere());
-				Assert.assertEquals("De la campagnola", pp.getNomConjoint());
-				Assert.assertEquals("Philippine", pp.getPrenomConjoint());
-				Assert.assertNotNull(pp.getOrigine());
-				Assert.assertEquals(MockCommune.Zurich.getNomOfficiel(), pp.getOrigine().getLibelle());
-				Assert.assertEquals(MockCanton.Zurich.getSigleOFS(), pp.getOrigine().getSigleCanton());
-
-				Assert.assertEquals("Place du château", pp.getRue());
-				Assert.assertEquals("1a", pp.getNumeroMaison());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
-				Assert.assertEquals("Château Hautesrives", pp.getTitre());
-				Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPays());
-				Assert.assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), pp.getOfsCommune());
-
-				// ... et ses rôles
-				final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
-				Assert.assertNotNull(roles);
-				Assert.assertEquals(2, roles.size());
-
-				// d'abord Aigle, puis Leysin
-				roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
-				{
-					final RolePartiePrenante role = roles.get(0);
-					Assert.assertNotNull(role);
-					Assert.assertFalse(role.isAnnule());
-					Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
-					Assert.assertSame(sortedTransactions.get(0), role.getTransaction());
-				}
-				{
-					final RolePartiePrenante role = roles.get(1);
-					Assert.assertNotNull(role);
-					Assert.assertFalse(role.isAnnule());
-					Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
-					Assert.assertSame(sortedTransactions.get(1), role.getTransaction());
-				}
+			final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
+			// d'abord Aigle, puis Leysin
+			sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));
+			{
+				final TransactionImmobiliere ti = sortedTransactions.get(0);
+				Assert.assertNotNull(ti);
+				Assert.assertFalse(ti.isAnnule());
+				Assert.assertEquals(MockCommune.Aigle.getNoOFS(), ti.getOfsCommune());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
+				Assert.assertEquals("Une transaction", ti.getDescription());
 			}
+			{
+				final TransactionImmobiliere ti = sortedTransactions.get(1);
+				Assert.assertNotNull(ti);
+				Assert.assertFalse(ti.isAnnule());
+				Assert.assertEquals(MockCommune.Leysin.getNoOFS(), ti.getOfsCommune());
+				Assert.assertEquals(ModeInscription.INSCRIPTION, ti.getModeInscription());
+				Assert.assertEquals(TypeInscription.PROPRIETE, ti.getTypeInscription());
+				Assert.assertEquals("Une transaction", ti.getDescription());
+			}
+
+			// l'unité de traitement elle-même
+			Assert.assertEquals(EtatTraitement.A_TRAITER, ut.getEtat());
+			Assert.assertNull(ut.getDateTraitement());
+			Assert.assertFalse(ut.isAnnule());
+			Assert.assertNotNull(ut.getErreurs());
+			Assert.assertEquals(0, ut.getErreurs().size());
+			Assert.assertNotNull(ut.getPartiesPrenantes());
+			Assert.assertEquals(1, ut.getPartiesPrenantes().size());
+
+			// la partie prenante
+			final PartiePrenante pp = ut.getPartiesPrenantes().iterator().next();
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.isAnnule());
+			Assert.assertEquals("De la campagnole", pp.getNom());
+			Assert.assertEquals("De la campagnole", pp.getNomNaissance());
+			Assert.assertEquals("Alfred Henri André", pp.getPrenoms());
+			Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+			Assert.assertEquals(date(1967, 10, 23), pp.getDateNaissance());
+			Assert.assertEquals(EtatCivil.MARIE, pp.getEtatCivil());
+			Assert.assertEquals(date(2000, 1, 1), pp.getDateEtatCivil());
+			Assert.assertEquals("Crettaz", pp.getNomMere());
+			Assert.assertEquals("Gladys Henriette", pp.getPrenomsMere());
+			Assert.assertNull(pp.getNomPere());
+			Assert.assertNull(pp.getPrenomsPere());
+			Assert.assertEquals("De la campagnola", pp.getNomConjoint());
+			Assert.assertEquals("Philippine", pp.getPrenomConjoint());
+			Assert.assertNotNull(pp.getOrigine());
+			Assert.assertEquals(MockCommune.Zurich.getNomOfficiel(), pp.getOrigine().getLibelle());
+			Assert.assertEquals(MockCanton.Zurich.getSigleOFS(), pp.getOrigine().getSigleCanton());
+
+			Assert.assertEquals("Place du château", pp.getRue());
+			Assert.assertEquals("1a", pp.getNumeroMaison());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
+			Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
+			Assert.assertEquals("Château Hautesrives", pp.getTitre());
+			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), pp.getOfsPays());
+			Assert.assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), pp.getOfsCommune());
+
+			// ... et ses rôles
+			final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
+			Assert.assertNotNull(roles);
+			Assert.assertEquals(2, roles.size());
+
+			// d'abord Aigle, puis Leysin
+			roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
+			{
+				final RolePartiePrenante role = roles.get(0);
+				Assert.assertNotNull(role);
+				Assert.assertFalse(role.isAnnule());
+				Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
+				Assert.assertSame(sortedTransactions.get(0), role.getTransaction());
+			}
+			{
+				final RolePartiePrenante role = roles.get(1);
+				Assert.assertNotNull(role);
+				Assert.assertFalse(role.isAnnule());
+				Assert.assertEquals(TypeRole.ACQUEREUR, role.getRole());
+				Assert.assertSame(sortedTransactions.get(1), role.getTransaction());
+			}
+			return null;
 		});
 	}
 }
