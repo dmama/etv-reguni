@@ -5,7 +5,6 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -120,13 +119,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -182,13 +178,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -246,13 +239,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -310,13 +300,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -374,13 +361,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -438,13 +422,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -503,13 +484,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -573,13 +551,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvs1, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvs1, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -636,13 +611,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -706,13 +678,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -776,13 +745,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -846,13 +812,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, mcId, email, dateDemande, typeDemande, noAvsDemande, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -909,13 +872,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -972,13 +932,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1036,13 +993,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1102,13 +1056,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ctbId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ctbId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1164,13 +1115,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1227,13 +1175,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1290,13 +1235,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1355,13 +1297,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1417,13 +1356,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, null, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, null, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture
@@ -1478,13 +1414,10 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		});
 
 		// traitement de la demande d'inscription
-		doInEFactureAwareTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Demande demande = new Demande(demandeId, ppId, null, dateDemande, typeDemande, noAvs, noAdherent);
-				handler.handle(demande);
-				return null;
-			}
+		doInEFactureAwareTransaction(status -> {
+			final Demande demande = new Demande(demandeId, ppId, null, dateDemande, typeDemande, noAvs, noAdherent);
+			handler.handle(demande);
+			return null;
 		});
 
 		// vérification état final e-facture

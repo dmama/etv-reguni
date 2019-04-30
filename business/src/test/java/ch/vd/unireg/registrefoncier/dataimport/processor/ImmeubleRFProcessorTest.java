@@ -9,12 +9,10 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
@@ -1506,78 +1504,70 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final RegDate veilleImport = dateImport.getOneDayBefore();
 
 		// précondition : il y a déjà un immeuble dans la base avec une quote-part
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			CommuneRF commune = new CommuneRF();
+			commune.setNoRf(13);
+			commune.setNomRf("Pétahouchnok");
+			commune.setNoOfs(66666);
+			commune = communeRFDAO.save(commune);
 
-				CommuneRF commune = new CommuneRF();
-				commune.setNoRf(13);
-				commune.setNomRf("Pétahouchnok");
-				commune.setNoOfs(66666);
-				commune = communeRFDAO.save(commune);
+			final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+			ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+			ppe.setEgrid("CH776584246539");
+			ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
 
-				final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
-				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
-				ppe.setEgrid("CH776584246539");
-				ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+			final SituationRF situation = new SituationRF();
+			situation.setDateDebut(RegDate.get(1988, 1, 1));
+			situation.setCommune(commune);
+			situation.setNoParcelle(917);
+			situation.setIndex1(106);
+			ppe.addSituation(situation);
 
-				final SituationRF situation = new SituationRF();
-				situation.setDateDebut(RegDate.get(1988, 1, 1));
-				situation.setCommune(commune);
-				situation.setNoParcelle(917);
-				situation.setIndex1(106);
-				ppe.addSituation(situation);
+			final EstimationRF estimation = new EstimationRF();
+			estimation.setDateDebut(RegDate.get(1988, 1, 1));
+			estimation.setMontant(240000L);
+			estimation.setReference("RG88");
+			estimation.setAnneeReference(1988);
+			estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
+			estimation.setEnRevision(false);
+			ppe.addEstimation(estimation);
 
-				final EstimationRF estimation = new EstimationRF();
-				estimation.setDateDebut(RegDate.get(1988, 1, 1));
-				estimation.setMontant(240000L);
-				estimation.setReference("RG88");
-				estimation.setAnneeReference(1988);
-				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
-				estimation.setEnRevision(false);
-				ppe.addEstimation(estimation);
-
-				immeubleRFDAO.save(ppe);
-				assertEquals(1, immeubleRFDAO.getAll().size());
-			}
+			immeubleRFDAO.save(ppe);
+			assertEquals(1, immeubleRFDAO.getAll().size());
+			return null;
 		});
 
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_8af80e62567f816f01571d91f3e56a38", null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et l'immeuble est radié
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+			assertEquals(1, immeubles.size());
 
-				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
-				assertEquals(1, immeubles.size());
+			// l'immeuble est radié
+			final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubles.get(0);
+			assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
+			assertEquals("CH776584246539", ppe.getEgrid());
+			assertEquals(veilleImport, ppe.getDateRadiation());
 
-				// l'immeuble est radié
-				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubles.get(0);
-				assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
-				assertEquals("CH776584246539", ppe.getEgrid());
-				assertEquals(veilleImport, ppe.getDateRadiation());
+			// la situation est fermée
+			final Set<SituationRF> situations = ppe.getSituations();
+			assertEquals(1, situations.size());
+			assertEquals(veilleImport, situations.iterator().next().getDateFin());
 
-				// la situation est fermée
-				final Set<SituationRF> situations = ppe.getSituations();
-				assertEquals(1, situations.size());
-				assertEquals(veilleImport, situations.iterator().next().getDateFin());
-
-				// la quote-part est fermée
-				final Set<QuotePartRF> quoteParts = ppe.getQuotesParts();
-				assertEquals(1, quoteParts.size());
-				assertEquals(veilleImport, quoteParts.iterator().next().getDateFin());
-			}
+			// la quote-part est fermée
+			final Set<QuotePartRF> quoteParts = ppe.getQuotesParts();
+			assertEquals(1, quoteParts.size());
+			assertEquals(veilleImport, quoteParts.iterator().next().getDateFin());
+			return null;
 		});
 	}
 
@@ -1592,162 +1582,153 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final RegDate veilleImport = dateImport.getOneDayBefore();
 
 		// précondition : il y a déjà un immeuble dans la base avec des droits et des servitudes qui pointent vers lui
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			CommuneRF commune = new CommuneRF();
+			commune.setNoRf(13);
+			commune.setNomRf("Pétahouchnok");
+			commune.setNoOfs(66666);
+			commune = communeRFDAO.save(commune);
 
-				CommuneRF commune = new CommuneRF();
-				commune.setNoRf(13);
-				commune.setNomRf("Pétahouchnok");
-				commune.setNoOfs(66666);
-				commune = communeRFDAO.save(commune);
+			ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+			ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+			ppe.setEgrid("CH776584246539");
+			ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
 
-				ProprieteParEtageRF ppe = new ProprieteParEtageRF();
-				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
-				ppe.setEgrid("CH776584246539");
-				ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+			final SituationRF situation = new SituationRF();
+			situation.setDateDebut(RegDate.get(1988, 1, 1));
+			situation.setCommune(commune);
+			situation.setNoParcelle(917);
+			situation.setIndex1(106);
+			ppe.addSituation(situation);
 
-				final SituationRF situation = new SituationRF();
-				situation.setDateDebut(RegDate.get(1988, 1, 1));
-				situation.setCommune(commune);
-				situation.setNoParcelle(917);
-				situation.setIndex1(106);
-				ppe.addSituation(situation);
+			final EstimationRF estimation = new EstimationRF();
+			estimation.setDateDebut(RegDate.get(1988, 1, 1));
+			estimation.setMontant(240000L);
+			estimation.setReference("RG88");
+			estimation.setAnneeReference(1988);
+			estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
+			estimation.setEnRevision(false);
+			ppe.addEstimation(estimation);
 
-				final EstimationRF estimation = new EstimationRF();
-				estimation.setDateDebut(RegDate.get(1988, 1, 1));
-				estimation.setMontant(240000L);
-				estimation.setReference("RG88");
-				estimation.setAnneeReference(1988);
-				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
-				estimation.setEnRevision(false);
-				ppe.addEstimation(estimation);
+			ppe = (ProprieteParEtageRF) immeubleRFDAO.save(ppe);
+			assertEquals(1, immeubleRFDAO.getAll().size());
 
-				ppe = (ProprieteParEtageRF) immeubleRFDAO.save(ppe);
-				assertEquals(1, immeubleRFDAO.getAll().size());
+			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+			pp.setIdRF("3893728273382823");
+			pp.setNom("Schulz");
+			pp.setPrenom("Alodie");
+			pp.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
 
-				PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
-				pp.setIdRF("3893728273382823");
-				pp.setNom("Schulz");
-				pp.setPrenom("Alodie");
-				pp.setDateNaissance(RegDate.get(1900, 1, 1));
-				pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
+			PersonneMoraleRF pm = new PersonneMoraleRF();
+			pm.setIdRF("48349384890202");
+			pm.setNoRF(3727);
+			pm.setNoContribuable(827288022L);
+			pm.setRaisonSociale("Raison sociale");
+			pm = (PersonneMoraleRF) ayantDroitRFDAO.save(pm);
 
-				PersonneMoraleRF pm = new PersonneMoraleRF();
-				pm.setIdRF("48349384890202");
-				pm.setNoRF(3727);
-				pm.setNoContribuable(827288022L);
-				pm.setRaisonSociale("Raison sociale");
-				pm = (PersonneMoraleRF) ayantDroitRFDAO.save(pm);
+			PersonnePhysiqueRF beneficiaire = new PersonnePhysiqueRF();
+			beneficiaire.setIdRF("9292871781");
+			beneficiaire.setNom("Schulz");
+			beneficiaire.setPrenom("Jean-Marc");
+			beneficiaire.setDateNaissance(RegDate.get(1900, 1, 1));
+			beneficiaire = (PersonnePhysiqueRF) ayantDroitRFDAO.save(beneficiaire);
 
-				PersonnePhysiqueRF beneficiaire = new PersonnePhysiqueRF();
-				beneficiaire.setIdRF("9292871781");
-				beneficiaire.setNom("Schulz");
-				beneficiaire.setPrenom("Jean-Marc");
-				beneficiaire.setDateNaissance(RegDate.get(1900, 1, 1));
-				beneficiaire = (PersonnePhysiqueRF) ayantDroitRFDAO.save(beneficiaire);
+			DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
+			droitPP.setMasterIdRF("1f109152381009be0138100c87276e68");
+			droitPP.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
+			droitPP.setDateDebut(RegDate.get(2005, 2, 12));
+			droitPP.setDateDebutMetier(RegDate.get(2005, 1, 1));
+			droitPP.setMotifDebut("Achat");
+			droitPP.setAyantDroit(pp);
+			droitPP.setImmeuble(ppe);
+			droitPP.setPart(new Fraction(1, 2));
+			droitPP.setRegime(GenrePropriete.COPROPRIETE);
+			droitPP.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 1, 1), "Achat", new IdentifiantAffaireRF(13, 2005, 173, 0)));
+			droitRFDAO.save(droitPP);
 
-				DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
-				droitPP.setMasterIdRF("1f109152381009be0138100c87276e68");
-				droitPP.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
-				droitPP.setDateDebut(RegDate.get(2005, 2, 12));
-				droitPP.setDateDebutMetier(RegDate.get(2005, 1, 1));
-				droitPP.setMotifDebut("Achat");
-				droitPP.setAyantDroit(pp);
-				droitPP.setImmeuble(ppe);
-				droitPP.setPart(new Fraction(1, 2));
-				droitPP.setRegime(GenrePropriete.COPROPRIETE);
-				droitPP.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 1, 1), "Achat", new IdentifiantAffaireRF(13, 2005, 173, 0)));
-				droitRFDAO.save(droitPP);
+			DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
+			droitPM.setMasterIdRF("9a9c9e94923");
+			droitPM.setVersionIdRF("1");
+			droitPM.setAyantDroit(pm);
+			droitPM.setImmeuble(ppe);
+			droitPM.setCommunaute(null);
+			droitPM.setDateDebut(RegDate.get(2010, 6, 1));
+			droitPM.setDateFin(null);
+			droitPM.setDateDebutMetier(RegDate.get(2010, 4, 23));
+			droitPM.setMotifDebut("Achat");
+			droitPM.setMotifFin(null);
+			droitPM.setPart(new Fraction(1, 2));
+			droitPM.setRegime(GenrePropriete.COPROPRIETE);
+			droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
+			droitRFDAO.save(droitPM);
 
-				DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
-				droitPM.setMasterIdRF("9a9c9e94923");
-				droitPM.setVersionIdRF("1");
-				droitPM.setAyantDroit(pm);
-				droitPM.setImmeuble(ppe);
-				droitPM.setCommunaute(null);
-				droitPM.setDateDebut(RegDate.get(2010, 6, 1));
-				droitPM.setDateFin(null);
-				droitPM.setDateDebutMetier(RegDate.get(2010, 4, 23));
-				droitPM.setMotifDebut("Achat");
-				droitPM.setMotifFin(null);
-				droitPM.setPart(new Fraction(1, 2));
-				droitPM.setRegime(GenrePropriete.COPROPRIETE);
-				droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
-				droitRFDAO.save(droitPM);
-
-				UsufruitRF usufruit = new UsufruitRF();
-				usufruit.setMasterIdRF("38388232");
-				usufruit.setVersionIdRF("1");
-				usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, beneficiaire));
-				usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe));
-				usufruit.setDateDebut(RegDate.get(2010, 6, 1));
-				usufruit.setDateFin(null);
-				usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
-				usufruit.setMotifDebut("Convention");
-				usufruit.setMotifFin(null);
-				usufruit.setIdentifiantDroit(new IdentifiantDroitRF(6, 2010, 22));
-				usufruit.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 232, 0));
-				droitRFDAO.save(usufruit);
-			}
+			UsufruitRF usufruit = new UsufruitRF();
+			usufruit.setMasterIdRF("38388232");
+			usufruit.setVersionIdRF("1");
+			usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, beneficiaire));
+			usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe));
+			usufruit.setDateDebut(RegDate.get(2010, 6, 1));
+			usufruit.setDateFin(null);
+			usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
+			usufruit.setMotifDebut("Convention");
+			usufruit.setMotifFin(null);
+			usufruit.setIdentifiantDroit(new IdentifiantDroitRF(6, 2010, 22));
+			usufruit.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 232, 0));
+			droitRFDAO.save(usufruit);
+			return null;
 		});
 
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_8af80e62567f816f01571d91f3e56a38", null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée, l'immeuble est radié et les droits sont fermés
-		doInNewTransaction(new TxCallbackWithoutResult() {
+		doInNewTransaction(status -> {
+			final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+			assertEquals(1, immeubles.size());
 
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			// l'immeuble est radié
+			final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubles.get(0);
+			assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
+			assertEquals("CH776584246539", ppe.getEgrid());
+			assertEquals(veilleImport, ppe.getDateRadiation());
 
-				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
-				assertEquals(1, immeubles.size());
+			// la situation est fermée
+			final Set<SituationRF> situations = ppe.getSituations();
+			assertEquals(1, situations.size());
+			assertEquals(veilleImport, situations.iterator().next().getDateFin());
 
-				// l'immeuble est radié
-				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubles.get(0);
-				assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
-				assertEquals("CH776584246539", ppe.getEgrid());
-				assertEquals(veilleImport, ppe.getDateRadiation());
+			// les droits sont fermés
+			final Set<DroitProprieteRF> droits = ppe.getDroitsPropriete();
+			assertEquals(2, droits.size());
+			final Iterator<DroitProprieteRF> iterator = droits.iterator();
 
-				// la situation est fermée
-				final Set<SituationRF> situations = ppe.getSituations();
-				assertEquals(1, situations.size());
-				assertEquals(veilleImport, situations.iterator().next().getDateFin());
+			final DroitProprieteRF droit0 = iterator.next();
+			assertEquals(veilleImport, droit0.getDateFinMetier());
+			assertEquals("Radiation", droit0.getMotifFin());
 
-				// les droits sont fermés
-				final Set<DroitProprieteRF> droits = ppe.getDroitsPropriete();
-				assertEquals(2, droits.size());
-				final Iterator<DroitProprieteRF> iterator = droits.iterator();
+			final DroitProprieteRF droit1 = iterator.next();
+			assertEquals(veilleImport, droit1.getDateFinMetier());
+			assertEquals("Radiation", droit1.getMotifFin());
 
-				final DroitProprieteRF droit0 = iterator.next();
-				assertEquals(veilleImport, droit0.getDateFinMetier());
-				assertEquals("Radiation", droit0.getMotifFin());
+			// l'usufruit est fermé
+			final Set<ChargeServitudeRF> liensImmeubles = ppe.getChargesServitudes();
+			assertEquals(1, liensImmeubles.size());
 
-				final DroitProprieteRF droit1 = iterator.next();
-				assertEquals(veilleImport, droit1.getDateFinMetier());
-				assertEquals("Radiation", droit1.getMotifFin());
+			final ChargeServitudeRF lien0 = liensImmeubles.iterator().next();
+			assertEquals(veilleImport, lien0.getDateFin());
 
-				// l'usufruit est fermé
-				final Set<ChargeServitudeRF> liensImmeubles = ppe.getChargesServitudes();
-				assertEquals(1, liensImmeubles.size());
-
-				final ChargeServitudeRF lien0 = liensImmeubles.iterator().next();
-				assertEquals(veilleImport, lien0.getDateFin());
-
-				final ServitudeRF servitude0 = lien0.getServitude();
-				assertEquals(veilleImport, servitude0.getDateFinMetier());
-				assertEquals("Radiation", servitude0.getMotifFin());
-			}
+			final ServitudeRF servitude0 = lien0.getServitude();
+			assertEquals(veilleImport, servitude0.getDateFinMetier());
+			assertEquals("Radiation", servitude0.getMotifFin());
+			return null;
 		});
 	}
 
@@ -1761,131 +1742,122 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final RegDate veilleImport = dateImport.getOneDayBefore();
 
 		// précondition : il y a déjà deux immeubles dans la base avec un servitude qui pointe vers eux
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			CommuneRF commune = new CommuneRF();
+			commune.setNoRf(13);
+			commune.setNomRf("Pétahouchnok");
+			commune.setNoOfs(66666);
+			commune = communeRFDAO.save(commune);
 
-				CommuneRF commune = new CommuneRF();
-				commune.setNoRf(13);
-				commune.setNomRf("Pétahouchnok");
-				commune.setNoOfs(66666);
-				commune = communeRFDAO.save(commune);
+			ProprieteParEtageRF ppe1 = new ProprieteParEtageRF();
+			ppe1.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+			ppe1.setEgrid("CH776584246539");
+			ppe1.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
 
-				ProprieteParEtageRF ppe1 = new ProprieteParEtageRF();
-				ppe1.setIdRF("_8af80e62567f816f01571d91f3e56a38");
-				ppe1.setEgrid("CH776584246539");
-				ppe1.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+			final SituationRF situation1 = new SituationRF();
+			situation1.setDateDebut(RegDate.get(1988, 1, 1));
+			situation1.setCommune(commune);
+			situation1.setNoParcelle(917);
+			situation1.setIndex1(106);
+			ppe1.addSituation(situation1);
 
-				final SituationRF situation1 = new SituationRF();
-				situation1.setDateDebut(RegDate.get(1988, 1, 1));
-				situation1.setCommune(commune);
-				situation1.setNoParcelle(917);
-				situation1.setIndex1(106);
-				ppe1.addSituation(situation1);
+			final EstimationRF estimation1 = new EstimationRF();
+			estimation1.setDateDebut(RegDate.get(1988, 1, 1));
+			estimation1.setMontant(240000L);
+			estimation1.setReference("RG88");
+			estimation1.setAnneeReference(1988);
+			estimation1.setDateDebutMetier(RegDate.get(1988, 1, 1));
+			estimation1.setEnRevision(false);
+			ppe1.addEstimation(estimation1);
+			ppe1 = (ProprieteParEtageRF) immeubleRFDAO.save(ppe1);
 
-				final EstimationRF estimation1 = new EstimationRF();
-				estimation1.setDateDebut(RegDate.get(1988, 1, 1));
-				estimation1.setMontant(240000L);
-				estimation1.setReference("RG88");
-				estimation1.setAnneeReference(1988);
-				estimation1.setDateDebutMetier(RegDate.get(1988, 1, 1));
-				estimation1.setEnRevision(false);
-				ppe1.addEstimation(estimation1);
-				ppe1 = (ProprieteParEtageRF) immeubleRFDAO.save(ppe1);
+			ProprieteParEtageRF ppe2 = new ProprieteParEtageRF();
+			ppe2.setIdRF("_9498438932489");
+			ppe2.setEgrid("CH776584246540");
+			ppe2.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
 
-				ProprieteParEtageRF ppe2 = new ProprieteParEtageRF();
-				ppe2.setIdRF("_9498438932489");
-				ppe2.setEgrid("CH776584246540");
-				ppe2.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+			final SituationRF situation2 = new SituationRF();
+			situation2.setDateDebut(RegDate.get(1988, 1, 1));
+			situation2.setCommune(commune);
+			situation2.setNoParcelle(917);
+			situation2.setIndex1(107);
+			ppe2.addSituation(situation2);
 
-				final SituationRF situation2 = new SituationRF();
-				situation2.setDateDebut(RegDate.get(1988, 1, 1));
-				situation2.setCommune(commune);
-				situation2.setNoParcelle(917);
-				situation2.setIndex1(107);
-				ppe2.addSituation(situation2);
+			final EstimationRF estimation2 = new EstimationRF();
+			estimation2.setDateDebut(RegDate.get(1988, 1, 1));
+			estimation2.setMontant(240000L);
+			estimation2.setReference("RG88");
+			estimation2.setAnneeReference(1988);
+			estimation2.setDateDebutMetier(RegDate.get(1988, 1, 1));
+			estimation2.setEnRevision(false);
+			ppe2.addEstimation(estimation2);
+			ppe2 = (ProprieteParEtageRF) immeubleRFDAO.save(ppe2);
 
-				final EstimationRF estimation2 = new EstimationRF();
-				estimation2.setDateDebut(RegDate.get(1988, 1, 1));
-				estimation2.setMontant(240000L);
-				estimation2.setReference("RG88");
-				estimation2.setAnneeReference(1988);
-				estimation2.setDateDebutMetier(RegDate.get(1988, 1, 1));
-				estimation2.setEnRevision(false);
-				ppe2.addEstimation(estimation2);
-				ppe2 = (ProprieteParEtageRF) immeubleRFDAO.save(ppe2);
+			assertEquals(2, immeubleRFDAO.getAll().size());
 
-				assertEquals(2, immeubleRFDAO.getAll().size());
+			PersonnePhysiqueRF beneficiaire = new PersonnePhysiqueRF();
+			beneficiaire.setIdRF("9292871781");
+			beneficiaire.setNom("Schulz");
+			beneficiaire.setPrenom("Jean-Marc");
+			beneficiaire.setDateNaissance(RegDate.get(1900, 1, 1));
+			beneficiaire = (PersonnePhysiqueRF) ayantDroitRFDAO.save(beneficiaire);
 
-				PersonnePhysiqueRF beneficiaire = new PersonnePhysiqueRF();
-				beneficiaire.setIdRF("9292871781");
-				beneficiaire.setNom("Schulz");
-				beneficiaire.setPrenom("Jean-Marc");
-				beneficiaire.setDateNaissance(RegDate.get(1900, 1, 1));
-				beneficiaire = (PersonnePhysiqueRF) ayantDroitRFDAO.save(beneficiaire);
-
-				UsufruitRF usufruit = new UsufruitRF();
-				usufruit.setMasterIdRF("38388232");
-				usufruit.setVersionIdRF("1");
-				usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, beneficiaire));
-				usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe1));
-				usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe2));
-				usufruit.setDateDebut(RegDate.get(2010, 6, 1));
-				usufruit.setDateFin(null);
-				usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
-				usufruit.setMotifDebut("Convention");
-				usufruit.setMotifFin(null);
-				usufruit.setIdentifiantDroit(new IdentifiantDroitRF(6, 2010, 22));
-				usufruit.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 232, 0));
-				droitRFDAO.save(usufruit);
-			}
+			UsufruitRF usufruit = new UsufruitRF();
+			usufruit.setMasterIdRF("38388232");
+			usufruit.setVersionIdRF("1");
+			usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, beneficiaire));
+			usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe1));
+			usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe2));
+			usufruit.setDateDebut(RegDate.get(2010, 6, 1));
+			usufruit.setDateFin(null);
+			usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
+			usufruit.setMotifDebut("Convention");
+			usufruit.setMotifFin(null);
+			usufruit.setIdentifiantDroit(new IdentifiantDroitRF(6, 2010, 22));
+			usufruit.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 232, 0));
+			droitRFDAO.save(usufruit);
+			return null;
 		});
 
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_8af80e62567f816f01571d91f3e56a38", null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée, l'immeuble est radié mais la servitude n'est pas radiée car l'autre immeuble n'est pas radié
-		doInNewTransaction(new TxCallbackWithoutResult() {
+		doInNewTransaction(status -> {
+			final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+			assertEquals(2, immeubles.size());
+			immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
 
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			// le premier immeuble est radié
+			final ProprieteParEtageRF ppe1 = (ProprieteParEtageRF) immeubles.get(0);
+			assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe1.getIdRF());
+			assertEquals("CH776584246539", ppe1.getEgrid());
+			assertEquals(veilleImport, ppe1.getDateRadiation());
 
-				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
-				assertEquals(2, immeubles.size());
-				immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+			// le second immeuble n'est pas radié
+			final ProprieteParEtageRF ppe2 = (ProprieteParEtageRF) immeubles.get(1);
+			assertEquals("_9498438932489", ppe2.getIdRF());
+			assertEquals("CH776584246540", ppe2.getEgrid());
+			assertNull(ppe2.getDateRadiation());
 
-				// le premier immeuble est radié
-				final ProprieteParEtageRF ppe1 = (ProprieteParEtageRF) immeubles.get(0);
-				assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe1.getIdRF());
-				assertEquals("CH776584246539", ppe1.getEgrid());
-				assertEquals(veilleImport, ppe1.getDateRadiation());
+			// l'usufruit n'est pas fermé
+			final Set<ChargeServitudeRF> liensImmeubles = ppe1.getChargesServitudes();
+			assertEquals(1, liensImmeubles.size());
 
-				// le second immeuble n'est pas radié
-				final ProprieteParEtageRF ppe2 = (ProprieteParEtageRF) immeubles.get(1);
-				assertEquals("_9498438932489", ppe2.getIdRF());
-				assertEquals("CH776584246540", ppe2.getEgrid());
-				assertNull(ppe2.getDateRadiation());
+			final ChargeServitudeRF lien0 = liensImmeubles.iterator().next();
+			assertNull(lien0.getDateFin());
 
-				// l'usufruit n'est pas fermé
-				final Set<ChargeServitudeRF> liensImmeubles = ppe1.getChargesServitudes();
-				assertEquals(1, liensImmeubles.size());
-
-				final ChargeServitudeRF lien0 = liensImmeubles.iterator().next();
-				assertNull(lien0.getDateFin());
-
-				final ServitudeRF servitude0 = lien0.getServitude();
-				assertNull(servitude0.getDateFinMetier());
-				assertNull(servitude0.getMotifFin());
-			}
+			final ServitudeRF servitude0 = lien0.getServitude();
+			assertNull(servitude0.getDateFinMetier());
+			assertNull(servitude0.getMotifFin());
+			return null;
 		});
 	}
 
@@ -1907,73 +1879,65 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final Ids ids = new Ids();
 
 		// précondition : il y a un immeuble avec une communauté de deux personnes
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondsRF immeuble = addBienFondsRF(idRFImmeuble, "EGRID", commune, 4514, 4, 2, 1);
 
-				final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-				final BienFondsRF immeuble = addBienFondsRF(idRFImmeuble, "EGRID", commune, 4514, 4, 2, 1);
+			// la personne 1
+			final PersonnePhysique ctb1 = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			pp1.setNoRF(223L);
+			addRapprochementRF(ctb1, pp1, null, null, TypeRapprochementRF.AUTO);
 
-				// la personne 1
-				final PersonnePhysique ctb1 = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
-				final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
-				pp1.setNoRF(223L);
-				addRapprochementRF(ctb1, pp1, null, null, TypeRapprochementRF.AUTO);
+			// la personne 2
+			final PersonnePhysique ctb2 = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
+			pp2.setNoRF(554L);
+			addRapprochementRF(ctb2, pp2, null, null, TypeRapprochementRF.AUTO);
 
-				// la personne 2
-				final PersonnePhysique ctb2 = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
-				final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
-				pp2.setNoRF(554L);
-				addRapprochementRF(ctb2, pp2, null, null, TypeRapprochementRF.AUTO);
+			// la communauté
+			final CommunauteRF communaute = addCommunauteRF("285t378og43t", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final IdentifiantAffaireRF affaire = new IdentifiantAffaireRF(213, "5823g");
+			addDroitPersonnePhysiqueRF(null, dateDebutCommunaute, null, null, "Achat", null, "3458wgfs", "3458wgfr", affaire, new Fraction(1, 1), GenrePropriete.COMMUNE, pp1, immeuble, communaute);
+			addDroitPersonnePhysiqueRF(null, dateDebutCommunaute, null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", affaire, new Fraction(1, 1), GenrePropriete.COMMUNE, pp2, immeuble, communaute);
+			addDroitCommunauteRF(null, dateDebutCommunaute, null, null, "Succession", null, "478tgsbFB", "478tgsbFA", affaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communaute, immeuble);
 
-				// la communauté
-				final CommunauteRF communaute = addCommunauteRF("285t378og43t", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
-				final IdentifiantAffaireRF affaire = new IdentifiantAffaireRF(213, "5823g");
-				addDroitPersonnePhysiqueRF(null, dateDebutCommunaute, null, null, "Achat", null, "3458wgfs", "3458wgfr", affaire, new Fraction(1, 1), GenrePropriete.COMMUNE, pp1, immeuble, communaute);
-				addDroitPersonnePhysiqueRF(null, dateDebutCommunaute, null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", affaire, new Fraction(1, 1), GenrePropriete.COMMUNE, pp2, immeuble, communaute);
-				addDroitCommunauteRF(null, dateDebutCommunaute, null, null, "Succession", null, "478tgsbFB", "478tgsbFA", affaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communaute, immeuble);
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
 
-				final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
-				addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
-
-				ids.idCommunaute = communaute.getId();
-				ids.idImmeuble = immeuble.getId();
-			}
+			ids.idCommunaute = communaute.getId();
+			ids.idImmeuble = immeuble.getId();
+			return null;
 		});
 
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, idRFImmeuble, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée, l'immeuble est radié et les regroupements de la communauté sont aussi fermés
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// l'immeuble est radié
+			final BienFondsRF bienFonds = (BienFondsRF) immeubleRFDAO.get(ids.idImmeuble);
+			assertNotNull(bienFonds);
+			assertEquals(idRFImmeuble, bienFonds.getIdRF());
+			assertEquals("EGRID", bienFonds.getEgrid());
+			assertEquals(veilleImport, bienFonds.getDateRadiation());
 
-				// l'immeuble est radié
-				final BienFondsRF bienFonds = (BienFondsRF) immeubleRFDAO.get(ids.idImmeuble);
-				assertNotNull(bienFonds);
-				assertEquals(idRFImmeuble, bienFonds.getIdRF());
-				assertEquals("EGRID", bienFonds.getEgrid());
-				assertEquals(veilleImport, bienFonds.getDateRadiation());
-
-				// la communauté est fermée
-				final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.get(ids.idCommunaute);
-				assertNotNull(communaute);
-				final Set<RegroupementCommunauteRF> regroupements = communaute.getRegroupements();
-				assertEquals(1, regroupements.size());
-				final RegroupementCommunauteRF regroupement0 = regroupements.iterator().next();
-				assertEquals(dateDebutCommunaute, regroupement0.getDateDebut());
-				assertEquals(veilleImport, regroupement0.getDateFin());
-			}
+			// la communauté est fermée
+			final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.get(ids.idCommunaute);
+			assertNotNull(communaute);
+			final Set<RegroupementCommunauteRF> regroupements = communaute.getRegroupements();
+			assertEquals(1, regroupements.size());
+			final RegroupementCommunauteRF regroupement0 = regroupements.iterator().next();
+			assertEquals(dateDebutCommunaute, regroupement0.getDateDebut());
+			assertEquals(veilleImport, regroupement0.getDateFin());
+			return null;
 		});
 	}
 }

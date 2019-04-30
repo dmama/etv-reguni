@@ -2,11 +2,9 @@ package ch.vd.unireg.adresse;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -80,33 +78,29 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		});
 
 		// Crée un habitant et un débiteur associé
-		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-				{
-					debiteur.setComplementNom("Ma petite entreprise");
-					AdresseSuisse adresse = new AdresseSuisse();
-					adresse.setNumeroMaison("2bis");
-					adresse.setDateDebut(date(1990, 1, 1));
-					adresse.setDateFin(null);
-					adresse.setUsage(TypeAdresseTiers.COURRIER);
-					adresse.setNumeroRue(MockRue.CossonayVille.CheminDeRiondmorcel.getNoRue());
-					adresse.setNumeroOrdrePoste(MockLocalite.CossonayVille.getNoOrdre());
-					debiteur.addAdresseTiers(adresse);
-				}
-				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
-				long noDebiteur = debiteur.getNumero();
-
-				PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(noIndividu);
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
-
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
-				hibernateTemplate.merge(contact);
-
-				return noDebiteur;
+		final long noDebiteur = doInNewTransaction(status -> {
+			DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
+			{
+				debiteur.setComplementNom("Ma petite entreprise");
+				AdresseSuisse adresse = new AdresseSuisse();
+				adresse.setNumeroMaison("2bis");
+				adresse.setDateDebut(date(1990, 1, 1));
+				adresse.setDateFin(null);
+				adresse.setUsage(TypeAdresseTiers.COURRIER);
+				adresse.setNumeroRue(MockRue.CossonayVille.CheminDeRiondmorcel.getNoRue());
+				adresse.setNumeroOrdrePoste(MockLocalite.CossonayVille.getNoOrdre());
+				debiteur.addAdresseTiers(adresse);
 			}
+			debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
+			long no = debiteur.getNumero();
+
+			PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(noIndividu);
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
+
+			ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
+			hibernateTemplate.merge(contact);
+			return no;
 		});
 
 		{
@@ -173,16 +167,11 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	public void testAdressesDebiteurAvecAdressePoursuiteSurPersonnePhysiqueSansAdresse() throws Exception {
 
 		// Crée un non-habitant sans adresse et un débiteur associé avec adresse de poursuite
-		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique arnold = addNonHabitant("Arnold", "Whitenegger", date(1960, 1, 1), Sexe.FEMININ);
-				final DebiteurPrestationImposable debiteur = addDebiteur("Ma petite entreprise", arnold, date(1980, 1, 1));
-				addAdresseSuisse(debiteur, TypeAdresseTiers.POURSUITE, date(1980, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
-
-				return debiteur.getNumero();
-			}
+		final long noDebiteur = doInNewTransaction(status -> {
+			final PersonnePhysique arnold = addNonHabitant("Arnold", "Whitenegger", date(1960, 1, 1), Sexe.FEMININ);
+			final DebiteurPrestationImposable debiteur = addDebiteur("Ma petite entreprise", arnold, date(1980, 1, 1));
+			addAdresseSuisse(debiteur, TypeAdresseTiers.POURSUITE, date(1980, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
+			return debiteur.getNumero();
 		});
 
 		{
@@ -236,23 +225,19 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		});
 
 		// Crée un habitant et un débiteur associé
-		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-				debiteur.setComplementNom("Ma petite entreprise");
-				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
-				long noDebiteur = debiteur.getNumero();
+		final long noDebiteur = doInNewTransaction(status -> {
+			DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
+			debiteur.setComplementNom("Ma petite entreprise");
+			debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
+			long no = debiteur.getNumero();
 
-				PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(noIndividu);
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
+			PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(noIndividu);
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
-				hibernateTemplate.merge(contact);
-
-				return noDebiteur;
-			}
+			ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
+			hibernateTemplate.merge(contact);
+			return no;
 		});
 
 		{
@@ -306,17 +291,13 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	public void testAdressesDebiteurSansContribuableAssocie() throws Exception {
 
 		// Crée un habitant et un débiteur associé
-		final long noDebiteur = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-				debiteur.setNom1("Arnold Schwarz");
-				debiteur.setComplementNom("Ma petite entreprise");
-				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
-				addAdresseSuisse(debiteur, TypeAdresseTiers.COURRIER, date(1980, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
-
-				return debiteur.getNumero();
-			}
+		final long noDebiteur = doInNewTransaction(status -> {
+			DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
+			debiteur.setNom1("Arnold Schwarz");
+			debiteur.setComplementNom("Ma petite entreprise");
+			debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
+			addAdresseSuisse(debiteur, TypeAdresseTiers.COURRIER, date(1980, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			return debiteur.getNumero();
 		});
 
 		{
@@ -393,18 +374,16 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		});
 
 		// demande de l'adresse du débiteur
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
-				Assert.assertEquals("Aux héritiers de", adresse.getLigne1());
-				Assert.assertEquals("Alphonse Baudet, défunt", adresse.getLigne2());
-				Assert.assertEquals("MonComplément", adresse.getLigne3());
-				Assert.assertEquals("Avenue du Funiculaire", adresse.getLigne4());
-				Assert.assertEquals("1304 Cossonay-Ville", adresse.getLigne5());
-				Assert.assertNull(adresse.getLigne6());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
+			Assert.assertEquals("Aux héritiers de", adresse.getLigne1());
+			Assert.assertEquals("Alphonse Baudet, défunt", adresse.getLigne2());
+			Assert.assertEquals("MonComplément", adresse.getLigne3());
+			Assert.assertEquals("Avenue du Funiculaire", adresse.getLigne4());
+			Assert.assertEquals("1304 Cossonay-Ville", adresse.getLigne5());
+			Assert.assertNull(adresse.getLigne6());
+			return null;
 		});
 	}
 }

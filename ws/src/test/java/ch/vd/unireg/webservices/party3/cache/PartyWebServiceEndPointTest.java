@@ -5,20 +5,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.BatchPartyEntry;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.SearchPartyRequest;
-import ch.vd.unireg.webservices.party3.SearchPartyResponse;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.security.Role;
@@ -26,7 +17,15 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.SearchPartyRequest;
+import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.webservices.party3.impl.PartyWebServiceEndPoint;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.party.v1.PartyInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -63,12 +62,9 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -107,18 +103,14 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
-				ids.a = a.getNumero();
-				final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
-				ids.b = b.getNumero();
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
-				ids.mc = ensemble.getMenage().getNumero();
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
+			ids.a = a.getNumero();
+			final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
+			ids.b = b.getNumero();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
+			ids.mc = ensemble.getMenage().getNumero();
+			return null;
 		});
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();

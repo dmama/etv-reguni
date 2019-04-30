@@ -6,10 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
@@ -73,18 +71,16 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		});
 
 		// traitement de l'événement civil
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// déclenchement de l'événement
-				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, null, RegDate.get(), 4848, context);
+		doInNewTransactionAndSession(status -> {
+			// déclenchement de l'événement
+			final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+			final ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, null, RegDate.get(), 4848, context);
 
-				final MessageCollector collector = buildMessageCollector();
-				chgtIdentificateur.validate(collector, collector);// Valider la conformite sexe et numavs
-				chgtIdentificateur.handle(collector);
-				Assert.assertTrue("Une erreur est survenue lors du traitement du changement d'identificateur", collector.getErreurs().isEmpty());
-			}
+			final MessageCollector collector = buildMessageCollector();
+			chgtIdentificateur.validate(collector, collector);// Valider la conformite sexe et numavs
+			chgtIdentificateur.handle(collector);
+			Assert.assertTrue("Une erreur est survenue lors du traitement du changement d'identificateur", collector.getErreurs().isEmpty());
+			return null;
 		});
 
 		// on laisse un peu de temps pour que l'indexation soit faite
@@ -153,18 +149,16 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 		});
 
 		// traitement de l'événement civil
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// déclenchement de l'événement
-				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, null, RegDate.get(), 4848, context);
+		doInNewTransactionAndSession(status -> {
+			// déclenchement de l'événement
+			final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+			final ChangementIdentificateur chgtIdentificateur = new ChangementIdentificateur(individu, null, RegDate.get(), 4848, context);
 
-				final MessageCollector collector = buildMessageCollector();
-				chgtIdentificateur.validate(collector, collector);// Valider la conformite sexe et numavs
-				chgtIdentificateur.handle(collector);
-				Assert.assertTrue("Une erreur est survenue lors du traitement du changement d'identificateur", collector.getErreurs().isEmpty());
-			}
+			final MessageCollector collector = buildMessageCollector();
+			chgtIdentificateur.validate(collector, collector);// Valider la conformite sexe et numavs
+			chgtIdentificateur.handle(collector);
+			Assert.assertTrue("Une erreur est survenue lors du traitement du changement d'identificateur", collector.getErreurs().isEmpty());
+			return null;
 		});
 
 		// on laisse un peu de temps pour que l'indexation soit faite

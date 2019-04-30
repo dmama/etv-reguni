@@ -6,12 +6,10 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
@@ -90,11 +88,9 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationCreation() throws Exception {
 
 		// précondition : la base est vide
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				assertEquals(0, communeRFDAO.getAll().size());
-			}
+		doInNewTransaction(status -> {
+			assertEquals(0, communeRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_commune_rf.xml");
@@ -104,28 +100,23 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.COMMUNE, TypeMutationRF.CREATION, "246", null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et la commune est créée en base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final List<CommuneRF> communes = communeRFDAO.getAll();
+			assertEquals(1, communes.size());
 
-				final List<CommuneRF> communes = communeRFDAO.getAll();
-				assertEquals(1, communes.size());
-
-				final CommuneRF commune0 = communes.get(0);
-				assertNotNull(commune0);
-				assertEquals(246, commune0.getNoRf());
-				assertEquals("Nyon", commune0.getNomRf());
-				assertEquals(5724, commune0.getNoOfs());
-			}
+			final CommuneRF commune0 = communes.get(0);
+			assertNotNull(commune0);
+			assertEquals(246, commune0.getNoRf());
+			assertEquals("Nyon", commune0.getNomRf());
+			assertEquals(5724, commune0.getNoOfs());
+			return null;
 		});
 	}
 
@@ -136,18 +127,15 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationModification() throws Exception {
 
 		// précondition : il y a déjà une commune dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CommuneRF commune = new CommuneRF();
+			commune.setNoRf(246);
+			commune.setNomRf("Pétahouchnok");
+			commune.setNoOfs(5000);
+			communeRFDAO.save(commune);
 
-				final CommuneRF commune = new CommuneRF();
-				commune.setNoRf(246);
-				commune.setNomRf("Pétahouchnok");
-				commune.setNoOfs(5000);
-				communeRFDAO.save(commune);
-
-				assertEquals(1, communeRFDAO.getAll().size());
-			}
+			assertEquals(1, communeRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_commune_rf.xml");
@@ -157,41 +145,36 @@ public class CommuneRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.COMMUNE, TypeMutationRF.MODIFICATION, "246", null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et la commune est modifiée en base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final List<CommuneRF> communes = communeRFDAO.getAll();
+			assertEquals(2, communes.size());
+			Collections.sort(communes, new DateRangeComparator<>());
 
-				final List<CommuneRF> communes = communeRFDAO.getAll();
-				assertEquals(2, communes.size());
-				Collections.sort(communes, new DateRangeComparator<>());
+			// l'ancienne commune est fermée
+			final CommuneRF commune0 = communes.get(0);
+			assertNotNull(commune0);
+			assertEquals(246, commune0.getNoRf());
+			assertEquals("Pétahouchnok", commune0.getNomRf());
+			assertEquals(5000, commune0.getNoOfs());
+			assertNull(commune0.getDateDebut());
+			assertEquals(RegDate.get(2016, 9, 30), commune0.getDateFin());
 
-				// l'ancienne commune est fermée
-				final CommuneRF commune0 = communes.get(0);
-				assertNotNull(commune0);
-				assertEquals(246, commune0.getNoRf());
-				assertEquals("Pétahouchnok", commune0.getNomRf());
-				assertEquals(5000, commune0.getNoOfs());
-				assertNull(commune0.getDateDebut());
-				assertEquals(RegDate.get(2016, 9, 30), commune0.getDateFin());
-
-				// la nouvelle commune est créée
-				final CommuneRF commune1 = communes.get(1);
-				assertNotNull(commune1);
-				assertEquals(246, commune1.getNoRf());
-				assertEquals("Nyon", commune1.getNomRf());
-				assertEquals(5724, commune1.getNoOfs());
-				assertEquals(RegDate.get(2016, 10, 1), commune1.getDateDebut());
-				assertNull(commune1.getDateFin());
-			}
+			// la nouvelle commune est créée
+			final CommuneRF commune1 = communes.get(1);
+			assertNotNull(commune1);
+			assertEquals(246, commune1.getNoRf());
+			assertEquals("Nyon", commune1.getNomRf());
+			assertEquals(5724, commune1.getNoOfs());
+			assertEquals(RegDate.get(2016, 10, 1), commune1.getDateDebut());
+			assertNull(commune1.getDateFin());
+			return null;
 		});
 	}
 }

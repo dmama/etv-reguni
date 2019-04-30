@@ -13,12 +13,10 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
@@ -207,12 +205,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
-				return albert.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+			return albert.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -235,12 +230,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique albert = addHabitant(noIndividu);
-				return albert.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique albert = addHabitant(noIndividu);
+			return albert.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -353,44 +345,37 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimorouille", null, null);
-				ids.alberto = alberto.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimorouille", null, null);
+			ids.alberto = alberto.getNumero();
+			return null;
 		});
 
 		// Albert
 		{
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					CriteresAdresse adresse = new CriteresAdresse();
+			doInNewTransaction(status -> {
+				CriteresAdresse adresse = new CriteresAdresse();
 
-					adresse.setNpaSuisse(3018);
-					adresse.setLieu("Bümpliz");
-					adresse.setLigneAdresse1("Alberto el tiburon");
-					adresse.setLigneAdresse2("et son épouse");
-					adresse.setNoAppartement("12");
-					adresse.setNoPolice("36B");
-					adresse.setRue("Chemin de la strasse verte");
-					adresse.setTypeAdresse(TypeAdresse.SUISSE);
-					CriteresPersonne criteres = new CriteresPersonne();
-					criteres.setPrenoms("Alberto");
-					criteres.setNom("Fujimori");
-					criteres.setNAVS13("123654798123");
-					criteres.setDateNaissance(date(1953, 12, 3));
-					criteres.setAdresse(adresse);
-					criteres.setSexe(Sexe.MASCULIN);
-					IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
-					message.setLogCreationDate(RegDate.get().asJavaDate());
-					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
-					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
-					return null;
-				}
+				adresse.setNpaSuisse(3018);
+				adresse.setLieu("Bümpliz");
+				adresse.setLigneAdresse1("Alberto el tiburon");
+				adresse.setLigneAdresse2("et son épouse");
+				adresse.setNoAppartement("12");
+				adresse.setNoPolice("36B");
+				adresse.setRue("Chemin de la strasse verte");
+				adresse.setTypeAdresse(TypeAdresse.SUISSE);
+				CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setPrenoms("Alberto");
+				criteres.setNom("Fujimori");
+				criteres.setNAVS13("123654798123");
+				criteres.setDateNaissance(date(1953, 12, 3));
+				criteres.setAdresse(adresse);
+				criteres.setSexe(Sexe.MASCULIN);
+				IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
+				message.setLogCreationDate(RegDate.get().asJavaDate());
+				final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
+				service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
+				return null;
 			});
 
 		}
@@ -426,14 +411,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -459,12 +440,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -519,14 +497,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -542,12 +516,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -595,14 +566,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique nonHabClaude = addNonHabitant("Rosat","Claude",naissance,null);
-				ids.claude = nonHabClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique nonHabClaude = addNonHabitant("Rosat", "Claude", naissance, null);
+			ids.claude = nonHabClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -618,12 +585,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -660,14 +624,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -683,12 +643,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -738,16 +695,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				final PersonnePhysique habClaudeAnne = addHabitant(noIndividuClaudeAnne);
-				ids.claude = habClaude.getNumero();
-				ids.claudeAnne = habClaudeAnne.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			final PersonnePhysique habClaudeAnne = addHabitant(noIndividuClaudeAnne);
+			ids.claude = habClaude.getNumero();
+			ids.claudeAnne = habClaudeAnne.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -764,12 +717,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -820,16 +770,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				final PersonnePhysique habAnne = addHabitant(noIndividuAnne);
-				ids.claude = habClaude.getNumero();
-				ids.anne = habAnne.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			final PersonnePhysique habAnne = addHabitant(noIndividuAnne);
+			ids.claude = habClaude.getNumero();
+			ids.anne = habAnne.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -845,12 +791,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -888,16 +831,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habJudith = addHabitant(noIndividuJudith);
-				final PersonnePhysique habHenchoz = addHabitant(noIndividuHenchoz);
-				ids.judith = habJudith.getNumero();
-				ids.henchoz = habHenchoz.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habJudith = addHabitant(noIndividuJudith);
+			final PersonnePhysique habHenchoz = addHabitant(noIndividuHenchoz);
+			ids.judith = habJudith.getNumero();
+			ids.henchoz = habHenchoz.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -913,12 +852,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -958,16 +894,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habAndre = addHabitant(noIndividuAndre);
-				final PersonnePhysique habRoger = addHabitant(noIndividuRoger);
-				ids.andre = habAndre.getNumero();
-				ids.roger = habRoger.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habAndre = addHabitant(noIndividuAndre);
+			final PersonnePhysique habRoger = addHabitant(noIndividuRoger);
+			ids.andre = habAndre.getNumero();
+			ids.roger = habRoger.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -982,12 +914,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -1026,16 +955,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habAndre = addHabitant(noIndividuAndre);
-				final PersonnePhysique habRoger = addHabitant(noIndividuRoger);
-				ids.andre = habAndre.getNumero();
-				ids.roger = habRoger.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habAndre = addHabitant(noIndividuAndre);
+			final PersonnePhysique habRoger = addHabitant(noIndividuRoger);
+			ids.andre = habAndre.getNumero();
+			ids.roger = habRoger.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1049,12 +974,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -1088,14 +1010,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1112,12 +1030,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -1155,16 +1070,12 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				final PersonnePhysique habHenri = addHabitant(noIndividuHenri);
-				ids.claude = habClaude.getNumero();
-				ids.henri = habHenri.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			final PersonnePhysique habHenri = addHabitant(noIndividuHenri);
+			ids.claude = habClaude.getNumero();
+			ids.henri = habHenri.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1181,12 +1092,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
@@ -1222,14 +1130,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1245,12 +1149,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1296,14 +1197,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1319,12 +1216,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1370,14 +1264,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1393,12 +1283,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1434,14 +1321,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1457,12 +1340,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1498,14 +1378,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1521,12 +1397,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1561,14 +1434,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1584,12 +1453,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1635,14 +1501,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1658,12 +1520,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1709,14 +1568,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1732,12 +1587,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1783,14 +1635,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1806,12 +1654,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1861,14 +1706,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1886,12 +1727,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -1941,14 +1779,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habJerome2 = addHabitant(noIndividuJerome2);
-				ids.jerome2 = habJerome2.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habJerome2 = addHabitant(noIndividuJerome2);
+			ids.jerome2 = habJerome2.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -1965,12 +1799,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable messageJerome1 = createDemandeWithEmetteurId(criteresJerome1, "EMPTY");
 		messageJerome1.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(messageJerome1);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(messageJerome1);
+			return null;
 		});
 
 		// L'identification a du échouer car le numéro NAVS13 ne correspond pas à la demande
@@ -1992,12 +1823,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable messageJerome2 = createDemandeWithEmetteurId(criteresJerome2, "EPSA1003");
 		messageJerome2.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(messageJerome2);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(messageJerome2);
+			return null;
 		});
 
 		// jérome doit avoir été trouvée, et traitée automatiquement
@@ -2046,15 +1874,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
-				addIdentificationPersonne(habClaude, CategorieIdentifiant.CH_AHV_AVS, "97750420000");
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
+			addIdentificationPersonne(habClaude, CategorieIdentifiant.CH_AHV_AVS, "97750420000");
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2072,12 +1896,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -2123,13 +1944,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
-				ids.claude = habClaude.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
+			ids.claude = habClaude.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2147,12 +1965,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		// zanolari doit avoir été trouvée, et traitée automatiquement
@@ -2200,44 +2015,37 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimorouille", null, null);
-				ids.alberto = alberto.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimorouille", null, null);
+			ids.alberto = alberto.getNumero();
+			return null;
 		});
 
 		// Albert
 		{
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					CriteresAdresse adresse = new CriteresAdresse();
+			doInNewTransaction(status -> {
+				CriteresAdresse adresse = new CriteresAdresse();
 
-					adresse.setNpaSuisse(3018);
-					adresse.setLieu("Bümpliz");
-					adresse.setLigneAdresse1("Alberto el tiburon");
-					adresse.setLigneAdresse2("et son épouse");
-					adresse.setNoAppartement("12");
-					adresse.setNoPolice("36B");
-					adresse.setRue("Chemin de la strasse verte");
-					adresse.setTypeAdresse(TypeAdresse.SUISSE);
-					CriteresPersonne criteres = new CriteresPersonne();
-					criteres.setPrenoms("Alberto");
-					criteres.setNom("Fujimori");
-					criteres.setNAVS13("123654798123");
-					criteres.setDateNaissance(date(1953, 12, 3));
-					criteres.setAdresse(adresse);
-					criteres.setSexe(Sexe.MASCULIN);
-					IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
-					message.setLogCreationDate(RegDate.get().asJavaDate());
-					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
-					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
-					return null;
-				}
+				adresse.setNpaSuisse(3018);
+				adresse.setLieu("Bümpliz");
+				adresse.setLigneAdresse1("Alberto el tiburon");
+				adresse.setLigneAdresse2("et son épouse");
+				adresse.setNoAppartement("12");
+				adresse.setNoPolice("36B");
+				adresse.setRue("Chemin de la strasse verte");
+				adresse.setTypeAdresse(TypeAdresse.SUISSE);
+				CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setPrenoms("Alberto");
+				criteres.setNom("Fujimori");
+				criteres.setNAVS13("123654798123");
+				criteres.setDateNaissance(date(1953, 12, 3));
+				criteres.setAdresse(adresse);
+				criteres.setSexe(Sexe.MASCULIN);
+				IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "2-BE-5");
+				message.setLogCreationDate(RegDate.get().asJavaDate());
+				final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
+				service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
+				return null;
 			});
 
 		}
@@ -2275,28 +2083,23 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Albert, le seul, le vrai
+			final PersonnePhysique albert = addHabitant(noIndividuAlbert);
+			ids.albert = albert.getNumero();
 
-				// Albert, le seul, le vrai
-				final PersonnePhysique albert = addHabitant(noIndividuAlbert);
-				ids.albert = albert.getNumero();
+			// même nom de famille qu'Albert
+			final PersonnePhysique anne = addHabitant(noIndividuAnne);
+			ids.anne = anne.getNumero();
 
-				// même nom de famille qu'Albert
-				final PersonnePhysique anne = addHabitant(noIndividuAnne);
-				ids.anne = anne.getNumero();
+			// prénom similaire à celui d'Albert
+			final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
+			ids.alberto = alberto.getNumero();
 
-				// prénom similaire à celui d'Albert
-				final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
-				ids.alberto = alberto.getNumero();
-
-				// même jour de naissance qu'Albert
-				final PersonnePhysique greg = addNonHabitant("Grégoire", "Duchemolle", date(1953, 4, 3), Sexe.MASCULIN);
-				ids.greg = greg.getNumero();
-
-				return null;
-			}
+			// même jour de naissance qu'Albert
+			final PersonnePhysique greg = addNonHabitant("Grégoire", "Duchemolle", date(1953, 4, 3), Sexe.MASCULIN);
+			ids.greg = greg.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2367,24 +2170,20 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			Long anne;
 		}
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Albert, le seul, le vrai
+			final PersonnePhysique albert = addHabitant(noIndividuAlbert);
+			ids.albert = albert.getNumero();
 
-				// Albert, le seul, le vrai
-				final PersonnePhysique albert = addHabitant(noIndividuAlbert);
-				ids.albert = albert.getNumero();
+			// même nom de famille qu'Albert
+			final PersonnePhysique anne = addHabitant(noIndividuAnne);
+			ids.anne = anne.getNumero();
 
-				// même nom de famille qu'Albert
-				final PersonnePhysique anne = addHabitant(noIndividuAnne);
-				ids.anne = anne.getNumero();
-
-				for (int i = 0; i < 150; i++) {
-					addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
-				}
-
-				return null;
+			for (int i = 0; i < 150; i++) {
+				addNonHabitant("Alberto", "Fujimori", date(1953, 12, 3), Sexe.MASCULIN);
 			}
+			;
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2450,26 +2249,23 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
-				addAdresseSuisse(robert, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
-				ids.robert = robert.getNumero();
+		doInNewTransaction(status -> {
+			final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
+			addAdresseSuisse(robert, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			ids.robert = robert.getNumero();
 
-				final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Nicoud", date(1971, 11, 25), Sexe.FEMININ);
-				addAdresseSuisse(jeanne, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.RouteGrangeNeuve);
-				ids.jeanne = jeanne.getNumero();
+			final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Nicoud", date(1971, 11, 25), Sexe.FEMININ);
+			addAdresseSuisse(jeanne, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.RouteGrangeNeuve);
+			ids.jeanne = jeanne.getNumero();
 
-				final PersonnePhysique luc = addNonHabitant("Luc", "Haddoque", date(1952, 7, 29), Sexe.MASCULIN);
-				addAdresseSuisse(luc, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Orbe.GrandRue);
-				ids.luc = luc.getNumero();
+			final PersonnePhysique luc = addNonHabitant("Luc", "Haddoque", date(1952, 7, 29), Sexe.MASCULIN);
+			addAdresseSuisse(luc, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Orbe.GrandRue);
+			ids.luc = luc.getNumero();
 
-				final PersonnePhysique michel = addNonHabitant("Michel", "Haddoque", date(1962, 4, 25), Sexe.MASCULIN);
-				addAdresseSuisse(michel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Vallorbe.GrandRue);
-				ids.michel = michel.getNumero();
-				return null;
-			}
+			final PersonnePhysique michel = addNonHabitant("Michel", "Haddoque", date(1962, 4, 25), Sexe.MASCULIN);
+			addAdresseSuisse(michel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Vallorbe.GrandRue);
+			ids.michel = michel.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2587,14 +2383,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
-				ids.robert = robert.getNumero();
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
+			ids.robert = robert.getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2627,12 +2419,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Arnold", "Duchoux");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2657,13 +2446,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -2671,12 +2457,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2709,13 +2492,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -2723,12 +2503,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.SANS_MANUEL);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2761,13 +2538,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -2775,12 +2549,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2828,13 +2599,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		service.setSearcher(searcher);
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addHabitant(noIndividu);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addHabitant(noIndividu);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -2843,12 +2611,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2882,13 +2647,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -2896,12 +2658,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeNCS("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2934,13 +2693,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Laurent", "LeRoux", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Laurent", "LeRoux", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -2948,12 +2704,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeEMPACI("Zouzou", "Leroux", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -2986,14 +2739,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long numeroZora = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				zora.setNumeroAssureSocial("7569613127861");
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long numeroZora = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			zora.setNumeroAssureSocial("7569613127861");
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -3001,12 +2751,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeE_Facture("7569613127861");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3040,13 +2787,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return zora.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return zora.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -3054,12 +2798,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_SANS_ACK);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3088,14 +2829,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création de plusieurs contribuables
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addNonHabitant("Petit", "Larousse", date(1970, 4, 3), Sexe.MASCULIN);
-				addNonHabitant("MonPremier", "Larousse", date(1970, 4, 3), Sexe.MASCULIN);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addNonHabitant("Petit", "Larousse", date(1970, 4, 3), Sexe.MASCULIN);
+			addNonHabitant("MonPremier", "Larousse", date(1970, 4, 3), Sexe.MASCULIN);
+			return null;
 		});
 		assertCountDemandes(0);
 
@@ -3103,12 +2841,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Larousse", "Larousse");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3134,13 +2869,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			return null;
 		});
 		assertCountDemandes(0);
 
@@ -3152,12 +2884,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 			// création et traitement du message d'identification
 			final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					service.handleDemande(message);
-					return null;
-				}
+			doInNewTransaction(status -> {
+				service.handleDemande(message);
+				return null;
 			});
 		}
 		finally {
@@ -3201,13 +2930,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique edouard = addNonHabitant("Edouard", "Bonhote", date(1965, 11, 3), Sexe.MASCULIN);
-				addForPrincipal(edouard, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				return edouard.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique edouard = addNonHabitant("Edouard", "Bonhote", date(1965, 11, 3), Sexe.MASCULIN);
+			addForPrincipal(edouard, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			return edouard.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -3215,12 +2941,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Edouard", "Bonhote", "7569613127861");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3255,14 +2978,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique edouard = addNonHabitant("Edouard", "Bonhote", date(1965, 11, 3), Sexe.MASCULIN);
-				addForPrincipal(edouard, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
-				edouard.setNumeroAssureSocial("7569613127861");
-				return edouard.getNumero();
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique edouard = addNonHabitant("Edouard", "Bonhote", date(1965, 11, 3), Sexe.MASCULIN);
+			addForPrincipal(edouard, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+			edouard.setNumeroAssureSocial("7569613127861");
+			return edouard.getNumero();
 		});
 		assertCountDemandes(0);
 
@@ -3270,12 +2990,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("George", "Pompidou", "7569613127861");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3308,22 +3025,19 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				final PersonnePhysique bruno = addNonHabitant("Bruno", "Larousse", date(1968, 7, 23), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(bruno, zora, date(1980, 4, 21), null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			final PersonnePhysique bruno = addNonHabitant("Bruno", "Larousse", date(1968, 7, 23), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(bruno, zora, date(1980, 4, 21), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Aubonne);
+			addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Aubonne);
 
-				ids.bruno = bruno.getNumero();
-				ids.zora = zora.getNumero();
-				ids.mc = menage.getNumero();
-				return null;
-			}
+			ids.bruno = bruno.getNumero();
+			ids.zora = zora.getNumero();
+			ids.mc = menage.getNumero();
+			return null;
 		});
 		assertCountDemandes(0);
 
@@ -3331,12 +3045,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3379,22 +3090,19 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// création d'un contribuable
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
-				final PersonnePhysique bruno = addNonHabitant("Bruno", "Larousse", date(1968, 7, 23), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(bruno, zora, date(1980, 4, 21), null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+			final PersonnePhysique bruno = addNonHabitant("Bruno", "Larousse", date(1968, 7, 23), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(bruno, zora, date(1980, 4, 21), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Aubonne);
+			addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Aubonne);
 
-				ids.bruno = bruno.getNumero();
-				ids.zora = zora.getNumero();
-				ids.mc = menage.getNumero();
-				return null;
-			}
+			ids.bruno = bruno.getNumero();
+			ids.zora = zora.getNumero();
+			ids.mc = menage.getNumero();
+			return null;
 		});
 		assertCountDemandes(0);
 
@@ -3408,12 +3116,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		//on set un eperiode fiscale dans le passé
 		final IdentificationContribuable message = createDemandeMeldewesen(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK, 1011);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				service.handleDemande(message);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			service.handleDemande(message);
+			return null;
 		});
 
 		doInNewTransaction(status -> {
@@ -3457,12 +3162,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3499,12 +3201,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique alex = addHabitant(noIndividu);
-				return alex.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique alex = addHabitant(noIndividu);
+			return alex.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3540,12 +3239,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3581,12 +3277,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3622,12 +3315,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3663,12 +3353,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3704,12 +3391,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -3745,12 +3429,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique maya = addHabitant(noIndividu);
-				return maya.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique maya = addHabitant(noIndividu);
+			return maya.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -4280,19 +3961,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		// on indexe tout ça
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setNAVS13(oldAvs);
-				final Mutable<String> upiAvs = new MutableObject<>();
-				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
-				assertNotNull(res);
-				assertEquals(1, res.size());
-				assertEquals((Long) ppId, res.get(0));
-				assertEquals(newAvs, upiAvs.getValue());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNAVS13(oldAvs);
+			final Mutable<String> upiAvs = new MutableObject<>();
+			final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
+			assertNotNull(res);
+			assertEquals(1, res.size());
+			assertEquals((Long) ppId, res.get(0));
+			assertEquals(newAvs, upiAvs.getValue());
+			return null;
 		});
 	}
 
@@ -4332,19 +4010,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		// on indexe tout ça
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setNAVS13(oldAvs);
-				final Mutable<String> upiAvs = new MutableObject<>("toto");
-				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
-				assertNotNull(res);
-				assertEquals(1, res.size());
-				assertEquals((Long) ppId, res.get(0));
-				assertNull(upiAvs.getValue());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNAVS13(oldAvs);
+			final Mutable<String> upiAvs = new MutableObject<>("toto");
+			final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
+			assertNotNull(res);
+			assertEquals(1, res.size());
+			assertEquals((Long) ppId, res.get(0));
+			assertNull(upiAvs.getValue());
+			return null;
 		});
 	}
 
@@ -4401,24 +4076,21 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		// on indexe tout ça
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CriteresPersonne criteres = new CriteresPersonne();
-				criteres.setNAVS13(oldAvs);
-				criteres.setDateNaissance(date(2000, 5, 3));
-				final Mutable<String> upiAvs = new MutableObject<>("titi");
-				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
-				assertNotNull(res);
-				assertEquals(3, res.size());
-				assertNull(upiAvs.getValue());
+		doInNewTransactionAndSession(status -> {
+			final CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNAVS13(oldAvs);
+			criteres.setDateNaissance(date(2000, 5, 3));
+			final Mutable<String> upiAvs = new MutableObject<>("titi");
+			final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
+			assertNotNull(res);
+			assertEquals(3, res.size());
+			assertNull(upiAvs.getValue());
 
-				final List<Long> resSorted = new ArrayList<>(res);
-				Collections.sort(resSorted);
-				assertEquals((Long) ids.ppId1, resSorted.get(0));
-				assertEquals((Long) ids.ppId2, resSorted.get(1));
-				return null;
-			}
+			final List<Long> resSorted = new ArrayList<>(res);
+			Collections.sort(resSorted);
+			assertEquals((Long) ids.ppId1, resSorted.get(0));
+			assertEquals((Long) ids.ppId2, resSorted.get(1));
+			return null;
 		});
 	}
 
@@ -4443,13 +4115,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Mathilda", "Tourdesac", null, Sexe.FEMININ);
-				pp.setNumeroAssureSocial(newAvs);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Mathilda", "Tourdesac", null, Sexe.FEMININ);
+			pp.setNumeroAssureSocial(newAvs);
+			return pp.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -4504,12 +4173,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Mathilda", "Tourdesac", date(1967, 4, 9), Sexe.FEMININ);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Mathilda", "Tourdesac", date(1967, 4, 9), Sexe.FEMININ);
+			return pp.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -4551,13 +4217,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testAdressePresenteSansLocalite() throws Exception {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
-				addAdresseSuisse(albert, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				return albert.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique albert = addNonHabitant("Albert", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+			addAdresseSuisse(albert, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			return albert.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -4597,13 +4260,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testPrenomsComposes() throws Exception {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
-				addAdresseSuisse(jeanDaniel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+			addAdresseSuisse(jeanDaniel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -4640,13 +4300,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testPlusDeDeuxPrenoms() throws Exception {
 		serviceUpi.setUp(new DefaultMockServiceUpi());
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique jeanDaniel = addNonHabitant("Jean Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
-				addAdresseSuisse(jeanDaniel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				return jeanDaniel.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique jeanDaniel = addNonHabitant("Jean Daniel", "Zweisteinen", date(1953, 4, 3), Sexe.MASCULIN);
+			addAdresseSuisse(jeanDaniel, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			return jeanDaniel.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -4710,16 +4367,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification par numéro IDE seul
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setIde(ideCoop);
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setIde(ideCoop);
 
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.singletonList(pmId), found);
-			}
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.singletonList(pmId), found);
+			return null;
 		});
 	}
 
@@ -4754,16 +4409,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification par numéro IDE seul
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setIde("CHE999999996");            // non attribué aux entités connues
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setIde("CHE999999996");            // non attribué aux entités connues
 
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.<Long>emptyList(), found);
-			}
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.<Long>emptyList(), found);
+			return null;
 		});
 	}
 
@@ -4798,17 +4451,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setIde(ideCoop);
-				criteres.setRaisonSociale("Nestlé");            // ce n'est pas le bon nom
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setIde(ideCoop);
+			criteres.setRaisonSociale("Nestlé");            // ce n'est pas le bon nom
 
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.<Long>emptyList(), found);
-			}
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.<Long>emptyList(), found);
+			return null;
 		});
 	}
 
@@ -4842,17 +4493,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale("coop");
-				criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE));
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale("coop");
+			criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE));
 
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.singletonList(pmId), found);
-			}
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.singletonList(pmId), found);
+			return null;
 		});
 	}
 
@@ -4886,17 +4535,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale("coop");
-				criteres.setIde("CHE999999996");        // celui-ci n'est attribué à aucune des entités connues dans le registre
-				criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE));
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.<Long>emptyList(), found);      // pas d'identification
-			}
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale("coop");
+			criteres.setIde("CHE999999996");        // celui-ci n'est attribué à aucune des entités connues dans le registre
+			criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE));
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.<Long>emptyList(), found);      // pas d'identification;
+			return null;
 		});
 	}
 
@@ -4930,16 +4577,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale("banque de la coop");
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale("banque de la coop");
 
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.singletonList(pmId), found);
-			}
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.singletonList(pmId), found);
+			return null;
 		});
 	}
 
@@ -4975,17 +4620,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale("müller");
-				criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE,TypeTiers.AUTRE_COMMUNAUTE));
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale("müller");
+			criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE, TypeTiers.AUTRE_COMMUNAUTE));
 
-				final List<Long> found = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(found);
-				Assert.assertEquals(Collections.singletonList(pmId), found);
-			}
+			final List<Long> found = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(found);
+			Assert.assertEquals(Collections.singletonList(pmId), found);
+			return null;
 		});
 	}
 
@@ -5024,28 +4667,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement de l'identification, d'abord avec le nom seul (2 candidats) puis avec le nom et le NPA
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale("favre");
-				criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE,TypeTiers.AUTRE_COMMUNAUTE));
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale("favre");
+			criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE, TypeTiers.AUTRE_COMMUNAUTE));
 
-				{
-					final List<Long> found = service.identifieEntreprise(criteres);
-					Assert.assertNotNull(found);
-					Assert.assertEquals(2, found.size());
-				}
-				{
-					final CriteresAdresse critAdresse = new CriteresAdresse();
-					critAdresse.setNpaSuisse(MockRue.Echallens.GrandRue.getLocalite().getNPA());
-					criteres.setAdresse(critAdresse);
-
-					final List<Long> found = service.identifieEntreprise(criteres);
-					Assert.assertNotNull(found);
-					Assert.assertEquals(Collections.singletonList(pmId), found);
-				}
+			{
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(2, found.size());
 			}
+			{
+				final CriteresAdresse critAdresse = new CriteresAdresse();
+				critAdresse.setNpaSuisse(MockRue.Echallens.GrandRue.getLocalite().getNPA());
+				criteres.setAdresse(critAdresse);
+
+				final List<Long> found = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(found);
+				Assert.assertEquals(Collections.singletonList(pmId), found);
+			}
+			return null;
 		});
 	}
 
@@ -5073,18 +4714,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// demande d'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale(raisonSocialeExterieure);
-				criteres.setIde(numeroIDE);
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale(raisonSocialeExterieure);
+			criteres.setIde(numeroIDE);
 
-				final List<Long> resultat = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(resultat);
-				Assert.assertEquals(1, resultat.size());
-				Assert.assertEquals((Long) pmId, resultat.get(0));
-			}
+			final List<Long> resultat = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(resultat);
+			Assert.assertEquals(1, resultat.size());
+			Assert.assertEquals((Long) pmId, resultat.get(0));
+			return null;
 		});
 	}
 
@@ -5112,17 +4751,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// demande d'identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CriteresEntreprise criteres = new CriteresEntreprise();
-				criteres.setRaisonSociale(raisonSocialeExterieure);
-				criteres.setIde(numeroIDE);
+		doInNewTransactionAndSession(status -> {
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale(raisonSocialeExterieure);
+			criteres.setIde(numeroIDE);
 
-				final List<Long> resultat = service.identifieEntreprise(criteres);
-				Assert.assertNotNull(resultat);
-				Assert.assertEquals(0, resultat.size());
-			}
+			final List<Long> resultat = service.identifieEntreprise(criteres);
+			Assert.assertNotNull(resultat);
+			Assert.assertEquals(0, resultat.size());
+			return null;
 		});
 	}
 }

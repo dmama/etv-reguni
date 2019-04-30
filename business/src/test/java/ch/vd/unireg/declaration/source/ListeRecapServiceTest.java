@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -26,6 +25,8 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.PeriodeDecompte;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+
+import static org.junit.Assert.assertEquals;
 
 public class ListeRecapServiceTest extends BusinessTest {
 
@@ -64,130 +65,106 @@ public class ListeRecapServiceTest extends BusinessTest {
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites1() throws Exception {
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2008, 1, 1), date(2008, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2010, 1, 1), date(2010, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2008, 1, 1), date(2008, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M01, date(2010, 1, 1), date(2010, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
+			addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-				final List<DateRange> lrTrouvees = new ArrayList<>();
-				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
-				Assert.assertEquals(6, lrManquantes.size());
-				final DateRange firstRange = lrManquantes.get(0);
-				Assert.assertEquals(RegDate.get(2008, 1, 1), firstRange.getDateDebut());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
+			final List<DateRange> lrTrouvees = new ArrayList<>();
+			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
+			assertEquals(6, lrManquantes.size());
+			final DateRange firstRange = lrManquantes.get(0);
+			assertEquals(RegDate.get(2008, 1, 1), firstRange.getDateDebut());
+			return null;
 		});
 	}
 
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites2() throws Exception {
 
-		final long dpiId2 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
-				return dpi.getNumero();
-			}
+		final long dpiId2 = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
+			addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
-				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-				final List<DateRange> lrTrouvees = new ArrayList<>();
-				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
-				Assert.assertEquals(6, lrManquantes.size());
-				final DateRange firstRange = lrManquantes.get(0);
-				Assert.assertEquals(RegDate.get(2008, 2, 1), firstRange.getDateDebut());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
+			final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
+			final List<DateRange> lrTrouvees = new ArrayList<>();
+			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
+			assertEquals(6, lrManquantes.size());
+			final DateRange firstRange = lrManquantes.get(0);
+			assertEquals(RegDate.get(2008, 2, 1), firstRange.getDateDebut());
+			return null;
 		});
 	}
 
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites3() throws Exception {
 
-		final long dpiId3 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
-				final PeriodeFiscale periodeFiscale2008 = addPeriodeFiscale(2008);
-				final PeriodeFiscale periodeFiscale2009 = addPeriodeFiscale(2009);
+		final long dpiId3 = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2009, 1, 1), date(2009, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
+			addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+			final PeriodeFiscale periodeFiscale2008 = addPeriodeFiscale(2008);
+			final PeriodeFiscale periodeFiscale2009 = addPeriodeFiscale(2009);
 
-				addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDocumentFiscal.RETOURNE);
-				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNE);
-				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNE);
-				return dpi.getNumero();
-			}
+			addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDocumentFiscal.RETOURNE);
+			addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNE);
+			addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNE);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId3);
-				final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
-				final List<DateRange> lrTrouvees = new ArrayList<>();
-				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
-				Assert.assertEquals(3, lrManquantes.size());
-				final DateRange firstRange = lrManquantes.get(0);
-				Assert.assertEquals(RegDate.get(2009, 7, 1), firstRange.getDateDebut());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId3);
+			final RegDate dateFinPeriode = RegDate.get(2010, 12, 31);
+			final List<DateRange> lrTrouvees = new ArrayList<>();
+			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
+			assertEquals(3, lrManquantes.size());
+			final DateRange firstRange = lrManquantes.get(0);
+			assertEquals(RegDate.get(2009, 7, 1), firstRange.getDateDebut());
+			return null;
 		});
 	}
 
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites4() throws Exception {
 
-		final long dpiId4 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.T1, date(2009, 1, 1), date(2009, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.A, date(2011, 1, 1), null);
-				addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
-				return dpi.getNumero();
-			}
+		final long dpiId4 = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M02, date(2008, 1, 1), date(2008, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.T1, date(2009, 1, 1), date(2009, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.S1, date(2010, 1, 1), date(2010, 12, 31));
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, PeriodeDecompte.A, date(2011, 1, 1), null);
+			addForDebiteur(dpi, date(2008, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId4);
-				final RegDate dateFinPeriode = RegDate.get(2011, 11, 23);
-				final List<DateRange> lrTrouvees = new ArrayList<>();
-				final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
-				Assert.assertEquals(4, lrManquantes.size());
-				final DateRange firstRange = lrManquantes.get(0);
-				Assert.assertEquals(RegDate.get(2008, 2, 1), firstRange.getDateDebut());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId4);
+			final RegDate dateFinPeriode = RegDate.get(2011, 11, 23);
+			final List<DateRange> lrTrouvees = new ArrayList<>();
+			final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
+			assertEquals(4, lrManquantes.size());
+			final DateRange firstRange = lrManquantes.get(0);
+			assertEquals(RegDate.get(2008, 2, 1), firstRange.getDateDebut());
+			return null;
 		});
 	}
 

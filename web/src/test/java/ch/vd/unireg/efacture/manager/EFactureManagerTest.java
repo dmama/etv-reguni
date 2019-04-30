@@ -15,17 +15,17 @@ import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
 import ch.vd.evd0025.v1.PayerStatus;
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
-import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
-import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.efacture.DestinataireAvecHistoView;
 import ch.vd.unireg.efacture.DummyEFactureService;
+import ch.vd.unireg.efacture.EFactureException;
 import ch.vd.unireg.efacture.EFactureResponseService;
 import ch.vd.unireg.efacture.EFactureService;
-import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +84,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 			@Override
 			public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws
-					EvenementEfactureException {
+					EFactureException {
 				assertEquals("ID_DEMANDE", idDemande);
 				assertEquals(TypeAttenteDemande.EN_ATTENTE_CONTACT, typeAttenteEFacture);
 				assertContains("USER_ID", description);
@@ -132,7 +132,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	public void testSuspendreContribuable() throws Exception {
 		final EFactureService eFactureService = new DummyEFactureService() {
 			@Override
-			public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+			public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 				assertEquals(NO_CTB, ctbId);
 				assertEquals(true, retourAttendu);
 				assertContains("USER_ID", description);
@@ -147,7 +147,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	public void testActiverContribuable() throws Exception {
 		final EFactureService eFactureService = new DummyEFactureService() {
 			@Override
-			public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+			public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 				assertEquals(NO_CTB, ctbId);
 				assertEquals(true, retourAttendu);
 				assertContains("USER_ID", description);
@@ -162,7 +162,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	public void testAccepterDemande() throws Exception {
 		EFactureService eFactureService = new DummyEFactureService() {
 			@Override
-			public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+			public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 				assertEquals("ID_DEMANDE",idDemande);
 				assertEquals(true,retourAttendu);
 				assertContains("USER_ID", description);
@@ -177,7 +177,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	public void testRefuserDemande() throws Exception {
 		EFactureService eFactureService = new DummyEFactureService() {
 			@Override
-			public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+			public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 				assertEquals("ID_DEMANDE",idDemande);
 				assertEquals(true,retourAttendu);
 				assertContains("USER_ID", description);

@@ -9,6 +9,13 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -18,20 +25,13 @@ import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.ws.security.v1.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.unireg.avatar.ImageData;
-import ch.vd.unireg.indexer.EmptySearchCriteriaException;
-import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.stats.ServiceTracing;
-import ch.vd.unireg.stats.StatsService;
-import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
-import ch.vd.unireg.xml.ServiceException;
 
 public class BusinessWebServiceTracing implements BusinessWebService, InitializingBean, DisposableBean {
 
@@ -87,7 +87,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -103,7 +103,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -119,7 +119,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.ackOrdinaryTaxDeclarations(user, request);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -135,7 +135,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -167,7 +167,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.getModifiedTaxPayers(user, since, until);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -183,7 +183,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.getDebtorInfo(user, debtorNo, pf);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -203,7 +203,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 			return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
 			                          partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -220,7 +220,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.searchCorporationEvent(user, corporationId, eventCode, startDate, endDate);
 		}
-		catch (AccessDeniedException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -236,7 +236,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.getParty(user, partyNo, parts);
 		}
-		catch (AccessDeniedException | ServiceException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -261,7 +261,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 			}
 			return parties;
 		}
-		catch (AccessDeniedException | ServiceException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -277,7 +277,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		try {
 			return target.getAvatar(partyNo);
 		}
-		catch (ServiceException | RuntimeException | Error e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

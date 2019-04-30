@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -24,7 +23,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.WebserviceTest;
@@ -197,13 +195,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertValidInteger(ppId);
 
 		// vérification du point de départ
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+			return null;
 		});
 
 		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
@@ -213,13 +209,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// vérification
 		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+			return null;
 		});
 
 		// appel du WS (= avec changement)
@@ -227,13 +221,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// vérification
 		Assert.assertTrue(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+			return null;
 		});
 
 		// appel du WS (= avec changement)
@@ -241,13 +233,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// vérification
 		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+			return null;
 		});
 	}
 
@@ -431,27 +421,25 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// vérification en base
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				for (Map.Entry<TaxDeclarationKey, AckStatus> entry : expected.entrySet()) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(entry.getKey().getTaxpayerNumber(), false);
-					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					Assert.assertNotNull(decls);
-					Assert.assertEquals(1, decls.size());
+		doInNewTransactionAndSession(status -> {
+			for (Map.Entry<TaxDeclarationKey, AckStatus> entry : expected.entrySet()) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(entry.getKey().getTaxpayerNumber(), false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
+				Assert.assertNotNull(decls);
+				Assert.assertEquals(1, decls.size());
 
-					final Declaration decl = decls.get(0);
-					Assert.assertNotNull(decl);
+				final Declaration decl = decls.get(0);
+				Assert.assertNotNull(decl);
 
-					final EtatDeclaration etat = decl.getDernierEtatDeclaration();
-					if (entry.getValue() == AckStatus.OK) {
-						Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
-					}
-					else {
-						Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-					}
+				final EtatDeclaration etat = decl.getDernierEtatDeclaration();
+				if (entry.getValue() == AckStatus.OK) {
+					Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
+				}
+				else {
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 				}
 			}
+			return null;
 		});
 	}
 
@@ -486,19 +474,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertValidInteger(ppId);
 
 		// vérification du délai existant
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
-				Assert.assertNotNull(di);
+			final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
+			Assert.assertNotNull(di);
 
-				final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
-			}
+			final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
+			Assert.assertNotNull(delai);
+			Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
+			return null;
 		});
 
 		// demande de délai qui échoue (délai plus ancien)
@@ -510,19 +496,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// vérification du délai qui ne devrait pas avoir bougé
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
-				Assert.assertNotNull(di);
+			final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
+			Assert.assertNotNull(di);
 
-				final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
-			}
+			final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
+			Assert.assertNotNull(delai);
+			Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
+			return null;
 		});
 
 
@@ -536,19 +520,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// vérification du nouveau délai
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
-				Assert.assertNotNull(di);
+			final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
+			Assert.assertNotNull(di);
 
-				final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(nouveauDelai, delai.getDelaiAccordeAu());
-			}
+			final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
+			Assert.assertNotNull(delai);
+			Assert.assertEquals(nouveauDelai, delai.getDelaiAccordeAu());
+			return null;
 		});
 	}
 

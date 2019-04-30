@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -1259,16 +1258,13 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique ppLui = addHabitant(noLui);
-				PersonnePhysique ppElle = addHabitant(noElle);
-				MenageCommun menage = metierService.marie(dateMariage, ppLui, ppElle, null, EtatCivil.MARIE, null);
-				tiersService.closeAllForsFiscaux(menage, dateDepart, MotifFor.DEPART_HS);
-				addForPrincipal(menage, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique ppLui = addHabitant(noLui);
+			PersonnePhysique ppElle = addHabitant(noElle);
+			MenageCommun menage = metierService.marie(dateMariage, ppLui, ppElle, null, EtatCivil.MARIE, null);
+			tiersService.closeAllForsFiscaux(menage, dateDepart, MotifFor.DEPART_HS);
+			addForPrincipal(menage, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
+			return null;
 		});
 
 		// création de l'événement civil pour l'arrivée de monsieur

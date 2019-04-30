@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
@@ -22,8 +24,6 @@ import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.type.TypeDocument;
 
 /**
@@ -104,7 +104,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EFactureException {
 		actions.add(new MettreEnAttenteInscription(idDemande, typeAttenteEFacture, description));
 		return StringUtils.EMPTY;
 	}
@@ -141,7 +141,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		actions.add(new SuspendreContribuable(ctbId, description));
 		return StringUtils.EMPTY;
 	}
@@ -168,7 +168,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		actions.add(new ActiverContribuable(ctbId, description));
 		return StringUtils.EMPTY;
 	}
@@ -201,7 +201,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		actions.add(new AccepterDemande(idDemande, description));
 		return StringUtils.EMPTY;
 	}
@@ -224,13 +224,13 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		actions.add(new RefuserDemande(idDemande, description));
 		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+	public ResultatQuittancement quittancer(Long noCtb) throws EFactureException {
 		// il faut trouver la demande en cours de validation et l'accepter
 		final DestinataireAvecHisto dest = data.get(noCtb);
 		final List<DemandeAvecHisto> histoDemandes = dest.getHistoriqueDemandes();
@@ -270,7 +270,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EFactureException {
 		actions.add(new ModifierEmail(noCtb, newEmail, description));
 		return StringUtils.EMPTY;
 	}
@@ -307,7 +307,7 @@ public abstract class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EFactureException {
 		actions.add(new Desinscrire(noCtb, idNouvelleDemande, description));
 	}
 

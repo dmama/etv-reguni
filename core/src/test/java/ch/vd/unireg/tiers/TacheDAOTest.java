@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -364,123 +363,110 @@ public class TacheDAOTest extends CoreDAOTest {
 		final Ids ids = new Ids();
 
 		// Crée un contribuable avec plusieurs tâches dans différents états
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique ctb = addNonHabitant("Alfred", "Duah", null, null);
+			ids.ctb = ctb.getNumero();
 
-				PersonnePhysique ctb = addNonHabitant("Alfred", "Duah", null, null);
-				ids.ctb = ctb.getNumero();
+			PeriodeFiscale periode = addPeriodeFiscale(2006);
+			ModeleDocument modele = addModele(periode);
+			DeclarationImpotOrdinaire di = addDeclaration(date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, Qualification.AUTOMATIQUE, periode, modele, ctb);
 
-				PeriodeFiscale periode = addPeriodeFiscale(2006);
-				ModeleDocument modele = addModele(periode);
-				DeclarationImpotOrdinaire di = addDeclaration(date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, Qualification.AUTOMATIQUE, periode, modele, ctb);
+			CollectiviteAdministrative ca = addCollAdm(3232);
+			ids.ca1 = ca.getNumero();
+			ids.ca2 = addCollAdm(7777).getNumero();
+			ids.ca3 = addCollAdm(22).getNumero();
 
-				CollectiviteAdministrative ca = addCollAdm(3232);
-				ids.ca1 = ca.getNumero();
-				ids.ca2 = addCollAdm(7777).getNumero();
-				ids.ca3 = addCollAdm(22).getNumero();
+			ids.envoiEnInstance = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
+			ids.annulationEnInstance = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di).getId();
+			ids.controleEnInstance = addTacheControle(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
+			ids.nouveauEnInstance = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
+			ids.transmissionEnInstance = addTacheTransmission(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 
-				ids.envoiEnInstance = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
-				ids.annulationEnInstance = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di).getId();
-				ids.controleEnInstance = addTacheControle(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
-				ids.nouveauEnInstance = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
-				ids.transmissionEnInstance = addTacheTransmission(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
+			ids.envoiTraitee = addTacheEnvoiDIPP(ctb, TypeEtatTache.TRAITE, ca).getId();
+			ids.annulationTraitee = addTacheAnnulation(ctb, TypeEtatTache.TRAITE, ca, di).getId();
+			ids.controleTraitee = addTacheControle(ctb, TypeEtatTache.TRAITE, ca).getId();
+			ids.nouveauTraitee = addTacheNouveau(ctb, TypeEtatTache.TRAITE, ca).getId();
+			ids.transmissionTraitee = addTacheTransmission(ctb, TypeEtatTache.TRAITE, ca).getId();
 
-				ids.envoiTraitee = addTacheEnvoiDIPP(ctb, TypeEtatTache.TRAITE, ca).getId();
-				ids.annulationTraitee = addTacheAnnulation(ctb, TypeEtatTache.TRAITE, ca, di).getId();
-				ids.controleTraitee = addTacheControle(ctb, TypeEtatTache.TRAITE, ca).getId();
-				ids.nouveauTraitee = addTacheNouveau(ctb, TypeEtatTache.TRAITE, ca).getId();
-				ids.transmissionTraitee = addTacheTransmission(ctb, TypeEtatTache.TRAITE, ca).getId();
+			final TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca);
+			envoi.setAnnule(true);
+			ids.envoiAnnulee = envoi.getId();
 
-				final TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca);
-				envoi.setAnnule(true);
-				ids.envoiAnnulee = envoi.getId();
+			final TacheAnnulationDeclarationImpot annulation = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di);
+			annulation.setAnnule(true);
+			ids.annulationAnnulee = annulation.getId();
 
-				final TacheAnnulationDeclarationImpot annulation = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di);
-				annulation.setAnnule(true);
-				ids.annulationAnnulee = annulation.getId();
+			final TacheControleDossier controle = addTacheControle(ctb, TypeEtatTache.EN_INSTANCE, ca);
+			controle.setAnnule(true);
+			ids.controleAnnulee = controle.getId();
 
-				final TacheControleDossier controle = addTacheControle(ctb, TypeEtatTache.EN_INSTANCE, ca);
-				controle.setAnnule(true);
-				ids.controleAnnulee = controle.getId();
+			final TacheNouveauDossier nouveau = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, ca);
+			nouveau.setAnnule(true);
+			ids.nouveauAnnulee = nouveau.getId();
 
-				final TacheNouveauDossier nouveau = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, ca);
-				nouveau.setAnnule(true);
-				ids.nouveauAnnulee = nouveau.getId();
-
-				final TacheTransmissionDossier transmission = addTacheTransmission(ctb, TypeEtatTache.EN_INSTANCE, ca);
-				transmission.setAnnule(true);
-				ids.transmissionAnnulee = transmission.getId();
-
-				return null;
-			}
+			final TacheTransmissionDossier transmission = addTacheTransmission(ctb, TypeEtatTache.EN_INSTANCE, ca);
+			transmission.setAnnule(true);
+			ids.transmissionAnnulee = transmission.getId();
+			return null;
 		});
 
 		// Etat avant changement
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative ca1 = (CollectiviteAdministrative) tiersDAO.get(ids.ca1);
+			assertNotNull(ca1);
+			final CollectiviteAdministrative ca2 = (CollectiviteAdministrative) tiersDAO.get(ids.ca2);
+			assertNotNull(ca2);
 
-				final CollectiviteAdministrative ca1 = (CollectiviteAdministrative) tiersDAO.get(ids.ca1);
-				assertNotNull(ca1);
-				final CollectiviteAdministrative ca2 = (CollectiviteAdministrative) tiersDAO.get(ids.ca2);
-				assertNotNull(ca2);
+			assertCollAdm(ca1, ids.envoiEnInstance);
+			assertCollAdm(ca1, ids.annulationEnInstance);
+			assertCollAdm(ca1, ids.controleEnInstance);
+			assertCollAdm(ca1, ids.nouveauEnInstance);
+			assertCollAdm(ca1, ids.transmissionEnInstance);
 
-				assertCollAdm(ca1, ids.envoiEnInstance);
-				assertCollAdm(ca1, ids.annulationEnInstance);
-				assertCollAdm(ca1, ids.controleEnInstance);
-				assertCollAdm(ca1, ids.nouveauEnInstance);
-				assertCollAdm(ca1, ids.transmissionEnInstance);
+			assertCollAdm(ca1, ids.envoiTraitee);
+			assertCollAdm(ca1, ids.annulationTraitee);
+			assertCollAdm(ca1, ids.controleTraitee);
+			assertCollAdm(ca1, ids.nouveauTraitee);
+			assertCollAdm(ca1, ids.transmissionTraitee);
 
-				assertCollAdm(ca1, ids.envoiTraitee);
-				assertCollAdm(ca1, ids.annulationTraitee);
-				assertCollAdm(ca1, ids.controleTraitee);
-				assertCollAdm(ca1, ids.nouveauTraitee);
-				assertCollAdm(ca1, ids.transmissionTraitee);
+			assertCollAdm(ca1, ids.envoiAnnulee);
+			assertCollAdm(ca1, ids.annulationAnnulee);
+			assertCollAdm(ca1, ids.controleAnnulee);
+			assertCollAdm(ca1, ids.nouveauAnnulee);
+			assertCollAdm(ca1, ids.transmissionAnnulee);
 
-				assertCollAdm(ca1, ids.envoiAnnulee);
-				assertCollAdm(ca1, ids.annulationAnnulee);
-				assertCollAdm(ca1, ids.controleAnnulee);
-				assertCollAdm(ca1, ids.nouveauAnnulee);
-				assertCollAdm(ca1, ids.transmissionAnnulee);
-
-				// Changement de collectivité administative assignée
-				final HashMap<Long, Integer> tiersOidsMapping = new HashMap<>();
-				tiersOidsMapping.put(ids.ctb, ca2.getNumeroCollectiviteAdministrative());
-				tacheDAO.updateCollAdmAssignee(tiersOidsMapping);
-				return null;
-			}
+			// Changement de collectivité administative assignée
+			final HashMap<Long, Integer> tiersOidsMapping = new HashMap<>();
+			tiersOidsMapping.put(ids.ctb, ca2.getNumeroCollectiviteAdministrative());
+			tacheDAO.updateCollAdmAssignee(tiersOidsMapping);
+			return null;
 		});
 
 		// Etat après changement
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative ca1 = hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca1);
+			assertNotNull(ca1);
+			final CollectiviteAdministrative ca2 = hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca2);
+			assertNotNull(ca2);
 
-				final CollectiviteAdministrative ca1 = hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca1);
-				assertNotNull(ca1);
-				final CollectiviteAdministrative ca2 = hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca2);
-				assertNotNull(ca2);
-				
-				assertCollAdm(ca2, ids.envoiEnInstance);
-				assertCollAdm(ca2, ids.annulationEnInstance);
-				assertCollAdm(ca1, ids.controleEnInstance); // [UNIREG-1024] les tâches de contrôle de dossier ne doivent pas être impactée
-				assertCollAdm(ca2, ids.nouveauEnInstance);
-				assertCollAdm(ca2, ids.transmissionEnInstance);
+			assertCollAdm(ca2, ids.envoiEnInstance);
+			assertCollAdm(ca2, ids.annulationEnInstance);
+			assertCollAdm(ca1, ids.controleEnInstance); // [UNIREG-1024] les tâches de contrôle de dossier ne doivent pas être impactée
+			assertCollAdm(ca2, ids.nouveauEnInstance);
+			assertCollAdm(ca2, ids.transmissionEnInstance);
 
-				assertCollAdm(ca1, ids.envoiTraitee); // les tâches déjà traitées ne doivent pas être impactées
-				assertCollAdm(ca1, ids.annulationTraitee);
-				assertCollAdm(ca1, ids.controleTraitee);
-				assertCollAdm(ca1, ids.nouveauTraitee);
-				assertCollAdm(ca1, ids.transmissionTraitee);
+			assertCollAdm(ca1, ids.envoiTraitee); // les tâches déjà traitées ne doivent pas être impactées
+			assertCollAdm(ca1, ids.annulationTraitee);
+			assertCollAdm(ca1, ids.controleTraitee);
+			assertCollAdm(ca1, ids.nouveauTraitee);
+			assertCollAdm(ca1, ids.transmissionTraitee);
 
-				assertCollAdm(ca1, ids.envoiAnnulee); // les tâches annulées ne doivent pas être impactées
-				assertCollAdm(ca1, ids.annulationAnnulee);
-				assertCollAdm(ca1, ids.controleAnnulee);
-				assertCollAdm(ca1, ids.nouveauAnnulee);
-				assertCollAdm(ca1, ids.transmissionAnnulee);
-				return null;
-			}
+			assertCollAdm(ca1, ids.envoiAnnulee); // les tâches annulées ne doivent pas être impactées
+			assertCollAdm(ca1, ids.annulationAnnulee);
+			assertCollAdm(ca1, ids.controleAnnulee);
+			assertCollAdm(ca1, ids.nouveauAnnulee);
+			assertCollAdm(ca1, ids.transmissionAnnulee);
+			return null;
 		});
 	}
 

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -387,24 +386,19 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		final Ids ids = new Ids();
 
 		// Création d'un couple avec un membre décédé
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique jacques = addNonHabitant("Jacques", "Pignut", date(1932, 1, 1), Sexe.MASCULIN);
+			jacques.setDateDeces(date(2008, 11, 4));
+			addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1932, 1, 1), null, MockRue.CossonayVille.CheminDeRiondmorcel);
+			ids.principal = jacques.getId();
 
-				final PersonnePhysique jacques = addNonHabitant("Jacques", "Pignut", date(1932, 1, 1), Sexe.MASCULIN);
-				jacques.setDateDeces(date(2008, 11, 4));
-				addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1932, 1, 1), null, MockRue.CossonayVille.CheminDeRiondmorcel);
-				ids.principal = jacques.getId();
+			final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Pignut", date(1945, 1, 1), Sexe.FEMININ);
+			addAdresseSuisse(jeanne, TypeAdresseTiers.DOMICILE, date(1945, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			ids.conjoint = jeanne.getId();
 
-				final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Pignut", date(1945, 1, 1), Sexe.FEMININ);
-				addAdresseSuisse(jeanne, TypeAdresseTiers.DOMICILE, date(1945, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				ids.conjoint = jeanne.getId();
-
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jacques, jeanne, date(1961, 5, 1), date(2008, 11, 4));
-				ids.menage = ensemble.getMenage().getNumero();
-
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jacques, jeanne, date(1961, 5, 1), date(2008, 11, 4));
+			ids.menage = ensemble.getMenage().getNumero();
+			return null;
 		});
 
 		// Ajout d'une adresse courrier dites "successorale" sur le ménage
@@ -425,39 +419,35 @@ public class AdresseControllerTest extends WebTestSpring3 {
 		handle(request, response);
 
 		// On vérifie que l'adresse saisie a été ajoutée à la fois sur le ménage et sur le principal décédé
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(menage);
 
-				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(menage);
+			final List<AdresseTiers> adressesMenage = menage.getAdressesTiersSorted();
+			assertNotNull(adressesMenage);
+			assertEquals(1, adressesMenage.size());
 
-				final List<AdresseTiers> adressesMenage = menage.getAdressesTiersSorted();
-				assertNotNull(adressesMenage);
-				assertEquals(1, adressesMenage.size());
+			final AdresseSuisse adresseSuccMenage = (AdresseSuisse) adressesMenage.get(0);
+			assertNotNull(adresseSuccMenage);
+			assertEquals(date(2010, 2, 12), adresseSuccMenage.getDateDebut());
+			assertNull(adresseSuccMenage.getDateFin());
+			assertEquals(TypeAdresseTiers.COURRIER, adresseSuccMenage.getUsage());
+			assertEquals(Integer.valueOf(165), adresseSuccMenage.getNumeroOrdrePoste());
 
-				final AdresseSuisse adresseSuccMenage = (AdresseSuisse) adressesMenage.get(0);
-				assertNotNull(adresseSuccMenage);
-				assertEquals(date(2010, 2, 12), adresseSuccMenage.getDateDebut());
-				assertNull(adresseSuccMenage.getDateFin());
-				assertEquals(TypeAdresseTiers.COURRIER, adresseSuccMenage.getUsage());
-				assertEquals(Integer.valueOf(165), adresseSuccMenage.getNumeroOrdrePoste());
+			final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+			assertNotNull(principal);
 
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
-				assertNotNull(principal);
+			final List<AdresseTiers> adressesDefunt = principal.getAdressesTiersSorted();
+			assertNotNull(adressesDefunt);
+			assertEquals(2, adressesDefunt.size());
 
-				final List<AdresseTiers> adressesDefunt = principal.getAdressesTiersSorted();
-				assertNotNull(adressesDefunt);
-				assertEquals(2, adressesDefunt.size());
-
-				final AdresseSuisse adresseSuccDefunt = (AdresseSuisse) adressesDefunt.get(1);
-				assertNotNull(adresseSuccDefunt);
-				assertEquals(date(2010, 2, 12), adresseSuccDefunt.getDateDebut());
-				assertNull(adresseSuccDefunt.getDateFin());
-				assertEquals(TypeAdresseTiers.COURRIER, adresseSuccDefunt.getUsage());
-				assertEquals(Integer.valueOf(165), adresseSuccDefunt.getNumeroOrdrePoste());
-				return null;
-			}
+			final AdresseSuisse adresseSuccDefunt = (AdresseSuisse) adressesDefunt.get(1);
+			assertNotNull(adresseSuccDefunt);
+			assertEquals(date(2010, 2, 12), adresseSuccDefunt.getDateDebut());
+			assertNull(adresseSuccDefunt.getDateFin());
+			assertEquals(TypeAdresseTiers.COURRIER, adresseSuccDefunt.getUsage());
+			assertEquals(Integer.valueOf(165), adresseSuccDefunt.getNumeroOrdrePoste());
+			return null;
 		});
 	}
 }

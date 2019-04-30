@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -51,66 +50,53 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 	public void testQuittancerDI() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
 
 
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2011);
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2011);
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de quittancement de DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final QuittancementDI quittance = new QuittancementDI();
-				quittance.setNumeroContribuable(id.intValue());
-				quittance.setSource("ADDI");
-				quittance.setDate(RegDate.get(2012, 5, 26));
-				quittance.setPeriodeFiscale(2011);
-				quittance.setBusinessId("1245633");
+		doInNewTransaction(status -> {
+			final QuittancementDI quittance = new QuittancementDI();
+			quittance.setNumeroContribuable(id.intValue());
+			quittance.setSource("ADDI");
+			quittance.setDate(RegDate.get(2012, 5, 26));
+			quittance.setPeriodeFiscale(2011);
+			quittance.setBusinessId("1245633");
 
-				service.onEvent(quittance, Collections.<String, String>emptyMap());
-				return null;
-			}
+			service.onEvent(quittance, Collections.<String, String>emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
+			assertTrue(etat instanceof EtatDeclarationRetournee);
 
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
-				assertTrue(etat instanceof EtatDeclarationRetournee);
-
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
-				assertEquals(date(2012, 5, 26), retour.getDateObtention());
-				assertEquals("ADDI", retour.getSource());
-
-				return null;
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+			assertEquals(date(2012, 5, 26), retour.getDateObtention());
+			assertEquals("ADDI", retour.getSource());
+			return null;
 		});
 	}
 

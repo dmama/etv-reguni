@@ -3,7 +3,6 @@ package ch.vd.unireg.tiers;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -33,34 +32,28 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAddContribuableExistingEntreprise() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// Créée une Entreprise
-				{
-					Entreprise ent = new Entreprise();
-					ent.setNumero(1234L);
-					dao.save(ent);
-				}
-				return null;
+		doInNewTransaction(status -> {
+			// Créée une Entreprise
+			{
+				Entreprise ent = new Entreprise();
+				ent.setNumero(1234L);
+				dao.save(ent);
 			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// Ajoute un DPI
-				{
-					Entreprise ent = (Entreprise) dao.getAll().get(0);
+		doInNewTransaction(status -> {
+			// Ajoute un DPI
+			{
+				Entreprise ent = (Entreprise) dao.getAll().get(0);
 
-					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-					dpi = (DebiteurPrestationImposable) dao.save(dpi);
+				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
-					ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
-					dao.save(contact);
-				}
-				return null;
+				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
+				dao.save(contact);
 			}
+			return null;
 		});
 
 		{
@@ -88,22 +81,19 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAddContribuableNewEntreprise() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				{
-					Entreprise ent = new Entreprise();
-					ent.setNumero(1235L);
-					ent = (Entreprise) dao.save(ent);
+		doInNewTransaction(status -> {
+			{
+				Entreprise ent = new Entreprise();
+				ent.setNumero(1235L);
+				ent = (Entreprise) dao.save(ent);
 
-					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-					dpi = (DebiteurPrestationImposable) dao.save(dpi);
+				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
-					ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
-					dao.save(contact);
-				}
-				return null;
+				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
+				dao.save(contact);
 			}
+			return null;
 		});
 
 		{
@@ -132,22 +122,19 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAddContribuableNewAutreCommunaute() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				{
-					AutreCommunaute ac = new AutreCommunaute();
-					ac.setNom("Bla bli");
-					ac = (AutreCommunaute) dao.save(ac);
+		doInNewTransaction(status -> {
+			{
+				AutreCommunaute ac = new AutreCommunaute();
+				ac.setNom("Bla bli");
+				ac = (AutreCommunaute) dao.save(ac);
 
-					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-					dpi = (DebiteurPrestationImposable) dao.save(dpi);
+				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
-					ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
-					dao.save(contact);
-				}
-				return null;
+				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
+				dao.save(contact);
 			}
+			return null;
 		});
 
 		{
@@ -174,16 +161,13 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAjoutPeriodicite() throws Exception {
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				Periodicite periodicite = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL);
-				periodicite.setDateDebut(date(2010,1,1));
-				dpi.addPeriodicite(periodicite);
-				dao.save(dpi);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+			Periodicite periodicite = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL);
+			periodicite.setDateDebut(date(2010, 1, 1));
+			dpi.addPeriodicite(periodicite);
+			dao.save(dpi);
+			return null;
 		});
 
 		{

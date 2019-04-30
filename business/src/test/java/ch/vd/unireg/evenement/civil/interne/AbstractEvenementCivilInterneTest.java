@@ -55,7 +55,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		return evenementFiscalService;
 	}
 
-	protected void launchEvent(final EvenementCivilInterne evtCivil, final EvenementCivilErreurCollector erreurs, final EvenementCivilWarningCollector warnings) throws Exception {
+	protected void launchEvent(final EvenementCivilInterne evtCivil, final EvenementCivilErreurCollector erreurs, final EvenementCivilWarningCollector warnings) {
 		evtCivil.validate(erreurs, warnings);
 		if (!erreurs.hasErreurs()) {
 			evtCivil.handle(warnings);
@@ -66,7 +66,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		return new MessageCollector();
 	}
 
-	protected void assertSansErreurNiWarning(EvenementCivilInterne evt) throws Exception {
+	protected void assertSansErreurNiWarning(EvenementCivilInterne evt) {
 		final EvenementCivilErreurCollector erreurs = buildMessageCollector();
 		final EvenementCivilWarningCollector warnings = buildMessageCollector();
 		launchEvent(evt, erreurs, warnings);
@@ -74,7 +74,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		Assert.assertFalse(warnings.hasWarnings());
 	}
 
-	protected void assertErreurs(EvenementCivilInterne evt, List<String> messagesErreurs) throws Exception {
+	protected void assertErreurs(EvenementCivilInterne evt, List<String> messagesErreurs) {
 		final MessageCollector erreurs = buildMessageCollector();
 		final MessageCollector warnings = buildMessageCollector();
 		try {

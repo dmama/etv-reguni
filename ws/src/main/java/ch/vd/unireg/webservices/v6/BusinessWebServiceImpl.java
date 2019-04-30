@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -35,8 +34,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -475,74 +472,66 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final RegDate dateObtention = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getGrantedOn());
 		final RegDate today = RegDate.get();
 
-		try {
-			return doInTransaction(false, new TxCallback<DeadlineResponse>() {
-				@Override
-				public DeadlineResponse execute(TransactionStatus status) throws AccessDeniedException {
+		return doInTransaction(false, status -> {
 
-					final Tiers tiers = context.tiersService.getTiers(partyNo);
-					if (tiers == null) {
-						throw new TiersNotFoundException(partyNo);
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			if (tiers == null) {
+				throw new TiersNotFoundException(partyNo);
+			}
+			else if (tiers instanceof Contribuable) {
+				final Contribuable ctb = (Contribuable) tiers;
+
+				if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+					WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PP);
+				}
+				else if (ctb instanceof Entreprise) {
+					WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PM);
+				}
+
+				final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
+				if (di == null) {
+					throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
+				}
+				else {
+					final DeadlineResponse response;
+					if (di.isAnnule()) {
+						response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
 					}
-					else if (tiers instanceof Contribuable) {
-						final Contribuable ctb = (Contribuable) tiers;
-
-						if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-							WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PP);
-						}
-						else if (ctb instanceof Entreprise) {
-							WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PM);
-						}
-
-						final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
-						if (di == null) {
-							throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
-						}
-						else {
-							final DeadlineResponse response;
-							if (di.isAnnule()) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
-							}
-							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMIS'.");
-							}
-							else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_GRANTED_ON, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
-							}
-							else if (RegDateHelper.isBefore(nouveauDelai, today, NullDateBehavior.LATEST)) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
-							}
-							else {
-								final RegDate delaiActuel = di.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
-								if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
-									response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
-								}
-								else {
-									final DelaiDeclaration delai = new DelaiDeclaration();
-									delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-									delai.setDateTraitement(RegDate.get());
-									delai.setCleArchivageCourrier(null);
-									delai.setDateDemande(dateObtention);
-									delai.setDelaiAccordeAu(nouveauDelai);
-									delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire par un WS est explicite
-									di.addDelai(delai);
-
-									response = new DeadlineResponse(DeadlineStatus.OK, null);
-								}
-							}
-
-							return response;
-						}
+					else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
+						response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMIS'.");
+					}
+					else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
+						response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_GRANTED_ON, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
+					}
+					else if (RegDateHelper.isBefore(nouveauDelai, today, NullDateBehavior.LATEST)) {
+						response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
 					}
 					else {
-						throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
+						final RegDate delaiActuel = di.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
+						if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
+							response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
+						}
+						else {
+							final DelaiDeclaration delai = new DelaiDeclaration();
+							delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+							delai.setDateTraitement(RegDate.get());
+							delai.setCleArchivageCourrier(null);
+							delai.setDateDemande(dateObtention);
+							delai.setDelaiAccordeAu(nouveauDelai);
+							delai.setTypeDelai(TypeDelaiDeclaration.EXPLICITE); // [FISCPROJ-873] par définition, un délai supplémentaire par un WS est explicite
+							di.addDelai(delai);
+
+							response = new DeadlineResponse(DeadlineStatus.OK, null);
+						}
 					}
+
+					return response;
 				}
-			});
-		}
-		catch (TxCallbackException e) {
-			throw (AccessDeniedException) e.getCause();
-		}
+			}
+			else {
+				throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
+			}
+		});
 	}
 
 	@Override
@@ -745,24 +734,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
-		try {
-			return doInTransaction(true, new TxCallback<Party>() {
-				@Override
-				public Party execute(TransactionStatus status) throws ServiceException {
-					final Tiers tiers = context.tiersService.getTiers(partyNo);
-					return buildParty(tiers, parts, context);
-				}
-			});
-		}
-		catch (TxCallbackException e) {
-			final Throwable cause = e.getCause();
-			if (cause instanceof ServiceException) {
-				throw (ServiceException) cause;
-			}
-			else {
-				throw e;
-			}
-		}
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			return buildParty(tiers, parts, context);
+		});
 	}
 
 	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(Set<PartyPart> parts) {
@@ -794,31 +769,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			// mode read-only..
 			final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
 			template.setReadOnly(true);
-			try {
-				return template.execute(new TxCallback<Parties>() {
-					@Override
-					public Parties execute(TransactionStatus status) throws Exception {
-						// on ne veut vraiment pas modifier la base
-						return context.hibernateTemplate.execute(FlushMode.MANUAL, session -> {
-							try {
-								return doExtract();
-							}
-							catch (ServiceException e) {
-								throw new TxCallbackException(e);
-							}
-						});
-					}
-				});
-			}
-			catch (TxCallbackException e) {
-				final Throwable cause = e.getCause();
-				if (cause instanceof ServiceException) {
-					throw (ServiceException) cause;
-				}
-				else {
-					throw e;
-				}
-			}
+			return template.execute(status -> {
+				// on ne veut vraiment pas modifier la base
+				return context.hibernateTemplate.execute(FlushMode.MANUAL, session -> doExtract());
+			});
 		}
 
 		private Parties doExtract() throws ServiceException {
@@ -932,7 +886,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				try {
 					throw cause;
 				}
-				catch (RuntimeException | Error | ServiceException c) {
+				catch (RuntimeException | Error c) {
 					throw c;
 				}
 				catch (Throwable t) {
@@ -946,27 +900,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public ImageData getAvatar(final int partyNo) throws ServiceException {
-		try {
-			return doInTransaction(true, new TxCallback<ImageData>() {
-				@Override
-				public ImageData execute(TransactionStatus status) throws ServiceException {
-					final Tiers tiers = context.tiersService.getTiers(partyNo);
-					if (tiers == null) {
-						throw new TiersNotFoundException(partyNo);
-					}
-
-					return avatarService.getAvatar(tiers, false);
-				}
-			});
-		}
-		catch (TxCallbackException e) {
-			final Throwable cause = e.getCause();
-			if (cause instanceof ServiceException) {
-				throw (ServiceException) cause;
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			if (tiers == null) {
+				throw new TiersNotFoundException(partyNo);
 			}
-			else {
-				throw e;
-			}
-		}
+			return avatarService.getAvatar(tiers, false);
+		});
 	}
 }

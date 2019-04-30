@@ -4,14 +4,12 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.FlashMessage;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.declaration.Declaration;
@@ -66,13 +64,10 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 	@Test
 	public void testImprimerDIGet() throws Exception {
 
-		final Long tiersId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, MockCommune.Vaulion);
-				return pp.getId();
-			}
+		final Long tiersId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, MockCommune.Vaulion);
+			return pp.getId();
 		});
 
 		// affiche la page de création d'une nouvelle DI
@@ -106,16 +101,13 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 	@Test
 	public void testImprimerDIPost() throws Exception {
 
-		final Long tiersId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, MockCommune.Vaulion);
+		final Long tiersId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, MockCommune.Vaulion);
 
-				final PeriodeFiscale p2007 = addPeriodeFiscale(2007);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, p2007);
-				return pp.getId();
-			}
+			final PeriodeFiscale p2007 = addPeriodeFiscale(2007);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, p2007);
+			return pp.getId();
 		});
 
 		request.setMethod("POST");
@@ -133,12 +125,10 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		final ModelAndView results = handle(request, response);
 		assertNull(results); // si le résultat est différent de null, c'est qu'il y a eu une erreur et qu'on a reçu un redirect
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(tiersId);
-				assertEquals(1, tiers.getDocumentsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(tiersId);
+			assertEquals(1, tiers.getDocumentsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -148,21 +138,18 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 	@Test
 	public void testImprimerDuplicataDIMauvaisePeriode() throws Exception {
 
-		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(pp, null, date(2008, 6, 12), date(2010, 7, 13));
+		final Long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(pp, null, date(2008, 6, 12), date(2010, 7, 13));
 
-				final MenageCommun menage = ensembleTiersCouple.getMenage();
-				addForPrincipal(menage, date(2008, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2010, 7, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				                MockCommune.Vaulion);
+			final MenageCommun menage = ensembleTiersCouple.getMenage();
+			addForPrincipal(menage, date(2008, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2010, 7, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                MockCommune.Vaulion);
 
-				final PeriodeFiscale p2010 = addPeriodeFiscale(2010);
-				final ModeleDocument modeleDocument2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2010);
-				Declaration declaration = addDeclarationImpot(menage, p2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument2010);
-				return declaration.getId();
-			}
+			final PeriodeFiscale p2010 = addPeriodeFiscale(2010);
+			final ModeleDocument modeleDocument2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2010);
+			Declaration declaration = addDeclarationImpot(menage, p2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument2010);
+			return declaration.getId();
 		});
 
 		request.setMethod("POST");
@@ -190,18 +177,15 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 		final int anneeCourante = RegDate.get().year();
 
-		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Vaulion);
+		final Long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Vaulion);
 
-				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeCourante);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periodeFiscale);
-				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
-				return declaration.getId();
-			}
+			final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeCourante);
+			final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periodeFiscale);
+			final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+			addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			return declaration.getId();
 		});
 
 		request.setMethod("POST");
@@ -238,18 +222,15 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 		final int annee = RegDate.get().year() - 2;
 
-		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
+		final Long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 
-				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periodeFiscale);
-				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
-				addEtatDeclarationEmise(declaration, date(annee + 1, 1, 15));
-				return declaration.getId();
-			}
+			final PeriodeFiscale periodeFiscale = addPeriodeFiscale(annee);
+			final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periodeFiscale);
+			final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
+			addEtatDeclarationEmise(declaration, date(annee + 1, 1, 15));
+			return declaration.getId();
 		});
 
 		final RegDate dateQuittance = date(annee + 1, 3, 15);
@@ -270,14 +251,12 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		assertEmpty(result.getAllErrors());
 
 		// On vérifie que la déclaration est bien quittancée et qu'elle est restée de type 'hors canton'
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
-				assertNotNull(di);
-				assertEquals(dateQuittance, di.getDateRetour());
-				assertEquals(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, di.getTypeDeclaration());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+			assertNotNull(di);
+			assertEquals(dateQuittance, di.getDateRetour());
+			assertEquals(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, di.getTypeDeclaration());
+			return null;
 		});
 	}
 
@@ -289,18 +268,15 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 		final int annee = RegDate.get().year() - 2;
 
-		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		final Long diId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
-				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periodeFiscale);
-				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				addEtatDeclarationEmise(declaration, date(annee + 1, 1, 15));
-				return declaration.getId();
-			}
+			final PeriodeFiscale periodeFiscale = addPeriodeFiscale(annee);
+			final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periodeFiscale);
+			final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+			addEtatDeclarationEmise(declaration, date(annee + 1, 1, 15));
+			return declaration.getId();
 		});
 
 		final RegDate dateQuittance = date(annee + 1, 3, 15);
@@ -321,14 +297,12 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		assertEmpty(result.getAllErrors());
 
 		// On vérifie que le type de document est resté 'batch'
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
-				assertNotNull(di);
-				assertEquals(dateQuittance, di.getDateRetour());
-				assertEquals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, di.getTypeDeclaration());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+			assertNotNull(di);
+			assertEquals(dateQuittance, di.getDateRetour());
+			assertEquals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, di.getTypeDeclaration());
+			return null;
 		});
 	}
 }

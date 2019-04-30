@@ -8,12 +8,10 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.StringUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.validation.ValidationResults;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -115,30 +113,24 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un contribuable parti hors-canton en 2004 et qui a débuté une activité indépendante en 2005
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(fabrice, date(2001, 1, 6), MotifFor.ARRIVEE_HC, date(2004, 8, 15), MotifFor.DEPART_HC, MockCommune.Cossonay);
-				addForPrincipal(fabrice, date(2004, 8, 16), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-				addForSecondaire(fabrice, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens,
-				                 MotifRattachement.ACTIVITE_INDEPENDANTE);
-				ids.fabrice = fabrice.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(fabrice, date(2001, 1, 6), MotifFor.ARRIVEE_HC, date(2004, 8, 15), MotifFor.DEPART_HC, MockCommune.Cossonay);
+			addForPrincipal(fabrice, date(2004, 8, 16), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+			addForSecondaire(fabrice, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens,
+			                 MotifRattachement.ACTIVITE_INDEPENDANTE);
+			ids.fabrice = fabrice.getNumero();
+			return null;
 		});
 
 		// Marie le contribuable (en mode marié-seul) le 23.11.2008
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				final MenageCommun menageCommun = metierService.marie(date(2008, 11, 23), fabrice, null, "test", EtatCivil.MARIE, null);
-				assertNotNull(menageCommun);
-				ids.menage = menageCommun.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			final MenageCommun menageCommun = metierService.marie(date(2008, 11, 23), fabrice, null, "test", EtatCivil.MARIE, null);
+			assertNotNull(menageCommun);
+			ids.menage = menageCommun.getNumero();
+			return null;
 		});
 
 		// Vérifie que le for principal ouvert sur le ménage est bien hors-canton
@@ -174,36 +166,30 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-canton
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseSuisse(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
-				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
-				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseSuisse(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+			fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseSuisse(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
+			final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
+			georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseSuisse(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
-				return null;
-			}
+			addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+			return null;
 		});
 
 		// Sépare le contribuable le 23.11.2008
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(menage);
-				metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(menage);
+			metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// Vérifie que les fors principals ouvert sur les contribuables sont bien hors-canton
@@ -247,36 +233,30 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-Suisse
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseEtrangere(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
-				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
-				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseEtrangere(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+			fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseEtrangere(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
+			final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
+			georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseEtrangere(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
-				return null;
-			}
+			addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
+			return null;
 		});
 
 		// Sépare le contribuable le 23.11.2008
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(menage);
-				metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(menage);
+			metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// Vérifie que les fors principals ouvert sur les contribuables sont bien hors-Suisse
@@ -322,55 +302,51 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-Suisse
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				// Alfredo
-				final PersonnePhysique alfredo = addNonHabitant("Alfredo", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+		doInNewTransaction(status -> {
+			// Alfredo
+			final PersonnePhysique alfredo = addNonHabitant("Alfredo", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
 
-				// ménage Alfredo
-				{
-					MenageCommun menage = new MenageCommun();
-					menage = (MenageCommun) tiersDAO.save(menage);
-					ids.noMenageAlfredo = menage.getNumero();
-					tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
+			// ménage Alfredo
+			{
+				MenageCommun menage = new MenageCommun();
+				menage = (MenageCommun) tiersDAO.save(menage);
+				ids.noMenageAlfredo = menage.getNumero();
+				tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
 
-					addForPrincipal(menage, dateMariageAlfredo, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne,
-					                MotifRattachement.DOMICILE);
-					menage.setBlocageRemboursementAutomatique(false);
-				}
-
-				// Armando
-				final PersonnePhysique armando = addNonHabitant("Armando", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-
-				// ménage Armando
-				{
-					MenageCommun menage = new MenageCommun();
-					menage = (MenageCommun) tiersDAO.save(menage);
-					ids.noMenageArmando = menage.getNumero();
-					tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
-
-					addForPrincipal(menage, dateMariageArmando, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne,
-					                MotifRattachement.DOMICILE);
-					menage.setBlocageRemboursementAutomatique(false);
-				}
-				return null;
+				addForPrincipal(menage, dateMariageAlfredo, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne,
+				                MotifRattachement.DOMICILE);
+				menage.setBlocageRemboursementAutomatique(false);
 			}
+
+			// Armando
+			final PersonnePhysique armando = addNonHabitant("Armando", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+
+			// ménage Armando
+			{
+				MenageCommun menage = new MenageCommun();
+				menage = (MenageCommun) tiersDAO.save(menage);
+				ids.noMenageArmando = menage.getNumero();
+				tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
+
+				addForPrincipal(menage, dateMariageArmando, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne,
+				                MotifRattachement.DOMICILE);
+				menage.setBlocageRemboursementAutomatique(false);
+			}
+			;
+			return null;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) {
-				try {
-					metierService.fusionneMenages((MenageCommun) tiersDAO.get(ids.noMenageAlfredo), (MenageCommun) tiersDAO.get(ids.noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
+		doInNewTransactionAndSession(status -> {
+			try {
+				metierService.fusionneMenages((MenageCommun) tiersDAO.get(ids.noMenageAlfredo), (MenageCommun) tiersDAO.get(ids.noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
+				throw new IllegalArgumentException();
+			}
+			catch (MetierServiceException e) {
+				if (!StringUtils.hasText(e.getMessage())) {
 					throw new IllegalArgumentException();
 				}
-				catch (MetierServiceException e) {
-					if (!StringUtils.hasText(e.getMessage())) {
-						throw new IllegalArgumentException();
-					}
-				}
 			}
+			return null;
 		});
 	}
 
@@ -388,38 +364,31 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-canton
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+			fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseSuisse(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
 
-				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseSuisse(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
+			final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
+			georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseSuisse(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
 
-				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
-				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseSuisse(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
-				final MenageCommun menage = ensemble.getMenage();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-
-				addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
-				return null;
-			}
+			addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+			return null;
 		});
 
 		// Décède le contribuable le 23.11.2008
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				metierService.deces(fabrice, date(2008, 11, 23), "test", null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			metierService.deces(fabrice, date(2008, 11, 23), "test", null);
+			return null;
 		});
 
 		// Vérifie que les fors principals ouvert sur le contribuable survivant est bien hors-canton
@@ -494,38 +463,35 @@ public class MetiersServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(2009, 8, 12);
 
 		// petite vérification et décès de monsieur
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
-				Assert.assertFalse(mc.getBlocageRemboursementAutomatique());
-				Assert.assertEquals(1, mc.getForsFiscaux().size());
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+			assertFalse(mc.getBlocageRemboursementAutomatique());
+			assertEquals(1, mc.getForsFiscaux().size());
 
-				final ForFiscalPrincipal ffp = (ForFiscalPrincipal) mc.getForsFiscaux().iterator().next();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateMariage, ffp.getDateDebut());
-				Assert.assertNull(ffp.getDateFin());
+			final ForFiscalPrincipal ffp = (ForFiscalPrincipal) mc.getForsFiscaux().iterator().next();
+			assertNotNull(ffp);
+			assertEquals(dateMariage, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
-				Assert.assertNotNull(couple);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+			assertNotNull(couple);
 
-				final PersonnePhysique m = couple.getPrincipal();
-				Assert.assertNotNull(m);
-				Assert.assertEquals(noIndividuM, (long) m.getNumeroIndividu());
-				Assert.assertFalse(m.getBlocageRemboursementAutomatique());
-				Assert.assertEquals(0, m.getForsFiscaux().size());
+			final PersonnePhysique m = couple.getPrincipal();
+			assertNotNull(m);
+			assertEquals(noIndividuM, (long) m.getNumeroIndividu());
+			assertFalse(m.getBlocageRemboursementAutomatique());
+			assertEquals(0, m.getForsFiscaux().size());
 
-				final PersonnePhysique mme = couple.getConjoint();
-				Assert.assertNotNull(mme);
-				Assert.assertEquals(noIndividuMme, (long) mme.getNumeroIndividu());
-				Assert.assertFalse(mme.getBlocageRemboursementAutomatique());
-				Assert.assertEquals(0, mme.getForsFiscaux().size());
+			final PersonnePhysique mme = couple.getConjoint();
+			assertNotNull(mme);
+			assertEquals(noIndividuMme, (long) mme.getNumeroIndividu());
+			assertFalse(mme.getBlocageRemboursementAutomatique());
+			assertEquals(0, mme.getForsFiscaux().size());
 
-				doModificationIndividu(noIndividuM, individu -> individu.setDateDeces(dateDeces));
+			doModificationIndividu(noIndividuM, individu -> individu.setDateDeces(dateDeces));
 
-				metierService.deces(m, dateDeces, "Pour le test", null);
-				return null;
-			}
+			metierService.deces(m, dateDeces, "Pour le test", null);
+			return null;
 		});
 
 		// vérification des fors et des blocages de remboursement automatique après décès
@@ -580,38 +546,31 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-Suisse
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+			fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseEtrangere(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
 
-				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseEtrangere(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
+			final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
+			georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseEtrangere(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
 
-				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
-				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseEtrangere(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, "Nizzaallee", "52072 Aachen", MockPays.Allemagne);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
-				final MenageCommun menage = ensemble.getMenage();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-
-				addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
-				return null;
-			}
+			addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
+			return null;
 		});
 
 		// Décède le contribuable le 23.11.2008
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				metierService.deces(fabrice, date(2008, 11, 23), "test", null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			metierService.deces(fabrice, date(2008, 11, 23), "test", null);
+			return null;
 		});
 
 		// Vérifie que les fors principals ouvert sur le contribuable survivant est bien hors-Suisse
@@ -641,36 +600,30 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-canton
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
-				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseSuisse(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
+			fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseSuisse(fabrice, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
 
-				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
-				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				addAdresseSuisse(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
+			final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
+			georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+			addAdresseSuisse(georgette, TypeAdresseTiers.DOMICILE, date(2001, 1, 6), null, MockRue.Neuchatel.RueDesBeauxArts);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
-				final MenageCommun menage = ensemble.getMenage();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.georgette = georgette.getNumero();
+			ids.georgette = georgette.getNumero();
 
-				addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
-				return null;
-			}
+			addForPrincipal(menage, date(2001, 1, 6), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+			return null;
 		});
 
 		// Décède le contribuable le 23.11.2008
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
-				metierService.veuvage(georgette, date(2008, 11, 23), "test", null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
+			metierService.veuvage(georgette, date(2008, 11, 23), "test", null);
+			return null;
 		});
 
 		// Vérifie que les fors principals ouvert sur le contribuable survivant est bien hors-canton
@@ -726,65 +679,58 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+			final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+				// domicile passe à Bex -> le for devra s'ouvrir là
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+			});
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				});
+			// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
+			doModificationIndividu(noIndGeorgette, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
-				doModificationIndividu(noIndGeorgette, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
-					adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+				// on ne connait que l'adresse courrier sur Genève (= prise par défaut pour l'adresse de domicile)
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
+			});
 
-					// on ne connait que l'adresse courrier sur Genève (= prise par défaut pour l'adresse de domicile)
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
-				});
-
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
-				metierService.separe(mc, dateSeparation, "test", null, null);
-				return null;
-			}
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
+			metierService.separe(mc, dateSeparation, "test", null, null);
+			return null;
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Fabrice à Bex, Georgette à Lausanne
@@ -872,71 +818,64 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+			final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+				// domicile passe à Bex -> le for devra s'ouvrir là
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+			});
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-				});
+			// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
+			doModificationIndividu(noIndGeorgette, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
-				doModificationIndividu(noIndGeorgette, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final RegDate dateDepart = dateSeparation.addDays(-20);
 
-					final RegDate dateDepart = dateSeparation.addDays(-20);
+				final MockAdresse vieilleAdresse = (MockAdresse) individu.getAdresses().iterator().next();
+				vieilleAdresse.setDateFinValidite(dateDepart);
+				vieilleAdresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			});
 
-					final MockAdresse vieilleAdresse = (MockAdresse) individu.getAdresses().iterator().next();
-					vieilleAdresse.setDateFinValidite(dateDepart);
-					vieilleAdresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
-				});
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
-
-				try {
-					metierService.separe(mc, dateSeparation, "test", null, null);
-					fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
-				}
-				catch (MetierServiceException e) {
-					final String attendu = String.format(
-							"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
-							FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
-					assertEquals(attendu, e.getMessage());
-				}
-				return null;
+			try {
+				metierService.separe(mc, dateSeparation, "test", null, null);
+				fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
 			}
+			catch (MetierServiceException e) {
+				final String attendu = String.format(
+						"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
+						FormatNumeroHelper.numeroCTBToDisplay(ids.georgette), FormatNumeroHelper.numeroCTBToDisplay(ids.menage));
+				assertEquals(attendu, e.getMessage());
+			}
+			return null;
 		});
 
 	}
@@ -978,61 +917,54 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+			final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+				// domicile passe à Bex -> le for devra s'ouvrir là
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+			});
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-				});
+			// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
+			doModificationIndividu(noIndGeorgette, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(0, individu.getAdresses().size());
 
-				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
-				doModificationIndividu(noIndGeorgette, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(0, individu.getAdresses().size());
+				final RegDate dateDepart = dateSeparation.addDays(-20);
 
-					final RegDate dateDepart = dateSeparation.addDays(-20);
+				// on ne connait que l'adresse courrier à Paris (= non prise par défaut pour l'adresse de domicile)
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
+			});
 
-					// on ne connait que l'adresse courrier à Paris (= non prise par défaut pour l'adresse de domicile)
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
-				});
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
-
-				metierService.separe(mc, dateSeparation, "test", null, null);
-				return null;
-			}
+			metierService.separe(mc, dateSeparation, "test", null, null);
+			return null;
 		});
 
 		// vérification des fors fiscaux
@@ -1099,63 +1031,56 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+			final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(),
+				                                                 null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
-					adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(),
-					                                                 null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
+				// domicile passe à Bex -> le for devra s'ouvrir là
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+			});
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				});
+			// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER (et ce depuis un an déjà au moment de la séparation -> période fiscale différente)
+			doModificationIndividu(noIndGeorgette, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER (et ce depuis un an déjà au moment de la séparation -> période fiscale différente)
-				doModificationIndividu(noIndGeorgette, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse vieilleAdresse = (MockAdresse) individu.getAdresses().iterator().next();
+				vieilleAdresse.setDateFinValidite(dateSeparation.addYears(-1));
+				vieilleAdresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			});
 
-					final MockAdresse vieilleAdresse = (MockAdresse) individu.getAdresses().iterator().next();
-					vieilleAdresse.setDateFinValidite(dateSeparation.addYears(-1));
-					vieilleAdresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
-				});
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
-
-				metierService.separe(mc, dateSeparation, "test", null, null);
-				return null;
-			}
+			metierService.separe(mc, dateSeparation, "test", null, null);
+			return null;
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Fabrice à Bex, Georgette à Paris
@@ -1243,56 +1168,48 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+			final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
-
-				return null;
-			}
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
+			return null;
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+				// domicile passe à Bex -> le for devra s'ouvrir là
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+			});
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-					individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				});
-
-				// vérification de l'absence d'adresse sur Georgette
-				{
-					final Individu individu = serviceCivil.getIndividu(noIndGeorgette, null, AttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(0, individu.getAdresses().size());
-				}
-
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
-				metierService.separe(mc, dateSeparation, "test", null, null);
-				return null;
+			// vérification de l'absence d'adresse sur Georgette
+			{
+				final Individu individu = serviceCivil.getIndividu(noIndGeorgette, null, AttributeIndividu.ADRESSES);
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(0, individu.getAdresses().size());
 			}
+
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
+			metierService.separe(mc, dateSeparation, "test", null, null);
+			return null;
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Fabrice à Bex, Georgette sans for
@@ -1371,32 +1288,26 @@ public class MetiersServiceTest extends BusinessTest {
 		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
 		try {
 			// Crée un couple avec un for principal à Grandvaux
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) {
-					final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-					final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-					final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-					final MenageCommun menage = ensemble.getMenage();
+			doInNewTransaction(status -> {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
 
-					ids.fabrice = fabrice.getNumero();
-					ids.georgette = georgette.getNumero();
-					ids.menage = menage.getNumero();
+				ids.fabrice = fabrice.getNumero();
+				ids.georgette = georgette.getNumero();
+				ids.menage = menage.getNumero();
 
-					addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux);
-					return null;
-				}
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux);
+				return null;
 			});
 
 			// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
-					metierService.separe(mc, dateSeparation, "test", null, null);
-					return null;
-				}
+			doInNewTransaction(status -> {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+				assertNotNull(mc);
+				metierService.separe(mc, dateSeparation, "test", null, null);
+				return null;
 			});
 
 			// vérifie les fors principaux ouverts sur les séparés : Monsieur à Riex, Madame à Grandvaux
@@ -1476,34 +1387,28 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un for principal à Grandvaux
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+			final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux.getDateFinValidite(), MotifFor.FUSION_COMMUNES,
-				                MockCommune.Grandvaux);
-				addForPrincipal(menage, MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, MockCommune.BourgEnLavaux);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux.getDateFinValidite(), MotifFor.FUSION_COMMUNES,
+			                MockCommune.Grandvaux);
+			addForPrincipal(menage, MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, MockCommune.BourgEnLavaux);
+			return null;
 		});
 
 		// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-				assertNotNull(mc);
-				metierService.separe(mc, dateSeparation, "test", null, null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
+			metierService.separe(mc, dateSeparation, "test", null, null);
+			return null;
 		});
 
 		// vérifie les fors principaux ouverts sur les séparés : Monsieur à Bourg-en-Lavaux (anciennement Riex), Madame à Bourg-en-Lavaux (anciennement Grandvaux)
@@ -1579,51 +1484,44 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
 
-				final PersonnePhysique georgette = addNonHabitant("Dunand", "Georgette", naissanceGeorgette, Sexe.FEMININ);
-				georgette.setNumeroIndividu(noIndGeorgette);
-				georgette.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
+			final PersonnePhysique georgette = addNonHabitant("Dunand", "Georgette", naissanceGeorgette, Sexe.FEMININ);
+			georgette.setNumeroIndividu(noIndGeorgette);
+			georgette.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Fabrice passe l'arme à gauche
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateDeces);
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateDeces);
+				individu.setDateDeces(dateDeces);
+			});
 
-					individu.setDateDeces(dateDeces);
-				});
-
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				metierService.deces(fabrice, dateDeces, "test", null);
-				return null;
-			}
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			metierService.deces(fabrice, dateDeces, "test", null);
+			return null;
 		});
 
 		// vérifie les fors principaux ouverts sur les contribuables : Fabrice est mort, Georgette est à Genève
@@ -1707,51 +1605,44 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+		doInNewTransaction(status -> {
+			final PersonnePhysique fabrice = addHabitant(noIndFabrice);
 
-				final PersonnePhysique georgette = addNonHabitant("Dunand", "Georgette", naissanceGeorgette, Sexe.FEMININ);
-				georgette.setNumeroIndividu(noIndGeorgette);
-				georgette.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
+			final PersonnePhysique georgette = addNonHabitant("Dunand", "Georgette", naissanceGeorgette, Sexe.FEMININ);
+			georgette.setNumeroIndividu(noIndGeorgette);
+			georgette.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				ids.fabrice = fabrice.getNumero();
-				ids.georgette = georgette.getNumero();
-				ids.menage = menage.getNumero();
+			ids.fabrice = fabrice.getNumero();
+			ids.georgette = georgette.getNumero();
+			ids.menage = menage.getNumero();
 
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				return null;
-			}
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Fabrice passe l'arme à gauche
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// changement d'adresse de Fabrice
+			doModificationIndividu(noIndFabrice, individu -> {
+				assertNotNull(individu);
+				assertNotNull(individu.getAdresses());
+				assertEquals(1, individu.getAdresses().size());
 
-				// changement d'adresse de Fabrice
-				doModificationIndividu(noIndFabrice, individu -> {
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+				assertNull(adresse.getDateFin());
+				assertEquals(dateMariage, adresse.getDateDebut());
+				adresse.setDateFinValidite(dateDeces);
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateDeces);
+				individu.setDateDeces(dateDeces);
+			});
 
-					individu.setDateDeces(dateDeces);
-				});
-
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
-				metierService.deces(fabrice, dateDeces, "test", null);
-				return null;
-			}
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+			metierService.deces(fabrice, dateDeces, "test", null);
+			return null;
 		});
 
 		// vérifie les fors principaux ouverts sur les contribuables : Fabrice est mort, Georgette est à Genève
@@ -1828,24 +1719,22 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification/application du veuvage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
-				final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
-				Assert.assertNotNull(resultatValidation);
-				Assert.assertEquals(0, resultatValidation.errorsCount());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
+			final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
+			Assert.assertNotNull(resultatValidation);
+			Assert.assertEquals(0, resultatValidation.errorsCount());
 
-				metierService.veuvage(fabrice, dateVeuvage, "Test pour cas UNIREG-1623", null);
+			metierService.veuvage(fabrice, dateVeuvage, "Test pour cas UNIREG-1623", null);
 
-				final Set<ForFiscal> ff = fabrice.getForsFiscaux();
-				Assert.assertEquals(1, ff.size());
+			final Set<ForFiscal> ff = fabrice.getForsFiscaux();
+			Assert.assertEquals(1, ff.size());
 
-				final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff.iterator().next();
-				Assert.assertNotNull(ffp);
-				Assert.assertNull(ffp.getAnnulationDate());
-				Assert.assertNull(ffp.getDateFin());
-			}
+			final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff.iterator().next();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getAnnulationDate());
+			Assert.assertNull(ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -1886,24 +1775,22 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification/application du veuvage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
-				final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
-				Assert.assertNotNull(resultatValidation);
-				Assert.assertEquals(0, resultatValidation.errorsCount());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
+			final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
+			Assert.assertNotNull(resultatValidation);
+			Assert.assertEquals(0, resultatValidation.errorsCount());
 
-				metierService.veuvage(fabrice, dateVeuvage, null, null);
+			metierService.veuvage(fabrice, dateVeuvage, null, null);
 
-				final Set<ForFiscal> ff = fabrice.getForsFiscaux();
-				Assert.assertEquals(1, ff.size());
+			final Set<ForFiscal> ff = fabrice.getForsFiscaux();
+			Assert.assertEquals(1, ff.size());
 
-				final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff.iterator().next();
-				Assert.assertNotNull(ffp);
-				Assert.assertNull(ffp.getAnnulationDate());
-				Assert.assertNull(ffp.getDateFin());
-			}
+			final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff.iterator().next();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getAnnulationDate());
+			Assert.assertNull(ffp.getDateFin());
+			return null;
 		});
 	}
 
@@ -1943,17 +1830,15 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// vérification/application du veuvage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) {
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
-				final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
-				Assert.assertNotNull(resultatValidation);
-				Assert.assertEquals(1, resultatValidation.errorsCount());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
+			final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
+			Assert.assertNotNull(resultatValidation);
+			Assert.assertEquals(1, resultatValidation.errorsCount());
 
-				final String erreur = resultatValidation.getErrors().get(0);
-				Assert.assertEquals("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?", erreur);
-			}
+			final String erreur = resultatValidation.getErrors().get(0);
+			Assert.assertEquals("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?", erreur);
+			return null;
 		});
 	}
 
@@ -1999,13 +1884,10 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// traitement du décès de monsieur
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique mr = (PersonnePhysique) tiersService.getTiers(ids.mrId);
-				metierService.deces(mr, dateDeces, "Décès de Monsieur", 1L);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique mr = (PersonnePhysique) tiersService.getTiers(ids.mrId);
+			metierService.deces(mr, dateDeces, "Décès de Monsieur", 1L);
+			return null;
 		});
 
 		// vérification du résultat
@@ -2072,14 +1954,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// décès fiscal
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertTrue(pp.isHabitantVD());
-				metierService.deces(pp, dateDecesFiscal, "Décédé", null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertTrue(pp.isHabitantVD());
+			metierService.deces(pp, dateDecesFiscal, "Décédé", null);
+			return null;
 		});
 
 		// vérification de l'impact du décès fiscal (ne doit pas être passé non-habitant!)
@@ -2117,15 +1996,12 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// décès fiscal
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertTrue(pp.isHabitantVD());
-				metierService.deces(pp, dateDeces, "Décédé", null);
-				tiersService.updateHabitantStatus(pp, noInd, dateDeces, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertTrue(pp.isHabitantVD());
+			metierService.deces(pp, dateDeces, "Décédé", null);
+			tiersService.updateHabitantStatus(pp, noInd, dateDeces, null);
+			return null;
 		});
 
 		// vérification de l'impact du décès fiscal (doit être passé non-habitant!)
@@ -2165,16 +2041,13 @@ public class MetiersServiceTest extends BusinessTest {
 		doModificationIndividu(noIndDecede, individu -> individu.setDateDeces(dateDeces));
 
 		// impact fiscal du décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertTrue(pp.isHabitantVD());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertTrue(pp.isHabitantVD());
 
-				metierService.deces(pp, dateDeces, "Décédé", 1L);
-				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
-				return null;
-			}
+			metierService.deces(pp, dateDeces, "Décédé", 1L);
+			tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
+			return null;
 		});
 
 		// vérification de l'impact fiscal
@@ -2189,14 +2062,11 @@ public class MetiersServiceTest extends BusinessTest {
 		doModificationIndividu(noIndDecede, individu -> individu.setDateDeces(null));
 
 		// impact fiscal de l'annulation de décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				metierService.annuleDeces(pp, dateDeces);
-				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null); // [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			metierService.annuleDeces(pp, dateDeces);
+			tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null); // [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux;
+			return null;
 		});
 
 		// vérification de l'impact fiscal de l'annulation du décès
@@ -2236,14 +2106,11 @@ public class MetiersServiceTest extends BusinessTest {
 		doModificationIndividu(noIndDecede, individu -> individu.setDateDeces(dateDeces));
 
 		// impact fiscal du décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.isHabitantVD());
-				metierService.deces(pp, dateDeces, "Décédé", 1L);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertFalse(pp.isHabitantVD());
+			metierService.deces(pp, dateDeces, "Décédé", 1L);
+			return null;
 		});
 
 		// vérification de l'impact fiscal
@@ -2258,13 +2125,10 @@ public class MetiersServiceTest extends BusinessTest {
 		doModificationIndividu(noIndDecede, individu -> individu.setDateDeces(null));
 
 		// impact fiscal de l'annulation de décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				metierService.annuleDeces(pp, dateDeces);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			metierService.annuleDeces(pp, dateDeces);
+			return null;
 		});
 
 		// vérification de l'impact fiscal de l'annulation du décès (la personne habite hors-canton, elle ne doit donc pas passer habitante!)
@@ -2305,30 +2169,24 @@ public class MetiersServiceTest extends BusinessTest {
 		doModificationIndividu(noIndDecede, individu -> individu.setDateDeces(dateDeces));
 
 		// impact fiscal du décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertTrue(pp.isHabitantVD());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertTrue(pp.isHabitantVD());
 
-				metierService.deces(pp, dateDeces, "Décédé", 1L);
-				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
-				return null;
-			}
+			metierService.deces(pp, dateDeces, "Décédé", 1L);
+			tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
+			return null;
 		});
 
 		// vérification de l'impact fiscal et annulation fiscale du décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.isHabitantVD());
-				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertFalse(pp.isHabitantVD());
+			assertEquals(dateDeces, tiersService.getDateDeces(pp));
 
-				metierService.annuleDeces(pp, dateDeces);
-				tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
-				return null;
-			}
+			metierService.annuleDeces(pp, dateDeces);
+			tiersService.updateHabitantStatus(pp, noIndDecede, dateDeces, null);
+			return null;
 		});
 
 		// vérification de l'impact fiscal de l'annulation du décès
@@ -2377,12 +2235,10 @@ public class MetiersServiceTest extends BusinessTest {
 		doModificationIndividu(noIndividu, individu -> individu.setDateDeces(dateDeces));
 
 		// on traite le décès fiscal
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ppId);
-				metierService.deces(defunt, dateDeces, null, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ppId);
+			metierService.deces(defunt, dateDeces, null, null);
+			return null;
 		});
 
 		// on vérifie maintenant que tous les rapports sont fermés à la date de décès
@@ -2405,12 +2261,10 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// maintenant, on annule le décès
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ppId);
-				metierService.annuleDeces(defunt, dateDeces);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ppId);
+			metierService.annuleDeces(defunt, dateDeces);
+			return null;
 		});
 
 		// et on vérifie que tous les rapports précédemment fermés à la date de décès sont bien ré-ouverts
@@ -2496,13 +2350,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// traitement du décès
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
-				Assert.assertNotNull(defunt);
-				metierService.deces(defunt, dateDeces, null, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
+			Assert.assertNotNull(defunt);
+			metierService.deces(defunt, dateDeces, null, null);
+			return null;
 		});
 
 		// vérification des liens sur le décédé
@@ -2564,27 +2416,23 @@ public class MetiersServiceTest extends BusinessTest {
 		}
 
 		// on crée les deux célibataires, avec monsieur propriétaire d'un immeuble vendu à la veille de son mariage, puis on enregistre le mariage
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
-			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividuMonsieur);
+			addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
-				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
+			final PersonnePhysique mme = addHabitant(noIndividuMadame);
+			addForPrincipal(mme, date(2002, 8, 12), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
-				final PersonnePhysique mme = addHabitant(noIndividuMadame);
-				addForPrincipal(mme, date(2002, 8, 12), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			final MenageCommun mc = metierService.marie(dateMariage, m, mme, null, EtatCivil.MARIE, null);
+			assertNotNull(mc);
 
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, null, EtatCivil.MARIE, null);
-				Assert.assertNotNull(mc);
-
-				final Ids ids = new Ids();
-				ids.idMonsieur = m.getNumero();
-				ids.idMadame = mme.getNumero();
-				ids.idMenage = mc.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idMonsieur = m.getNumero();
+			ids1.idMadame = mme.getNumero();
+			ids1.idMenage = mc.getNumero();
+			return ids1;
 		});
 
 		// et on vérifie les fors après l'enregistrement du mariage
@@ -2707,39 +2555,31 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// annulation du mariage
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, null);
 
-				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
-				final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, null);
+			// retour par le couple comme dans l'IHM...
+			final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+			assertNotNull(menageCommun);
 
-				// retour par le couple comme dans l'IHM...
-				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
-				Assert.assertNotNull(menageCommun);
+			final RapportEntreTiers dernierRapport = menageCommun.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			final RegDate dateReference = dernierRapport.getDateDebut();
 
-				final RapportEntreTiers dernierRapport = menageCommun.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				final RegDate dateReference = dernierRapport.getDateDebut();
-
-				metierService.annuleMariage(ensembleTiersCouple.getPrincipal(), ensembleTiersCouple.getConjoint(), dateReference, null);
-				return null;
-			}
+			metierService.annuleMariage(ensembleTiersCouple.getPrincipal(), ensembleTiersCouple.getConjoint(), dateReference, null);
+			return null;
 		});
 
 		// test de résultat -> le for de monsieur devrait avoir été ré-ouvert
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.idMonsieur);
+			Assert.assertNotNull(m);
 
-				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.idMonsieur);
-				Assert.assertNotNull(m);
-
-				final ForFiscalPrincipal ffp = m.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(date(2002, 12, 1), ffp.getDateDebut());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = m.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(date(2002, 12, 1), ffp.getDateDebut());
+			return null;
 		});
 	}
 
@@ -2777,19 +2617,15 @@ public class MetiersServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+			assertNotNull(m);
 
-				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
-				Assert.assertNotNull(m);
+			final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+			assertNotNull(mme);
 
-				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
-				Assert.assertNotNull(mme);
-
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, null);
-				return mc.getNumero();
-			}
+			final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, null);
+			return mc.getNumero();
 		});
 
 		// et on vérifie les fors créés sur le couple
@@ -2861,19 +2697,15 @@ public class MetiersServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		final long mcId = (Long) doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+			assertNotNull(m);
 
-				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
-				Assert.assertNotNull(m);
+			final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+			assertNotNull(mme);
 
-				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
-				Assert.assertNotNull(mme);
-
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents sur la commune", EtatCivil.MARIE, null);
-				return mc.getNumero();
-			}
+			final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents sur la commune", EtatCivil.MARIE, null);
+			return mc.getNumero();
 		});
 
 		// et on vérifie les fors créés sur le couple
@@ -2961,19 +2793,15 @@ public class MetiersServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+			assertNotNull(m);
 
-				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
-				Assert.assertNotNull(m);
+			final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+			assertNotNull(mme);
 
-				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
-				Assert.assertNotNull(mme);
-
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents selon leur motif de rattachement", EtatCivil.MARIE, null);
-				return mc.getNumero();
-			}
+			final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents selon leur motif de rattachement", EtatCivil.MARIE, null);
+			return mc.getNumero();
 		});
 
 		// et on vérifie les fors créés sur le couple
@@ -3062,19 +2890,15 @@ public class MetiersServiceTest extends BusinessTest {
 		final RegDate dateMariage = date(2008, 5, 1);
 
 		// maintenant, on va marier les tourtereaux
-		final long mcId = (Long) doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		final long mcId = (Long) doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+			assertNotNull(m);
 
-				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
-				Assert.assertNotNull(m);
+			final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+			assertNotNull(mme);
 
-				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
-				Assert.assertNotNull(mme);
-
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, null);
-				return mc.getNumero();
-			}
+			final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, null);
+			return mc.getNumero();
 		});
 
 		// et on vérifie les fors créés sur le couple
@@ -3148,12 +2972,7 @@ public class MetiersServiceTest extends BusinessTest {
 		// appel du service métier
 		doInNewTransactionAndSession(status -> {
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-			try {
-				metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, null);
-			}
-			catch (MetierServiceException e) {
-				throw new RuntimeException(e);
-			}
+			metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, null);
 			return null;
 		});
 
@@ -3246,48 +3065,39 @@ public class MetiersServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) {
-				final PersonnePhysique principal = addHabitant(noInd);
-				addForPrincipal(principal, date(1998, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				ids.principal = principal.getId();
-				final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
-				ids.conjoint = conjoint.getId();
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique principal = addHabitant(noInd);
+			addForPrincipal(principal, date(1998, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			ids.principal = principal.getId();
+			final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
+			ids.conjoint = conjoint.getId();
+			return null;
 		});
 
 		final RegDate dateMariage = date(2007, 2, 12);
 
 		// appel du service métier
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
-				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(ids.conjoint);
-				metierService.marie(dateMariage, principal, conjoint, null, EtatCivil.MARIE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+			final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(ids.conjoint);
+			metierService.marie(dateMariage, principal, conjoint, null, EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// Vérifie que le couple a été créé dans la base
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+			assertNotNull(principal);
 
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
-				assertNotNull(principal);
+			final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(principal, null);
+			assertNotNull(etc);
 
-				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(principal, null);
-				assertNotNull(etc);
+			final MenageCommun menage = etc.getMenage();
+			assertNotNull(menage);
 
-				final MenageCommun menage = etc.getMenage();
-				assertNotNull(menage);
-
-				final ForFiscalPrincipalPP ffp = menage.getForFiscalPrincipalAt(null);
-				assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = menage.getForFiscalPrincipalAt(null);
+			assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+			return null;
 		});
 	}
 
@@ -3303,47 +3113,39 @@ public class MetiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) {
-				final PersonnePhysique principal = addNonHabitant("René", "Roberelle", date(1963, 4, 22), Sexe.MASCULIN);
-				ids.principal = principal.getId();
-				final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
-				ids.conjoint = conjoint.getId();
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique principal = addNonHabitant("René", "Roberelle", date(1963, 4, 22), Sexe.MASCULIN);
+			ids.principal = principal.getId();
+			final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
+			ids.conjoint = conjoint.getId();
+			return null;
 		});
 
 		final RegDate dateMariage = date(2007, 2, 12);
 
 		// appel du service métier
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
-				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(ids.conjoint);
-				try {
-					metierService.marie(dateMariage, principal, conjoint, null, EtatCivil.MARIE, null);
-				}
-				catch (MetierServiceException e) {
-					assertEquals("Impossible de déterminer le mode d'imposition requis (que ce soit sur le principal ou le conjoint)", e.getMessage());
-					status.setRollbackOnly();
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+			final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(ids.conjoint);
+			try {
+				metierService.marie(dateMariage, principal, conjoint, null, EtatCivil.MARIE, null);
 			}
+			catch (MetierServiceException e) {
+				assertEquals("Impossible de déterminer le mode d'imposition requis (que ce soit sur le principal ou le conjoint)", e.getMessage());
+				status.setRollbackOnly();
+			}
+			;
+			return null;
 		});
 
 		// Vérifie que le couple n'a pas été créé dans la base
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+			assertNotNull(principal);
 
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
-				assertNotNull(principal);
-
-				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(principal, null);
-				assertNull(etc);
-				return null;
-			}
+			final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(principal, null);
+			assertNull(etc);
+			return null;
 		});
 	}
 
@@ -3390,12 +3192,7 @@ public class MetiersServiceTest extends BusinessTest {
 		// appel du service métier
 		doInNewTransactionAndSession(status -> {
 			final MenageCommun mc = (MenageCommun) tiersDAO.get(menageId);
-			try {
-				metierService.annuleSeparation(mc, dateSeparation.getOneDayAfter(), 1234L);
-			}
-			catch (MetierServiceException e) {
-				Assert.fail(e.getMessage());
-			}
+			metierService.annuleSeparation(mc, dateSeparation.getOneDayAfter(), 1234L);
 			return null;
 		});
 
@@ -3474,13 +3271,10 @@ public class MetiersServiceTest extends BusinessTest {
 		// traitement de la séparation...
 		// ce qu'on veut obtenir, c'est la fermeture du for du couple à la date de la séparation, l'ouverture d'un for sur chacun des
 		// ancien conjoints (lui à Moudon, elle à Berne - malgré l'absence d'adresse de domicile sur Berne renvoyée par le civil)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
-				metierService.separe(mc, dateSeparation, null, null, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+			metierService.separe(mc, dateSeparation, null, null, null);
+			return null;
 		});
 
 		// vérification du résultat : for fermé sur le couple, et for ouvert sur les deux compères
@@ -3565,13 +3359,10 @@ public class MetiersServiceTest extends BusinessTest {
 		// traitement de la séparation...
 		// ce qu'on veut obtenir, c'est la fermeture du for du couple à la date de la séparation, l'ouverture d'un for sur chacun des
 		// ancien conjoints (lui à Moudon, elle en Albanie - malgré l'absence d'adresse de domicile renvoyée par le civil)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
-				metierService.separe(mc, dateSeparation, null, null, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+			metierService.separe(mc, dateSeparation, null, null, null);
+			return null;
 		});
 
 		// vérification du résultat : for fermé sur le couple, et for ouvert sur les deux compères
@@ -3656,13 +3447,10 @@ public class MetiersServiceTest extends BusinessTest {
 		// traitement de la séparation...
 		// ce qu'on veut obtenir, c'est la fermeture du for du couple à la date de la séparation, l'ouverture d'un for sur chacun des
 		// ancien conjoints (tous deux à Moudon, car elle a fait un départ vaudois sans arrivée... donc on reprends l'ancienne commune)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
-				metierService.separe(mc, dateSeparation, null, null, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+			metierService.separe(mc, dateSeparation, null, null, null);
+			return null;
 		});
 
 		// vérification du résultat : for fermé sur le couple, et for ouvert sur les deux compères
@@ -3731,14 +3519,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// mariage
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
+			metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// vérification du résultat (c'est le for du contribuable principal qui détermine celui du couple)
@@ -3809,14 +3594,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// mariage
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
+			metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// vérification du résultat (c'est le for du contribuable principal qui détermine celui du couple)
@@ -3885,13 +3667,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// mariage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+			metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// vérification du couple créé
@@ -3977,13 +3757,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// mariage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+			metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// vérification du couple créé
@@ -4070,13 +3848,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// mariage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.lui);
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.elle);
+			metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
+			return null;
 		});
 
 		// vérification du couple créé
@@ -4179,13 +3955,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// traitement du décès du principal
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
-				Assert.assertNotNull(defunt);
-				metierService.deces(defunt, dateDecesPrincipal, null, null);
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
+			Assert.assertNotNull(defunt);
+			metierService.deces(defunt, dateDecesPrincipal, null, null);
+			return null;
 		});
 
 		// vérification des étiquettes assignées aux différents tiers concernés
@@ -4251,13 +4025,11 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// traitement du décès du conjoint quelques jours après
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
-				Assert.assertNotNull(defunt);
-				metierService.deces(defunt, dateDecesConjoint, null, null);
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
+			Assert.assertNotNull(defunt);
+			metierService.deces(defunt, dateDecesConjoint, null, null);
+			return null;
 		});
 
 		// vérification des étiquettes assignées aux différents tiers concernés

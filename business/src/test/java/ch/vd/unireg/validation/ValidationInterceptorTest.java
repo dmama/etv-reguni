@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationMessage;
@@ -199,13 +198,10 @@ public class ValidationInterceptorTest extends BusinessTest {
 
 		// On teste que si le nom est NULL, on a une erreur de validation
 		try {
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nh = new PersonnePhysique(false);
-					hibernateTemplate.merge(nh);
-					return null;
-				}
+			doInNewTransaction(status -> {
+				PersonnePhysique nh = new PersonnePhysique(false);
+				hibernateTemplate.merge(nh);
+				return null;
 			});
 			fail();
 		}
@@ -214,14 +210,11 @@ public class ValidationInterceptorTest extends BusinessTest {
 		}
 
 		// On teste que si le nom est PAS null, on n'a pas d'erreurs de validation
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("toto");
-				hibernateTemplate.merge(nh);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("toto");
+			hibernateTemplate.merge(nh);
+			return null;
 		});
 	}
 }

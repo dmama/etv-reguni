@@ -5,10 +5,10 @@ import java.math.BigInteger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.efacture.DestinataireAvecHistoView;
-import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.efacture.EFactureException;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.type.TypeDocument;
 
 public interface EfactureManager {
@@ -25,7 +25,8 @@ public interface EfactureManager {
 	 * @param noAdherentPrecedent numéro d'adhérent e-facture de l'inscription précédente remplacée par celle-ci
 	 * @return business id du message jms
 	 */
-	String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, EvenementEfactureException;
+	String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException,
+			EFactureException;
 
 	/**Permet de rechercher l'historique des états  et des demandes d'un destinataire
 	 *
@@ -40,7 +41,7 @@ public interface EfactureManager {
 	 * @param comment commentaire libre si saisi par l'utilisateur
 	 * @return l'identifant du message demandant la suspension
 	 */
-	String suspendreContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException;
+	String suspendreContribuable(long ctbId, @Nullable String comment) throws EFactureException;
 
 
 	/**Demande l'activation d'un contribuable
@@ -49,7 +50,7 @@ public interface EfactureManager {
 	 * @param comment commentaire libre si saisi par l'utilisateur
 	 * @return l'identifant du message demandant l'activation
 	 */
-	String activerContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException;
+	String activerContribuable(long ctbId, @Nullable String comment) throws EFactureException;
 
 	/**Retourne indique si on a reçu une réponse concernant le message dont le business id est passé en parametre
 	 *
@@ -65,15 +66,15 @@ public interface EfactureManager {
 	 * @param idDemande identifiant de la demande
 	 * @return business id de la demande de validation
 	 */
-	String accepterDemande(String idDemande) throws EvenementEfactureException;
+	String accepterDemande(String idDemande) throws EFactureException;
 
 	/**
 	 * permet de demander un refus d'inscription
 	 * @param idDemande id de la demande
 	 * @return business id de la demande de refus
-	 * @throws EvenementEfactureException
+	 * @throws EFactureException
 	 */
-	String refuserDemande(String idDemande) throws EvenementEfactureException;
+	String refuserDemande(String idDemande) throws EFactureException;
 
 	/**
 	 * Quittance le contribuable
@@ -81,14 +82,14 @@ public interface EfactureManager {
 	 * @param noCtb le numéro du contribuable à quittancer
 	 * @return ok si le quittancement s'est déroulé correctement
 	 */
-	ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException;
+	ResultatQuittancement quittancer(Long noCtb) throws EFactureException;
 
 	/**
 	 * Demande le changement d'adresse mail du contribuable inscrit à la e-facture
 	 * @param noCtb numéro du contribuable
 	 * @param newEmail nouvelle valeur de l'adresse mail (peut être nulle si inconnue)
 	 */
-	String modifierEmail(long noCtb, @Nullable String newEmail) throws EvenementEfactureException;
+	String modifierEmail(long noCtb, @Nullable String newEmail) throws EFactureException;
 
 	String getMessageQuittancement(ResultatQuittancement resultatQuittancement, long noCtb);
 

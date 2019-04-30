@@ -5,10 +5,10 @@ import java.math.BigInteger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.type.TypeDocument;
 
 public interface EFactureService {
@@ -26,7 +26,7 @@ public interface EFactureService {
 	 * @param idArchivage la clé d'archivage générée
 	 * @param retourAttendu vrai si un retour est attendu suite à la notification
 	 */
-	String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
+	String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EFactureException;
 
 	/**
 	 * Demande l'impression du document de demande de signature ou de demande de contact
@@ -54,7 +54,7 @@ public interface EFactureService {
 	 * @param description ...
 	 * @return le business id du message demandant la suspension
 	 */
-	String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException;
 
 
 	/**
@@ -64,7 +64,7 @@ public interface EFactureService {
 	 * @param description ...
 	 * @return le business id du message demandant l'activation
 	 */
-	String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException;
 
 	/**
 	 * Permet l'envoi d'un message d'acceptation pour une demande d'inscription
@@ -72,9 +72,9 @@ public interface EFactureService {
 	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
 	 * @param description ...
 	 * @return le business id du message demandant l'acceptation
-	 * @throws EvenementEfactureException
+	 * @throws EFactureException
 	 */
-	String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException;
 
 	/**
 	 * Permet l'envoi d'un message de refus pour une demande d'inscription
@@ -83,15 +83,15 @@ public interface EFactureService {
 	 * @param description ...
 	 * @return le business id du message demandant le refus
 	 */
-	String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException;
 
 	/**
 	 * Quittance l'inscription e-facture pour un contribuable
 	 * @param noCtb contribuable à quittancer
 	 * @return null si le quittancement est ok
-	 * @throws EvenementEfactureException
+	 * @throws EFactureException
 	 */
-	ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException;
+	ResultatQuittancement quittancer(Long noCtb) throws EFactureException;
 
 	/**
 	 * Permet l'envoi d'un message de demande de modification de l'adresse mail e-facture
@@ -100,16 +100,16 @@ public interface EFactureService {
 	 * @param retourAttendu <code>true</code> si on demande une réponse (ACK) de la part de l'application e-facture
 	 * @param description description attachée à la demande de modification d'e-mail
 	 * @return le business id du message demandant le changement d'adresse
-	 * @throws EvenementEfactureException en cas de souci
+	 * @throws EFactureException en cas de souci
 	 */
-	String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException;
+	String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EFactureException;
 
 	/**
 	 * Envoie une demande de désinscription complète du contribuable pour tout ce qui concerne ce qui s'est passé avant la demande dont l'identifiant est donné
 	 * @param noCtb numéro du contribuable concerné
 	 * @param idNouvelleDemande id de la demande en cours de traitement qui représente le nouveau départ
 	 * @param description texte libre attaché à la désinscription
-	 * @throws EvenementEfactureException en cas de souci
+	 * @throws EFactureException en cas de souci
 	 */
-	void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException;
+	void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EFactureException;
 }

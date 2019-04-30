@@ -37,8 +37,8 @@ import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.efacture.EFactureException;
 import ch.vd.unireg.efacture.EFactureService;
-import ch.vd.unireg.efacture.EvenementEfactureException;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
@@ -2683,7 +2683,7 @@ public class MetierServiceImpl implements MetierService {
 		try {
 			eFactureService.suspendreContribuable(ctbId, false, descr);
 		}
-		catch (EvenementEfactureException e) {
+		catch (EFactureException e) {
 			throw new MetierServiceException(e.getMessage(),e);
 		}
 	}

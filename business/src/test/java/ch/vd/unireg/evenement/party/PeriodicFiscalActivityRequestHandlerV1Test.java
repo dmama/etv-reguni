@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.party;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -55,12 +54,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -88,12 +82,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -120,12 +109,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -157,12 +141,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -188,12 +167,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -221,12 +195,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -259,12 +228,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
@@ -296,12 +260,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			final PeriodicFiscalActivityRequest request = createRequest((int) ppId, annee);
 
 			// lancement de la requête et obtention de la réponse
-			final FiscalActivityResponse response = doInNewTransactionAndSession(new TxCallback<FiscalActivityResponse>() {
-				@Override
-				public FiscalActivityResponse execute(TransactionStatus status) throws Exception {
-					return (FiscalActivityResponse) handler.handle(request).getResponse();
-				}
-			});
+			final FiscalActivityResponse response = doInNewTransactionAndSession(status -> (FiscalActivityResponse) handler.handle(request).getResponse());
 
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);

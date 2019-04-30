@@ -3,7 +3,7 @@ package ch.vd.unireg.metier;
 /**
  * Exception levée dans le service métier.
  */
-public class MetierServiceException extends Exception {
+public class MetierServiceException extends RuntimeException {
 
 	public MetierServiceException() {
 	}

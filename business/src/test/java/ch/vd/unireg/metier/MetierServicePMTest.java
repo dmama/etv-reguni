@@ -15,13 +15,11 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseMandataireSuisse;
 import ch.vd.unireg.adresse.AdresseService;
@@ -82,6 +80,7 @@ import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings("Duplicates")
@@ -148,12 +147,7 @@ public class MetierServicePMTest extends BusinessTest {
 
 		final RattachementEntrepriseResult result = doInNewTransactionAndSession(transactionStatus -> {
 			final Entreprise entreprise = (Entreprise) tiersDAO.get(entrepriseId);
-			try {
-				return metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateRattachement);
-			}
-			catch (MetierServiceException e) {
-				throw new RuntimeException(e);
-			}
+			return metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateRattachement);
 		});
 		Assert.assertNotNull(result);
 
@@ -303,12 +297,7 @@ public class MetierServicePMTest extends BusinessTest {
 
 		final RattachementEntrepriseResult result = doInNewTransactionAndSession(transactionStatus -> {
 			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.entrepriseId);
-			try {
-				return metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateRattachement);
-			}
-			catch (MetierServiceException e) {
-				throw new RuntimeException(e);
-			}
+			return metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateRattachement);
 		});
 
 		// Vérification du traitement de l'événement
@@ -389,12 +378,7 @@ public class MetierServicePMTest extends BusinessTest {
 
 		final RattachementEntrepriseResult result = doInNewTransactionAndSession(transactionStatus -> {
 			final Entreprise entreprise = (Entreprise) tiersDAO.get(entrepriseId);
-			try {
-				return metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateRattachement);
-			}
-			catch (MetierServiceException e) {
-				throw new RuntimeException(e);
-			}
+			return metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateRattachement);
 		});
 
 		// Vérification du traitement de l'événement
@@ -469,14 +453,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de la faillite
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.faillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.faillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle...");
+			return null;
 		});
 
 		// vérification des résultats
@@ -633,14 +615,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de la faillite
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.faillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.faillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle...");
+			return null;
 		});
 
 		// vérification des résultats
@@ -769,14 +749,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de l'annulation de la faillite
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.annuleFaillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle pour l'annulation...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.annuleFaillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle pour l'annulation...");
+			return null;
 		});
 
 		// vérification des résultats
@@ -942,14 +920,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de la révocation de la faillite
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.revoqueFaillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle pour la révocation...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.revoqueFaillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle pour la révocation...");
+			return null;
 		});
 
 		// vérification des résultats
@@ -1120,13 +1096,10 @@ public class MetierServicePMTest extends BusinessTest {
 			return ids1;
 		});
 
-		final AjustementForsSecondairesResult ajustementForsSecondairesResult = doInNewTransactionAndSession(new TxCallback<AjustementForsSecondairesResult>() {
-			@Override
-			public AjustementForsSecondairesResult execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				return metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
-			}
+		final AjustementForsSecondairesResult ajustementForsSecondairesResult = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			assertNotNull(entreprise);
+			return metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
 		});
 
 		Assert.assertNotNull(ajustementForsSecondairesResult);
@@ -1182,14 +1155,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// déménagement de siège vers Lausanne
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+			return null;
 		});
 
 		// vérification des données après déménagement
@@ -1326,14 +1297,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// déménagement de siège vers Sierre (VS)
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sierre.getNoOFS());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sierre.getNoOFS());
+			return null;
 		});
 
 		// vérification des données après déménagement
@@ -1451,14 +1420,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// déménagement de siège vers Sierre (VS)
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sierre.getNoOFS());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sierre.getNoOFS());
+			return null;
 		});
 
 		// vérification des données après déménagement
@@ -1600,17 +1567,15 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// lancement de la fusion d'entreprises
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
-				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
-				final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
-				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(absorbee1.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(absorbee2.getBlocageRemboursementAutomatique());
-				metierServicePM.fusionne(absorbante, Arrays.asList(absorbee1, absorbee2), dateContratFusion, dateBilanFusion);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
+			final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
+			final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
+			Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(absorbee1.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(absorbee2.getBlocageRemboursementAutomatique());
+			metierServicePM.fusionne(absorbante, Arrays.asList(absorbee1, absorbee2), dateContratFusion, dateBilanFusion);
+			return null;
 		});
 
 		// vérification des résultats en base
@@ -1875,20 +1840,17 @@ public class MetierServicePMTest extends BusinessTest {
 				// ne rien mettre en base quoi qu'il arrive...
 				status.setRollbackOnly();
 			}
-			;
 			return null;
 		});
 
 		// annulation de la fusion (sans erreur cette fois)
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
-				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
-				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
-				Assert.assertTrue(absorbee1.getBlocageRemboursementAutomatique());
-				metierServicePM.annuleFusionEntreprises(absorbante, Collections.singletonList(absorbee1), dateContratFusion1, dateBilanFusion);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
+			final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
+			Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
+			Assert.assertTrue(absorbee1.getBlocageRemboursementAutomatique());
+			metierServicePM.annuleFusionEntreprises(absorbante, Collections.singletonList(absorbee1), dateContratFusion1, dateBilanFusion);
+			return null;
 		});
 
 		// vérification des données en base
@@ -2103,14 +2065,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de la faillite
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
+			return null;
 		});
 
 		// vérification des résultats
@@ -2258,14 +2218,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de la faillite
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
+			return null;
 		});
 
 		// vérification des résultats
@@ -2345,14 +2303,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de l'annulation de la fin d'activité
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour l'annulation...", true);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour l'annulation...", true);
+			return null;
 		});
 
 		// vérification des résultats
@@ -2506,14 +2462,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// traitement de la reprise partielle d'activité
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
-				Assert.assertNotNull(entreprise);
-				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour la reprise partielle...", false);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour la reprise partielle...", false);
+			return null;
 		});
 
 		// vérification des résultats
@@ -2717,17 +2671,15 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// lancement de la scission d'entreprise
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
-				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
-				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
-				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(resultante2.getBlocageRemboursementAutomatique());
-				metierServicePM.scinde(scindee, Arrays.asList(resultante1, resultante2), dateContratScission);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+			final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+			final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+			Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(resultante2.getBlocageRemboursementAutomatique());
+			metierServicePM.scinde(scindee, Arrays.asList(resultante1, resultante2), dateContratScission);
+			return null;
 		});
 
 		// vérification des résultats en base
@@ -2958,20 +2910,17 @@ public class MetierServicePMTest extends BusinessTest {
 				// ne rien mettre en base quoi qu'il arrive...
 				status.setRollbackOnly();
 			}
-			;
 			return null;
 		});
 
 		// annulation de la fusion (sans erreur cette fois)
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
-				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
-				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
-				metierServicePM.annuleScission(scindee, Collections.singletonList(resultante1), dateContratScission1);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+			final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+			Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
+			metierServicePM.annuleScission(scindee, Collections.singletonList(resultante1), dateContratScission1);
+			return null;
 		});
 
 		// vérification des données en base
@@ -3198,17 +3147,15 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// lancement du transfert de patrimoine
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
-				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
-				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
-				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(receptrice2.getBlocageRemboursementAutomatique());
-				metierServicePM.transferePatrimoine(emettrice, Arrays.asList(receptrice1, receptrice2), dateTransfert);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+			final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+			final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+			Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(receptrice2.getBlocageRemboursementAutomatique());
+			metierServicePM.transferePatrimoine(emettrice, Arrays.asList(receptrice1, receptrice2), dateTransfert);
+			return null;
 		});
 
 		// vérification des résultats en base
@@ -3438,20 +3385,17 @@ public class MetierServicePMTest extends BusinessTest {
 				// ne rien mettre en base quoi qu'il arrive...
 				status.setRollbackOnly();
 			}
-			;
 			return null;
 		});
 
 		// annulation du transfert (sans erreur cette fois)
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
-				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
-				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
-				Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
-				metierServicePM.annuleTransfertPatrimoine(emettrice, Collections.singletonList(receptrice1), dateTransfert1);
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+			final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+			Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
+			Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
+			metierServicePM.annuleTransfertPatrimoine(emettrice, Collections.singletonList(receptrice1), dateTransfert1);
+			return null;
 		});
 
 		// vérification des données en base
@@ -3627,14 +3571,12 @@ public class MetierServicePMTest extends BusinessTest {
 		});
 
 		// lancement de la ré-inscription au RC
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
-				Assert.assertNotNull(entreprise);
-				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
-				metierServicePM.reinscritRC(entreprise, dateRadiationRC, "Une remarque...");
-			}
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
+			metierServicePM.reinscritRC(entreprise, dateRadiationRC, "Une remarque...");
+			return null;
 		});
 
 		// vérification du résultat

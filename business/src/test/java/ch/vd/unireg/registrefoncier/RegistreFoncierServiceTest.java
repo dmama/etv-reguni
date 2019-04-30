@@ -17,11 +17,9 @@ import java.util.stream.IntStream;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -132,49 +130,47 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// appel du service
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
-				assertNotNull(ctb);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+			assertNotNull(ctb);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false, false);
-				assertEquals(2, droits.size());
+			final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false, false);
+			assertEquals(2, droits.size());
 
-				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
-				assertNull(droit0.getCommunaute());
-				assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
-				assertEquals(new Fraction(1, 3), droit0.getPart());
-				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
-				assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
-				assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
-				assertEquals("Achat", droit0.getMotifDebut());
-				assertEquals("Achat", droit0.getMotifFin());
-				assertEquals("47e7d7e773", droit0.getMasterIdRF());
-				assertEquals("02faeee", droit0.getImmeuble().getIdRF());
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droit0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
+			assertEquals(new Fraction(1, 3), droit0.getPart());
+			assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
+			assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
+			assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
+			assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertEquals("Achat", droit0.getMotifFin());
+			assertEquals("47e7d7e773", droit0.getMasterIdRF());
+			assertEquals("02faeee", droit0.getImmeuble().getIdRF());
 
-				final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
-				assertEquals(1, raisons0.size());
-				assertRaisonAcquisition(RegDate.get(1997, 7, 2), "Achat", new IdentifiantAffaireRF(23, 1997, 13, 0), raisons0.iterator().next());
+			final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+			assertEquals(1, raisons0.size());
+			assertRaisonAcquisition(RegDate.get(1997, 7, 2), "Achat", new IdentifiantAffaireRF(23, 1997, 13, 0), raisons0.iterator().next());
 
-				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
-				assertNull(droit1.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
-				assertEquals(new Fraction(1, 1), droit1.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
-				assertNull(droit1.getDateFin());
-				assertNull(droit1.getDateFinMetier());
-				assertEquals("Achat", droit1.getMotifDebut());
-				assertNull(droit1.getMotifFin());
-				assertEquals("48390a0e044", droit1.getMasterIdRF());
-				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+			assertNull(droit1.getDateFin());
+			assertNull(droit1.getDateFinMetier());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("48390a0e044", droit1.getMasterIdRF());
+			assertEquals("01faeee", droit1.getImmeuble().getIdRF());
 
-				final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
-				assertEquals(1, raisons1.size());
-				assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
-			}
+			final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
+			assertEquals(1, raisons1.size());
+			assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
+			return null;
 		});
 	}
 
@@ -241,69 +237,67 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// appel du service
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
-				assertNotNull(ctb);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+			assertNotNull(ctb);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, false);
-				droits.sort(new DroitRFRangeMetierComparator());
-				assertEquals(3, droits.size());
+			final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, false);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertEquals(3, droits.size());
 
-				// le premier droit réel
-				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
-				assertNull(droit0.getCommunaute());
-				assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
-				assertEquals(new Fraction(1, 3), droit0.getPart());
-				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
-				assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
-				assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
-				assertEquals("Achat", droit0.getMotifDebut());
-				assertEquals("Achat", droit0.getMotifFin());
-				assertEquals("47e7d7e773", droit0.getMasterIdRF());
-				assertEquals("02faeee", droit0.getImmeuble().getIdRF());
+			// le premier droit réel
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droit0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
+			assertEquals(new Fraction(1, 3), droit0.getPart());
+			assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
+			assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
+			assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
+			assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertEquals("Achat", droit0.getMotifFin());
+			assertEquals("47e7d7e773", droit0.getMasterIdRF());
+			assertEquals("02faeee", droit0.getImmeuble().getIdRF());
 
-				final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
-				assertEquals(1, raisons0.size());
-				assertRaisonAcquisition(RegDate.get(1997, 7, 2), "Achat", new IdentifiantAffaireRF(23, 1997, 13, 0), raisons0.iterator().next());
+			final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+			assertEquals(1, raisons0.size());
+			assertRaisonAcquisition(RegDate.get(1997, 7, 2), "Achat", new IdentifiantAffaireRF(23, 1997, 13, 0), raisons0.iterator().next());
 
-				// le deuxième droit réel
-				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
-				assertNull(droit1.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
-				assertEquals(new Fraction(1, 1), droit1.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
-				assertNull(droit1.getDateFin());
-				assertNull(droit1.getDateFinMetier());
-				assertEquals("Achat", droit1.getMotifDebut());
-				assertNull(droit1.getMotifFin());
-				assertEquals("48390a0e044", droit1.getMasterIdRF());
-				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+			// le deuxième droit réel
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+			assertNull(droit1.getDateFin());
+			assertNull(droit1.getDateFinMetier());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("48390a0e044", droit1.getMasterIdRF());
+			assertEquals("01faeee", droit1.getImmeuble().getIdRF());
 
-				final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
-				assertEquals(1, raisons1.size());
-				assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
+			final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
+			assertEquals(1, raisons1.size());
+			assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
 
-				// le droit virtuel
-				final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droits.get(2);
-				assertNull(droit2.getCommunaute());
-				assertNull(droit2.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
-				assertNull(droit2.getDateFin());
-				assertNull(droit2.getDateFinMetier());
-				assertEquals("Achat", droit2.getMotifDebut());
-				assertNull(droit2.getMotifFin());
-				assertNull(droit2.getMasterIdRF());
-				assertEquals("02faeee", droit2.getImmeuble().getIdRF());
+			// le droit virtuel
+			final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droits.get(2);
+			assertNull(droit2.getCommunaute());
+			assertNull(droit2.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
+			assertNull(droit2.getDateFin());
+			assertNull(droit2.getDateFinMetier());
+			assertEquals("Achat", droit2.getMotifDebut());
+			assertNull(droit2.getMotifFin());
+			assertNull(droit2.getMasterIdRF());
+			assertEquals("02faeee", droit2.getImmeuble().getIdRF());
 
-				final List<DroitRF> chemin = droit2.getChemin();
-				assertEquals(2, chemin.size());
-				assertDroitPropChemin(ids.droit0, 1, 1, chemin.get(0));
-				assertDroitPropChemin(ids.droit2, 12, 345, chemin.get(1));
-			}
+			final List<DroitRF> chemin = droit2.getChemin();
+			assertEquals(2, chemin.size());
+			assertDroitPropChemin(ids.droit0, 1, 1, chemin.get(0));
+			assertDroitPropChemin(ids.droit2, 12, 345, chemin.get(1));
+			return null;
 		});
 	}
 
@@ -387,85 +381,83 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// appel du service
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
-				assertNotNull(ctb);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+			assertNotNull(ctb);
 
-				// Tiers RF 1 :
-				// -------------
-				// Rapprochement         1997-10-07 |=============================| 2005-12-31
-				// Droit A                                         2004-05-21 |------------------------------->
-				// Droit B                                                      2008-03-01 |------------------>
-				// Droit C               1997-10-07 |----------| 2002-02-23
-				//
-				// Tiers RF 2 :
-				// -------------
-				// Rapprochement                                       2006-01-01 |===========================>
-				// Droit D          1960-02-07 |-----| 1994-04-05
-				// Droit E                                    2003-05-01 |------------------------------------>
-				// Droit F                                                                  2010-06-06 |------>
-				//
-				// Droits du contribuable
-				// ---------------------
-				// Droit A                                         2004-05-21 |------------------------------->
-				// Droit C               1997-10-07 |----------| 2002-02-23
-				// Droit E                                    2003-05-01 |------------------------------------>
-				// Droit F                                                                  2010-06-06 |------>
-				//
+			// Tiers RF 1 :
+			// -------------
+			// Rapprochement         1997-10-07 |=============================| 2005-12-31
+			// Droit A                                         2004-05-21 |------------------------------->
+			// Droit B                                                      2008-03-01 |------------------>
+			// Droit C               1997-10-07 |----------| 2002-02-23
+			//
+			// Tiers RF 2 :
+			// -------------
+			// Rapprochement                                       2006-01-01 |===========================>
+			// Droit D          1960-02-07 |-----| 1994-04-05
+			// Droit E                                    2003-05-01 |------------------------------------>
+			// Droit F                                                                  2010-06-06 |------>
+			//
+			// Droits du contribuable
+			// ---------------------
+			// Droit A                                         2004-05-21 |------------------------------->
+			// Droit C               1997-10-07 |----------| 2002-02-23
+			// Droit E                                    2003-05-01 |------------------------------------>
+			// Droit F                                                                  2010-06-06 |------>
+			//
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false, false);
-				assertEquals(4, droits.size());
+			final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false, false);
+			assertEquals(4, droits.size());
 
-				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
-				assertNull(droit0.getCommunaute());
-				assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
-				assertEquals(new Fraction(1, 3), droit0.getPart());
-				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
-				assertEquals(RegDate.get(2002, 2, 23), droit0.getDateFin());
-				assertEquals("Achat", droit0.getMotifDebut());
-				assertEquals("Vente", droit0.getMotifFin());
-				assertEquals("47e7d7e773", droit0.getMasterIdRF());
-				assertEquals("03faeee", droit0.getImmeuble().getIdRF());
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droit0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
+			assertEquals(new Fraction(1, 3), droit0.getPart());
+			assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
+			assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
+			assertEquals(RegDate.get(2002, 2, 23), droit0.getDateFin());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertEquals("Vente", droit0.getMotifFin());
+			assertEquals("47e7d7e773", droit0.getMasterIdRF());
+			assertEquals("03faeee", droit0.getImmeuble().getIdRF());
 
-				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
-				assertNull(droit1.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
-				assertEquals(new Fraction(1, 1), droit1.getPart());
-				assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebut());
-				assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebutMetier());
-				assertNull(droit1.getDateFin());
-				assertEquals("Achat", droit1.getMotifDebut());
-				assertEquals("Vente", droit1.getMotifFin());
-				assertEquals("834838c", droit1.getMasterIdRF());
-				assertEquals("05faeee", droit1.getImmeuble().getIdRF());
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebut());
+			assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebutMetier());
+			assertNull(droit1.getDateFin());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertEquals("Vente", droit1.getMotifFin());
+			assertEquals("834838c", droit1.getMasterIdRF());
+			assertEquals("05faeee", droit1.getImmeuble().getIdRF());
 
-				final DroitProprietePersonnePhysiqueRF droit2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
-				assertNull(droit2.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit2.getRegime());
-				assertEquals(new Fraction(1, 1), droit2.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebut());
-				assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebutMetier());
-				assertNull(droit2.getDateFin());
-				assertEquals("Achat", droit2.getMotifDebut());
-				assertNull(droit2.getMotifFin());
-				assertEquals("48390a0e044", droit2.getMasterIdRF());
-				assertEquals("01faeee", droit2.getImmeuble().getIdRF());
+			final DroitProprietePersonnePhysiqueRF droit2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
+			assertNull(droit2.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit2.getRegime());
+			assertEquals(new Fraction(1, 1), droit2.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebut());
+			assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebutMetier());
+			assertNull(droit2.getDateFin());
+			assertEquals("Achat", droit2.getMotifDebut());
+			assertNull(droit2.getMotifFin());
+			assertEquals("48390a0e044", droit2.getMasterIdRF());
+			assertEquals("01faeee", droit2.getImmeuble().getIdRF());
 
-				final DroitProprietePersonnePhysiqueRF droit3 = (DroitProprietePersonnePhysiqueRF) droits.get(3);
-				assertNull(droit3.getCommunaute());
-				assertEquals(GenrePropriete.COPROPRIETE, droit3.getRegime());
-				assertEquals(new Fraction(1, 3), droit3.getPart());
-				assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebut());
-				assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebutMetier());
-				assertNull(droit3.getDateFin());
-				assertEquals("Achat", droit3.getMotifDebut());
-				assertNull(droit3.getMotifFin());
-				assertEquals("c83839e", droit3.getMasterIdRF());
-				assertEquals("06faeee", droit3.getImmeuble().getIdRF());
-			}
+			final DroitProprietePersonnePhysiqueRF droit3 = (DroitProprietePersonnePhysiqueRF) droits.get(3);
+			assertNull(droit3.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droit3.getRegime());
+			assertEquals(new Fraction(1, 3), droit3.getPart());
+			assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebut());
+			assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebutMetier());
+			assertNull(droit3.getDateFin());
+			assertEquals("Achat", droit3.getMotifDebut());
+			assertNull(droit3.getMotifFin());
+			assertEquals("c83839e", droit3.getMasterIdRF());
+			assertEquals("06faeee", droit3.getImmeuble().getIdRF());
+			return null;
 		});
 	}
 
@@ -1462,12 +1454,10 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// appel du service
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
-				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
+			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+			return null;
 		});
 	}
 
@@ -1499,12 +1489,10 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// appel du service
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
-				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
+			assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+			return null;
 		});
 	}
 
@@ -2891,77 +2879,75 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les droits sur l'héritier
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.heritier);
-				assertNotNull(ctb);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.heritier);
+			assertNotNull(ctb);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, true);
-				droits.sort(new DroitRFRangeMetierComparator());
-				assertEquals(3, droits.size()); // le droit d'usufruit est ignoré
+			final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, true);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertEquals(3, droits.size()); // le droit d'usufruit est ignoré
 
-				// le premier droit virtuel
-				final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);
-				assertEquals(dateHeritage, droitVirtuel0.getDateDebutMetier());
-				assertEquals(RegDate.get(2010, 2, 20), droitVirtuel0.getDateFinMetier());
-				assertEquals("Succession", droitVirtuel0.getMotifDebut());
-				assertEquals("Achat", droitVirtuel0.getMotifFin());
+			// le premier droit virtuel
+			final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);
+			assertEquals(dateHeritage, droitVirtuel0.getDateDebutMetier());
+			assertEquals(RegDate.get(2010, 2, 20), droitVirtuel0.getDateFinMetier());
+			assertEquals("Succession", droitVirtuel0.getMotifDebut());
+			assertEquals("Achat", droitVirtuel0.getMotifFin());
 
-				// la référence du droit hérité
-				final DroitProprietePersonnePhysiqueRF reference0 = (DroitProprietePersonnePhysiqueRF) droitVirtuel0.getReference();
-				assertNull(reference0.getCommunaute());
-				assertEquals(GenrePropriete.COPROPRIETE, reference0.getRegime());
-				assertEquals(new Fraction(1, 3), reference0.getPart());
-				assertEquals(RegDate.get(1997, 10, 7), reference0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), reference0.getDateDebutMetier());
-				assertEquals(RegDate.get(2010, 2, 23), reference0.getDateFin());
-				assertEquals(RegDate.get(2010, 2, 20), reference0.getDateFinMetier());
-				assertEquals("Achat", reference0.getMotifDebut());
-				assertEquals("Achat", reference0.getMotifFin());
-				assertEquals("47e7d7e773", reference0.getMasterIdRF());
-				assertEquals("02faeee", reference0.getImmeuble().getIdRF());
+			// la référence du droit hérité
+			final DroitProprietePersonnePhysiqueRF reference0 = (DroitProprietePersonnePhysiqueRF) droitVirtuel0.getReference();
+			assertNull(reference0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, reference0.getRegime());
+			assertEquals(new Fraction(1, 3), reference0.getPart());
+			assertEquals(RegDate.get(1997, 10, 7), reference0.getDateDebut());
+			assertEquals(RegDate.get(1997, 7, 2), reference0.getDateDebutMetier());
+			assertEquals(RegDate.get(2010, 2, 23), reference0.getDateFin());
+			assertEquals(RegDate.get(2010, 2, 20), reference0.getDateFinMetier());
+			assertEquals("Achat", reference0.getMotifDebut());
+			assertEquals("Achat", reference0.getMotifFin());
+			assertEquals("47e7d7e773", reference0.getMasterIdRF());
+			assertEquals("02faeee", reference0.getImmeuble().getIdRF());
 
-				// le deuxième droit virtuel
-				final DroitVirtuelHeriteRF droitVirtuel1 = (DroitVirtuelHeriteRF) droits.get(1);
-				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel1.getDateDebutMetier());
-				assertNull(droitVirtuel1.getDateFinMetier());
-				assertEquals("Achat", droitVirtuel1.getMotifDebut());
-				assertNull(droitVirtuel1.getMotifFin());
+			// le deuxième droit virtuel
+			final DroitVirtuelHeriteRF droitVirtuel1 = (DroitVirtuelHeriteRF) droits.get(1);
+			assertEquals(RegDate.get(2004, 4, 12), droitVirtuel1.getDateDebutMetier());
+			assertNull(droitVirtuel1.getDateFinMetier());
+			assertEquals("Achat", droitVirtuel1.getMotifDebut());
+			assertNull(droitVirtuel1.getMotifFin());
 
-				// la référence du droit hérité
-				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitVirtuel1.getReference();
-				assertNull(droit1.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
-				assertEquals(new Fraction(1, 1), droit1.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
-				assertNull(droit1.getDateFin());
-				assertNull(droit1.getDateFinMetier());
-				assertEquals("Achat", droit1.getMotifDebut());
-				assertNull(droit1.getMotifFin());
-				assertEquals("48390a0e044", droit1.getMasterIdRF());
-				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+			// la référence du droit hérité
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitVirtuel1.getReference();
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+			assertNull(droit1.getDateFin());
+			assertNull(droit1.getDateFinMetier());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("48390a0e044", droit1.getMasterIdRF());
+			assertEquals("01faeee", droit1.getImmeuble().getIdRF());
 
-				// le troisième droit virtuel
-				final DroitVirtuelHeriteRF droitVirtuel2 = (DroitVirtuelHeriteRF) droits.get(2);
-				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel2.getDateDebutMetier());
-				assertNull(droitVirtuel2.getDateFinMetier());
-				assertEquals("Achat", droitVirtuel2.getMotifDebut());
-				assertNull(droitVirtuel2.getMotifFin());
+			// le troisième droit virtuel
+			final DroitVirtuelHeriteRF droitVirtuel2 = (DroitVirtuelHeriteRF) droits.get(2);
+			assertEquals(RegDate.get(2004, 4, 12), droitVirtuel2.getDateDebutMetier());
+			assertNull(droitVirtuel2.getDateFinMetier());
+			assertEquals("Achat", droitVirtuel2.getMotifDebut());
+			assertNull(droitVirtuel2.getMotifFin());
 
-				// la référence du droit hérité (lui-même un droit virtuel transitif)
-				final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droitVirtuel2.getReference();
-				assertNull(droit2.getCommunaute());
-				assertNull(droit2.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
-				assertNull(droit2.getDateFin());
-				assertNull(droit2.getDateFinMetier());
-				assertEquals("Achat", droit2.getMotifDebut());
-				assertNull(droit2.getMotifFin());
-				assertNull(droit2.getMasterIdRF());
-				assertEquals("02faeee", droit2.getImmeuble().getIdRF());
-			}
+			// la référence du droit hérité (lui-même un droit virtuel transitif)
+			final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droitVirtuel2.getReference();
+			assertNull(droit2.getCommunaute());
+			assertNull(droit2.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
+			assertNull(droit2.getDateFin());
+			assertNull(droit2.getDateFinMetier());
+			assertEquals("Achat", droit2.getMotifDebut());
+			assertNull(droit2.getMotifFin());
+			assertNull(droit2.getMasterIdRF());
+			assertEquals("02faeee", droit2.getImmeuble().getIdRF());
+			return null;
 		});
 	}
 
@@ -3024,77 +3010,75 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les droits sur l'entreprise absorbante
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
-				assertNotNull(ent);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
+			assertNotNull(ent);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ent, true, true);
-				droits.sort(new DroitRFRangeMetierComparator());
-				assertEquals(3, droits.size());
+			final List<DroitRF> droits = serviceRF.getDroitsForCtb(ent, true, true);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertEquals(3, droits.size());
 
-				// le premier droit virtuel
-				final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);
-				assertEquals(dateFusion, droitVirtuel0.getDateDebutMetier());
-				assertEquals(RegDate.get(2010, 2, 20), droitVirtuel0.getDateFinMetier());
-				assertEquals("Fusion", droitVirtuel0.getMotifDebut());
-				assertEquals("Achat", droitVirtuel0.getMotifFin());
+			// le premier droit virtuel
+			final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);
+			assertEquals(dateFusion, droitVirtuel0.getDateDebutMetier());
+			assertEquals(RegDate.get(2010, 2, 20), droitVirtuel0.getDateFinMetier());
+			assertEquals("Fusion", droitVirtuel0.getMotifDebut());
+			assertEquals("Achat", droitVirtuel0.getMotifFin());
 
-				// la référence du droit hérité
-				final DroitProprietePersonneMoraleRF reference0 = (DroitProprietePersonneMoraleRF) droitVirtuel0.getReference();
-				assertNull(reference0.getCommunaute());
-				assertEquals(GenrePropriete.COPROPRIETE, reference0.getRegime());
-				assertEquals(new Fraction(1, 3), reference0.getPart());
-				assertEquals(RegDate.get(1997, 10, 7), reference0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), reference0.getDateDebutMetier());
-				assertEquals(RegDate.get(2010, 2, 23), reference0.getDateFin());
-				assertEquals(RegDate.get(2010, 2, 20), reference0.getDateFinMetier());
-				assertEquals("Achat", reference0.getMotifDebut());
-				assertEquals("Achat", reference0.getMotifFin());
-				assertEquals("47e7d7e773", reference0.getMasterIdRF());
-				assertEquals("02faeee", reference0.getImmeuble().getIdRF());
+			// la référence du droit hérité
+			final DroitProprietePersonneMoraleRF reference0 = (DroitProprietePersonneMoraleRF) droitVirtuel0.getReference();
+			assertNull(reference0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, reference0.getRegime());
+			assertEquals(new Fraction(1, 3), reference0.getPart());
+			assertEquals(RegDate.get(1997, 10, 7), reference0.getDateDebut());
+			assertEquals(RegDate.get(1997, 7, 2), reference0.getDateDebutMetier());
+			assertEquals(RegDate.get(2010, 2, 23), reference0.getDateFin());
+			assertEquals(RegDate.get(2010, 2, 20), reference0.getDateFinMetier());
+			assertEquals("Achat", reference0.getMotifDebut());
+			assertEquals("Achat", reference0.getMotifFin());
+			assertEquals("47e7d7e773", reference0.getMasterIdRF());
+			assertEquals("02faeee", reference0.getImmeuble().getIdRF());
 
-				// le deuxième droit virtuel
-				final DroitVirtuelHeriteRF droitVirtuel1 = (DroitVirtuelHeriteRF) droits.get(1);
-				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel1.getDateDebutMetier());
-				assertNull(droitVirtuel1.getDateFinMetier());
-				assertEquals("Achat", droitVirtuel1.getMotifDebut());
-				assertNull(droitVirtuel1.getMotifFin());
+			// le deuxième droit virtuel
+			final DroitVirtuelHeriteRF droitVirtuel1 = (DroitVirtuelHeriteRF) droits.get(1);
+			assertEquals(RegDate.get(2004, 4, 12), droitVirtuel1.getDateDebutMetier());
+			assertNull(droitVirtuel1.getDateFinMetier());
+			assertEquals("Achat", droitVirtuel1.getMotifDebut());
+			assertNull(droitVirtuel1.getMotifFin());
 
-				// la référence du droit hérité
-				final DroitProprietePersonneMoraleRF droit1 = (DroitProprietePersonneMoraleRF) droitVirtuel1.getReference();
-				assertNull(droit1.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
-				assertEquals(new Fraction(1, 1), droit1.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
-				assertNull(droit1.getDateFin());
-				assertNull(droit1.getDateFinMetier());
-				assertEquals("Achat", droit1.getMotifDebut());
-				assertNull(droit1.getMotifFin());
-				assertEquals("48390a0e044", droit1.getMasterIdRF());
-				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+			// la référence du droit hérité
+			final DroitProprietePersonneMoraleRF droit1 = (DroitProprietePersonneMoraleRF) droitVirtuel1.getReference();
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+			assertNull(droit1.getDateFin());
+			assertNull(droit1.getDateFinMetier());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("48390a0e044", droit1.getMasterIdRF());
+			assertEquals("01faeee", droit1.getImmeuble().getIdRF());
 
-				// le troisième droit virtuel
-				final DroitVirtuelHeriteRF droitVirtuel2 = (DroitVirtuelHeriteRF) droits.get(2);
-				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel2.getDateDebutMetier());
-				assertNull(droitVirtuel2.getDateFinMetier());
-				assertEquals("Achat", droitVirtuel2.getMotifDebut());
-				assertNull(droitVirtuel2.getMotifFin());
+			// le troisième droit virtuel
+			final DroitVirtuelHeriteRF droitVirtuel2 = (DroitVirtuelHeriteRF) droits.get(2);
+			assertEquals(RegDate.get(2004, 4, 12), droitVirtuel2.getDateDebutMetier());
+			assertNull(droitVirtuel2.getDateFinMetier());
+			assertEquals("Achat", droitVirtuel2.getMotifDebut());
+			assertNull(droitVirtuel2.getMotifFin());
 
-				// la référence du droit hérité (lui-même un droit virtuel transitif)
-				final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droitVirtuel2.getReference();
-				assertNull(droit2.getCommunaute());
-				assertNull(droit2.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
-				assertNull(droit2.getDateFin());
-				assertNull(droit2.getDateFinMetier());
-				assertEquals("Achat", droit2.getMotifDebut());
-				assertNull(droit2.getMotifFin());
-				assertNull(droit2.getMasterIdRF());
-				assertEquals("02faeee", droit2.getImmeuble().getIdRF());
-			}
+			// la référence du droit hérité (lui-même un droit virtuel transitif)
+			final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droitVirtuel2.getReference();
+			assertNull(droit2.getCommunaute());
+			assertNull(droit2.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
+			assertNull(droit2.getDateFin());
+			assertNull(droit2.getDateFinMetier());
+			assertEquals("Achat", droit2.getMotifDebut());
+			assertNull(droit2.getMotifFin());
+			assertNull(droit2.getMasterIdRF());
+			assertEquals("02faeee", droit2.getImmeuble().getIdRF());
+			return null;
 		});
 	}
 
@@ -3160,61 +3144,59 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les droits virtuels sur le droit de propriété
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
-				assertNotNull(defunt);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
+			assertNotNull(defunt);
 
-				final DroitProprieteRF droit = (DroitProprieteRF) droitRFDAO.get(ids.droit);
-				assertNotNull(droit);
+			final DroitProprieteRF droit = (DroitProprieteRF) droitRFDAO.get(ids.droit);
+			assertNotNull(droit);
 
-				// on devrait obtenir 2 droits virtuels (1 pour chacun des héritiers)
-				final List<DroitVirtuelHeriteRF> droitVirtuels = serviceRF.determineDroitsVirtuelsHerites(droit, defunt, null);
-				assertNotNull(droitVirtuels);
-				assertEquals(2, droitVirtuels.size());
-				droitVirtuels.sort(Comparator.comparing(DroitVirtuelHeriteRF::getHeritierId));
+			// on devrait obtenir 2 droits virtuels (1 pour chacun des héritiers)
+			final List<DroitVirtuelHeriteRF> droitVirtuels = serviceRF.determineDroitsVirtuelsHerites(droit, defunt, null);
+			assertNotNull(droitVirtuels);
+			assertEquals(2, droitVirtuels.size());
+			droitVirtuels.sort(Comparator.comparing(DroitVirtuelHeriteRF::getHeritierId));
 
-				final DroitVirtuelHeriteRF virtuel0 = droitVirtuels.get(0);
-				assertEquals(ids.defunt, virtuel0.getDecedeId());
-				assertEquals(ids.heritier1, virtuel0.getHeritierId());
-				assertEquals(dateHeritage, virtuel0.getDateDebutMetier());
-				assertNull(virtuel0.getDateFinMetier());
+			final DroitVirtuelHeriteRF virtuel0 = droitVirtuels.get(0);
+			assertEquals(ids.defunt, virtuel0.getDecedeId());
+			assertEquals(ids.heritier1, virtuel0.getHeritierId());
+			assertEquals(dateHeritage, virtuel0.getDateDebutMetier());
+			assertNull(virtuel0.getDateFinMetier());
 
-				// la référence du droit hérité
-				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) virtuel0.getReference();
-				assertNull(droit0.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
-				assertEquals(new Fraction(1, 1), droit0.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit0.getDateDebutMetier());
-				assertNull(droit0.getDateFin());
-				assertNull(droit0.getDateFinMetier());
-				assertEquals("Achat", droit0.getMotifDebut());
-				assertNull(droit0.getMotifFin());
-				assertEquals("48390a0e044", droit0.getMasterIdRF());
-				assertEquals("01faeee", droit0.getImmeuble().getIdRF());
+			// la référence du droit hérité
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) virtuel0.getReference();
+			assertNull(droit0.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+			assertEquals(new Fraction(1, 1), droit0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit0.getDateDebutMetier());
+			assertNull(droit0.getDateFin());
+			assertNull(droit0.getDateFinMetier());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertNull(droit0.getMotifFin());
+			assertEquals("48390a0e044", droit0.getMasterIdRF());
+			assertEquals("01faeee", droit0.getImmeuble().getIdRF());
 
-				final DroitVirtuelHeriteRF virtuel1 = droitVirtuels.get(1);
-				assertEquals(ids.defunt, virtuel1.getDecedeId());
-				assertEquals(ids.heritier2, virtuel1.getHeritierId());
-				assertEquals(dateHeritage, virtuel1.getDateDebutMetier());
-				assertNull(virtuel1.getDateFinMetier());
+			final DroitVirtuelHeriteRF virtuel1 = droitVirtuels.get(1);
+			assertEquals(ids.defunt, virtuel1.getDecedeId());
+			assertEquals(ids.heritier2, virtuel1.getHeritierId());
+			assertEquals(dateHeritage, virtuel1.getDateDebutMetier());
+			assertNull(virtuel1.getDateFinMetier());
 
-				// la référence du droit hérité
-				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) virtuel1.getReference();
-				assertNull(droit1.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
-				assertEquals(new Fraction(1, 1), droit1.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
-				assertNull(droit1.getDateFin());
-				assertNull(droit1.getDateFinMetier());
-				assertEquals("Achat", droit1.getMotifDebut());
-				assertNull(droit1.getMotifFin());
-				assertEquals("48390a0e044", droit1.getMasterIdRF());
-				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
-			}
+			// la référence du droit hérité
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) virtuel1.getReference();
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+			assertNull(droit1.getDateFin());
+			assertNull(droit1.getDateFinMetier());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("48390a0e044", droit1.getMasterIdRF());
+			assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+			return null;
 		});
 	}
 
@@ -3264,41 +3246,38 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les droits virtuels sur le droit de propriété
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbee);
+			assertNotNull(ent);
 
-				final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbee);
-				assertNotNull(ent);
+			final DroitProprieteRF droit = (DroitProprieteRF) droitRFDAO.get(ids.droit);
+			assertNotNull(droit);
 
-				final DroitProprieteRF droit = (DroitProprieteRF) droitRFDAO.get(ids.droit);
-				assertNotNull(droit);
+			// on devrait obtenir 1 droit virtuel
+			final List<DroitVirtuelHeriteRF> droitVirtuels = serviceRF.determineDroitsVirtuelsHerites(droit, ent, null);
+			assertNotNull(droitVirtuels);
+			assertEquals(1, droitVirtuels.size());
 
-				// on devrait obtenir 1 droit virtuel
-				final List<DroitVirtuelHeriteRF> droitVirtuels = serviceRF.determineDroitsVirtuelsHerites(droit, ent, null);
-				assertNotNull(droitVirtuels);
-				assertEquals(1, droitVirtuels.size());
+			final DroitVirtuelHeriteRF virtuel0 = droitVirtuels.get(0);
+			assertEquals(ids.absorbee, virtuel0.getDecedeId());
+			assertEquals(ids.absorbante, virtuel0.getHeritierId());
+			assertEquals(dateFusion, virtuel0.getDateDebutMetier());
+			assertNull(virtuel0.getDateFinMetier());
 
-				final DroitVirtuelHeriteRF virtuel0 = droitVirtuels.get(0);
-				assertEquals(ids.absorbee, virtuel0.getDecedeId());
-				assertEquals(ids.absorbante, virtuel0.getHeritierId());
-				assertEquals(dateFusion, virtuel0.getDateDebutMetier());
-				assertNull(virtuel0.getDateFinMetier());
-
-				// la référence du droit hérité
-				final DroitProprietePersonneMoraleRF droit0 = (DroitProprietePersonneMoraleRF) virtuel0.getReference();
-				assertNull(droit0.getCommunaute());
-				assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
-				assertEquals(new Fraction(1, 1), droit0.getPart());
-				assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit0.getDateDebutMetier());
-				assertNull(droit0.getDateFin());
-				assertNull(droit0.getDateFinMetier());
-				assertEquals("Achat", droit0.getMotifDebut());
-				assertNull(droit0.getMotifFin());
-				assertEquals("48390a0e044", droit0.getMasterIdRF());
-				assertEquals("01faeee", droit0.getImmeuble().getIdRF());
-			}
+			// la référence du droit hérité
+			final DroitProprietePersonneMoraleRF droit0 = (DroitProprietePersonneMoraleRF) virtuel0.getReference();
+			assertNull(droit0.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+			assertEquals(new Fraction(1, 1), droit0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebut());
+			assertEquals(RegDate.get(2004, 4, 12), droit0.getDateDebutMetier());
+			assertNull(droit0.getDateFin());
+			assertNull(droit0.getDateFinMetier());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertNull(droit0.getMotifFin());
+			assertEquals("48390a0e044", droit0.getMasterIdRF());
+			assertEquals("01faeee", droit0.getImmeuble().getIdRF());
+			return null;
 		});
 	}
 
@@ -3514,38 +3493,36 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// appel du service
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) {
+		doInNewTransactionAndSession(transactionStatus -> {
+			// on demande les droits de Charles
+			final PersonnePhysique charles = (PersonnePhysique) tiersDAO.get(ids.charles);
+			assertNotNull(charles);
+			{
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(charles, false, false);
+				assertEquals(1, droits.size());
 
-				// on demande les droits de Charles
-				final PersonnePhysique charles = (PersonnePhysique) tiersDAO.get(ids.charles);
-				assertNotNull(charles);
-				{
-					final List<DroitRF> droits = serviceRF.getDroitsForCtb(charles, false, false);
-					assertEquals(1, droits.size());
-
-					final ServitudeRF serv = (ServitudeRF) droits.get(0);
-					assertEquals(dateDebutServitude, serv.getDateDebutMetier());
-					assertEquals(dateDecesCharles, serv.getDateFinMetier());        // <-- la validité de la servitude doit être adaptée à celle de la présence de Charles dans la servitude
-					assertEquals("Achat", serv.getMotifDebut());
-					assertNull(serv.getMotifFin());
-				}
-
-				// on demande les droits d'Adelaide
-				final PersonnePhysique adelaide = (PersonnePhysique) tiersDAO.get(ids.charles);
-				assertNotNull(adelaide);
-				{
-					final List<DroitRF> droits = serviceRF.getDroitsForCtb(adelaide, false, false);
-					assertEquals(1, droits.size());
-
-					final ServitudeRF serv = (ServitudeRF) droits.get(0);
-					assertEquals(dateDebutServitude, serv.getDateDebutMetier());
-					assertEquals(dateDecesCharles, serv.getDateFinMetier());        // <-- la validité de la servitude n'est pas adaptée (c'est-à-dire qu'elle n'a pas besoin d'être adaptée)
-					assertEquals("Achat", serv.getMotifDebut());
-					assertNull(serv.getMotifFin());
-				}
+				final ServitudeRF serv = (ServitudeRF) droits.get(0);
+				assertEquals(dateDebutServitude, serv.getDateDebutMetier());
+				assertEquals(dateDecesCharles, serv.getDateFinMetier());        // <-- la validité de la servitude doit être adaptée à celle de la présence de Charles dans la servitude
+				assertEquals("Achat", serv.getMotifDebut());
+				assertNull(serv.getMotifFin());
 			}
+
+			// on demande les droits d'Adelaide
+			final PersonnePhysique adelaide = (PersonnePhysique) tiersDAO.get(ids.charles);
+			assertNotNull(adelaide);
+			{
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(adelaide, false, false);
+				assertEquals(1, droits.size());
+
+				final ServitudeRF serv = (ServitudeRF) droits.get(0);
+				assertEquals(dateDebutServitude, serv.getDateDebutMetier());
+				assertEquals(dateDecesCharles, serv.getDateFinMetier());        // <-- la validité de la servitude n'est pas adaptée (c'est-à-dire qu'elle n'a pas besoin d'être adaptée)
+				assertEquals("Achat", serv.getMotifDebut());
+				assertNull(serv.getMotifFin());
+			}
+			;
+			return null;
 		});
 	}
 
@@ -3601,31 +3578,29 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les allégements virtuels sur l'entreprise absorbante
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) {
-				final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
-				assertNotNull(ent);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
+			assertNotNull(ent);
 
-				final List<AllegementFoncierVirtuel> allegementVirtuels = serviceRF.determineAllegementsFonciersVirtuels(ent);
-				assertEquals(2, allegementVirtuels.size()); // l'allégement n°1 se termine avant la fusion et n'est donc pas pris en compte
+			final List<AllegementFoncierVirtuel> allegementVirtuels = serviceRF.determineAllegementsFonciersVirtuels(ent);
+			assertEquals(2, allegementVirtuels.size()); // l'allégement n°1 se termine avant la fusion et n'est donc pas pris en compte
 
-				// l'allégement virtuel qui correspond à l'allégement n°0
-				final AllegementFoncierVirtuel alleg0 = allegementVirtuels.get(0);
-				assertNotNull(alleg0);
-				assertEquals(ids.absorbee, alleg0.getAbsorbeeId());
-				assertEquals(dateFusion, alleg0.getDateDebut());
-				assertEquals(date(2009, 12, 31), alleg0.getDateFin());
-				assertEquals(ids.alleg0, alleg0.getReference().getId());
+			// l'allégement virtuel qui correspond à l'allégement n°0
+			final AllegementFoncierVirtuel alleg0 = allegementVirtuels.get(0);
+			assertNotNull(alleg0);
+			assertEquals(ids.absorbee, alleg0.getAbsorbeeId());
+			assertEquals(dateFusion, alleg0.getDateDebut());
+			assertEquals(date(2009, 12, 31), alleg0.getDateFin());
+			assertEquals(ids.alleg0, alleg0.getReference().getId());
 
-				// l'allégement virtuel qui correspond à l'allégement n°2
-				final AllegementFoncierVirtuel alleg1 = allegementVirtuels.get(1);
-				assertNotNull(alleg1);
-				assertEquals(ids.absorbee, alleg1.getAbsorbeeId());
-				assertEquals(dateFusion, alleg1.getDateDebut());
-				assertNull(alleg1.getDateFin());
-				assertEquals(ids.alleg2, alleg1.getReference().getId());
-			}
+			// l'allégement virtuel qui correspond à l'allégement n°2
+			final AllegementFoncierVirtuel alleg1 = allegementVirtuels.get(1);
+			assertNotNull(alleg1);
+			assertEquals(ids.absorbee, alleg1.getAbsorbeeId());
+			assertEquals(dateFusion, alleg1.getDateDebut());
+			assertNull(alleg1.getDateFin());
+			assertEquals(ids.alleg2, alleg1.getReference().getId());
+			return null;
 		});
 	}
 
@@ -3682,31 +3657,29 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on demande les allégements virtuels sur l'entreprise absorbante
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) {
-				final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
-				assertNotNull(ent);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
+			assertNotNull(ent);
 
-				final List<AllegementFoncierVirtuel> allegementVirtuels = serviceRF.determineAllegementsFonciersVirtuels(ent);
-				assertEquals(2, allegementVirtuels.size()); // l'allégement n°1 est annulé et n'est donc pas pris en compte
+			final List<AllegementFoncierVirtuel> allegementVirtuels = serviceRF.determineAllegementsFonciersVirtuels(ent);
+			assertEquals(2, allegementVirtuels.size()); // l'allégement n°1 est annulé et n'est donc pas pris en compte
 
-				// l'allégement virtuel qui correspond à l'allégement n°0
-				final AllegementFoncierVirtuel alleg0 = allegementVirtuels.get(0);
-				assertNotNull(alleg0);
-				assertEquals(ids.absorbee, alleg0.getAbsorbeeId());
-				assertEquals(dateFusion, alleg0.getDateDebut());
-				assertEquals(date(2009, 12, 31), alleg0.getDateFin());
-				assertEquals(ids.alleg0, alleg0.getReference().getId());
+			// l'allégement virtuel qui correspond à l'allégement n°0
+			final AllegementFoncierVirtuel alleg0 = allegementVirtuels.get(0);
+			assertNotNull(alleg0);
+			assertEquals(ids.absorbee, alleg0.getAbsorbeeId());
+			assertEquals(dateFusion, alleg0.getDateDebut());
+			assertEquals(date(2009, 12, 31), alleg0.getDateFin());
+			assertEquals(ids.alleg0, alleg0.getReference().getId());
 
-				// l'allégement virtuel qui correspond à l'allégement n°2
-				final AllegementFoncierVirtuel alleg1 = allegementVirtuels.get(1);
-				assertNotNull(alleg1);
-				assertEquals(ids.absorbee, alleg1.getAbsorbeeId());
-				assertEquals(dateFusion, alleg1.getDateDebut());
-				assertNull(alleg1.getDateFin());
-				assertEquals(ids.alleg2, alleg1.getReference().getId());
-			}
+			// l'allégement virtuel qui correspond à l'allégement n°2
+			final AllegementFoncierVirtuel alleg1 = allegementVirtuels.get(1);
+			assertNotNull(alleg1);
+			assertEquals(ids.absorbee, alleg1.getAbsorbeeId());
+			assertEquals(dateFusion, alleg1.getDateDebut());
+			assertNull(alleg1.getDateFin());
+			assertEquals(ids.alleg2, alleg1.getReference().getId());
+			return null;
 		});
 	}
 

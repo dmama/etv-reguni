@@ -7,12 +7,10 @@ import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -80,12 +78,10 @@ public class ListeDroitsAccesJob extends JobDefinition {
 		statusManager.setMessage("Chargement de la liste des dossiers protégés...");
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Number> daIds = template.execute(new TxCallback<List<Number>>() {
-			@Override
-			public List<Number> execute(TransactionStatus status) throws Exception {
-				//noinspection unchecked
-				return hibernateTemplate.find("select da.id from DroitAcces da where da.annulationDate is null order by da.tiers.id asc", null);
-			}
+		final List<Number> daIds = template.execute(status -> {
+			//noinspection unchecked
+
+			return hibernateTemplate.find("select da.id from DroitAcces da where da.annulationDate is null order by da.tiers.id asc", null);
 		});
 
 		final ListeDroitsAccesResults rapportFinal = new ListeDroitsAccesResults(dateValeur, tiersService, adresseService);

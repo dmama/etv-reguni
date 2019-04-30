@@ -7,7 +7,6 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -48,6 +47,7 @@ import ch.vd.unireg.type.TypeEvenementErreur;
 import ch.vd.unireg.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -72,13 +72,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement de départ
@@ -137,13 +134,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -199,13 +193,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -268,13 +259,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -337,13 +325,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -396,14 +381,11 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
-				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully, MotifRattachement.IMMEUBLE_PRIVE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
+			addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully, MotifRattachement.IMMEUBLE_PRIVE);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -448,14 +430,11 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
-				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully, MotifRattachement.IMMEUBLE_PRIVE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
+			addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully, MotifRattachement.IMMEUBLE_PRIVE);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -503,13 +482,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement de départ
@@ -559,13 +535,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			return null;
 		});
 
 		// événement de départ
@@ -612,13 +585,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -644,24 +614,21 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			return null;
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			assertNotNull(pp);
 
 
-				final Set<ForFiscal> ff = pp.getForsFiscaux();
-				Assert.assertNotNull(ff);
-				Assert.assertEquals(2, ff.size());
+			final Set<ForFiscal> ff = pp.getForsFiscaux();
+			assertNotNull(ff);
+			assertEquals(2, ff.size());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockPays.PaysInconnu.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
-				Assert.assertEquals(depart.getOneDayAfter(), ffp.getDateDebut());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			assertEquals(MockPays.PaysInconnu.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(depart.getOneDayAfter(), ffp.getDateDebut());
+			return null;
 		});
 	}
 
@@ -687,13 +654,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		final Long numeroCtb = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully);
-				return luis.getNumero();
-			}
+		final Long numeroCtb = doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully);
+			return luis.getNumero();
 		});
 
 		// événement de départ
@@ -870,12 +834,9 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noIndividu);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			addHabitant(noIndividu);
+			return null;
 		});
 
 		// événement d'arrivée
@@ -1639,14 +1600,11 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addDecisionAci(luis, arrivee, null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique luis = addHabitant(noIndividu);
+			addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+			addDecisionAci(luis, arrivee, null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return null;
 		});
 
 		// événement de départ

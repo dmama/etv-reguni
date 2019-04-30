@@ -15,9 +15,9 @@ import org.apache.ws.commons.schema.XmlSchemaSimpleType;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -150,20 +150,17 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale et impression de la DI
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
-				addEtatDeclarationEmise(di, RegDate.get());
-				service.imprimeDIForBatch(di);          // <-- ça pêtait ici sur un "type de document non supporté: null"
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
+			addEtatDeclarationEmise(di, RegDate.get());
+			service.imprimeDIForBatch(di);          // <-- ça pêtait ici sur un "type de document non supporté: null";
+			return pp.getNumero();
 		});
 
 		Assert.assertEquals(1, docsImprimes.size());
@@ -213,36 +210,30 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 
 
 		// mise en place fiscale et impression de la DI
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
-				addEtatDeclarationEmise(di, RegDate.get());
-				//addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 3, 31), EtatDelaiDocumentFiscal.ACCORDE).setAnnule(true);
-				addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
+			addEtatDeclarationEmise(di, RegDate.get());
+			//addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 3, 31), EtatDelaiDocumentFiscal.ACCORDE).setAnnule(true);
+			addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				Mockito.doReturn(nomDocument).when(impressionConfirmationDelaiPPHelper).construitIdDocument(Mockito.any(DelaiDeclaration.class));
+		doInNewTransactionAndSession(status -> {
+			Mockito.doReturn(nomDocument).when(impressionConfirmationDelaiPPHelper).construitIdDocument(ArgumentMatchers.any(DelaiDeclaration.class));
 
-				final Tiers pp = tiersDAO.get(ppId);
-				assertNotNull(pp);
-				final List<DeclarationImpotOrdinairePP> list = pp.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
-				final DeclarationImpotOrdinairePP di = list.get(0);
-				assertNotNull(di);
-				service.imprimeLettreDecisionDelaiOnline(di, (DelaiDeclaration) di.getDelais().iterator().next());
-				return null;
-			}
+			final Tiers pp = tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final List<DeclarationImpotOrdinairePP> list = pp.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
+			final DeclarationImpotOrdinairePP di = list.get(0);
+			assertNotNull(di);
+			service.imprimeLettreDecisionDelaiOnline(di, (DelaiDeclaration) di.getDelais().iterator().next());
+			return null;
 		});
 
 		Assert.assertEquals(1, documentEditique.size());

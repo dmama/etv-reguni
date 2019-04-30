@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationException;
@@ -83,14 +82,11 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noTiersRepresentant, noIndRepresentant);
-				PersonnePhysique represente = addHabitant(noTiersRepresente, noIndRepresente);
-				addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Bex);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(noTiersRepresentant, noIndRepresentant);
+			PersonnePhysique represente = addHabitant(noTiersRepresente, noIndRepresente);
+			addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Bex);
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -143,14 +139,11 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noTiersRepresentant, noIndRepresentant);
-				PersonnePhysique represente = addHabitant(noTiersRepresente, noIndRepresente);
-				addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Zurich);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(noTiersRepresentant, noIndRepresentant);
+			PersonnePhysique represente = addHabitant(noTiersRepresente, noIndRepresente);
+			addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Zurich);
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -201,14 +194,11 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noTiersRepresentant, noIndRepresentant);
-				PersonnePhysique represente = addNonHabitant(noTiersRepresente, "Jean-Patrice", "Poulet", date(1964, 5, 23), Sexe.MASCULIN);
-				addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockPays.France);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(noTiersRepresentant, noIndRepresentant);
+			PersonnePhysique represente = addNonHabitant(noTiersRepresente, "Jean-Patrice", "Poulet", date(1964, 5, 23), Sexe.MASCULIN);
+			addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockPays.France);
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -247,14 +237,11 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noTiersSubstituant, noIndSubstituant);
-				PersonnePhysique represente = addHabitant(noTiersSubstitue, noIndSubstitue);
-				addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Bex);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(noTiersSubstituant, noIndSubstituant);
+			PersonnePhysique represente = addHabitant(noTiersSubstitue, noIndSubstitue);
+			addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Bex);
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -596,38 +583,32 @@ public class RapportEditManagerTest extends WebTest {
 	}
 
 	private void assertUneRepresentationConventionnelle(final boolean executionForcee, final long noTiersRepresente) throws Exception {
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique represente = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, noTiersRepresente);
-				assertNotNull(represente);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique represente = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, noTiersRepresente);
+			assertNotNull(represente);
 
-				final Set<RapportEntreTiers> rapports = represente.getRapportsSujet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = represente.getRapportsSujet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapports.iterator().next();
-				assertEquals(executionForcee, repres.getExtensionExecutionForcee());
-				return null;
-			}
+			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapports.iterator().next();
+			assertEquals(executionForcee, repres.getExtensionExecutionForcee());
+			return null;
 		});
 	}
 
 	private void assertUnAssujetissementParSubstitution(final long noTiersSubstitue) throws Exception {
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique represente = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, noTiersSubstitue);
-				assertNotNull(represente);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique represente = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, noTiersSubstitue);
+			assertNotNull(represente);
 
-				final Set<RapportEntreTiers> rapports = represente.getRapportsSujet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = represente.getRapportsSujet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RapportEntreTiers rapport = rapports.iterator().next();
-				assertTrue(rapport instanceof AssujettissementParSubstitution);
-				return null;
-			}
+			final RapportEntreTiers rapport = rapports.iterator().next();
+			assertTrue(rapport instanceof AssujettissementParSubstitution);
+			return null;
 		});
 	}
 }

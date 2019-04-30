@@ -6,11 +6,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -994,25 +992,23 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Crée l'autre habitant
-				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
+		final Long id = doInNewTransactionAndSession(status -> {
+			// Crée l'autre habitant
+			PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
-				// Crée un habitant avec un adresse fiscale 'courrier' surchargée pointant vers l'adresse 'courrier' d'un autre habitant
-				PersonnePhysique habitant = addHabitant(noIndividu);
-				{
-					AdresseAutreTiers adresse = new AdresseAutreTiers();
-					adresse.setDateDebut(date(2000, 3, 20));
-					adresse.setDateFin(date(2001, 12, 31));
-					adresse.setUsage(TypeAdresseTiers.COURRIER);
-					adresse.setType(TypeAdresseTiers.COURRIER);
-					adresse.setAutreTiersId(autreHabitant.getId());
-					habitant.addAdresseTiers(adresse);
-				}
-				return habitant.getId();
+			// Crée un habitant avec un adresse fiscale 'courrier' surchargée pointant vers l'adresse 'courrier' d'un autre habitant
+			PersonnePhysique habitant = addHabitant(noIndividu);
+			{
+				AdresseAutreTiers adresse = new AdresseAutreTiers();
+				adresse.setDateDebut(date(2000, 3, 20));
+				adresse.setDateFin(date(2001, 12, 31));
+				adresse.setUsage(TypeAdresseTiers.COURRIER);
+				adresse.setType(TypeAdresseTiers.COURRIER);
+				adresse.setAutreTiersId(autreHabitant.getId());
+				habitant.addAdresseTiers(adresse);
 			}
+			;
+			return habitant.getId();
 		});
 
 		final PersonnePhysique habitant = (PersonnePhysique) tiersDAO.get(id);
@@ -1110,26 +1106,24 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Crée l'autre habitant
-				PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
+		final Long id = doInNewTransactionAndSession(status -> {
+			// Crée l'autre habitant
+			PersonnePhysique autreHabitant = addHabitant(noAutreIndividu);
 
-				// Crée un habitant avec un adresse fiscale 'courrier' surchargée <b>annulée</b> pointant vers l'adresse 'courrier' d'un autre habitant
-				PersonnePhysique habitant = addHabitant(noIndividu);
-				{
-					AdresseAutreTiers adresse = new AdresseAutreTiers();
-					adresse.setDateDebut(date(2000, 3, 20));
-					adresse.setDateFin(date(2001, 12, 31));
-					adresse.setUsage(TypeAdresseTiers.COURRIER);
-					adresse.setType(TypeAdresseTiers.COURRIER);
-					adresse.setAutreTiersId(autreHabitant.getId());
-					adresse.setAnnule(true);
-					habitant.addAdresseTiers(adresse);
-				}
-				return habitant.getId();
+			// Crée un habitant avec un adresse fiscale 'courrier' surchargée <b>annulée</b> pointant vers l'adresse 'courrier' d'un autre habitant
+			PersonnePhysique habitant = addHabitant(noIndividu);
+			{
+				AdresseAutreTiers adresse = new AdresseAutreTiers();
+				adresse.setDateDebut(date(2000, 3, 20));
+				adresse.setDateFin(date(2001, 12, 31));
+				adresse.setUsage(TypeAdresseTiers.COURRIER);
+				adresse.setType(TypeAdresseTiers.COURRIER);
+				adresse.setAutreTiersId(autreHabitant.getId());
+				adresse.setAnnule(true);
+				habitant.addAdresseTiers(adresse);
 			}
+			;
+			return habitant.getId();
 		});
 
 		final PersonnePhysique habitant = (PersonnePhysique) tiersDAO.get(id);
@@ -1823,15 +1817,12 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal possède une adresse fiscale surchargée
-		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				addAdresseSuisse(principal, TypeAdresseTiers.COURRIER, date(2008, 1, 1), null, MockRue.Renens.QuatorzeAvril);
-				final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				return ensemble.getMenage().getNumero();
-			}
+		final long noMenageCommun = doInNewTransaction(status -> {
+			final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			addAdresseSuisse(principal, TypeAdresseTiers.COURRIER, date(2008, 1, 1), null, MockRue.Renens.QuatorzeAvril);
+			final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			return ensemble.getMenage().getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -1865,35 +1856,32 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// Crée un ménage composé de deux non-habitants et un principal avec une adresse fiscale courrier
 
-		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				PersonnePhysique principal = new PersonnePhysique(false);
-				principal.setPrenomUsuel("Tommy");
-				principal.setNom("Zrwg");
-				principal.setSexe(Sexe.MASCULIN);
-				principal.setDateNaissance(date(1977, 1, 1));
+		final long noMenageCommun = doInNewTransaction(status -> {
+			PersonnePhysique principal = new PersonnePhysique(false);
+			principal.setPrenomUsuel("Tommy");
+			principal.setNom("Zrwg");
+			principal.setSexe(Sexe.MASCULIN);
+			principal.setDateNaissance(date(1977, 1, 1));
 
-				AdresseSuisse adresse = new AdresseSuisse();
-				adresse.setDateDebut(date(1980, 1, 1));
-				adresse.setNumeroRue(MockRue.Lausanne.RouteGrangeNeuve.getNoRue());
-				adresse.setNumeroOrdrePoste(MockRue.Lausanne.RouteGrangeNeuve.getNoLocalite());
-				adresse.setNumeroMaison("12");
-				adresse.setUsage(TypeAdresseTiers.COURRIER);
-				principal.addAdresseTiers(adresse);
+			AdresseSuisse adresse = new AdresseSuisse();
+			adresse.setDateDebut(date(1980, 1, 1));
+			adresse.setNumeroRue(MockRue.Lausanne.RouteGrangeNeuve.getNoRue());
+			adresse.setNumeroOrdrePoste(MockRue.Lausanne.RouteGrangeNeuve.getNoLocalite());
+			adresse.setNumeroMaison("12");
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			principal.addAdresseTiers(adresse);
 
-				PersonnePhysique conjoint = new PersonnePhysique(false);
-				conjoint.setPrenomUsuel("Lolo");
-				conjoint.setNom("Zrwg");
-				conjoint.setSexe(Sexe.FEMININ);
-				conjoint.setDateNaissance(date(1978, 1, 1));
+			PersonnePhysique conjoint = new PersonnePhysique(false);
+			conjoint.setPrenomUsuel("Lolo");
+			conjoint.setNom("Zrwg");
+			conjoint.setSexe(Sexe.FEMININ);
+			conjoint.setDateNaissance(date(1978, 1, 1));
 
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
-				return menage.getNumero();
-			}
+			MenageCommun menage = new MenageCommun();
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -2015,28 +2003,24 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long numeroContribuablePupille = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Crée le pupille et le tuteru
-				PersonnePhysique pupille = new PersonnePhysique(true);
-				pupille.setNumeroIndividu(noPupille);
-				pupille = (PersonnePhysique) tiersDAO.save(pupille);
+		final long numeroContribuablePupille = doInNewTransaction(status -> {
+			// Crée le pupille et le tuteru
+			PersonnePhysique pupille = new PersonnePhysique(true);
+			pupille.setNumeroIndividu(noPupille);
+			pupille = (PersonnePhysique) tiersDAO.save(pupille);
 
-				PersonnePhysique tuteur = new PersonnePhysique(true);
-				tuteur.setNumeroIndividu(noTuteur);
-				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+			PersonnePhysique tuteur = new PersonnePhysique(true);
+			tuteur.setNumeroIndividu(noTuteur);
+			tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
 
-				// Crée la tutelle proprement dites
-				RapportEntreTiers rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 1, 1));
-				rapport.setDateFin(date(2007, 12, 31));
-				rapport.setObjet(tuteur);
-				rapport.setSujet(pupille);
-				tiersDAO.save(rapport);
-
-				return pupille.getNumero();
-			}
+			// Crée la tutelle proprement dites
+			RapportEntreTiers rapport = new Tutelle();
+			rapport.setDateDebut(date(2004, 1, 1));
+			rapport.setDateFin(date(2007, 12, 31));
+			rapport.setObjet(tuteur);
+			rapport.setSujet(pupille);
+			tiersDAO.save(rapport);
+			return pupille.getNumero();
 		});
 
 		// Vérification des adresses
@@ -2123,20 +2107,16 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				// Crée le pupille, le tuteur et la tutelle
-				final PersonnePhysique pupille = addHabitant(noPupille);
-				ids.pupille = pupille.getId();
-				final AdresseSuisse adresse = addAdresseSuisse(pupille, TypeAdresseTiers.COURRIER, date(2002, 1, 1), null, MockRue.Renens.QuatorzeAvril);
-				ids.adresse = adresse.getId();
+		doInNewTransaction(status -> {
+			// Crée le pupille, le tuteur et la tutelle
+			final PersonnePhysique pupille = addHabitant(noPupille);
+			ids.pupille = pupille.getId();
+			final AdresseSuisse adresse = addAdresseSuisse(pupille, TypeAdresseTiers.COURRIER, date(2002, 1, 1), null, MockRue.Renens.QuatorzeAvril);
+			ids.adresse = adresse.getId();
 
-				final PersonnePhysique tuteur = addHabitant(noTuteur);
-				addTutelle(pupille, tuteur, null, date(2004, 1, 1), date(2007, 12, 31));
-
-				return null;
-			}
+			final PersonnePhysique tuteur = addHabitant(noTuteur);
+			addTutelle(pupille, tuteur, null, date(2004, 1, 1), date(2007, 12, 31));
+			return null;
 		});
 
 		// [UNIREG-2927] Vérification que les adresses génériques résultantes sur Renens exposent l'id de l'adresse supplémentaire sous-jacente.
@@ -2230,40 +2210,37 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				// Crée le ménage
-				PersonnePhysique conjoint = new PersonnePhysique(true);
-				conjoint.setNumeroIndividu(noConjoint);
-				PersonnePhysique principal = new PersonnePhysique(true);
-				principal.setNumeroIndividu(noPrincipal);
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			PersonnePhysique conjoint = new PersonnePhysique(true);
+			conjoint.setNumeroIndividu(noConjoint);
+			PersonnePhysique principal = new PersonnePhysique(true);
+			principal.setNumeroIndividu(noPrincipal);
 
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				numeros.numeroContribuableMenage = menage.getNumero();
-				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
-				numeros.numeroContribuablePrincipal = principal.getNumero();
+			MenageCommun menage = new MenageCommun();
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			numeros.numeroContribuableMenage = menage.getNumero();
+			principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+			numeros.numeroContribuablePrincipal = principal.getNumero();
 
-				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
-				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
-				numeros.numeroContribuableConjoint = conjoint.getNumero();
+			rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
+			conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+			numeros.numeroContribuableConjoint = conjoint.getNumero();
 
-				// Crée le tuteur
-				PersonnePhysique tuteur = new PersonnePhysique(true);
-				tuteur.setNumeroIndividu(noTuteur);
-				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+			// Crée le tuteur
+			PersonnePhysique tuteur = new PersonnePhysique(true);
+			tuteur.setNumeroIndividu(noTuteur);
+			tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
 
-				// Crée la tutelle proprement dites
-				rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 1, 1));
-				rapport.setDateFin(date(2007, 12, 31));
-				rapport.setObjet(tuteur);
-				rapport.setSujet(principal);
-				tiersDAO.save(rapport);
-				return null;
-			}
+			// Crée la tutelle proprement dites
+			rapport = new Tutelle();
+			rapport.setDateDebut(date(2004, 1, 1));
+			rapport.setDateFin(date(2007, 12, 31));
+			rapport.setObjet(tuteur);
+			rapport.setSujet(principal);
+			tiersDAO.save(rapport);
+			return null;
 		});
 
 		// Vérification des adresses du principal
@@ -2397,26 +2374,22 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Numeros numeros = new Numeros();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			final PersonnePhysique conjoint = addHabitant(noConjoint);
+			final PersonnePhysique principal = addHabitant(noPrincipal);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1), null);
+			final MenageCommun menage = ensemble.getMenage();
+			numeros.numeroContribuableMenage = menage.getNumero();
+			numeros.numeroContribuablePrincipal = principal.getNumero();
+			numeros.numeroContribuableConjoint = conjoint.getNumero();
 
-				// Crée le ménage
-				final PersonnePhysique conjoint = addHabitant(noConjoint);
-				final PersonnePhysique principal = addHabitant(noPrincipal);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1), null);
-				final MenageCommun menage = ensemble.getMenage();
-				numeros.numeroContribuableMenage = menage.getNumero();
-				numeros.numeroContribuablePrincipal = principal.getNumero();
-				numeros.numeroContribuableConjoint = conjoint.getNumero();
+			// Crée le tuteur
+			final PersonnePhysique tuteur = addHabitant(noTuteur);
 
-				// Crée le tuteur
-				final PersonnePhysique tuteur = addHabitant(noTuteur);
-
-				// Crée la tutelle proprement dites
-				addConseilLegal(principal, tuteur, date(2004, 1, 1), date(2007, 12, 31));
-				return null;
-			}
+			// Crée la tutelle proprement dites
+			addConseilLegal(principal, tuteur, date(2004, 1, 1), date(2007, 12, 31));
+			return null;
 		});
 
 		// Vérification des adresses du ménage
@@ -2523,30 +2496,26 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			final PersonnePhysique conjoint = addHabitant(noConjoint);
+			final PersonnePhysique principal = addHabitant(noPrincipal);
+			principal.setHabitant(false);
+			principal.setNom("Cochand");
+			principal.setPrenomUsuel("Gilbert");
+			principal.setDateNaissance(dateNaissance);
+			principal.setDateDeces(dateDeces);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateDeces);
+			numeros.numeroContribuableMenage = ensemble.getMenage().getNumero();
+			numeros.numeroContribuablePrincipal = principal.getNumero();
+			numeros.numeroContribuableConjoint = conjoint.getNumero();
 
-				// Crée le ménage
-				final PersonnePhysique conjoint = addHabitant(noConjoint);
-				final PersonnePhysique principal = addHabitant(noPrincipal);
-				principal.setHabitant(false);
-				principal.setNom("Cochand");
-				principal.setPrenomUsuel("Gilbert");
-				principal.setDateNaissance(dateNaissance);
-				principal.setDateDeces(dateDeces);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateDeces);
-				numeros.numeroContribuableMenage = ensemble.getMenage().getNumero();
-				numeros.numeroContribuablePrincipal = principal.getNumero();
-				numeros.numeroContribuableConjoint = conjoint.getNumero();
+			// Crée le curateur
+			final PersonnePhysique curateur = addHabitant(noCurateur);
 
-				// Crée le curateur
-				final PersonnePhysique curateur = addHabitant(noCurateur);
-
-				// Crée la curatelle proprement dites
-				addCuratelle(conjoint, curateur, date(2011, 1, 11), null);
-				return null;
-			}
+			// Crée la curatelle proprement dites
+			addCuratelle(conjoint, curateur, date(2011, 1, 11), null);
+			return null;
 		});
 
 		// Vérification des adresses du principal
@@ -2686,40 +2655,37 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				// Crée le ménage
-				PersonnePhysique conjoint = new PersonnePhysique(true);
-				conjoint.setNumeroIndividu(noConjoint);
-				PersonnePhysique principal = new PersonnePhysique(true);
-				principal.setNumeroIndividu(noPrincipal);
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			PersonnePhysique conjoint = new PersonnePhysique(true);
+			conjoint.setNumeroIndividu(noConjoint);
+			PersonnePhysique principal = new PersonnePhysique(true);
+			principal.setNumeroIndividu(noPrincipal);
 
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				numeros.numeroContribuableMenage = menage.getNumero();
-				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
-				numeros.numeroContribuablePrincipal = principal.getNumero();
+			MenageCommun menage = new MenageCommun();
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			numeros.numeroContribuableMenage = menage.getNumero();
+			principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+			numeros.numeroContribuablePrincipal = principal.getNumero();
 
-				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
-				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
-				numeros.numeroContribuableConjoint = conjoint.getNumero();
+			rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
+			conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+			numeros.numeroContribuableConjoint = conjoint.getNumero();
 
-				// Crée le tuteur
-				PersonnePhysique tuteur = new PersonnePhysique(true);
-				tuteur.setNumeroIndividu(noTuteur);
-				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+			// Crée le tuteur
+			PersonnePhysique tuteur = new PersonnePhysique(true);
+			tuteur.setNumeroIndividu(noTuteur);
+			tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
 
-				// Crée la tutelle proprement dites
-				rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 1, 1));
-				rapport.setDateFin(date(2007, 12, 31));
-				rapport.setObjet(tuteur);
-				rapport.setSujet(conjoint);
-				tiersDAO.save(rapport);
-				return null;
-			}
+			// Crée la tutelle proprement dites
+			rapport = new Tutelle();
+			rapport.setDateDebut(date(2004, 1, 1));
+			rapport.setDateFin(date(2007, 12, 31));
+			rapport.setObjet(tuteur);
+			rapport.setSujet(conjoint);
+			tiersDAO.save(rapport);
+			return null;
 		});
 		// Vérification des adresses du principal
 		{
@@ -2875,51 +2841,48 @@ public class AdresseServiceTest extends BusinessTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				// Crée le ménage
-				PersonnePhysique conjoint = new PersonnePhysique(true);
-				conjoint.setNumeroIndividu(noConjoint);
-				PersonnePhysique principal = new PersonnePhysique(true);
-				principal.setNumeroIndividu(noPrincipal);
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			PersonnePhysique conjoint = new PersonnePhysique(true);
+			conjoint.setNumeroIndividu(noConjoint);
+			PersonnePhysique principal = new PersonnePhysique(true);
+			principal.setNumeroIndividu(noPrincipal);
 
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				numeros.numeroContribuableMenage = menage.getNumero();
-				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
-				numeros.numeroContribuablePrincipal = principal.getNumero();
+			MenageCommun menage = new MenageCommun();
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			numeros.numeroContribuableMenage = menage.getNumero();
+			principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+			numeros.numeroContribuablePrincipal = principal.getNumero();
 
-				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
-				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
-				numeros.numeroContribuableConjoint = conjoint.getNumero();
+			rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
+			conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+			numeros.numeroContribuableConjoint = conjoint.getNumero();
 
-				// Crée la tutelle sur le principal
-				PersonnePhysique tuteurPrincipal = new PersonnePhysique(true);
-				tuteurPrincipal.setNumeroIndividu(noTuteurPrincipal);
-				tuteurPrincipal = (PersonnePhysique) tiersDAO.save(tuteurPrincipal);
+			// Crée la tutelle sur le principal
+			PersonnePhysique tuteurPrincipal = new PersonnePhysique(true);
+			tuteurPrincipal.setNumeroIndividu(noTuteurPrincipal);
+			tuteurPrincipal = (PersonnePhysique) tiersDAO.save(tuteurPrincipal);
 
-				rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 1, 1));
-				rapport.setDateFin(date(2007, 12, 31));
-				rapport.setObjet(tuteurPrincipal);
-				rapport.setSujet(principal);
-				tiersDAO.save(rapport);
+			rapport = new Tutelle();
+			rapport.setDateDebut(date(2004, 1, 1));
+			rapport.setDateFin(date(2007, 12, 31));
+			rapport.setObjet(tuteurPrincipal);
+			rapport.setSujet(principal);
+			tiersDAO.save(rapport);
 
-				// Crée la tutelle sur le conjoint
-				PersonnePhysique tuteurConjoint = new PersonnePhysique(true);
-				tuteurConjoint.setNumeroIndividu(noTuteurConjoint);
-				tuteurConjoint = (PersonnePhysique) tiersDAO.save(tuteurConjoint);
+			// Crée la tutelle sur le conjoint
+			PersonnePhysique tuteurConjoint = new PersonnePhysique(true);
+			tuteurConjoint.setNumeroIndividu(noTuteurConjoint);
+			tuteurConjoint = (PersonnePhysique) tiersDAO.save(tuteurConjoint);
 
-				rapport = new Tutelle();
-				rapport.setDateDebut(date(2005, 7, 1));
-				rapport.setDateFin(date(2009, 12, 31));
-				rapport.setObjet(tuteurConjoint);
-				rapport.setSujet(conjoint);
-				tiersDAO.save(rapport);
-				return null;
-			}
+			rapport = new Tutelle();
+			rapport.setDateDebut(date(2005, 7, 1));
+			rapport.setDateFin(date(2009, 12, 31));
+			rapport.setObjet(tuteurConjoint);
+			rapport.setSujet(conjoint);
+			tiersDAO.save(rapport);
+			return null;
 		});
 
 		// Vérification des adresses du principal
@@ -3028,37 +2991,33 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long numeroContribuablePupille = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Crée le pupille et le tuteur
-				PersonnePhysique pupille = new PersonnePhysique(true);
-				pupille.setNumeroIndividu(noPupille);
-				pupille = (PersonnePhysique) tiersDAO.save(pupille);
+		final long numeroContribuablePupille = doInNewTransaction(status -> {
+			// Crée le pupille et le tuteur
+			PersonnePhysique pupille = new PersonnePhysique(true);
+			pupille.setNumeroIndividu(noPupille);
+			pupille = (PersonnePhysique) tiersDAO.save(pupille);
 
-				PersonnePhysique tuteur = new PersonnePhysique(true);
-				tuteur.setNumeroIndividu(noTuteur);
+			PersonnePhysique tuteur = new PersonnePhysique(true);
+			tuteur.setNumeroIndividu(noTuteur);
 
-				// Crée l'adresse qui provoque une récursion infinie
-				AdresseAutreTiers adresse = new AdresseAutreTiers();
-				adresse.setDateDebut(date(2000, 1, 1));
-				adresse.setDateFin(null);
-				adresse.setUsage(TypeAdresseTiers.REPRESENTATION);
-				adresse.setAutreTiersId(pupille.getId());
-				adresse.setType(TypeAdresseTiers.COURRIER);
-				tuteur.addAdresseTiers(adresse);
-				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+			// Crée l'adresse qui provoque une récursion infinie
+			AdresseAutreTiers adresse = new AdresseAutreTiers();
+			adresse.setDateDebut(date(2000, 1, 1));
+			adresse.setDateFin(null);
+			adresse.setUsage(TypeAdresseTiers.REPRESENTATION);
+			adresse.setAutreTiersId(pupille.getId());
+			adresse.setType(TypeAdresseTiers.COURRIER);
+			tuteur.addAdresseTiers(adresse);
+			tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
 
-				// Crée la tutelle proprement dites
-				RapportEntreTiers rapport = new Tutelle();
-				rapport.setDateDebut(date(2000, 1, 1));
-				rapport.setDateFin(null);
-				rapport.setObjet(tuteur);
-				rapport.setSujet(pupille);
-				tiersDAO.save(rapport);
-
-				return pupille.getNumero();
-			}
+			// Crée la tutelle proprement dites
+			RapportEntreTiers rapport = new Tutelle();
+			rapport.setDateDebut(date(2000, 1, 1));
+			rapport.setDateFin(null);
+			rapport.setObjet(tuteur);
+			rapport.setSujet(pupille);
+			tiersDAO.save(rapport);
+			return pupille.getNumero();
 		});
 
 		// Vérification de la détection du cycle
@@ -3116,38 +3075,34 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final long numeroContribuableTuteur = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Crée le pupille et le tuteur
-				PersonnePhysique pupille = new PersonnePhysique(true);
-				pupille.setNumeroIndividu(noPupille);
-				pupille = (PersonnePhysique) tiersDAO.save(pupille);
+		final long numeroContribuableTuteur = doInNewTransaction(status -> {
+			// Crée le pupille et le tuteur
+			PersonnePhysique pupille = new PersonnePhysique(true);
+			pupille.setNumeroIndividu(noPupille);
+			pupille = (PersonnePhysique) tiersDAO.save(pupille);
 
-				PersonnePhysique tuteur = new PersonnePhysique(true);
-				tuteur.setNumeroIndividu(noTuteur);
+			PersonnePhysique tuteur = new PersonnePhysique(true);
+			tuteur.setNumeroIndividu(noTuteur);
 
-				// Crée une adresse <b>annulée</b> qui provoque une récursion infinie
-				AdresseAutreTiers adresse = new AdresseAutreTiers();
-				adresse.setDateDebut(date(2000, 1, 1));
-				adresse.setDateFin(null);
-				adresse.setUsage(TypeAdresseTiers.REPRESENTATION);
-				adresse.setAutreTiersId(pupille.getId());
-				adresse.setType(TypeAdresseTiers.COURRIER);
-				adresse.setAnnule(true);
-				tuteur.addAdresseTiers(adresse);
-				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+			// Crée une adresse <b>annulée</b> qui provoque une récursion infinie
+			AdresseAutreTiers adresse = new AdresseAutreTiers();
+			adresse.setDateDebut(date(2000, 1, 1));
+			adresse.setDateFin(null);
+			adresse.setUsage(TypeAdresseTiers.REPRESENTATION);
+			adresse.setAutreTiersId(pupille.getId());
+			adresse.setType(TypeAdresseTiers.COURRIER);
+			adresse.setAnnule(true);
+			tuteur.addAdresseTiers(adresse);
+			tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
 
-				// Crée la tutelle proprement dites
-				RapportEntreTiers rapport = new Tutelle();
-				rapport.setDateDebut(date(2000, 1, 1));
-				rapport.setDateFin(null);
-				rapport.setObjet(tuteur);
-				rapport.setSujet(pupille);
-				tiersDAO.save(rapport);
-
-				return tuteur.getNumero();
-			}
+			// Crée la tutelle proprement dites
+			RapportEntreTiers rapport = new Tutelle();
+			rapport.setDateDebut(date(2000, 1, 1));
+			rapport.setDateFin(null);
+			rapport.setObjet(tuteur);
+			rapport.setSujet(pupille);
+			tiersDAO.save(rapport);
+			return tuteur.getNumero();
 		});
 
 		// Vérification de la détection du cycle : le cycle est bien détecté mais comme l'adresse fautive est annulée les adresses doivent être quand même résolues
@@ -3592,29 +3547,27 @@ public class AdresseServiceTest extends BusinessTest {
 			return entreprise.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
-				assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+			assertNotNull(entreprise);
 
-				// Vérification des adresses
-				final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(entreprise, false);
-				assertNotNull(adresses);
+			// Vérification des adresses
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(entreprise, false);
+			assertNotNull(adresses);
 
-				assertEquals(3, adresses.courrier.size());
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ENT, false, adresses.courrier.get(0));
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_ENT, false, adresses.courrier.get(1));
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_ENT, false, adresses.courrier.get(2));
+			assertEquals(3, adresses.courrier.size());
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ENT, false, adresses.courrier.get(0));
+			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_ENT, false, adresses.courrier.get(1));
+			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_ENT, false, adresses.courrier.get(2));
 
-				assertAdressesEquals(adresses.courrier, adresses.representation);
+			assertAdressesEquals(adresses.courrier, adresses.representation);
 
-				assertEquals(2, adresses.poursuite.size());
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ENT, false, adresses.poursuite.get(0));
-				assertAdresse(date(1987, 12, 12), null, "Cossonay-Ville", SourceType.CIVILE_ENT, false, adresses.poursuite.get(1));
+			assertEquals(2, adresses.poursuite.size());
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ENT, false, adresses.poursuite.get(0));
+			assertAdresse(date(1987, 12, 12), null, "Cossonay-Ville", SourceType.CIVILE_ENT, false, adresses.poursuite.get(1));
 
-				assertAdressesEquals(adresses.poursuite, adresses.domicile);
-			}
+			assertAdressesEquals(adresses.poursuite, adresses.domicile);
+			return null;
 		});
 	}
 
@@ -3975,25 +3928,22 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseSansAdressePrecedenteExistante() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Données d'entrées
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Pauly");
-				nh.setPrenomUsuel("Marco");
-				nh.setDateNaissance(date(1970, 3, 2));
+		Long id = doInNewTransaction(status -> {
+			// Données d'entrées
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Pauly");
+			nh.setPrenomUsuel("Marco");
+			nh.setDateNaissance(date(1970, 3, 2));
 
-				AdresseSuisse adresse = new AdresseSuisse();
-				adresse.setUsage(TypeAdresseTiers.COURRIER);
-				adresse.setDateDebut(date(2001, 1, 1));
-				adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-				adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-				nh.addAdresseTiers(adresse);
+			AdresseSuisse adresse = new AdresseSuisse();
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setDateDebut(date(2001, 1, 1));
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
+			nh.addAdresseTiers(adresse);
 
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers tiers = tiersDAO.get(id);
@@ -4015,33 +3965,30 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistante() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Données d'entrées
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Pauly");
-				nh.setPrenomUsuel("Marco");
-				nh.setDateNaissance(date(1970, 3, 2));
+		Long id = doInNewTransaction(status -> {
+			// Données d'entrées
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Pauly");
+			nh.setPrenomUsuel("Marco");
+			nh.setDateNaissance(date(1970, 3, 2));
 
-				AdresseSuisse adresse1 = new AdresseSuisse();
-				adresse1.setUsage(TypeAdresseTiers.COURRIER);
-				adresse1.setDateDebut(date(1988, 3, 2));
-				adresse1.setDateFin(date(2000, 12, 31));
-				adresse1.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
-				adresse1.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
-				nh.addAdresseTiers(adresse1);
+			AdresseSuisse adresse1 = new AdresseSuisse();
+			adresse1.setUsage(TypeAdresseTiers.COURRIER);
+			adresse1.setDateDebut(date(1988, 3, 2));
+			adresse1.setDateFin(date(2000, 12, 31));
+			adresse1.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+			adresse1.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+			nh.addAdresseTiers(adresse1);
 
-				AdresseSuisse adresse2 = new AdresseSuisse();
-				adresse2.setUsage(TypeAdresseTiers.COURRIER);
-				adresse2.setDateDebut(date(2001, 1, 1));
-				adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-				adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-				nh.addAdresseTiers(adresse2);
+			AdresseSuisse adresse2 = new AdresseSuisse();
+			adresse2.setUsage(TypeAdresseTiers.COURRIER);
+			adresse2.setDateDebut(date(2001, 1, 1));
+			adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+			adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
+			nh.addAdresseTiers(adresse2);
 
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers tiers = tiersDAO.get(id);
@@ -4089,13 +4036,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresseService.annulerAdresse(adresse1);
 
 			// Teste des adresses résultantes
-			AdressesFiscalesHisto adressesHisto;
-			try {
-				adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
-			}
-			catch (AdresseException e) {
-				throw new RuntimeException(e);
-			}
+			AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
 			assertNotNull(adressesHisto);
 			assertEquals(2, adressesHisto.courrier.size());
 			assertAdresse(date(2009, 8, 29), null, "Genève", SourceType.FISCALE, false, adressesHisto.courrier.get(0));
@@ -4108,35 +4049,32 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistanteMaisNonAccolee() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Données d'entrées
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Pauly");
-				nh.setPrenomUsuel("Marco");
-				nh.setDateNaissance(date(1970, 3, 2));
+		Long id = doInNewTransaction(status -> {
+			// Données d'entrées
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Pauly");
+			nh.setPrenomUsuel("Marco");
+			nh.setDateNaissance(date(1970, 3, 2));
 
-				AdresseSuisse adresse1 = new AdresseSuisse();
-				adresse1.setUsage(TypeAdresseTiers.COURRIER);
-				adresse1.setDateDebut(date(1988, 3, 2));
-				adresse1.setDateFin(date(2000, 12, 31));
-				adresse1.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
-				adresse1.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
-				nh.addAdresseTiers(adresse1);
+			AdresseSuisse adresse1 = new AdresseSuisse();
+			adresse1.setUsage(TypeAdresseTiers.COURRIER);
+			adresse1.setDateDebut(date(1988, 3, 2));
+			adresse1.setDateFin(date(2000, 12, 31));
+			adresse1.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+			adresse1.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+			nh.addAdresseTiers(adresse1);
 
-				// du 2001.1.1 au 2003.12.31 -> pas d'adresse
+			// du 2001.1.1 au 2003.12.31 -> pas d'adresse
 
-				AdresseSuisse adresse2 = new AdresseSuisse();
-				adresse2.setUsage(TypeAdresseTiers.COURRIER);
-				adresse2.setDateDebut(date(2004, 1, 1));
-				adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-				adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-				nh.addAdresseTiers(adresse2);
+			AdresseSuisse adresse2 = new AdresseSuisse();
+			adresse2.setUsage(TypeAdresseTiers.COURRIER);
+			adresse2.setDateDebut(date(2004, 1, 1));
+			adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+			adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
+			nh.addAdresseTiers(adresse2);
 
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers tiers = tiersDAO.get(id);
@@ -4179,25 +4117,22 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Données d'entrées
-				// Crée un habitant sans adresse fiscale surchargée
-				PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(noIndividu);
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
+		Long id = doInNewTransaction(status -> {
+			// Données d'entrées
+			// Crée un habitant sans adresse fiscale surchargée
+			PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(noIndividu);
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
-				AdresseSuisse adresse = new AdresseSuisse();
-				adresse.setUsage(TypeAdresseTiers.COURRIER);
-				adresse.setDateDebut(date(2001, 1, 1));
-				adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-				adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-				habitant.addAdresseTiers(adresse);
+			AdresseSuisse adresse = new AdresseSuisse();
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setDateDebut(date(2001, 1, 1));
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
+			habitant.addAdresseTiers(adresse);
 
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
-				return habitant.getNumero();
-			}
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
+			return habitant.getNumero();
 		});
 
 		Tiers tiers = tiersDAO.get(id);
@@ -4238,33 +4173,30 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				// Données d'entrées
-				// Crée un habitant sans adresse fiscale surchargée
-				PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(noIndividu);
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
+		Long id = doInNewTransaction(status -> {
+			// Données d'entrées
+			// Crée un habitant sans adresse fiscale surchargée
+			PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(noIndividu);
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
-				AdresseSuisse adresse1 = new AdresseSuisse();
-				adresse1.setUsage(TypeAdresseTiers.COURRIER);
-				adresse1.setDateDebut(date(1988, 3, 2));
-				adresse1.setDateFin(date(1995, 1, 1));
-				adresse1.setNumeroRue(MockRue.Orbe.CheminDeLaTranchee.getNoRue());
-				adresse1.setNumeroOrdrePoste(MockLocalite.Orbe.getNoOrdre());
-				habitant.addAdresseTiers(adresse1);
+			AdresseSuisse adresse1 = new AdresseSuisse();
+			adresse1.setUsage(TypeAdresseTiers.COURRIER);
+			adresse1.setDateDebut(date(1988, 3, 2));
+			adresse1.setDateFin(date(1995, 1, 1));
+			adresse1.setNumeroRue(MockRue.Orbe.CheminDeLaTranchee.getNoRue());
+			adresse1.setNumeroOrdrePoste(MockLocalite.Orbe.getNoOrdre());
+			habitant.addAdresseTiers(adresse1);
 
-				AdresseSuisse adresse2 = new AdresseSuisse();
-				adresse2.setUsage(TypeAdresseTiers.COURRIER);
-				adresse2.setDateDebut(date(2003, 3, 2));
-				adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-				adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-				habitant.addAdresseTiers(adresse2);
+			AdresseSuisse adresse2 = new AdresseSuisse();
+			adresse2.setUsage(TypeAdresseTiers.COURRIER);
+			adresse2.setDateDebut(date(2003, 3, 2));
+			adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+			adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
+			habitant.addAdresseTiers(adresse2);
 
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
-				return habitant.getNumero();
-			}
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
+			return habitant.getNumero();
 		});
 
 		Tiers tiers = tiersDAO.get(id);
@@ -4306,21 +4238,18 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
-		final long noMenageCommun = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				PersonnePhysique principal = new PersonnePhysique(true);
-				principal.setNumeroIndividu(noIndividuPrincipal);
-				PersonnePhysique conjoint = new PersonnePhysique(true);
-				conjoint.setNumeroIndividu(noIndividuConjoint);
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
-				rapport.setAnnule(true);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
-				rapport.setAnnule(true);
-				return menage.getNumero();
-			}
+		final long noMenageCommun = doInNewTransaction(status -> {
+			PersonnePhysique principal = new PersonnePhysique(true);
+			principal.setNumeroIndividu(noIndividuPrincipal);
+			PersonnePhysique conjoint = new PersonnePhysique(true);
+			conjoint.setNumeroIndividu(noIndividuConjoint);
+			MenageCommun menage = new MenageCommun();
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
+			rapport.setAnnule(true);
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
+			rapport.setAnnule(true);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -4399,21 +4328,16 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
-				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addRepresentationConventionnelle(menage, representant, date(2007, 1, 1), false);
-
-				return menage.getNumero();
-			}
+			addRepresentationConventionnelle(menage, representant, date(2007, 1, 1), false);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -4504,21 +4428,16 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
-				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addRepresentationConventionnelle(principal, representant, date(2007, 1, 1), false);
-
-				return menage.getNumero();
-			}
+			addRepresentationConventionnelle(principal, representant, date(2007, 1, 1), false);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -4596,21 +4515,16 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique representant = addHabitant(noIndividuRepresentant);
 
-				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addRepresentationConventionnelle(conjoint, representant, date(2007, 1, 1), false);
-
-				return menage.getNumero();
-			}
+			addRepresentationConventionnelle(conjoint, representant, date(2007, 1, 1), false);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -4694,23 +4608,18 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal et un autre sur le ménage
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique representantMenage = addHabitant(noIndividuRepresentantMenage);
+			PersonnePhysique representantPrincipal = addHabitant(noIndividuRepresentantPrincipal);
 
-				PersonnePhysique representantMenage = addHabitant(noIndividuRepresentantMenage);
-				PersonnePhysique representantPrincipal = addHabitant(noIndividuRepresentantPrincipal);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addRepresentationConventionnelle(menage, representantMenage, date(2007, 1, 1), false);
-				addRepresentationConventionnelle(principal, representantPrincipal, date(2005, 1, 1), false);
-
-				return menage.getNumero();
-			}
+			addRepresentationConventionnelle(menage, representantMenage, date(2007, 1, 1), false);
+			addRepresentationConventionnelle(principal, representantPrincipal, date(2005, 1, 1), false);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -4806,23 +4715,18 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+			PersonnePhysique tuteur = addHabitant(noIndividuTuteur);
 
-				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
-				PersonnePhysique tuteur = addHabitant(noIndividuTuteur);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addRepresentationConventionnelle(conjoint, representant, date(2007, 1, 1), false);
-				addTutelle(principal, tuteur, null, date(2007, 1, 1), null);
-
-				return menage.getNumero();
-			}
+			addRepresentationConventionnelle(conjoint, representant, date(2007, 1, 1), false);
+			addTutelle(principal, tuteur, null, date(2007, 1, 1), null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -4914,22 +4818,17 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
 
-				PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addConseilLegal(principal, conseiller, date(2007, 1, 1), null);
-				addConseilLegal(conjoint, conseiller, date(2007, 1, 1), null);
-
-				return menage.getNumero();
-			}
+			addConseilLegal(principal, conseiller, date(2007, 1, 1), null);
+			addConseilLegal(conjoint, conseiller, date(2007, 1, 1), null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5022,21 +4921,16 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
 
-				PersonnePhysique conseiller = addHabitant(noIndividuConseiller);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				addConseilLegal(principal, conseiller, date(2007, 1, 1), null);
-
-				return menage.getNumero();
-			}
+			addConseilLegal(principal, conseiller, date(2007, 1, 1), null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5133,26 +5027,21 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique curateurPrincipal = addHabitant(noIndividuCurateurPrincipal);
+			PersonnePhysique curateurConjoint = addHabitant(noIndividuCurateurConjoint);
 
-				PersonnePhysique curateurPrincipal = addHabitant(noIndividuCurateurPrincipal);
-				PersonnePhysique curateurConjoint = addHabitant(noIndividuCurateurConjoint);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				// 2003 : principal sous curatelle
-				// 2004 : principal+conjoint sous curatelle
-				// 2005 : conjoint sous curatelle
-				addCuratelle(principal, curateurPrincipal, date(2003, 1, 1), date(2004, 12, 31));
-				addCuratelle(conjoint, curateurConjoint, date(2004, 1, 1), date(2005, 12, 31));
-
-				return menage.getNumero();
-			}
+			// 2003 : principal sous curatelle
+			// 2004 : principal+conjoint sous curatelle
+			// 2005 : conjoint sous curatelle
+			addCuratelle(principal, curateurPrincipal, date(2003, 1, 1), date(2004, 12, 31));
+			addCuratelle(conjoint, curateurConjoint, date(2004, 1, 1), date(2005, 12, 31));
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5316,26 +5205,21 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants avec un représentant
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique curateurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+			PersonnePhysique curateurConjoint = addHabitant(noIndividuTuteurConjoint);
 
-				PersonnePhysique curateurPrincipal = addHabitant(noIndividuTuteurPrincipal);
-				PersonnePhysique curateurConjoint = addHabitant(noIndividuTuteurConjoint);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				// 2003 : principal sous tutelle
-				// 2004 : principal+conjoint sous tutelle
-				// 2005 : conjoint sous tutelle
-				addTutelle(principal, curateurPrincipal, null, date(2003, 1, 1), date(2004, 12, 31));
-				addTutelle(conjoint, curateurConjoint, null, date(2004, 1, 1), date(2005, 12, 31));
-
-				return menage.getNumero();
-			}
+			// 2003 : principal sous tutelle
+			// 2004 : principal+conjoint sous tutelle
+			// 2005 : conjoint sous tutelle
+			addTutelle(principal, curateurPrincipal, null, date(2003, 1, 1), date(2004, 12, 31));
+			addTutelle(conjoint, curateurConjoint, null, date(2004, 1, 1), date(2005, 12, 31));
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5497,24 +5381,19 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
-				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(1990, 7, 14), null);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(1990, 7, 14), null);
-				MenageCommun menage = ensemble.getMenage();
-
-				// 2000-2004 : principal sous tutelle, conjoint en Suisse
-				// 2005-2008 : principal sous tutelle, conjoint hors canton
-				// dès 2009 : principal sous tutelle, conjoint hors Suisse
-				addTutelle(principal, tuteurPrincipal, null, date(2000, 1, 1), null);
-
-				return menage.getNumero();
-			}
+			// 2000-2004 : principal sous tutelle, conjoint en Suisse
+			// 2005-2008 : principal sous tutelle, conjoint hors canton
+			// dès 2009 : principal sous tutelle, conjoint hors Suisse
+			addTutelle(principal, tuteurPrincipal, null, date(2000, 1, 1), null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5650,23 +5529,18 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
-				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateDeces);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateDeces);
-				MenageCommun menage = ensemble.getMenage();
-
-				// 2000 : mise sous tutelle de monsieur
-				// 2009 : décès de madame
-				addTutelle(principal, tuteurPrincipal, null, date(2000, 1, 1), null);
-
-				return menage.getNumero();
-			}
+			// 2000 : mise sous tutelle de monsieur
+			// 2009 : décès de madame
+			addTutelle(principal, tuteurPrincipal, null, date(2000, 1, 1), null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5790,23 +5664,18 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
 
-				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateSeparation);
+			MenageCommun menage = ensemble.getMenage();
 
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateSeparation);
-				MenageCommun menage = ensemble.getMenage();
-
-				// 2000 : mise sous tutelle de monsieur
-				// 2009 : séparation du couple
-				addTutelle(principal, tuteurPrincipal, null, dateTutelle, null);
-
-				return menage.getNumero();
-			}
+			// 2000 : mise sous tutelle de monsieur
+			// 2009 : séparation du couple
+			addTutelle(principal, tuteurPrincipal, null, dateTutelle, null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -5935,20 +5804,15 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont le principal est sous tutelle et madame décédée
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			final PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+			addTutelle(principal, tuteurPrincipal, null, dateDebutTutelle, dateFinTutelle);
 
-				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				final PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
-				addTutelle(principal, tuteurPrincipal, null, dateDebutTutelle, dateFinTutelle);
-
-				final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, null);
-				final MenageCommun menage = ensemble.getMenage();
-
-				return menage.getNumero();
-			}
+			final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, null);
+			final MenageCommun menage = ensemble.getMenage();
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
@@ -7602,38 +7466,32 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// vérification du nom complet du ménage et assignation de la surcharge d'adresse
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
-				assertNotNull(nom);
-				assertEquals(2, nom.size());
-				assertEquals("Alexander Popov", nom.get(0));
-				assertEquals("Sabrina Popova", nom.get(1));
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			final List<String> nom = adresseService.getNomCourrier(mc, null, false);
+			assertNotNull(nom);
+			assertEquals(2, nom.size());
+			assertEquals("Alexander Popov", nom.get(0));
+			assertEquals("Sabrina Popova", nom.get(1));
 
-				final PersonnePhysique m = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuM);
-				final AdresseCivile adresseSurchargee = new AdresseCivile();
-				adresseSurchargee.setDateDebut(date(2009, 1, 1));
-				adresseSurchargee.setType(TypeAdresseCivil.PRINCIPALE);
-				adresseSurchargee.setUsage(TypeAdresseTiers.COURRIER);
-				m.addAdresseTiers(adresseSurchargee);
-				return null;
-			}
+			final PersonnePhysique m = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuM);
+			final AdresseCivile adresseSurchargee = new AdresseCivile();
+			adresseSurchargee.setDateDebut(date(2009, 1, 1));
+			adresseSurchargee.setType(TypeAdresseCivil.PRINCIPALE);
+			adresseSurchargee.setUsage(TypeAdresseTiers.COURRIER);
+			m.addAdresseTiers(adresseSurchargee);
+			return null;
 		});
 
 		// vérification du nom complet du ménage
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				final List<String> nom = adresseService.getNomCourrier(mc, null, false);
-				assertNotNull(nom);
-				assertEquals(2, nom.size());
-				assertEquals("Alexander Popov", nom.get(0));
-				assertEquals("Sabrina Popova", nom.get(1));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+			final List<String> nom = adresseService.getNomCourrier(mc, null, false);
+			assertNotNull(nom);
+			assertEquals(2, nom.size());
+			assertEquals("Alexander Popov", nom.get(0));
+			assertEquals("Sabrina Popova", nom.get(1));
+			return null;
 		});
 	}
 
@@ -7656,23 +7514,19 @@ public class AdresseServiceTest extends BusinessTest {
 		/*
 		 * Crée deux contribuable Jean (A) et Jacques (B) et ajoute une adresse 'autre tiers' sur Jean qui pointe vers Jacques.
 		 */
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique jean = addNonHabitant("Jean", "A", date(1980, 1, 1), Sexe.MASCULIN);
+			addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			ids.jean = jean.getId();
 
-				final PersonnePhysique jean = addNonHabitant("Jean", "A", date(1980, 1, 1), Sexe.MASCULIN);
-				addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				ids.jean = jean.getId();
+			final PersonnePhysique jacques = addNonHabitant("Jacques", "B", date(1980, 1, 1), Sexe.MASCULIN);
+			final AdresseSuisse adresseJacques = addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.CheminDeRiondmorcel);
+			ids.jacques = jacques.getId();
+			ids.adresseJacques = adresseJacques.getId();
 
-				final PersonnePhysique jacques = addNonHabitant("Jacques", "B", date(1980, 1, 1), Sexe.MASCULIN);
-				final AdresseSuisse adresseJacques = addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1980, 1, 1), null, MockRue.CossonayVille.CheminDeRiondmorcel);
-				ids.jacques = jacques.getId();
-				ids.adresseJacques = adresseJacques.getId();
-
-				final AdresseAutreTiers adresseJean = addAdresseAutreTiers(jean, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, TypeAdresseTiers.REPRESENTATION, jacques);
-				ids.adresseJean = adresseJean.getId();
-				return null;
-			}
+			final AdresseAutreTiers adresseJean = addAdresseAutreTiers(jean, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, TypeAdresseTiers.REPRESENTATION, jacques);
+			ids.adresseJean = adresseJean.getId();
+			return null;
 		});
 
 		final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, ids.jean);
@@ -7722,31 +7576,26 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		// Crée un ménage composé de deux habitants dont monsieur est sous tutelle et madame possède un représentant conventionnel, qui se séparent puis se réconcilient
-		final long noMenageCommun = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final long noMenageCommun = doInNewTransactionAndSession(status -> {
+			PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+			PersonnePhysique representantConjoint = addHabitant(noIndividuRepresentantConjoint);
 
-				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
-				PersonnePhysique representantConjoint = addHabitant(noIndividuRepresentantConjoint);
+			// 1979 : mariage
+			// 2006 : séparation
+			PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+			PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateSeparation);
+			MenageCommun menage = ensemble.getMenage();
 
-				// 1979 : mariage
-				// 2006 : séparation
-				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateMariage, dateSeparation);
-				MenageCommun menage = ensemble.getMenage();
+			// 2007 : réconciliation
+			addAppartenanceMenage(menage, principal, dateReconciliation, null, false);
+			addAppartenanceMenage(menage, conjoint, dateReconciliation, null, false);
 
-				// 2007 : réconciliation
-				addAppartenanceMenage(menage, principal, dateReconciliation, null, false);
-				addAppartenanceMenage(menage, conjoint, dateReconciliation, null, false);
-
-				// 1995 : madame prend un représentant
-				// 2004 : mise sous tutelle de monsieur
-				addRepresentationConventionnelle(conjoint, representantConjoint, date(1995, 2, 13), false);
-				addTutelle(principal, tuteurPrincipal, null, dateTutelle, null);
-
-				return menage.getNumero();
-			}
+			// 1995 : madame prend un représentant
+			// 2004 : mise sous tutelle de monsieur
+			addRepresentationConventionnelle(conjoint, representantConjoint, date(1995, 2, 13), false);
+			addTutelle(principal, tuteurPrincipal, null, dateTutelle, null);
+			return menage.getNumero();
 		});
 
 		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);

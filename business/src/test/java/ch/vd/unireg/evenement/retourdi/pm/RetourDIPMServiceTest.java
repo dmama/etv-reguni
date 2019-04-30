@@ -10,13 +10,11 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseMandataireSuisse;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -132,11 +130,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// traitement de ces données
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus transactionStatus) throws Exception {
-					service.traiterRetour(retour, Collections.emptyMap());
-				}
+			doInNewTransactionAndSession(transactionStatus -> {
+				service.traiterRetour(retour, Collections.emptyMap());
+				return null;
 			});
 			Assert.fail("La transaction ne doit pas pouvoir avoir été committée normalement, puisque le tiers 42 n'existe pas...");
 		}
@@ -160,11 +156,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// traitement de ces données
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus transactionStatus) throws Exception {
-					service.traiterRetour(retour, Collections.emptyMap());
-				}
+			doInNewTransactionAndSession(transactionStatus -> {
+				service.traiterRetour(retour, Collections.emptyMap());
+				return null;
 			});
 			Assert.fail("La transaction ne doit pas pouvoir avoir été committée normalement, puisque le tiers donné n'est pas une entreprise...");
 		}
@@ -196,11 +190,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// traitement de ces données
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus transactionStatus) throws Exception {
-					service.traiterRetour(retour, Collections.emptyMap());
-				}
+			doInNewTransactionAndSession(transactionStatus -> {
+				service.traiterRetour(retour, Collections.emptyMap());
+				return null;
 			});
 			Assert.fail("La transaction ne doit pas pouvoir avoir été committée normalement, puisque la déclaration n'existe pas...");
 		}
@@ -241,11 +233,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// on n'a rien fait, juste une remarque...
@@ -325,11 +315,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// on n'a rien fait, juste une remarque...
@@ -408,11 +396,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// on n'a rien fait, juste une remarque...
@@ -482,11 +468,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -585,11 +569,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -687,11 +669,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -795,11 +775,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -903,11 +881,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -1013,11 +989,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -1147,11 +1121,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résulat...
@@ -1267,11 +1239,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
@@ -1423,11 +1393,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// traitement de ces données
 		// exceptionnellement, on va dire que les tâches d'envoi de DI sont générables depuis 2014 (pour bien voir que le trou est remplit par une tâche d'envoi de DI)
-		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(2014), new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(2014), transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
@@ -1626,11 +1594,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremiereAnnee);
 			}
 		};
-		doInNewTransactionAndSessionWithInitCleanup(initCleanup, new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSessionWithInitCleanup(initCleanup, transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
@@ -1809,11 +1775,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
@@ -1944,11 +1908,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données (en mettant la première année de calcul des tâches de DI PM à 2014 pour comprendre ce qui se passe sur la DI 2014)
-		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
@@ -2115,11 +2077,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données (en mettant la première année de calcul des tâches de DI PM à 2014 pour comprendre ce qui se passe sur la DI 2014)
-		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats de la prise en compte des données de retour
@@ -2266,11 +2226,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2340,11 +2298,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2417,11 +2373,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2497,11 +2451,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2568,11 +2520,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2651,11 +2601,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2735,11 +2683,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2831,11 +2777,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -2924,11 +2868,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -3017,11 +2959,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -3129,11 +3069,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat obtenu
@@ -3241,11 +3179,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3318,11 +3254,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3402,11 +3336,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3487,11 +3419,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3572,11 +3502,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3657,11 +3585,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3749,11 +3675,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3842,11 +3766,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résulats
@@ -3936,11 +3858,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4010,11 +3930,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4061,11 +3979,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4132,11 +4048,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4206,11 +4120,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4288,11 +4200,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4362,11 +4272,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4436,11 +4344,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -4511,11 +4417,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -4581,11 +4485,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -4661,11 +4563,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -4744,11 +4644,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -4814,11 +4712,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -4888,11 +4784,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -4987,11 +4881,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5092,11 +4984,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5196,11 +5086,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5305,11 +5193,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5414,11 +5300,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5531,11 +5415,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5647,11 +5529,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5750,11 +5630,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5865,11 +5743,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -5986,11 +5862,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6107,11 +5981,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6224,11 +6096,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6330,11 +6200,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6427,11 +6295,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6495,11 +6361,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6567,11 +6431,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6640,11 +6502,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6712,11 +6572,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6784,11 +6642,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6856,11 +6712,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -6924,11 +6778,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(id, annee, 1, null, infoMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -7001,11 +6853,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -7106,11 +6956,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat : tout s'est bien passé
@@ -7238,11 +7086,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -7342,11 +7188,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -7437,11 +7281,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification du résultat
@@ -7528,11 +7370,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -7605,11 +7445,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, null, mandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -7699,11 +7537,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.PAPIER);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats
@@ -7740,11 +7576,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.emptyMap());
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			service.traiterRetour(retour, Collections.emptyMap());
+			return null;
 		});
 
 		// vérification des résultats

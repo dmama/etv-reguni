@@ -6,7 +6,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -33,12 +32,9 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 	@Test
 	public void testSubmitPrenomNomVides() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique nh = addNonHabitant("", "temp", date(1967, 11, 1), Sexe.FEMININ);
-				return nh.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique nh = addNonHabitant("", "temp", date(1967, 11, 1), Sexe.FEMININ);
+			return nh.getNumero();
 		});
 
 		// affiche la page de modification du tiers

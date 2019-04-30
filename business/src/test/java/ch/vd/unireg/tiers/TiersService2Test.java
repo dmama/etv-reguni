@@ -8,12 +8,10 @@ import java.util.Map;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
@@ -166,30 +164,24 @@ public class TiersService2Test extends BusinessTest {
 	@Test
 	public void testUpdateForPrincipalMotifEtAutoriteFiscaleEnMemeTemps() throws Exception {
 
-		final Long ppId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Jean", "Dufoot", date(1956, 3, 2), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.FUSION_COMMUNES, MockCommune.Vevey);
+		final Long ppId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jean", "Dufoot", date(1956, 3, 2), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.FUSION_COMMUNES, MockCommune.Vevey);
 
-				// on met-à-jour à la fois le motif de fermeture et l'autorité fiscale
-				tiersService.updateForPrincipal(ffp, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne.getNoOFS());
-				return pp.getNumero();
-			}
+			// on met-à-jour à la fois le motif de fermeture et l'autorité fiscale
+			tiersService.updateForPrincipal(ffp, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne.getNoOFS());
+			return pp.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
-				assertNotNull(fors);
-				assertEquals(1, fors.size());
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 
-				final ForFiscalPrincipalPP f0 = fors.get(0);
-				assertForPrincipal(date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, f0);
-				return null;
-			}
+			final ForFiscalPrincipalPP f0 = fors.get(0);
+			assertForPrincipal(date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, f0);
+			return null;
 		});
 	}
 
@@ -237,23 +229,19 @@ public class TiersService2Test extends BusinessTest {
 		});
 
 		// recalcul du flag habitant sur cet individu
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				tiersService.updateHabitantFlag(pp, noIndividu, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			tiersService.updateHabitantFlag(pp, noIndividu, null);
+			return null;
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertFalse("Redevenu habitant ?", pp.isHabitantVD());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertFalse("Redevenu habitant ?", pp.isHabitantVD());
+			return null;
 		});
 	}
 
@@ -291,23 +279,19 @@ public class TiersService2Test extends BusinessTest {
 		});
 
 		// recalcul du flag habitant sur cet individu
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				tiersService.updateHabitantFlag(pp, noIndividu, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			tiersService.updateHabitantFlag(pp, noIndividu, null);
+			return null;
 		});
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertFalse("Redevenu habitant ?", pp.isHabitantVD());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertFalse("Redevenu habitant ?", pp.isHabitantVD());
+			return null;
 		});
 	}
 

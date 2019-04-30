@@ -8,7 +8,7 @@ import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 /**
  * Exception lancée quand une demande d'identifcation fournit plus de résultats que le seuil autorisé
  */
-public class TooManyIdentificationPossibilitiesException extends Exception {
+public class TooManyIdentificationPossibilitiesException extends RuntimeException {
 
 	private final int maxAllowedSize;
 	private final List<Long> examplesFound;

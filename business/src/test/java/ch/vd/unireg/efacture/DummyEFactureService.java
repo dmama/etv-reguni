@@ -6,16 +6,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.type.TypeDocument;
 
 public class DummyEFactureService implements EFactureService {
 
 	@Override
-	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EFactureException {
 		return StringUtils.EMPTY;
 	}
 
@@ -30,22 +30,22 @@ public class DummyEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		return StringUtils.EMPTY;
 	}
 
@@ -55,11 +55,11 @@ public class DummyEFactureService implements EFactureService {
 	}
 
 	@Override
-	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EFactureException {
 		return StringUtils.EMPTY;
 	}
 
 	@Override
-	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EFactureException {
 	}
 }

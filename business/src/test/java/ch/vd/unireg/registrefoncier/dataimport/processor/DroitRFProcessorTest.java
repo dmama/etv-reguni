@@ -9,12 +9,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
@@ -1686,40 +1684,35 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
 
 		// précondition : il y a déjà un droit entre immeubles dans la base de données
-		final Long immId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long immId = doInNewTransaction(status -> {
+			BienFondsRF immeuble1 = new BienFondsRF();
+			immeuble1.setIdRF(idImmeubleRF1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-				BienFondsRF immeuble1 = new BienFondsRF();
-				immeuble1.setIdRF(idImmeubleRF1);
-				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
+			BienFondsRF immeuble2 = new BienFondsRF();
+			immeuble2.setIdRF(idImmeubleRF2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
-				BienFondsRF immeuble2 = new BienFondsRF();
-				immeuble2.setIdRF(idImmeubleRF2);
-				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
+			ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
+			imm.setIdRF(idImmeubleRF1);
+			imm.setImmeuble(immeuble1);
+			imm = (ImmeubleBeneficiaireRF) ayantDroitRFDAO.save(imm);
 
-				ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
-				imm.setIdRF(idImmeubleRF1);
-				imm.setImmeuble(immeuble1);
-				imm = (ImmeubleBeneficiaireRF) ayantDroitRFDAO.save(imm);
-
-				// on droit différent de celui qui arrive dans le fichier XML
-				final DroitProprieteImmeubleRF droit0 = new DroitProprieteImmeubleRF();
-				// master id RF différent
-				droit0.setMasterIdRF("1f109152381009be0138100c87000000");
-				droit0.setVersionIdRF("8af806fc40347c370141c079ff970020");
-				droit0.setDateDebut(dateImportInitial);
-				droit0.setDateDebutMetier(RegDate.get(2007, 1, 2));
-				droit0.setMotifDebut("Appropriation illégitime");
-				droit0.setAyantDroit(imm);
-				droit0.setImmeuble(immeuble2);
-				droit0.setPart(new Fraction(1, 2));
-				droit0.setRegime(GenrePropriete.FONDS_DOMINANT);
-				droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 1, 2), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
-				droitRFDAO.save(droit0);
-
-				return imm.getId();
-			}
+			// on droit différent de celui qui arrive dans le fichier XML
+			final DroitProprieteImmeubleRF droit0 = new DroitProprieteImmeubleRF();
+			// master id RF différent
+			droit0.setMasterIdRF("1f109152381009be0138100c87000000");
+			droit0.setVersionIdRF("8af806fc40347c370141c079ff970020");
+			droit0.setDateDebut(dateImportInitial);
+			droit0.setDateDebutMetier(RegDate.get(2007, 1, 2));
+			droit0.setMotifDebut("Appropriation illégitime");
+			droit0.setAyantDroit(imm);
+			droit0.setImmeuble(immeuble2);
+			droit0.setPart(new Fraction(1, 2));
+			droit0.setRegime(GenrePropriete.FONDS_DOMINANT);
+			droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 1, 2), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
+			droitRFDAO.save(droit0);
+			return imm.getId();
 		});
 
 		// on envoie un fichier d'import qui ne contient aucun droit
@@ -1730,43 +1723,38 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.DROIT, TypeMutationRF.SUPPRESSION, idImmeubleRF2, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et tous les droits existants sont fermés
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final ImmeubleBeneficiaireRF imm = (ImmeubleBeneficiaireRF) ayantDroitRFDAO.get(immId);
+			assertNotNull(imm);
 
-				final ImmeubleBeneficiaireRF imm = (ImmeubleBeneficiaireRF) ayantDroitRFDAO.get(immId);
-				assertNotNull(imm);
+			final Set<DroitProprieteRF> droits = imm.getDroitsPropriete();
+			assertNotNull(droits);
+			assertEquals(1, droits.size());
 
-				final Set<DroitProprieteRF> droits = imm.getDroitsPropriete();
-				assertNotNull(droits);
-				assertEquals(1, droits.size());
+			// le droit0 doit être fermé
+			final DroitProprieteImmeubleRF droit0 = (DroitProprieteImmeubleRF) droits.iterator().next();
+			assertNotNull(droit0);
+			assertEquals("1f109152381009be0138100c87000000", droit0.getMasterIdRF());
+			assertEquals("8af806fc40347c370141c079ff970020", droit0.getVersionIdRF());
+			assertEquals(dateImportInitial, droit0.getDateDebut());
+			assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
+			assertEquals("Appropriation illégitime", droit0.getMotifDebut());
+			assertEquals(RegDate.get(2007, 1, 2), droit0.getDateDebutMetier());
+			assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
+			assertEquals(new Fraction(1, 2), droit0.getPart());
+			assertEquals(GenrePropriete.FONDS_DOMINANT, droit0.getRegime());
 
-				// le droit0 doit être fermé
-				final DroitProprieteImmeubleRF droit0 = (DroitProprieteImmeubleRF) droits.iterator().next();
-				assertNotNull(droit0);
-				assertEquals("1f109152381009be0138100c87000000", droit0.getMasterIdRF());
-				assertEquals("8af806fc40347c370141c079ff970020", droit0.getVersionIdRF());
-				assertEquals(dateImportInitial, droit0.getDateDebut());
-				assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
-				assertEquals("Appropriation illégitime", droit0.getMotifDebut());
-				assertEquals(RegDate.get(2007, 1, 2), droit0.getDateDebutMetier());
-				assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
-				assertEquals(new Fraction(1, 2), droit0.getPart());
-				assertEquals(GenrePropriete.FONDS_DOMINANT, droit0.getRegime());
-
-				final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
-				assertEquals(1, raisons0.size());
-				assertRaisonAcquisition(RegDate.get(2007, 1, 2), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0), raisons0.iterator().next());
-			}
+			final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+			assertEquals(1, raisons0.size());
+			assertRaisonAcquisition(RegDate.get(2007, 1, 2), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0), raisons0.iterator().next());
+			return null;
 		});
 	}
 

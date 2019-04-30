@@ -6,19 +6,18 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -91,12 +90,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				return addHabitant(noIndividu).getNumero();
-			}
-		});
+		final long ppId = doInNewTransactionAndSession(status -> addHabitant(noIndividu).getNumero());
 
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
@@ -125,14 +119,11 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setAnnule(true);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ffp.setAnnule(true);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -162,13 +153,10 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -205,13 +193,10 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				return couple.getMenage().getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			return couple.getMenage().getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -251,16 +236,13 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setAnnule(true);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ffp.setAnnule(true);
+			return mc.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -300,15 +282,12 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return mc.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -355,14 +334,11 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				final PersonnePhysique mme = addHabitant(noIndividuAutre);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				return couple.getMenage().getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			final PersonnePhysique mme = addHabitant(noIndividuAutre);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			return couple.getMenage().getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -408,17 +384,14 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				final PersonnePhysique mme = addHabitant(noIndividuAutre);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setAnnule(true);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			final PersonnePhysique mme = addHabitant(noIndividuAutre);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ffp.setAnnule(true);
+			return mc.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -464,16 +437,13 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				final PersonnePhysique mme = addHabitant(noIndividuAutre);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			final PersonnePhysique mme = addHabitant(noIndividuAutre);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return mc.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -524,14 +494,11 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				final PersonnePhysique mme = addHabitant(noIndividuAutre);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				return couple.getMenage().getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			final PersonnePhysique mme = addHabitant(noIndividuAutre);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			return couple.getMenage().getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -582,17 +549,14 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				final PersonnePhysique mme = addHabitant(noIndividuAutre);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setAnnule(true);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			final PersonnePhysique mme = addHabitant(noIndividuAutre);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ffp.setAnnule(true);
+			return mc.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -643,16 +607,13 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				final PersonnePhysique mme = addHabitant(noIndividuAutre);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			final PersonnePhysique mme = addHabitant(noIndividuAutre);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return mc.getNumero();
 		});
 
 		// envoi de l'événement dans le handler
@@ -699,12 +660,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				return addHabitant(noIndividu).getNumero();
-			}
-		});
+		final long ppId = doInNewTransactionAndSession(status -> addHabitant(noIndividu).getNumero());
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
@@ -737,14 +693,11 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setAnnule(true);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ffp.setAnnule(true);
+			return pp.getNumero();
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
@@ -778,14 +731,11 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addDecisionAci(pp,date(RegDate.get().year()-1,1,1),null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addDecisionAci(pp, date(RegDate.get().year() - 1, 1, 1), null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return pp.getNumero();
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
@@ -817,13 +767,10 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// mise en place fiscale (pour la PP)
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return pp.getNumero();
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);

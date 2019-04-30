@@ -10,7 +10,6 @@ import ch.vd.infrastructure.model.rest.CommuneSimple;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -148,13 +147,7 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 		return doInNewTransaction(transactionStatus -> {
 			final DemandeDegrevementICI dd = hibernateTemplate.get(DemandeDegrevementICI.class, idDegrevement);
 			assertNotNull(dd);
-
-			try {
-				return impressionDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement, duplicata);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
+			return impressionDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement, duplicata);
 		});
 	}
 
@@ -162,13 +155,7 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 		return doInNewTransaction(transactionStatus -> {
 			final DemandeDegrevementICI dd = hibernateTemplate.get(DemandeDegrevementICI.class, idDegrevement);
 			assertNotNull(dd);
-
-			try {
-				return impressionRappelDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
+			return impressionRappelDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement);
 		});
 	}
 

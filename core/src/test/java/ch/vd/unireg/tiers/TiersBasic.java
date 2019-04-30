@@ -4,13 +4,11 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.type.CategorieIdentifiant;
@@ -33,89 +31,90 @@ public class TiersBasic {
 	 *
 	 * @param hibernateTemplate  l'hibernate template
 	 * @param transactionManager le transaction manager
-	 * @throws Exception en cas de problème
 	 */
-	public static void loadDatabase(final HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager) throws Exception {
+	public static void loadDatabase(final HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager) {
 
-		doInNewTransaction(status -> {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.execute(status -> {
 			PersonnePhysique pp0 = new PersonnePhysique();
 			pp0.setNumero(10006789L);
-			pp0.setMouvementsDossier(new HashSet());
-			pp0.setSituationsFamille(new HashSet());
+			pp0.setMouvementsDossier(new HashSet<>());
+			pp0.setSituationsFamille(new HashSet<>());
 			pp0.setDebiteurInactif(false);
 			pp0.setLogModifDate(new Timestamp(1199142000000L));
-			pp0.setIdentificationsPersonnes(new HashSet());
+			pp0.setIdentificationsPersonnes(new HashSet<>());
 			pp0.setNumeroIndividu(282315L);
 			pp0.setHabitant(true);
-			pp0.setAdressesTiers(new HashSet());
-			pp0.setDocumentsFiscaux(new HashSet());
-			pp0.setDroitsAccesAppliques(new HashSet());
-			pp0.setForsFiscaux(new HashSet());
-			pp0.setRapportsObjet(new HashSet());
-			pp0.setRapportsSujet(new HashSet());
+			pp0.setAdressesTiers(new HashSet<>());
+			pp0.setDocumentsFiscaux(new HashSet<>());
+			pp0.setDroitsAccesAppliques(new HashSet<>());
+			pp0.setForsFiscaux(new HashSet<>());
+			pp0.setRapportsObjet(new HashSet<>());
+			pp0.setRapportsSujet(new HashSet<>());
 			pp0 = hibernateTemplate.merge(pp0);
 
 			DebiteurPrestationImposable dpi0 = new DebiteurPrestationImposable();
 			dpi0.setNumero(1001234L);
 			dpi0.setCategorieImpotSource(CategorieImpotSource.ADMINISTRATEURS);
-			dpi0.setPeriodicites(new HashSet());
+			dpi0.setPeriodicites(new HashSet<>());
 			dpi0.setDebiteurInactif(false);
 			dpi0.setLogModifDate(new Timestamp(1199142000000L));
 			dpi0.setModeCommunication(ModeCommunication.SITE_WEB);
 			dpi0.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
-			dpi0.setAdressesTiers(new HashSet());
-			dpi0.setDocumentsFiscaux(new HashSet());
-			dpi0.setForsFiscaux(new HashSet());
-			dpi0.setRapportsObjet(new HashSet());
-			dpi0.setRapportsSujet(new HashSet());
+			dpi0.setAdressesTiers(new HashSet<>());
+			dpi0.setDocumentsFiscaux(new HashSet<>());
+			dpi0.setForsFiscaux(new HashSet<>());
+			dpi0.setRapportsObjet(new HashSet<>());
+			dpi0.setRapportsSujet(new HashSet<>());
 			dpi0 = hibernateTemplate.merge(dpi0);
 
 			Entreprise e0 = new Entreprise();
 			e0.setNumero(9876L);
-			e0.setMouvementsDossier(new HashSet());
+			e0.setMouvementsDossier(new HashSet<>());
 			e0.setDebiteurInactif(false);
 			e0.setLogModifDate(new Timestamp(1199142000000L));
-			e0.setAdressesTiers(new HashSet());
-			e0.setDocumentsFiscaux(new HashSet());
-			e0.setForsFiscaux(new HashSet());
-			e0.setRapportsObjet(new HashSet());
-			e0.setRapportsSujet(new HashSet());
+			e0.setAdressesTiers(new HashSet<>());
+			e0.setDocumentsFiscaux(new HashSet<>());
+			e0.setForsFiscaux(new HashSet<>());
+			e0.setRapportsObjet(new HashSet<>());
+			e0.setRapportsSujet(new HashSet<>());
 			e0 = hibernateTemplate.merge(e0);
 
 			PersonnePhysique pp1 = new PersonnePhysique();
 			pp1.setNumero(10007890L);
-			pp1.setMouvementsDossier(new HashSet());
-			pp1.setSituationsFamille(new HashSet());
+			pp1.setMouvementsDossier(new HashSet<>());
+			pp1.setSituationsFamille(new HashSet<>());
 			pp1.setDebiteurInactif(false);
 			pp1.setLogModifDate(new Timestamp(1199142000000L));
-			pp1.setIdentificationsPersonnes(new HashSet());
+			pp1.setIdentificationsPersonnes(new HashSet<>());
 			pp1.setNumeroIndividu(333528L);
 			pp1.setHabitant(true);
-			pp1.setAdressesTiers(new HashSet());
-			pp1.setDocumentsFiscaux(new HashSet());
-			pp1.setDroitsAccesAppliques(new HashSet());
-			pp1.setForsFiscaux(new HashSet());
-			pp1.setRapportsObjet(new HashSet());
-			pp1.setRapportsSujet(new HashSet());
+			pp1.setAdressesTiers(new HashSet<>());
+			pp1.setDocumentsFiscaux(new HashSet<>());
+			pp1.setDroitsAccesAppliques(new HashSet<>());
+			pp1.setForsFiscaux(new HashSet<>());
+			pp1.setRapportsObjet(new HashSet<>());
+			pp1.setRapportsSujet(new HashSet<>());
 			pp1 = hibernateTemplate.merge(pp1);
 
 			MenageCommun mc0 = new MenageCommun();
 			mc0.setNumero(10008901L);
-			mc0.setMouvementsDossier(new HashSet());
-			mc0.setSituationsFamille(new HashSet());
+			mc0.setMouvementsDossier(new HashSet<>());
+			mc0.setSituationsFamille(new HashSet<>());
 			mc0.setDebiteurInactif(false);
 			mc0.setLogModifDate(new Timestamp(1199142000000L));
-			mc0.setAdressesTiers(new HashSet());
-			mc0.setDocumentsFiscaux(new HashSet());
-			mc0.setForsFiscaux(new HashSet());
-			mc0.setRapportsObjet(new HashSet());
-			mc0.setRapportsSujet(new HashSet());
+			mc0.setAdressesTiers(new HashSet<>());
+			mc0.setDocumentsFiscaux(new HashSet<>());
+			mc0.setForsFiscaux(new HashSet<>());
+			mc0.setRapportsObjet(new HashSet<>());
+			mc0.setRapportsSujet(new HashSet<>());
 			mc0 = hibernateTemplate.merge(mc0);
 
 			PersonnePhysique pp2 = new PersonnePhysique();
 			pp2.setNumero(10001111L);
-			pp2.setMouvementsDossier(new HashSet());
-			pp2.setSituationsFamille(new HashSet());
+			pp2.setMouvementsDossier(new HashSet<>());
+			pp2.setSituationsFamille(new HashSet<>());
 			pp2.setDebiteurInactif(false);
 			pp2.setLogModifDate(new Timestamp(1199142000000L));
 			pp2.setDateNaissance(RegDate.get(1970, 1, 23));
@@ -124,131 +123,131 @@ public class TiersBasic {
 			pp2.setNumeroAssureSocial("1245100071000");
 			pp2.setPrenomUsuel("Andrea");
 			pp2.setSexe(Sexe.FEMININ);
-			pp2.setIdentificationsPersonnes(new HashSet());
+			pp2.setIdentificationsPersonnes(new HashSet<>());
 			pp2.setNumeroIndividu(10001111L);
 			pp2.setHabitant(false);
-			pp2.setAdressesTiers(new HashSet());
-			pp2.setDocumentsFiscaux(new HashSet());
-			pp2.setDroitsAccesAppliques(new HashSet());
-			pp2.setForsFiscaux(new HashSet());
-			pp2.setRapportsObjet(new HashSet());
-			pp2.setRapportsSujet(new HashSet());
+			pp2.setAdressesTiers(new HashSet<>());
+			pp2.setDocumentsFiscaux(new HashSet<>());
+			pp2.setDroitsAccesAppliques(new HashSet<>());
+			pp2.setForsFiscaux(new HashSet<>());
+			pp2.setRapportsObjet(new HashSet<>());
+			pp2.setRapportsSujet(new HashSet<>());
 			pp2 = hibernateTemplate.merge(pp2);
 
 			AutreCommunaute ac0 = new AutreCommunaute();
 			ac0.setNumero(2002222L);
 			ac0.setFormeJuridique(FormeJuridique.ASS);
 			ac0.setNom("Communaute XYZ");
-			ac0.setMouvementsDossier(new HashSet());
+			ac0.setMouvementsDossier(new HashSet<>());
 			ac0.setDebiteurInactif(false);
 			ac0.setLogModifDate(new Timestamp(1199142000000L));
-			ac0.setAdressesTiers(new HashSet());
-			ac0.setDocumentsFiscaux(new HashSet());
-			ac0.setForsFiscaux(new HashSet());
-			ac0.setRapportsObjet(new HashSet());
-			ac0.setRapportsSujet(new HashSet());
+			ac0.setAdressesTiers(new HashSet<>());
+			ac0.setDocumentsFiscaux(new HashSet<>());
+			ac0.setForsFiscaux(new HashSet<>());
+			ac0.setRapportsObjet(new HashSet<>());
+			ac0.setRapportsSujet(new HashSet<>());
 			ac0 = hibernateTemplate.merge(ac0);
 
 			PersonnePhysique pp3 = new PersonnePhysique();
 			pp3.setNumero(10000010L);
-			pp3.setMouvementsDossier(new HashSet());
-			pp3.setSituationsFamille(new HashSet());
+			pp3.setMouvementsDossier(new HashSet<>());
+			pp3.setSituationsFamille(new HashSet<>());
 			pp3.setDebiteurInactif(false);
 			pp3.setLogModifDate(new Timestamp(1199142000000L));
-			pp3.setIdentificationsPersonnes(new HashSet());
+			pp3.setIdentificationsPersonnes(new HashSet<>());
 			pp3.setNumeroIndividu(333526L);
 			pp3.setHabitant(true);
-			pp3.setAdressesTiers(new HashSet());
-			pp3.setDocumentsFiscaux(new HashSet());
-			pp3.setDroitsAccesAppliques(new HashSet());
-			pp3.setForsFiscaux(new HashSet());
-			pp3.setRapportsObjet(new HashSet());
-			pp3.setRapportsSujet(new HashSet());
+			pp3.setAdressesTiers(new HashSet<>());
+			pp3.setDocumentsFiscaux(new HashSet<>());
+			pp3.setDroitsAccesAppliques(new HashSet<>());
+			pp3.setForsFiscaux(new HashSet<>());
+			pp3.setRapportsObjet(new HashSet<>());
+			pp3.setRapportsSujet(new HashSet<>());
 			pp3 = hibernateTemplate.merge(pp3);
 
 			PersonnePhysique pp4 = new PersonnePhysique();
 			pp4.setNumero(10000001L);
-			pp4.setMouvementsDossier(new HashSet());
-			pp4.setSituationsFamille(new HashSet());
+			pp4.setMouvementsDossier(new HashSet<>());
+			pp4.setSituationsFamille(new HashSet<>());
 			pp4.setDebiteurInactif(false);
 			pp4.setLogModifDate(new Timestamp(1199142000000L));
-			pp4.setIdentificationsPersonnes(new HashSet());
+			pp4.setIdentificationsPersonnes(new HashSet<>());
 			pp4.setNumeroIndividu(333529L);
 			pp4.setHabitant(true);
-			pp4.setAdressesTiers(new HashSet());
-			pp4.setDocumentsFiscaux(new HashSet());
-			pp4.setDroitsAccesAppliques(new HashSet());
-			pp4.setForsFiscaux(new HashSet());
-			pp4.setRapportsObjet(new HashSet());
-			pp4.setRapportsSujet(new HashSet());
+			pp4.setAdressesTiers(new HashSet<>());
+			pp4.setDocumentsFiscaux(new HashSet<>());
+			pp4.setDroitsAccesAppliques(new HashSet<>());
+			pp4.setForsFiscaux(new HashSet<>());
+			pp4.setRapportsObjet(new HashSet<>());
+			pp4.setRapportsSujet(new HashSet<>());
 			pp4 = hibernateTemplate.merge(pp4);
 
 			PersonnePhysique pp5 = new PersonnePhysique();
 			pp5.setNumero(10000002L);
-			pp5.setMouvementsDossier(new HashSet());
-			pp5.setSituationsFamille(new HashSet());
+			pp5.setMouvementsDossier(new HashSet<>());
+			pp5.setSituationsFamille(new HashSet<>());
 			pp5.setDebiteurInactif(false);
 			pp5.setLogModifDate(new Timestamp(1199142000000L));
-			pp5.setIdentificationsPersonnes(new HashSet());
+			pp5.setIdentificationsPersonnes(new HashSet<>());
 			pp5.setNumeroIndividu(333527L);
 			pp5.setHabitant(true);
-			pp5.setAdressesTiers(new HashSet());
-			pp5.setDocumentsFiscaux(new HashSet());
-			pp5.setDroitsAccesAppliques(new HashSet());
-			pp5.setForsFiscaux(new HashSet());
-			pp5.setRapportsObjet(new HashSet());
-			pp5.setRapportsSujet(new HashSet());
+			pp5.setAdressesTiers(new HashSet<>());
+			pp5.setDocumentsFiscaux(new HashSet<>());
+			pp5.setDroitsAccesAppliques(new HashSet<>());
+			pp5.setForsFiscaux(new HashSet<>());
+			pp5.setRapportsObjet(new HashSet<>());
+			pp5.setRapportsSujet(new HashSet<>());
 			pp5 = hibernateTemplate.merge(pp5);
 
 			PersonnePhysique pp6 = new PersonnePhysique();
 			pp6.setNumero(10000004L);
-			pp6.setMouvementsDossier(new HashSet());
-			pp6.setSituationsFamille(new HashSet());
+			pp6.setMouvementsDossier(new HashSet<>());
+			pp6.setSituationsFamille(new HashSet<>());
 			pp6.setDebiteurInactif(false);
 			pp6.setLogModifDate(new Timestamp(1199142000000L));
-			pp6.setIdentificationsPersonnes(new HashSet());
+			pp6.setIdentificationsPersonnes(new HashSet<>());
 			pp6.setNumeroIndividu(333525L);
 			pp6.setHabitant(true);
-			pp6.setAdressesTiers(new HashSet());
-			pp6.setDocumentsFiscaux(new HashSet());
-			pp6.setDroitsAccesAppliques(new HashSet());
-			pp6.setForsFiscaux(new HashSet());
-			pp6.setRapportsObjet(new HashSet());
-			pp6.setRapportsSujet(new HashSet());
+			pp6.setAdressesTiers(new HashSet<>());
+			pp6.setDocumentsFiscaux(new HashSet<>());
+			pp6.setDroitsAccesAppliques(new HashSet<>());
+			pp6.setForsFiscaux(new HashSet<>());
+			pp6.setRapportsObjet(new HashSet<>());
+			pp6.setRapportsSujet(new HashSet<>());
 			pp6 = hibernateTemplate.merge(pp6);
 
 			PersonnePhysique pp7 = new PersonnePhysique();
 			pp7.setNumero(10000005L);
-			pp7.setMouvementsDossier(new HashSet());
-			pp7.setSituationsFamille(new HashSet());
+			pp7.setMouvementsDossier(new HashSet<>());
+			pp7.setSituationsFamille(new HashSet<>());
 			pp7.setDebiteurInactif(false);
 			pp7.setLogModifDate(new Timestamp(1199142000000L));
-			pp7.setIdentificationsPersonnes(new HashSet());
+			pp7.setIdentificationsPersonnes(new HashSet<>());
 			pp7.setNumeroIndividu(333524L);
 			pp7.setHabitant(true);
-			pp7.setAdressesTiers(new HashSet());
-			pp7.setDocumentsFiscaux(new HashSet());
-			pp7.setDroitsAccesAppliques(new HashSet());
-			pp7.setForsFiscaux(new HashSet());
-			pp7.setRapportsObjet(new HashSet());
-			pp7.setRapportsSujet(new HashSet());
+			pp7.setAdressesTiers(new HashSet<>());
+			pp7.setDocumentsFiscaux(new HashSet<>());
+			pp7.setDroitsAccesAppliques(new HashSet<>());
+			pp7.setForsFiscaux(new HashSet<>());
+			pp7.setRapportsObjet(new HashSet<>());
+			pp7.setRapportsSujet(new HashSet<>());
 			pp7 = hibernateTemplate.merge(pp7);
 
 			PersonnePhysique pp8 = new PersonnePhysique();
 			pp8.setNumero(10000005L);
-			pp8.setMouvementsDossier(new HashSet());
-			pp8.setSituationsFamille(new HashSet());
+			pp8.setMouvementsDossier(new HashSet<>());
+			pp8.setSituationsFamille(new HashSet<>());
 			pp8.setDebiteurInactif(false);
 			pp8.setLogModifDate(new Timestamp(1199142000000L));
-			pp8.setIdentificationsPersonnes(new HashSet());
+			pp8.setIdentificationsPersonnes(new HashSet<>());
 			pp8.setNumeroIndividu(333524L);
 			pp8.setHabitant(true);
-			pp8.setAdressesTiers(new HashSet());
-			pp8.setDocumentsFiscaux(new HashSet());
-			pp8.setDroitsAccesAppliques(new HashSet());
-			pp8.setForsFiscaux(new HashSet());
-			pp8.setRapportsObjet(new HashSet());
-			pp8.setRapportsSujet(new HashSet());
+			pp8.setAdressesTiers(new HashSet<>());
+			pp8.setDocumentsFiscaux(new HashSet<>());
+			pp8.setDroitsAccesAppliques(new HashSet<>());
+			pp8.setForsFiscaux(new HashSet<>());
+			pp8.setRapportsObjet(new HashSet<>());
+			pp8.setRapportsSujet(new HashSet<>());
 			pp8.setLogCreationDate(DateHelper.getDate(2010, 11, 20));
 			pp8 = hibernateTemplate.merge(pp8);
 
@@ -379,18 +378,6 @@ public class TiersBasic {
 			pp2.addIdentificationPersonne(ip1);
 			pp2 = hibernateTemplate.merge(pp2);
 			return null;
-		}, transactionManager);
+		});
 	}
-
-	private static <T> T doInNewTransaction(TransactionCallback<T> action, PlatformTransactionManager transactionManager) throws Exception {
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setPropagationBehavior(Propagation.REQUIRES_NEW.value());
-		try {
-			return template.execute(action);
-		}
-		catch (TxCallbackException e) {
-			throw (Exception) e.getCause();
-		}
-	}
-
 }

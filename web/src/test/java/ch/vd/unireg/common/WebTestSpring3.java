@@ -158,7 +158,7 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 	 * Le chargement des fichiers DbUnit est extrêmenent lent avec Oracle 11g : veuillez créer les données de test à partir du code Java (voir les méthodes addXXX).
 	 */
 	@Override
-	protected void loadDatabase(String filename) throws Exception {
+	protected void loadDatabase(String filename) {
 		super.loadDatabase(filename);
 		indexTiersData();
 	}

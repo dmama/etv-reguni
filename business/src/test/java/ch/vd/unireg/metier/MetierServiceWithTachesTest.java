@@ -146,12 +146,7 @@ public class MetierServiceWithTachesTest extends BusinessTest {
 			assertNotNull(madame);
 
 			// on annule le second mariage
-			try {
-				metierService.annuleMariage(monsieur, madame, dateSecondMariage, null);
-			}
-			catch (MetierServiceException e) {
-				throw new RuntimeException(e);
-			}
+			metierService.annuleMariage(monsieur, madame, dateSecondMariage, null);
 
 			// les fors fiscaux de monsieur et madame doivent être réouverts
 			final ForFiscalPrincipalPP ffpMonsieur = monsieur.getDernierForFiscalPrincipal();

@@ -4,10 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.validation.ValidationService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.Declaration;
@@ -64,57 +62,47 @@ public class QuittancementDeclarationTest extends BusinessTest {
 	public void testQuittancerDIPrecise() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationComplete2011);
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2011);
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de quittancement de DI
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationIdentifier identifier = new DeclarationIdentifier(id.intValue(), 2011, 1, null, null);
-				final DeclarationAck quittance = new DeclarationAck(identifier, "ADDI", DataHelper.coreToXMLv2(date(2012, 5, 26)));
-				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
-			}
+		doInNewTransaction(status -> {
+			final DeclarationIdentifier identifier = new DeclarationIdentifier(id.intValue(), 2011, 1, null, null);
+			final DeclarationAck quittance = new DeclarationAck(identifier, "ADDI", DataHelper.coreToXMLv2(date(2012, 5, 26)));
+			quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
+			assertTrue(etat instanceof EtatDeclarationRetournee);
 
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
-				assertTrue(etat instanceof EtatDeclarationRetournee);
-
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
-				assertEquals(date(2012, 5, 26), retour.getDateObtention());
-				assertEquals("ADDI", retour.getSource());
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+			assertEquals(date(2012, 5, 26), retour.getDateObtention());
+			assertEquals("ADDI", retour.getSource());
+			return null;
 		});
 	}
 
@@ -122,37 +110,30 @@ public class QuittancementDeclarationTest extends BusinessTest {
 	public void testQuittancerDIPreciseAbsente() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2011);
-				addEtatDeclarationEmise(di, date(2012, 1, 6));
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2011);
+			addEtatDeclarationEmise(di, date(2012, 1, 6));
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de quittancement de DI
 		try {
-			doInNewTransaction(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final DeclarationIdentifier identifier = new DeclarationIdentifier(id.intValue(), 2011, 10, null, null);        // le noseq 10 n'existe pas...
-					final DeclarationAck quittance = new DeclarationAck(identifier, "ADDI", DataHelper.coreToXMLv2(date(2012, 5, 26)));
-					quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
-				}
+			doInNewTransaction(status -> {
+				final DeclarationIdentifier identifier = new DeclarationIdentifier(id.intValue(), 2011, 10, null, null);        // le noseq 10 n'existe pas...
+				final DeclarationAck quittance = new DeclarationAck(identifier, "ADDI", DataHelper.coreToXMLv2(date(2012, 5, 26)));
+				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
+				return null;
 			});
 		}
 		catch (Exception e) {
@@ -161,20 +142,17 @@ public class QuittancementDeclarationTest extends BusinessTest {
 		}
 
 		// Vérifie que les informations personnelles ainsi que le type de DI n'ont pas été mis à jour
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
-
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
-				assertTrue(etat instanceof EtatDeclarationEmise);
-			}
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
+			assertTrue(etat instanceof EtatDeclarationEmise);
+			return null;
 		});
 	}
 
@@ -182,57 +160,47 @@ public class QuittancementDeclarationTest extends BusinessTest {
 	public void testQuittancerToutesDI() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument declarationComplete2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2011);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2011);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2011);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationComplete2011);
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2011);
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de quittancement de DI
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationIdentifier identifier = new DeclarationIdentifier(id.intValue(), 2011, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
-				final DeclarationAck quittance = new DeclarationAck(identifier, "ADDI", DataHelper.coreToXMLv2(date(2012, 5, 26)));
-				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
-			}
+		doInNewTransaction(status -> {
+			final DeclarationIdentifier identifier = new DeclarationIdentifier(id.intValue(), 2011, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
+			final DeclarationAck quittance = new DeclarationAck(identifier, "ADDI", DataHelper.coreToXMLv2(date(2012, 5, 26)));
+			quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2011, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
+			assertTrue(etat instanceof EtatDeclarationRetournee);
 
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
-				assertTrue(etat instanceof EtatDeclarationRetournee);
-
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
-				assertEquals(date(2012, 5, 26), retour.getDateObtention());
-				assertEquals("ADDI", retour.getSource());
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+			assertEquals(date(2012, 5, 26), retour.getDateObtention());
+			assertEquals("ADDI", retour.getSource());
+			return null;
 		});
 	}
 
@@ -255,34 +223,29 @@ public class QuittancementDeclarationTest extends BusinessTest {
 		});
 
 		// Simule la réception d'un événement de quittancement du questionnaire
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationIdentifier identifier = new DeclarationIdentifier((int) id, pf, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
-				final DeclarationAck quittance = new DeclarationAck(identifier, "E-DIPM", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
-				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
-			}
+		doInNewTransaction(status -> {
+			final DeclarationIdentifier identifier = new DeclarationIdentifier((int) id, pf, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
+			final DeclarationAck quittance = new DeclarationAck(identifier, "E-DIPM", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
+			quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations ont été prises en compte
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
 
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			final List<QuestionnaireSNC> list = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, pf, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<QuestionnaireSNC> list = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, pf, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
+			final QuestionnaireSNC qsnc = list.get(0);
+			final EtatDeclaration etat = qsnc.getDernierEtatDeclaration();
+			assertTrue(etat instanceof EtatDeclarationRetournee);
 
-				final QuestionnaireSNC qsnc = list.get(0);
-				final EtatDeclaration etat = qsnc.getDernierEtatDeclaration();
-				assertTrue(etat instanceof EtatDeclarationRetournee);
-
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
-				assertEquals(date(pf + 1, 5, 26), retour.getDateObtention());
-				assertEquals("E-DIPM", retour.getSource());
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+			assertEquals(date(pf + 1, 5, 26), retour.getDateObtention());
+			assertEquals("E-DIPM", retour.getSource());
+			return null;
 		});
 	}
 
@@ -297,34 +260,29 @@ public class QuittancementDeclarationTest extends BusinessTest {
 		final long id = buildEntreprise(dateDebut, pf);
 
 		// Simule la réception d'un événement de quittancement du questionnaire
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationIdentifier identifier = new DeclarationIdentifier((int) id, pf, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
-				final DeclarationAck quittance = new DeclarationAck(identifier, "CEDI", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
-				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
-			}
+		doInNewTransaction(status -> {
+			final DeclarationIdentifier identifier = new DeclarationIdentifier((int) id, pf, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
+			final DeclarationAck quittance = new DeclarationAck(identifier, "CEDI", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
+			quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations ont été prises en compte
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
 
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			final List<QuestionnaireSNC> list = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, pf, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<QuestionnaireSNC> list = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, pf, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
+			final QuestionnaireSNC qsnc = list.get(0);
+			final EtatDeclaration etat = qsnc.getDernierEtatDeclaration();
+			assertTrue(etat instanceof EtatDeclarationRetournee);
 
-				final QuestionnaireSNC qsnc = list.get(0);
-				final EtatDeclaration etat = qsnc.getDernierEtatDeclaration();
-				assertTrue(etat instanceof EtatDeclarationRetournee);
-
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
-				assertEquals(date(pf + 1, 5, 26), retour.getDateObtention());
-				assertEquals("CEDI", retour.getSource());
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+			assertEquals(date(pf + 1, 5, 26), retour.getDateObtention());
+			assertEquals("CEDI", retour.getSource());
+			return null;
 		});
 	}
 

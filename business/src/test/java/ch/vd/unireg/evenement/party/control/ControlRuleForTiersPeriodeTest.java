@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.party.control;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -24,23 +23,17 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2001, 3, 12), MotifFor.MAJORITE, MockCommune.Moudon);
-				return pp.getNumero();
-			}
+		final Long idPP = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2001, 3, 12), MotifFor.MAJORITE, MockCommune.Moudon);
+			return pp.getNumero();
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+			return controlRuleForTiersPeriode.check(pp, null);
 		});
 		assertTiersAssujetti(idPP, result);
 	}
@@ -57,23 +50,17 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2012, 12, 12), MotifFor.MAJORITE,date(2012,12,12),MotifFor.DEPART_HS, MockCommune.Moudon);
-				return pp.getNumero();
-			}
+		final Long idPP = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2012, 12, 12), MotifFor.MAJORITE, date(2012, 12, 12), MotifFor.DEPART_HS, MockCommune.Moudon);
+			return pp.getNumero();
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+			return controlRuleForTiersPeriode.check(pp, null);
 		});
 
 		assertTiersAssujetti(idPP, result);
@@ -91,23 +78,17 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 		});
 
 		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				addForPrincipal(pp, date(2011, 1, 12), MotifFor.MAJORITE,date(2011,12,12),MotifFor.DEPART_HS, MockCommune.Moudon);
-				return pp.getNumero();
-			}
+		final Long idPP = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			addForPrincipal(pp, date(2011, 1, 12), MotifFor.MAJORITE, date(2011, 12, 12), MotifFor.DEPART_HS, MockCommune.Moudon);
+			return pp.getNumero();
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForTiersPeriode controlRuleForTiersPeriode = new ControlRuleForTiersPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+			return controlRuleForTiersPeriode.check(pp, null);
 		});
 
 		assertControlNumeroKO(result);

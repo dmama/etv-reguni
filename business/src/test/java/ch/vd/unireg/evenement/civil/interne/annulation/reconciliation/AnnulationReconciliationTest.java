@@ -3,10 +3,8 @@ package ch.vd.unireg.evenement.civil.interne.annulation.reconciliation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -61,17 +59,15 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		});
 
 		// lancement du traitement de l'annulation de réconciliation
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
-				final AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateReconciliation);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
+			final AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateReconciliation);
 
-				final MessageCollector collector = buildMessageCollector();
-				annulation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", collector.getErreurs());
-				annulation.handle(collector);
-			}
+			final MessageCollector collector = buildMessageCollector();
+			annulation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", collector.getErreurs());
+			annulation.handle(collector);
+			return null;
 		});
 
 		// vérification du résultat
@@ -156,18 +152,16 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		});
 
 		// lancement du traitement de l'annulation de réconciliation
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividuMarie, date(2008, 12, 31));
-				final Individu conjoint = serviceCivil.getIndividu(noIndividuConjoint, date(2008, 12, 31));
-				final AnnulationReconciliation annulation = createAnnulationReconciliation(individu, conjoint, dateReconciliation);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividuMarie, date(2008, 12, 31));
+			final Individu conjoint = serviceCivil.getIndividu(noIndividuConjoint, date(2008, 12, 31));
+			final AnnulationReconciliation annulation = createAnnulationReconciliation(individu, conjoint, dateReconciliation);
 
-				final MessageCollector collector = buildMessageCollector();
-				annulation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", collector.getErreurs());
-				annulation.handle(collector);
-			}
+			final MessageCollector collector = buildMessageCollector();
+			annulation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de l'annulation de réconciliation", collector.getErreurs());
+			annulation.handle(collector);
+			return null;
 		});
 
 		// vérification du résultat
@@ -247,25 +241,23 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		});
 
 		// lancement du processus d'annulation de réconciliation
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
-				final AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateFictive);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividu, date(2008, 12, 31));
+			final AnnulationReconciliation annulation = createAnnulationReconciliation(individu, dateFictive);
 
-				final MessageCollector collector = buildMessageCollector();
-				boolean errorFound = false;
-				String errorMessage = null;
-				try {
-					annulation.validate(collector, collector);
-				}
-				catch (Exception ex) {
-					errorFound = true;
-					errorMessage = ex.getMessage();
-				}
-				assertTrue("Une erreur aurait dû se produire car cette personne n'est pas réconciliée", errorFound);
-				assertEquals("L'erreur n'est pas la bonne", "Le tiers ménage commun n'a pu être trouvé", errorMessage);
+			final MessageCollector collector = buildMessageCollector();
+			boolean errorFound = false;
+			String errorMessage = null;
+			try {
+				annulation.validate(collector, collector);
 			}
+			catch (Exception ex) {
+				errorFound = true;
+				errorMessage = ex.getMessage();
+			}
+			assertTrue("Une erreur aurait dû se produire car cette personne n'est pas réconciliée", errorFound);
+			assertEquals("L'erreur n'est pas la bonne", "Le tiers ménage commun n'a pu être trouvé", errorMessage);
+			return null;
 		});
 	}
 

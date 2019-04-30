@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,11 +12,10 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -70,17 +68,14 @@ public class CoupleControllerTest extends WebTestSpring3 {
 	@Test
 	public void onSubmitSansDate() throws Exception {
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique nhab1 = (PersonnePhysique)tiersDAO.get(numeroPP1);
-				assertNotNull(nhab1);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(numeroPP1);
+			assertNotNull(nhab1);
 
-				// on s'assure que la personne n'est pas déjà mariée
-				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, RegDate.get());
-				assertNull(etc);
-				return null;
-			}
+			// on s'assure que la personne n'est pas déjà mariée
+			final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, RegDate.get());
+			assertNull(etc);
+			return null;
 		});
 
 		// Une requête sans la date de début
@@ -108,17 +103,14 @@ public class CoupleControllerTest extends WebTestSpring3 {
 		final CoupleView coupleView = (CoupleView) mav.getModel().get("command");
 		assertNotNull(coupleView);
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique nhab1 = (PersonnePhysique)tiersDAO.get(numeroPP1);
-				assertNotNull(nhab1);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(numeroPP1);
+			assertNotNull(nhab1);
 
-				// On vérifie que la personne n'est toujours pas mariée
-				EnsembleTiersCouple etc2 = tiersService.getEnsembleTiersCouple(nhab1, RegDate.get());
-				assertNull(etc2);
-				return null;
-			}
+			// On vérifie que la personne n'est toujours pas mariée
+			EnsembleTiersCouple etc2 = tiersService.getEnsembleTiersCouple(nhab1, RegDate.get());
+			assertNull(etc2);
+			return null;
 		});
 	}
 
@@ -148,18 +140,14 @@ public class CoupleControllerTest extends WebTestSpring3 {
 		assertNotNull(model);
 
 		// Vérifie que le couple a été créé dans la base
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(numeroPP1);
+			assertNotNull(nhab1);
 
-				final PersonnePhysique nhab1 = (PersonnePhysique)tiersDAO.get(numeroPP1);
-				assertNotNull(nhab1);
-
-				EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, null);
-				assertNotNull(etc);
-				assertNotNull(etc.getMenage());
-				return null;
-			}
+			EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, null);
+			assertNotNull(etc);
+			assertNotNull(etc.getMenage());
+			return null;
 		});
 	}
 
@@ -183,19 +171,16 @@ public class CoupleControllerTest extends WebTestSpring3 {
 		final Map<?, ?> model = mav.getModel();
 		assertNotNull(model);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// Vérifie que le couple est créé
-				PersonnePhysique nhab1 = (PersonnePhysique)tiersDAO.get(numeroPP1);
-				assertNotNull(nhab1);
+		doInNewTransaction(status -> {
+			// Vérifie que le couple est créé
+			PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(numeroPP1);
+			assertNotNull(nhab1);
 
-				// Prends le couple très loin dans le passé, pour être sur de le récupérer
-				EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, dateMariage);
-				assertNotNull(etc);
-				assertNotNull(etc.getMenage());
-				return null;
-			}
+			// Prends le couple très loin dans le passé, pour être sur de le récupérer
+			EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, dateMariage);
+			assertNotNull(etc);
+			assertNotNull(etc.getMenage());
+			return null;
 		});
 	}
 
@@ -221,15 +206,13 @@ public class CoupleControllerTest extends WebTestSpring3 {
 			}
 		});
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique principal = addHabitant(noInd);
-				addForPrincipal(principal, date(1998, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				ids.principal = principal.getId();
-				final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
-				ids.conjoint = conjoint.getId();
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique principal = addHabitant(noInd);
+			addForPrincipal(principal, date(1998, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			ids.principal = principal.getId();
+			final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
+			ids.conjoint = conjoint.getId();
+			return null;
 		});
 
 		final Date dateMariage = DateHelper.getDate(2007, 2, 12);
@@ -248,23 +231,19 @@ public class CoupleControllerTest extends WebTestSpring3 {
 		assertNotNull(model);
 
 		// Vérifie que le couple a été créé dans la base
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(ids.principal);
+			assertNotNull(nhab1);
 
-				final PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(ids.principal);
-				assertNotNull(nhab1);
+			final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, null);
+			assertNotNull(etc);
 
-				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, null);
-				assertNotNull(etc);
+			final MenageCommun menage = etc.getMenage();
+			assertNotNull(menage);
 
-				final MenageCommun menage = etc.getMenage();
-				assertNotNull(menage);
-
-				final ForFiscalPrincipalPP ffp = menage.getForFiscalPrincipalAt(null);
-				assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = menage.getForFiscalPrincipalAt(null);
+			assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+			return null;
 		});
 	}
 }

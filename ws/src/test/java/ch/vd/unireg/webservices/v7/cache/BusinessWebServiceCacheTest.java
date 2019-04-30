@@ -34,7 +34,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -235,209 +234,201 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// données globales
+			final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 
-				// données globales
-				final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
+			// quelques immeubles, bâtiments, etc...
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("3893882", "other egrid", new Fraction(1, 3), laSarraz, 579, 11, null, null);
+			final BienFondsRF immeuble2 = addBienFondsRF("93352512", "trois egrid", laSarraz, 12);
+			final BienFondsRF immeuble3 = addBienFondsRF("347837", "quatre egrid", laSarraz, 13);
+			ids.immeuble0 = immeuble0.getId();
+			ids.immeuble1 = immeuble1.getId();
+			ids.immeuble2 = immeuble2.getId();
+			ids.immeuble3 = immeuble3.getId();
 
-				// quelques immeubles, bâtiments, etc...
-				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
-				final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("3893882", "other egrid", new Fraction(1, 3), laSarraz, 579, 11, null, null);
-				final BienFondsRF immeuble2 = addBienFondsRF("93352512", "trois egrid", laSarraz, 12);
-				final BienFondsRF immeuble3 = addBienFondsRF("347837", "quatre egrid", laSarraz, 13);
-				ids.immeuble0 = immeuble0.getId();
-				ids.immeuble1 = immeuble1.getId();
-				ids.immeuble2 = immeuble2.getId();
-				ids.immeuble3 = immeuble3.getId();
-
-				// l'immeuble 0 possède lui-même l'immeuble 1
-				addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), date(2010, 1, 1), date(2010, 1, 1), null, null,
-				                  "Constitution PPE", new IdentifiantAffaireRF(28, 2010, 208, 1), "02828289", "1");
-				// l'immeuble 2 possède lui-même l'immeuble 3
-				addDroitPropriete(immeuble2, immeuble3, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), null, null,
-				                  "Achat", new IdentifiantAffaireRF(3, 1940, 1, 1), "2783771", "1");
+			// l'immeuble 0 possède lui-même l'immeuble 1
+			addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), date(2010, 1, 1), date(2010, 1, 1), null, null,
+			                  "Constitution PPE", new IdentifiantAffaireRF(28, 2010, 208, 1), "02828289", "1");
+			// l'immeuble 2 possède lui-même l'immeuble 3
+			addDroitPropriete(immeuble2, immeuble3, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), null, null,
+			                  "Achat", new IdentifiantAffaireRF(3, 1940, 1, 1), "2783771", "1");
 
 
-				final BatimentRF batiment0 = addBatimentRF("3838");
-				final BatimentRF batiment1 = addBatimentRF("8482");
-				final BatimentRF batiment2 = addBatimentRF("8929");
-				ids.batiment0 = batiment0.getId();
-				ids.batiment1 = batiment1.getId();
-				ids.batiment2 = batiment2.getId();
+			final BatimentRF batiment0 = addBatimentRF("3838");
+			final BatimentRF batiment1 = addBatimentRF("8482");
+			final BatimentRF batiment2 = addBatimentRF("8929");
+			ids.batiment0 = batiment0.getId();
+			ids.batiment1 = batiment1.getId();
+			ids.batiment2 = batiment2.getId();
 
-				final CommunauteRF communaute0 = addCommunauteRF("228833", TypeCommunaute.COMMUNAUTE_DE_BIENS);
-				final CommunauteRF communaute1 = addCommunauteRF("900022", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
-				final CommunauteRF communaute2 = addCommunauteRF("11187282", TypeCommunaute.INDIVISION);
-				ids.communaute0 = communaute0.getId();
-				ids.communaute1 = communaute1.getId();
-				ids.communaute2 = communaute2.getId();
+			final CommunauteRF communaute0 = addCommunauteRF("228833", TypeCommunaute.COMMUNAUTE_DE_BIENS);
+			final CommunauteRF communaute1 = addCommunauteRF("900022", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final CommunauteRF communaute2 = addCommunauteRF("11187282", TypeCommunaute.INDIVISION);
+			ids.communaute0 = communaute0.getId();
+			ids.communaute1 = communaute1.getId();
+			ids.communaute2 = communaute2.getId();
 
-				// Une personne physique avec avec toutes les parties renseignées
-				final PersonnePhysique eric = addHabitant(noIndividu);
-				{
-					addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
-					addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-					addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-					eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+			// Une personne physique avec avec toutes les parties renseignées
+			final PersonnePhysique eric = addHabitant(noIndividu);
+			{
+				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
-					final PersonnePhysique defunt = addHabitant(noIndividuDefunt);
+				final PersonnePhysique defunt = addHabitant(noIndividuDefunt);
 
-					final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
-					addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
 
-					final PersonnePhysique aieulEric = addNonHabitant("Aïeul", "Bolomey", date(1904, 3, 11), Sexe.MASCULIN);
-					addHeritage(eric, aieulEric, RegDate.get(1977, 8, 1), null, true);
+				final PersonnePhysique aieulEric = addNonHabitant("Aïeul", "Bolomey", date(1904, 3, 11), Sexe.MASCULIN);
+				addHeritage(eric, aieulEric, RegDate.get(1977, 8, 1), null, true);
 
-					final PersonnePhysique heritier1 = addNonHabitant("Germaine", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
-					addHeritage(heritier1, eric, dateHeritage, null, true);
-					final PersonnePhysique heritier2 = addNonHabitant("Adelaïde", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
-					addHeritage(heritier2, eric, dateHeritage, null, false);
+				final PersonnePhysique heritier1 = addNonHabitant("Germaine", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
+				addHeritage(heritier1, eric, dateHeritage, null, true);
+				final PersonnePhysique heritier2 = addNonHabitant("Adelaïde", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
+				addHeritage(heritier2, eric, dateHeritage, null, false);
 
-					final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
-					situation.setDateDebut(date(1989, 5, 1));
-					situation.setNombreEnfants(0);
-					eric.addSituationFamille(situation);
+				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+				situation.setDateDebut(date(1989, 5, 1));
+				situation.setNombreEnfants(0);
+				eric.addSituationFamille(situation);
 
-					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
-					ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-					addEtatDeclarationEmise(di, date(2003, 1, 10));
-					addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
+				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di, date(2003, 1, 10));
+				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-					addHeritage(eric, defunt, date(1980, 1, 1), null, true);
+				addHeritage(eric, defunt, date(1980, 1, 1), null, true);
 
-					ids.eric = eric.getNumero();
-					ids.heritier1 = heritier1.getNumero();
-					ids.heritier2 = heritier2.getNumero();
-					ids.aieulEric = aieulEric.getNumero();
+				ids.eric = eric.getNumero();
+				ids.heritier1 = heritier1.getNumero();
+				ids.heritier2 = heritier2.getNumero();
+				ids.aieulEric = aieulEric.getNumero();
 
-					// le père et l'enfant
-					final PersonnePhysique papa = addHabitant(noIndividuPapa);
-					final PersonnePhysique junior = addHabitant(noIndividuJunior);
+				// le père et l'enfant
+				final PersonnePhysique papa = addHabitant(noIndividuPapa);
+				final PersonnePhysique junior = addHabitant(noIndividuJunior);
 
-					addParente(eric, papa, dateNaissance, null);
-					addParente(junior, eric, dateNaissanceJunior, null);
+				addParente(eric, papa, dateNaissance, null);
+				addParente(junior, eric, dateNaissanceJunior, null);
 
-					// un débiteur
-					final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-					ids.debiteur = debiteur.getId();
+				// un débiteur
+				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+				ids.debiteur = debiteur.getId();
 
-					// ... avec une LR sur 2009
-					addForDebiteur(debiteur, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
-					final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
-					final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf2009);
-					addListeRecapitulative(debiteur, pf2009, date(2009, 1, 1), date(2009, 12, 31), modeleLr);
+				// ... avec une LR sur 2009
+				addForDebiteur(debiteur, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
+				final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
+				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf2009);
+				addListeRecapitulative(debiteur, pf2009, date(2009, 1, 1), date(2009, 12, 31), modeleLr);
 
-					// un rapport de travail entre eric et le débiteur (pour avoir un calcul de PIIS)
-					addRapportPrestationImposable(debiteur, eric, date(2009, 1, 1), date(2009, 5, 1), false);
+				// un rapport de travail entre eric et le débiteur (pour avoir un calcul de PIIS)
+				addRapportPrestationImposable(debiteur, eric, date(2009, 1, 1), date(2009, 5, 1), false);
 
-					// une adresse mandataire
-					addAdresseMandataireSuisse(eric, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
+				// une adresse mandataire
+				addAdresseMandataireSuisse(eric, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
 
-					// Eric possède un immeuble qui possède lui-même un immeuble
-					final PersonnePhysiqueRF ericRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
-					addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
-					                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, ericRF, immeuble0, null);
-					addRapprochementRF(eric, ericRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+				// Eric possède un immeuble qui possède lui-même un immeuble
+				final PersonnePhysiqueRF ericRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
+				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
+				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, ericRF, immeuble0, null);
+				addRapprochementRF(eric, ericRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
 
-					// L'aïeul d'Eric possèdait un immeuble qui possèdait lui-même un immeuble
-					final PersonnePhysiqueRF aieulEricRF = addPersonnePhysiqueRF("Aïeul", "Bolomey", date(1904, 3, 11), "289218921", 3722L, null);
-					addDroitPersonnePhysiqueRF(RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), date(1980, 1, 1), date(1980, 1, 1), "Achat", "Succession", "476218937", "1",
-					                           new IdentifiantAffaireRF(3, 1940, 1, 1), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, aieulEricRF, immeuble2, null);
-					addRapprochementRF(aieulEric, aieulEricRF, RegDate.get(1940, 1, 1), null, TypeRapprochementRF.MANUEL);
-				}
-
-				// Une entreprise avec avec toutes les parties renseignées
-				final RegDate dateCreationEntreprise = date(1970, 1, 1);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite entreprise", dateCreationEntreprise);
-				{
-					// l'entreprise elle-même
-					addRegimeFiscalVD(entreprise, dateCreationEntreprise, date(2011, 12, 31), MockTypeRegimeFiscal.SOCIETE_PERS);
-					addRegimeFiscalCH(entreprise, dateCreationEntreprise, date(2011, 12, 31), MockTypeRegimeFiscal.SOCIETE_PERS);
-					addRegimeFiscalVD(entreprise, date(2012, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(entreprise, date(2012, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
-					addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, date(2011,12,31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-					addForPrincipal(entreprise, date(2012, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.BENEFICE_CAPITAL);
-					addForSecondaire(entreprise, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-					entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
-					addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.SARL);
-					addCapitalEntreprise(entreprise, dateCreationEntreprise, null, new MontantMonetaire(25000L, "CHF"));
-					addAllegementFiscalCantonal(entreprise, dateCreationEntreprise, null, AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.TEN, AllegementFiscalCantonCommune.Type.HOLDING_IMMEUBLE);
-					addAdresseMandataireSuisse(entreprise, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
-					addDegrevementICI(entreprise, immeuble0, 2010, null, new DonneesUtilisation(10000L, 1000L, 100L, BigDecimal.valueOf(50), BigDecimal.valueOf(50)), null, null);
-					addExonerationIFONC(entreprise, immeuble0, date(2005, 1, 1), date(2006, 12, 31), BigDecimal.TEN);
-
-					final Etablissement etablissement = addEtablissement();
-					etablissement.setRaisonSociale("Etablissement principal");
-					addActiviteEconomique(entreprise, etablissement, dateCreationEntreprise, null, true);
-					addDomicileEtablissement(etablissement, dateCreationEntreprise, null, MockCommune.Lausanne);
-
-					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode2003);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, periode2003, date(2003, 1, 1), date(2003, 12, 31),
-					                                                           date(2003, 1, 1), date(2003, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-					addEtatDeclarationEmise(di, date(2003, 1, 10));
-					addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
-
-					// une entreprise absorbée par l'entreprise principale
-					final RegDate dateFusion = RegDate.get(1990,1,1);
-					final Entreprise absorbee = addEntrepriseInconnueAuCivil("Entreprise absorbée", dateCreationEntreprise);
-					addRegimeFiscalVD(absorbee, dateCreationEntreprise, dateFusion.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(absorbee, dateCreationEntreprise, dateFusion.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addAdresseSuisse(absorbee, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
-					addForPrincipal(absorbee, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFusion.getOneDayBefore(), MotifFor.FUSION_ENTREPRISES, MockCommune.Lausanne);
-					addFusionEntreprises(entreprise, absorbee, dateFusion);
-					addDegrevementICI(absorbee, immeuble0, 2005, null, new DonneesUtilisation(500L, 200L, 120L, BigDecimal.valueOf(80), BigDecimal.valueOf(60)), null, null);
-					addExonerationIFONC(absorbee, immeuble0, date(2002, 1, 1), date(2010, 12, 31), BigDecimal.valueOf(22));
-
-					final PersonneMoraleRF entrepriseRF = addPersonneMoraleRF("Ma pEtItE entreprise", "CHE2222", "wliu239eru8", 82289, null);
-					final PersonneMoraleRF absorbeeRF = addPersonneMoraleRF("Mon entreprise aBSorbEe", "CHE1221", "372282", 473232, null);
-
-					// l'entreprise possède un immeuble qui possède lui-même un immeuble
-					addDroitPersonneMoraleRF(RegDate.get(2004, 5, 21), RegDate.get(2001, 11, 7), null, null, "Achat", null, "3822282ef3434", "29891919",
-					                         new IdentifiantAffaireRF(123, 2001, 3, 1), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, entrepriseRF, immeuble0, null);
-					addRapprochementRF(entreprise, entrepriseRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
-
-					// l'entreprise absorbée possède encore un immeuble qui possède lui-même un autre immeuble
-					addDroitPersonneMoraleRF(RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), null, null, "Achat", "Succession", "40303eff9339", "1",
-					                         new IdentifiantAffaireRF(3, 1940, 1, 1), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, absorbeeRF, immeuble2, null);
-					addRapprochementRF(absorbee, absorbeeRF, RegDate.get(1940, 1, 1), null, TypeRapprochementRF.MANUEL);
-
-					ids.entreprise = entreprise.getNumero();
-				}
-
-				return null;
+				// L'aïeul d'Eric possèdait un immeuble qui possèdait lui-même un immeuble
+				final PersonnePhysiqueRF aieulEricRF = addPersonnePhysiqueRF("Aïeul", "Bolomey", date(1904, 3, 11), "289218921", 3722L, null);
+				addDroitPersonnePhysiqueRF(RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), date(1980, 1, 1), date(1980, 1, 1), "Achat", "Succession", "476218937", "1",
+				                           new IdentifiantAffaireRF(3, 1940, 1, 1), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, aieulEricRF, immeuble2, null);
+				addRapprochementRF(aieulEric, aieulEricRF, RegDate.get(1940, 1, 1), null, TypeRapprochementRF.MANUEL);
 			}
+
+			// Une entreprise avec avec toutes les parties renseignées
+			final RegDate dateCreationEntreprise = date(1970, 1, 1);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite entreprise", dateCreationEntreprise);
+			{
+				// l'entreprise elle-même
+				addRegimeFiscalVD(entreprise, dateCreationEntreprise, date(2011, 12, 31), MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateCreationEntreprise, date(2011, 12, 31), MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalVD(entreprise, date(2012, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2012, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, date(2011, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, date(2012, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+				entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+				addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.SARL);
+				addCapitalEntreprise(entreprise, dateCreationEntreprise, null, new MontantMonetaire(25000L, "CHF"));
+				addAllegementFiscalCantonal(entreprise, dateCreationEntreprise, null, AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.TEN, AllegementFiscalCantonCommune.Type.HOLDING_IMMEUBLE);
+				addAdresseMandataireSuisse(entreprise, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
+				addDegrevementICI(entreprise, immeuble0, 2010, null, new DonneesUtilisation(10000L, 1000L, 100L, BigDecimal.valueOf(50), BigDecimal.valueOf(50)), null, null);
+				addExonerationIFONC(entreprise, immeuble0, date(2005, 1, 1), date(2006, 12, 31), BigDecimal.TEN);
+
+				final Etablissement etablissement = addEtablissement();
+				etablissement.setRaisonSociale("Etablissement principal");
+				addActiviteEconomique(entreprise, etablissement, dateCreationEntreprise, null, true);
+				addDomicileEtablissement(etablissement, dateCreationEntreprise, null, MockCommune.Lausanne);
+
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode2003);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, periode2003, date(2003, 1, 1), date(2003, 12, 31),
+				                                                           date(2003, 1, 1), date(2003, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di, date(2003, 1, 10));
+				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+
+				// une entreprise absorbée par l'entreprise principale
+				final RegDate dateFusion = RegDate.get(1990, 1, 1);
+				final Entreprise absorbee = addEntrepriseInconnueAuCivil("Entreprise absorbée", dateCreationEntreprise);
+				addRegimeFiscalVD(absorbee, dateCreationEntreprise, dateFusion.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(absorbee, dateCreationEntreprise, dateFusion.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addAdresseSuisse(absorbee, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+				addForPrincipal(absorbee, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFusion.getOneDayBefore(), MotifFor.FUSION_ENTREPRISES, MockCommune.Lausanne);
+				addFusionEntreprises(entreprise, absorbee, dateFusion);
+				addDegrevementICI(absorbee, immeuble0, 2005, null, new DonneesUtilisation(500L, 200L, 120L, BigDecimal.valueOf(80), BigDecimal.valueOf(60)), null, null);
+				addExonerationIFONC(absorbee, immeuble0, date(2002, 1, 1), date(2010, 12, 31), BigDecimal.valueOf(22));
+
+				final PersonneMoraleRF entrepriseRF = addPersonneMoraleRF("Ma pEtItE entreprise", "CHE2222", "wliu239eru8", 82289, null);
+				final PersonneMoraleRF absorbeeRF = addPersonneMoraleRF("Mon entreprise aBSorbEe", "CHE1221", "372282", 473232, null);
+
+				// l'entreprise possède un immeuble qui possède lui-même un immeuble
+				addDroitPersonneMoraleRF(RegDate.get(2004, 5, 21), RegDate.get(2001, 11, 7), null, null, "Achat", null, "3822282ef3434", "29891919",
+				                         new IdentifiantAffaireRF(123, 2001, 3, 1), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, entrepriseRF, immeuble0, null);
+				addRapprochementRF(entreprise, entrepriseRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+				// l'entreprise absorbée possède encore un immeuble qui possède lui-même un autre immeuble
+				addDroitPersonneMoraleRF(RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), null, null, "Achat", "Succession", "40303eff9339", "1",
+				                         new IdentifiantAffaireRF(3, 1940, 1, 1), new Fraction(1, 2), GenrePropriete.INDIVIDUELLE, absorbeeRF, immeuble2, null);
+				addRapprochementRF(absorbee, absorbeeRF, RegDate.get(1940, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+				ids.entreprise = entreprise.getNumero();
+			}
+			;
+			return null;
 		});
 
 		// Un ménage commun
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
+			ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
+			mc.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
-				PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
-				ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
-				mc.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+			SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
+			situation.setDateDebut(date(1989, 5, 1));
+			situation.setNombreEnfants(0);
+			mc.addSituationFamille(situation);
 
-				SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
-				situation.setDateDebut(date(1989, 5, 1));
-				situation.setNombreEnfants(0);
-				mc.addSituationFamille(situation);
+			addAdresseSuisse(mc, TypeAdresseTiers.COURRIER, date(1989, 5, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
 
-				addAdresseSuisse(mc, TypeAdresseTiers.COURRIER, date(1989, 5, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
-				addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-
-				ids.monsieur = monsieur.getNumero();
-				ids.madame = madame.getNumero();
-				ids.menage = mc.getNumero();
-				return null;
-			}
+			ids.monsieur = monsieur.getNumero();
+			ids.madame = madame.getNumero();
+			ids.menage = mc.getNumero();
+			return null;
 		});
 
 
@@ -760,30 +751,26 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertNull(adressesAvant.getLine6());
 
 		// On modifie le prénom de madame
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final ch.vd.unireg.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.unireg.tiers.MenageCommun.class, ids.menage);
+			assertNotNull(mc);
 
-				final ch.vd.unireg.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.unireg.tiers.MenageCommun.class, ids.menage);
-				assertNotNull(mc);
+			final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
 
-				final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
+			PersonnePhysique madame = null;
+			for (RapportEntreTiers r : rapports) {
+				final AppartenanceMenage am = (AppartenanceMenage) r;
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, am.getSujetId());
+				assertNotNull(pp);
 
-				PersonnePhysique madame = null;
-				for (RapportEntreTiers r : rapports) {
-					final AppartenanceMenage am = (AppartenanceMenage) r;
-					final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, am.getSujetId());
-					assertNotNull(pp);
-
-					if (pp.getPrenomUsuel().equals("Monique")) {
-						madame = pp;
-						break;
-					}
+				if (pp.getPrenomUsuel().equals("Monique")) {
+					madame = pp;
+					break;
 				}
-				assertNotNull(madame);
-				madame.setPrenomUsuel("Gudrun");
-				return null;
 			}
+			assertNotNull(madame);
+			madame.setPrenomUsuel("Gudrun");
+			return null;
 		});
 
 		// Cette modification va provoquer l'éviction de madame du cache, et par transitivité l'éviction du ménage commun. Si ce n'était pas le cas, les données (périmées) du ménage commun seraient encore dans le cache.

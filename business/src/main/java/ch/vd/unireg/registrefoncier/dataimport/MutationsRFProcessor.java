@@ -11,12 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -146,25 +143,18 @@ public class MutationsRFProcessor {
 	boolean isImportInitial() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<Boolean>() {
-			@Override
-			public Boolean execute(TransactionStatus status) throws Exception {
-				return evenementRFImportDAO.getCount(ImmeubleRF.class) == 0;
-			}
-		});
+		return template.execute(status -> evenementRFImportDAO.getCount(ImmeubleRF.class) == 0);
 	}
 
 	private void checkPreconditions(long importId) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		template.execute(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Long nextMutationsToProcess = evenementRFMutationDAO.findNextMutationsToProcess();
-				if (nextMutationsToProcess != null && nextMutationsToProcess != importId) {
-					throw new IllegalArgumentException("Les mutations de l'import RF avec l'id = [" + importId + "] ne peuvent être traitées car les mutations de l'import RF avec l'id = [" + nextMutationsToProcess + "] n'ont pas été traitées.");
-				}
+		template.execute(status -> {
+			final Long nextMutationsToProcess = evenementRFMutationDAO.findNextMutationsToProcess();
+			if (nextMutationsToProcess != null && nextMutationsToProcess != importId) {
+				throw new IllegalArgumentException("Les mutations de l'import RF avec l'id = [" + importId + "] ne peuvent être traitées car les mutations de l'import RF avec l'id = [" + nextMutationsToProcess + "] n'ont pas été traitées.");
 			}
+			return null;
 		});
 	}
 
@@ -267,29 +257,22 @@ public class MutationsRFProcessor {
 	private List<Long> findIdsMutationsATraiter(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull Collection<TypeMutationRF> typesMutations) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<List<Long>>() {
-			@Override
-			public List<Long> execute(TransactionStatus status) throws Exception {
-				return evenementRFMutationDAO.findIds(importId,
-				                                      typeEntite,
-				                                      Arrays.asList(EtatEvenementRF.A_TRAITER, EtatEvenementRF.EN_ERREUR),
-				                                      typesMutations);
-			}
-		});
+		return template.execute(status -> evenementRFMutationDAO.findIds(importId,
+		                                                                 typeEntite,
+		                                                                 Arrays.asList(EtatEvenementRF.A_TRAITER, EtatEvenementRF.EN_ERREUR),
+		                                                                 typesMutations));
 	}
 
 	private void updateMutation(final long mutId, @Nullable final Exception e) {
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		t.execute(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = getMutation(mutId);
-				mutation.setEtat(EtatEvenementRF.EN_ERREUR);
-				if (e != null) {
-					mutation.setErrorMessage(LengthConstants.streamlineField(ExceptionHelper.getMessage(e), 1000, true));
-					mutation.setCallstack(ExceptionUtils.getStackTrace(e));
-				}
+		t.execute(status -> {
+			final EvenementRFMutation mutation = getMutation(mutId);
+			mutation.setEtat(EtatEvenementRF.EN_ERREUR);
+			if (e != null) {
+				mutation.setErrorMessage(LengthConstants.streamlineField(ExceptionHelper.getMessage(e), 1000, true));
+				mutation.setCallstack(ExceptionUtils.getStackTrace(e));
 			}
+			return null;
 		});
 	}
 }

@@ -7,7 +7,6 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -73,43 +72,38 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 		final RegDate dateSecondaire = RegDate.get(2000, 3, 1);
 		final RegDate dateTutelle = RegDate.get(2000, 4, 1);
 
-		doInNewTransaction(new TxCallback<Object>() {
+		doInNewTransaction(status -> {
+			final PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(200L);
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			// données d'entrée
+			final AdresseCivile adresseCourrier = new AdresseCivile();
+			adresseCourrier.setDateDebut(dateCourrier);
+			adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
+			adresseCourrier.setType(TypeAdresseCivil.COURRIER);
+			habitant.addAdresseTiers(adresseCourrier);
 
-				final PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(200L);
+			final AdresseCivile adressePrincipal = new AdresseCivile();
+			adressePrincipal.setDateDebut(datePrincipale);
+			adressePrincipal.setUsage(TypeAdresseTiers.POURSUITE);
+			adressePrincipal.setType(TypeAdresseCivil.PRINCIPALE);
+			habitant.addAdresseTiers(adressePrincipal);
 
-				// données d'entrée
-				final AdresseCivile adresseCourrier = new AdresseCivile();
-				adresseCourrier.setDateDebut(dateCourrier);
-				adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
-				adresseCourrier.setType(TypeAdresseCivil.COURRIER);
-				habitant.addAdresseTiers(adresseCourrier);
+			final AdresseCivile adresseSecondaire = new AdresseCivile();
+			adresseSecondaire.setDateDebut(dateSecondaire);
+			adresseSecondaire.setUsage(TypeAdresseTiers.DOMICILE);
+			adresseSecondaire.setType(TypeAdresseCivil.SECONDAIRE);
+			habitant.addAdresseTiers(adresseSecondaire);
 
-				final AdresseCivile adressePrincipal = new AdresseCivile();
-				adressePrincipal.setDateDebut(datePrincipale);
-				adressePrincipal.setUsage(TypeAdresseTiers.POURSUITE);
-				adressePrincipal.setType(TypeAdresseCivil.PRINCIPALE);
-				habitant.addAdresseTiers(adressePrincipal);
+			final AdresseCivile adresseTutelle = new AdresseCivile();
+			adresseTutelle.setDateDebut(dateTutelle);
+			adresseTutelle.setUsage(TypeAdresseTiers.REPRESENTATION);
+			adresseTutelle.setType(TypeAdresseCivil.TUTEUR);
+			habitant.addAdresseTiers(adresseTutelle);
 
-				final AdresseCivile adresseSecondaire = new AdresseCivile();
-				adresseSecondaire.setDateDebut(dateSecondaire);
-				adresseSecondaire.setUsage(TypeAdresseTiers.DOMICILE);
-				adresseSecondaire.setType(TypeAdresseCivil.SECONDAIRE);
-				habitant.addAdresseTiers(adresseSecondaire);
-
-				final AdresseCivile adresseTutelle = new AdresseCivile();
-				adresseTutelle.setDateDebut(dateTutelle);
-				adresseTutelle.setUsage(TypeAdresseTiers.REPRESENTATION);
-				adresseTutelle.setType(TypeAdresseCivil.TUTEUR);
-				habitant.addAdresseTiers(adresseTutelle);
-
-				// sauvegarde dans la base (+ commit de la transaction)
-				dao.save(habitant);
-				return null;
-			}
+			// sauvegarde dans la base (+ commit de la transaction)
+			dao.save(habitant);
+			return null;
 		});
 
 		// vérification de la validité des valeurs dans la base

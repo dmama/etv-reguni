@@ -1,14 +1,13 @@
 package ch.vd.unireg.indexer.tiers;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -55,16 +54,12 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableSansFor() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		Long id = (Long) doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers nh = tiersDAO.get(id);
@@ -76,17 +71,13 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableSansForAvecNumeroOID() throws Exception {
 
-		Long id = (Long) doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		Long id = (Long) doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
+			nh.setOfficeImpotId(8);
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
-				nh.setOfficeImpotId(8);
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers nh = tiersDAO.get(id);
@@ -99,27 +90,23 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipal() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
+			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(date(2000, 1, 1));
+			f.setDateFin(null);
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			nh.addForFiscal(f);
 
-				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(date(2000, 1, 1));
-				f.setDateFin(null);
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				nh.addForFiscal(f);
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers nh = tiersDAO.get(id);
@@ -131,19 +118,15 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipalVariante() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
+			// variante : le for principal est d'abord sauvé pour lui-même avant d'être ajouté au tiers
+			addForPrincipal(nh, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null, null, MockCommune.Lausanne);
 
-				// variante : le for principal est d'abord sauvé pour lui-même avant d'être ajouté au tiers
-				addForPrincipal(nh, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null, null, MockCommune.Lausanne);
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers nh = tiersDAO.get(id);
@@ -155,28 +138,24 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipalFerme() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
+			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(date(2000, 1, 1));
+			f.setDateFin(date(2008, 1, 1));
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			f.setMotifFermeture(MotifFor.DEPART_HS);
+			nh.addForFiscal(f);
 
-				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(date(2000, 1, 1));
-				f.setDateFin(date(2008, 1, 1));
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setMotifFermeture(MotifFor.DEPART_HS);
-				nh.addForFiscal(f);
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers nh = tiersDAO.get(id);
@@ -187,28 +166,24 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testOfficeImpotContribuableAvecForPrincipalFermeParDepartHC() throws Exception {
 
-		Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
+			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(date(2000, 1, 1));
+			f.setDateFin(date(2008, 1, 1));
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			f.setMotifFermeture(MotifFor.DEPART_HC);
+			nh.addForFiscal(f);
 
-				final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(date(2000, 1, 1));
-				f.setDateFin(date(2008, 1, 1));
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setMotifFermeture(MotifFor.DEPART_HC);
-				nh.addForFiscal(f);
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		Tiers nh = tiersDAO.get(id);
@@ -221,60 +196,46 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	public void testOfficeImpotContribuableAjoutForPrincipal() throws Exception {
 
 		// Crée un contribuable sans for
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 		// L'oid doit être null
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Tiers nh = tiersDAO.get(id);
-				assertNotNull(nh);
-				assertNull(nh.getOfficeImpotId());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			Tiers nh = tiersDAO.get(id);
+			assertNotNull(nh);
+			assertNull(nh.getOfficeImpotId());
+			return null;
 		});
 
 		// Recharge le contribuable de la base et ajoute le for
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			Tiers nh = tiersDAO.get(id);
 
-				Tiers nh = tiersDAO.get(id);
+			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(date(2000, 1, 1));
+			f.setDateFin(date(2008, 1, 1));
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			f.setMotifFermeture(MotifFor.DEPART_HC);
+			nh.addForFiscal(f);
 
-				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(date(2000, 1, 1));
-				f.setDateFin(date(2008, 1, 1));
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setMotifFermeture(MotifFor.DEPART_HC);
-				nh.addForFiscal(f);
-
-				tiersDAO.save(nh);
-				return null;
-			}
+			tiersDAO.save(nh);
+			return null;
 		});
 		// L'oid doit maintenant être renseigné
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Tiers nh = tiersDAO.get(id);
-				assertNotNull(nh);
-				assertEquals(oidLausanne, nh.getOfficeImpotId());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			Tiers nh = tiersDAO.get(id);
+			assertNotNull(nh);
+			assertEquals(oidLausanne, nh.getOfficeImpotId());
+			return null;
 		});
 	}
 
@@ -286,56 +247,43 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	public void testOfficeImpotContribuableAnnulationForPrincipal() throws Exception {
 
 		// Crée un contribuable né à Lausanne et ayant déménagé récemment à Orbe
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique robin = addNonHabitant("Robin", "DesBois", date(1965, 5, 23), Sexe.MASCULIN);
-				addForPrincipal(robin, date(1985,5,23), MotifFor.MAJORITE, date(2002,12,31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(robin, date(2003,1,1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
-				return robin.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique robin = addNonHabitant("Robin", "DesBois", date(1965, 5, 23), Sexe.MASCULIN);
+			addForPrincipal(robin, date(1985, 5, 23), MotifFor.MAJORITE, date(2002, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(robin, date(2003, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+			return robin.getNumero();
 		});
 
 		// L'oid doit être sur Orbe
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
-				assertNotNull(robin);
-				final Integer oid = robin.getOfficeImpotId();
-				assertNotNull(oid);
-				assertEquals(MockOfficeImpot.OID_ORBE.getNoColAdm(), oid.intValue());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
+			assertNotNull(robin);
+			final Integer oid = robin.getOfficeImpotId();
+			assertNotNull(oid);
+			assertEquals(MockOfficeImpot.OID_ORBE.getNoColAdm(), oid.intValue());
+			return null;
 		});
 
 		// Annule le dernier for
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
+			assertNotNull(robin);
 
-				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
-				assertNotNull(robin);
+			final ForFiscalPrincipal ffp = robin.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
 
-				final ForFiscalPrincipal ffp = robin.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-
-				tiersService.annuleForFiscal(ffp);
-				return null;
-			}
+			tiersService.annuleForFiscal(ffp);
+			return null;
 		});
 
 		// L'oid doit maintenant être sur Lausanne
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
-				assertNotNull(robin);
-				final Integer oid = robin.getOfficeImpotId();
-				assertNotNull(oid);
-				assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), oid.intValue());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
+			assertNotNull(robin);
+			final Integer oid = robin.getOfficeImpotId();
+			assertNotNull(oid);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), oid.intValue());
+			return null;
 		});
 	}
 
@@ -343,75 +291,61 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	public void testOfficeImpotContribuableDemenagement() throws Exception {
 
 		// Crée un contribuable à Lausanne avec une tâche
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final long ppId = doInNewTransactionAndSession(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
+			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(date(2000, 1, 1));
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			nh.addForFiscal(f);
 
-				final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(date(2000, 1, 1));
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				nh.addForFiscal(f);
-
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				return nh.getNumero();
-			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			return nh.getNumero();
 		});
 
 		// L'oid doit être celui de Lausanne
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Tiers nh = tiersDAO.get(ppId);
-				assertNotNull(nh);
-				assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), nh.getOfficeImpotId().intValue());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			Tiers nh = tiersDAO.get(ppId);
+			assertNotNull(nh);
+			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), nh.getOfficeImpotId().intValue());
+			return null;
 		});
 
 
 		// Déménagement du contribuable à Bex
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ppId);
-				assertNotNull(ctb);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ppId);
+			assertNotNull(ctb);
 
-				final ForFiscalPrincipalPP ffp0 = ctb.getForFiscalPrincipalAt(null);
-				assertNotNull(ffp0);
-				ffp0.setDateFin(date(2009,5,1));
-				ffp0.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+			final ForFiscalPrincipalPP ffp0 = ctb.getForFiscalPrincipalAt(null);
+			assertNotNull(ffp0);
+			ffp0.setDateFin(date(2009, 5, 1));
+			ffp0.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-				final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
-				ffp1.setDateDebut(date(2009, 5, 2));
-				ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-				ffp1.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				ffp1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFS());
-				ffp1.setMotifRattachement(MotifRattachement.DOMICILE);
-				ffp1.setModeImposition(ModeImposition.ORDINAIRE);
-				ctb.addForFiscal(ffp1);
-
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
+			ffp1.setDateDebut(date(2009, 5, 2));
+			ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+			ffp1.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			ffp1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFS());
+			ffp1.setMotifRattachement(MotifRattachement.DOMICILE);
+			ffp1.setModeImposition(ModeImposition.ORDINAIRE);
+			ctb.addForFiscal(ffp1);
+			return null;
 		});
 
 		// L'oid doit être celui d'Aigle
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Tiers nh = tiersDAO.get(ppId);
-				assertNotNull(nh);
-				assertEquals(MockOfficeImpot.OID_AIGLE.getNoColAdm(), nh.getOfficeImpotId().intValue());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			Tiers nh = tiersDAO.get(ppId);
+			assertNotNull(nh);
+			assertEquals(MockOfficeImpot.OID_AIGLE.getNoColAdm(), nh.getOfficeImpotId().intValue());
+			return null;
 		});
 	}
 
@@ -427,48 +361,40 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		}
 
 		// Crée les OIDs qui vont bien
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
-			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
-				final Ids ids = new Ids();
-				ids.lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
-				ids.aigle = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm()).getNumero();
-				ids.aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI).getNumero();
-                return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Ids ids1 = new Ids();
+			ids1.lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
+			ids1.aigle = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm()).getNumero();
+			ids1.aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI).getNumero();
+			return ids1;
 		});
 
 		// Crée un contribuable à Lausanne avec une tâche
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
+			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(date(2000, 1, 1));
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			nh.addForFiscal(f);
 
-				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(date(2000, 1, 1));
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				nh.addForFiscal(f);
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			ids.ctb = nh.getNumero();
 
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				ids.ctb = nh.getNumero();
+			final CollectiviteAdministrative lausanne = hibernateTemplate.get(CollectiviteAdministrative.class, ids.lausanne);
+			assertNotNull(lausanne);
 
-				final CollectiviteAdministrative lausanne = hibernateTemplate.get(CollectiviteAdministrative.class, ids.lausanne);
-				assertNotNull(lausanne);
-
-				TacheNouveauDossier tache = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 1), nh, lausanne);
-				tache.setCollectiviteAdministrativeAssignee(lausanne);
-				tache = (TacheNouveauDossier) tiersDAO.saveObject(tache);
-				ids.tache = tache.getId();
-
-				return null;
-			}
+			TacheNouveauDossier tache = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 1), nh, lausanne);
+			tache.setCollectiviteAdministrativeAssignee(lausanne);
+			tache = (TacheNouveauDossier) tiersDAO.saveObject(tache);
+			ids.tache = tache.getId();
+			return null;
 		});
 
 
@@ -477,30 +403,25 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 
 		// Déménagement du contribuable à Bex
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+			assertNotNull(ctb);
 
-				final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
-				assertNotNull(ctb);
+			final ForFiscalPrincipal ffp0 = ctb.getForFiscalPrincipalAt(null);
+			assertNotNull(ffp0);
+			ffp0.setDateFin(date(2009, 5, 1));
+			ffp0.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-				final ForFiscalPrincipal ffp0 = ctb.getForFiscalPrincipalAt(null);
-				assertNotNull(ffp0);
-				ffp0.setDateFin(date(2009,5,1));
-				ffp0.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
-
-				final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
-				ffp1.setDateDebut(date(2009, 5, 2));
-				ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-				ffp1.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				ffp1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFS());
-				ffp1.setMotifRattachement(MotifRattachement.DOMICILE);
-				ffp1.setModeImposition(ModeImposition.ORDINAIRE);
-				ctb.addForFiscal(ffp1);
-
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
+			ffp1.setDateDebut(date(2009, 5, 2));
+			ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+			ffp1.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			ffp1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFS());
+			ffp1.setMotifRattachement(MotifRattachement.DOMICILE);
+			ffp1.setModeImposition(ModeImposition.ORDINAIRE);
+			ctb.addForFiscal(ffp1);
+			return null;
 		});
 
 		// [UNIREG-2306] La tâche doit être passé sur l'OID d'Aigle
@@ -508,14 +429,11 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	private void assertCaTache(final Long caId, final Long tacheId) throws Exception {
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final TacheNouveauDossier tache = hibernateTemplate.get(TacheNouveauDossier.class, tacheId);
-				assertNotNull(tache);
-				assertEquals(caId, tache.getCollectiviteAdministrativeAssignee().getNumero());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final TacheNouveauDossier tache = hibernateTemplate.get(TacheNouveauDossier.class, tacheId);
+			assertNotNull(tache);
+			assertEquals(caId, tache.getCollectiviteAdministrativeAssignee().getNumero());
+			return null;
 		});
 	}
 }

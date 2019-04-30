@@ -8,8 +8,8 @@ import noNamespace.impl.FichierImpressionDocumentImpl;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -605,48 +605,39 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PersonnePhysique pp = addNonHabitant("Arnold", "Stäpäld", date(1978, 9, 23), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2010);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(2010, 1, 1), date(2010, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+		doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PersonnePhysique pp = addNonHabitant("Arnold", "Stäpäld", date(1978, 9, 23), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2010);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(2010, 1, 1), date(2010, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
-				ids.pp = pp.getId();
-				ids.di = di.getId();
-				return null;
-			}
+			ids.pp = pp.getId();
+			ids.di = di.getId();
+			return null;
 		});
 
 		// Quittancement de la DI par l'interface web
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				manager.quittancerDI(ids.di, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, date(2011, 4, 12));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			manager.quittancerDI(ids.di, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, date(2011, 4, 12));
+			return null;
 		});
 
 		// On vérifie que la source du quittancement est bien "WEB"
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
-				assertNotNull(di);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+			assertNotNull(di);
 
-				assertEquals(date(2011, 4, 12), di.getDateRetour());
+			assertEquals(date(2011, 4, 12), di.getDateRetour());
 
-				final EtatDeclaration dernier = di.getDernierEtatDeclaration();
-				assertNotNull(dernier);
-				assertInstanceOf(EtatDeclarationRetournee.class, dernier);
+			final EtatDeclaration dernier = di.getDernierEtatDeclaration();
+			assertNotNull(dernier);
+			assertInstanceOf(EtatDeclarationRetournee.class, dernier);
 
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) dernier;
-				assertEquals(date(2011, 4, 12), retour.getDateObtention());
-				assertEquals("WEB", retour.getSource());
-				return null;
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) dernier;
+			assertEquals(date(2011, 4, 12), retour.getDateObtention());
+			assertEquals("WEB", retour.getSource());
+			return null;
 		});
 	}
 
@@ -676,12 +667,9 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				manager.envoieImpressionLocaleDI(ppId, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			manager.envoieImpressionLocaleDI(ppId, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
+			return null;
 		});
 
 		// le code segment doit avoir été transmis à la nouvelle DI
@@ -710,46 +698,35 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
 
-				final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
+			final PersonnePhysique pp = addNonHabitant("Annette", "Lebeurre", date(1978, 12, 3), Sexe.FEMININ);
+			addForPrincipal(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, MockCommune.Zurich);
+			addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
+			ids.ppId = pp.getNumero();
 
-				final PersonnePhysique pp = addNonHabitant("Annette", "Lebeurre", date(1978, 12, 3), Sexe.FEMININ);
-				addForPrincipal(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, MockCommune.Zurich);
-				addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
-				ids.ppId = pp.getNumero();
-
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
-
-				return null;
-			}
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
+			return null;
 		});
 
 		final RegDate delaiAccorde = RegDate.get().addMonths(2);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
-				// cet appel levait une exception parce que le for de gestion au 31 décembre 2009 n'était pas connu avant la correction du cas SIFISC-4923
-				manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, delaiAccorde, null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
+			// cet appel levait une exception parce que le for de gestion au 31 décembre 2009 n'était pas connu avant la correction du cas SIFISC-4923
+			manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, delaiAccorde, null);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
-				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, 2009, false);
-				assertNotNull(decls);
-				assertEquals(1, decls.size());
-				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
+			final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, 2009, false);
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
+			assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
+			return null;
 		});
 	}
 
@@ -818,35 +795,29 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		});
 
 		// mise en place fiscale et impression de la DI
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
-				addEtatDeclarationEmise(di, RegDate.get());
-				addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateOuvertureFor, MotifFor.MAJORITE, MockCommune.Cossonay);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
+			addEtatDeclarationEmise(di, RegDate.get());
+			addDelaiDeclaration(di, RegDate.get(annee, 2, 15), RegDate.get(annee, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				Mockito.doReturn(nomDocument).when(impressionConfirmationDelaiPPHelper).construitIdDocument(Mockito.any(DelaiDeclaration.class));
-				final Tiers pp = tiersDAO.get(ppId);
-				assertNotNull(pp);
-				final List<DeclarationImpotOrdinairePP> list = pp.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
-				final DeclarationImpotOrdinairePP di = list.get(0);
-				assertNotNull(di);
-				final DelaiDeclaration delaiDeclaration = (DelaiDeclaration) di.getDelais().iterator().next();
-				manager.envoieImpressionBatchLettreDecisionDelaiPP(delaiDeclaration.getId());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			Mockito.doReturn(nomDocument).when(impressionConfirmationDelaiPPHelper).construitIdDocument(ArgumentMatchers.any(DelaiDeclaration.class));
+			final Tiers pp = tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final List<DeclarationImpotOrdinairePP> list = pp.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
+			final DeclarationImpotOrdinairePP di = list.get(0);
+			assertNotNull(di);
+			final DelaiDeclaration delaiDeclaration = (DelaiDeclaration) di.getDelais().iterator().next();
+			manager.envoieImpressionBatchLettreDecisionDelaiPP(delaiDeclaration.getId());
+			return null;
 		});
 		Assert.assertEquals(1, documentEditique.size());
 		final XmlObject document = documentEditique.get(nomDocument);

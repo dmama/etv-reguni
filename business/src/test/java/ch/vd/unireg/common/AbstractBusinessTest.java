@@ -296,7 +296,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     @Override
-    protected void loadDatabase(String filename) throws Exception {
+    protected void loadDatabase(String filename) {
         super.loadDatabase(filename);
 
         if (wantIndexationTiers) {
@@ -343,23 +343,23 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		this.wantCollectivitesAdministratives = wantCollectivitesAdministratives;
 	}
 
-	protected void indexTiersData() throws Exception {
+	protected void indexTiersData() {
         globalTiersIndexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 1, null);
     }
 
-	protected void indexMessagesIdentificationData() throws Exception {
+	protected void indexMessagesIdentificationData() {
 		globalMessageIdentificationIndexer.indexAllDatabase(null, 1);
 	}
 
-    protected void removeTiersIndexData() throws Exception {
+    protected void removeTiersIndexData() {
         globalTiersIndexer.overwriteIndex();
     }
 
-	protected void removeMessageIdentificationIndexData() throws Exception {
+	protected void removeMessageIdentificationIndexData() {
 		globalMessageIdentificationIndexer.overwriteIndex();
 	}
 
-	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
+	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) {
         return doInNewTransaction(status -> hibernateTemplate.executeWithNewSession(session -> action.doInTransaction(status)));
     }
 

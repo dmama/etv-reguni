@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -140,20 +139,17 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// Dans le fiscal
-		final Long[] ids = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long[]>() {
-			@Override
-			public Long[] execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addAdresseSuisse(monsieur, TypeAdresseTiers.DOMICILE, date(1943, 2, 12), null, MockRue.Echallens.GrandRue);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1944, 8, 1), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
-				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1944, 8, 1), date(1947, 7, 13), MockRue.Chamblon.RueDesUttins);
-				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1947, 7, 14), null, MockRue.Echallens.GrandRue);
-				EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(monsieur, madame, date(1947, 7, 14), null);
-				addForPrincipal(ensembleTiersCouple.getMenage(), date(1947, 7, 14), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return new Long[]{ensembleTiersCouple.getMenage().getId(), ensembleTiersCouple.getPrincipal().getId(), ensembleTiersCouple.getConjoint().getId()};
-			}
+		final Long[] ids = doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addAdresseSuisse(monsieur, TypeAdresseTiers.DOMICILE, date(1943, 2, 12), null, MockRue.Echallens.GrandRue);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1944, 8, 1), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+			addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1944, 8, 1), date(1947, 7, 13), MockRue.Chamblon.RueDesUttins);
+			addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1947, 7, 14), null, MockRue.Echallens.GrandRue);
+			EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(monsieur, madame, date(1947, 7, 14), null);
+			addForPrincipal(ensembleTiersCouple.getMenage(), date(1947, 7, 14), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return new Long[]{ensembleTiersCouple.getMenage().getId(), ensembleTiersCouple.getPrincipal().getId(), ensembleTiersCouple.getConjoint().getId()};
 		});
 		final long menageId = ids[0];
 		final long monsieurId = ids[1];
@@ -754,16 +750,13 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, dateNaissanceMadame.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.ANNULATION, MockCommune.Echallens);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, dateNaissanceMadame.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.ANNULATION, MockCommune.Echallens);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return null;
 		});
 
 		// décès civil
@@ -965,26 +958,23 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 
 		// Dans le fiscal
-		final Long[] ids = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long[]>() {
-			@Override
-			public Long[] execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addAdresseSuisse(monsieur, TypeAdresseTiers.DOMICILE, date(1943, 2, 12), null, MockRue.Echallens.GrandRue);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1944, 8, 1), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
-				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1944, 8, 1), date(1947, 7, 13), MockRue.Chamblon.RueDesUttins);
-				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1947, 7, 14), null, MockRue.Echallens.GrandRue);
-				EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(monsieur, madame, date(1947, 7, 14), null);
-				addForPrincipal(ensembleTiersCouple.getMenage(), date(1947, 7, 14), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				PersonnePhysique heritier = addHabitant(noHeritier);
-				PersonnePhysique heritiere = addHabitant(noHeritiere);
-				addParente(heritier, madame, dateNaissanceEnfants, null);
-				addParente(heritier, monsieur, dateNaissanceEnfants, null);
-				addParente(heritiere, madame, dateNaissanceEnfants, null);
-				addParente(heritiere, monsieur, dateNaissanceEnfants, null);
-				return new Long[]{ensembleTiersCouple.getMenage().getId(), ensembleTiersCouple.getPrincipal().getId(), ensembleTiersCouple.getConjoint().getId(), heritier.getId(), heritiere.getId()};
-			}
+		final Long[] ids = doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addAdresseSuisse(monsieur, TypeAdresseTiers.DOMICILE, date(1943, 2, 12), null, MockRue.Echallens.GrandRue);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1944, 8, 1), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+			addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1944, 8, 1), date(1947, 7, 13), MockRue.Chamblon.RueDesUttins);
+			addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1947, 7, 14), null, MockRue.Echallens.GrandRue);
+			EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(monsieur, madame, date(1947, 7, 14), null);
+			addForPrincipal(ensembleTiersCouple.getMenage(), date(1947, 7, 14), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			PersonnePhysique heritier = addHabitant(noHeritier);
+			PersonnePhysique heritiere = addHabitant(noHeritiere);
+			addParente(heritier, madame, dateNaissanceEnfants, null);
+			addParente(heritier, monsieur, dateNaissanceEnfants, null);
+			addParente(heritiere, madame, dateNaissanceEnfants, null);
+			addParente(heritiere, monsieur, dateNaissanceEnfants, null);
+			return new Long[]{ensembleTiersCouple.getMenage().getId(), ensembleTiersCouple.getPrincipal().getId(), ensembleTiersCouple.getConjoint().getId(), heritier.getId(), heritiere.getId()};
 		});
 		final long menageId = ids[0];
 		final long monsieurId = ids[1];

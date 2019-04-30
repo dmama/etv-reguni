@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -57,14 +56,11 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique osvalde = addHabitant(noIndividu);
-				addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockCommune.Cossonay);
-				addAdresseSuisse(osvalde, TypeAdresseTiers.DOMICILE, dateMajorite, null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique osvalde = addHabitant(noIndividu);
+			addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockCommune.Cossonay);
+			addAdresseSuisse(osvalde, TypeAdresseTiers.DOMICILE, dateMajorite, null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			return null;
 		});
 
 		// événement demenagement
@@ -122,15 +118,12 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique osvalde = addHabitant(noIndividu);
-				addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockCommune.Cossonay);
-				addDecisionAci(osvalde, dateDemenagement.addMonths(6), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				addAdresseSuisse(osvalde, TypeAdresseTiers.DOMICILE, dateMajorite, null, MockRue.CossonayVille.AvenueDuFuniculaire);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique osvalde = addHabitant(noIndividu);
+			addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockCommune.Cossonay);
+			addDecisionAci(osvalde, dateDemenagement.addMonths(6), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			addAdresseSuisse(osvalde, TypeAdresseTiers.DOMICILE, dateMajorite, null, MockRue.CossonayVille.AvenueDuFuniculaire);
+			return null;
 		});
 
 		// événement demenagement
@@ -189,16 +182,13 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addDecisionAci(ensemble.getMenage(), date(2012, 5, 1), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addDecisionAci(ensemble.getMenage(), date(2012, 5, 1), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -271,13 +261,10 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique osvalde = addHabitant(noIndividu);
-				addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockPays.Espagne);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique osvalde = addHabitant(noIndividu);
+			addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockPays.Espagne);
+			return null;
 		});
 
 		// événement demenagement
@@ -326,13 +313,10 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique osvalde = addHabitant(noIndividu);
-				addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockPays.Espagne);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique osvalde = addHabitant(noIndividu);
+			addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockPays.Espagne);
+			return null;
 		});
 
 		// événement demenagement

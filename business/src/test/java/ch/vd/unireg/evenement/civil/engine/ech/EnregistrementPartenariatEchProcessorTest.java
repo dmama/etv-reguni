@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
@@ -37,15 +36,12 @@ public class EnregistrementPartenariatEchProcessorTest extends AbstractEvenement
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noPrincipal);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noConjoint);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noPrincipal);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noConjoint);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			return null;
 		});
 
 		// événement civil

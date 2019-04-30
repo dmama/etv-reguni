@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.XmlUtils;
@@ -96,30 +97,40 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		return errorCollector;
 	}
 
-	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
-		final EsbMessage m = EsbMessageFactory.createMessage();
-		m.setBusinessUser("EvenementTest");
-		m.setBusinessId(String.valueOf(m.hashCode()));
-		m.setContext("test");
-		m.setServiceDestination(queueName);
-		m.setBody(texte);
-		m.setServiceReplyTo(replyTo);
-		return m;
+	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) {
+		try {
+			final EsbMessage m = EsbMessageFactory.createMessage();
+			m.setBusinessUser("EvenementTest");
+			m.setBusinessId(String.valueOf(m.hashCode()));
+			m.setContext("test");
+			m.setServiceDestination(queueName);
+			m.setBody(texte);
+			m.setServiceReplyTo(replyTo);
+			return m;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
 	 * @return le businessId du message envoyé
 	 */
-	protected String sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
+	protected String sendTextMessage(String queueName, String texte, String replyTo) {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
 		validateMessage(m);
 		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
 		return m.getBusinessId();
 	}
 
-	protected void validateMessage(EsbMessage msg) throws Exception {
+	protected void validateMessage(EsbMessage msg) {
 		if (esbValidator != null) {
-			esbValidator.validate(msg);
+			try {
+				esbValidator.validate(msg);
+			}
+			catch (ESBValidationException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

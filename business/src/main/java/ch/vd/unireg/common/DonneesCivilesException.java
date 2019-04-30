@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Exception lancée lors d'un problème de cohérence dans les données récupérées depuis le registre civil
  */
-public class DonneesCivilesException extends Exception {
+public class DonneesCivilesException extends RuntimeException {
 
 	private static final long serialVersionUID = 3301152111456034197L;
 

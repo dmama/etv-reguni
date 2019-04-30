@@ -13,13 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
-import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
-import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
-import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
-import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -30,12 +23,19 @@ import ch.vd.unireg.efacture.DemandeAvecHistoView;
 import ch.vd.unireg.efacture.DestinataireAvecHistoView;
 import ch.vd.unireg.efacture.DocumentEFacture;
 import ch.vd.unireg.efacture.DocumentEFactureDAO;
+import ch.vd.unireg.efacture.EFactureException;
 import ch.vd.unireg.efacture.EFactureHelper;
 import ch.vd.unireg.efacture.EFactureResponseService;
 import ch.vd.unireg.efacture.EFactureService;
 import ch.vd.unireg.efacture.EtatDemandeView;
 import ch.vd.unireg.efacture.EtatDestinataireView;
-import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
+import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.utils.WebContextUtils;
@@ -52,7 +52,8 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException, EvenementEfactureException {
+	public String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException,
+			EFactureException {
 		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 		final TypeAttenteDemande typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
 		final String messageAvecVisaUser = getMessageAvecVisaUser();
@@ -99,21 +100,21 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String suspendreContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException {
+	public String suspendreContribuable(long ctbId, @Nullable String comment) throws EFactureException {
 		final String description = getMessageAvecVisaUser(comment);
 		return eFactureService.suspendreContribuable(ctbId, true, description);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String activerContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException {
+	public String activerContribuable(long ctbId, @Nullable String comment) throws EFactureException {
 		final String description = getMessageAvecVisaUser(comment);
 		return eFactureService.activerContribuable(ctbId, true, description);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String modifierEmail(long noCtb, String newEmail) throws EvenementEfactureException {
+	public String modifierEmail(long noCtb, String newEmail) throws EFactureException {
 		final String description = getMessageAvecVisaUser();
 		return eFactureService.modifierEmailContribuable(noCtb, newEmail, true, description);
 	}
@@ -124,20 +125,20 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	@Override
-	public String accepterDemande(String idDemande) throws EvenementEfactureException {
+	public String accepterDemande(String idDemande) throws EFactureException {
 		final String description = getMessageAvecVisaUser();
 		return eFactureService.accepterDemande(idDemande, true, description);
 	}
 
 	@Override
-	public String refuserDemande(String idDemande) throws EvenementEfactureException {
+	public String refuserDemande(String idDemande) throws EFactureException {
 		final String description = getMessageAvecVisaUser();
 		return eFactureService.refuserDemande(idDemande, true, description);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@Override
-	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+	public ResultatQuittancement quittancer(Long noCtb) throws EFactureException {
 		return eFactureService.quittancer(noCtb);
 	}
 

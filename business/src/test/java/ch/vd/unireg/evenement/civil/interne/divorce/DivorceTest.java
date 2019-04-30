@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.civil.interne.divorce;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -296,44 +295,38 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// création d'un ménage-commun divorcé au fiscal
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForPrincipal(monsieur, dateDivorce.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addForPrincipal(monsieur, dateDivorce.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Echallens);
 
-				final PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
-				addForPrincipal(madame, dateDivorce.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+			addForPrincipal(madame, dateDivorce.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateDivorce);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				                MockCommune.Echallens);
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateDivorce);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                MockCommune.Echallens);
+			return null;
 		});
 
 		// traitement de l'événement de divorce redondant
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateDivorce);
+			final Individu madame = serviceCivil.getIndividu(noMadame, dateDivorce);
 
-				final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateDivorce);
-				final Individu madame = serviceCivil.getIndividu(noMadame, dateDivorce);
+			// la date de l'événement divorce corresponds au premier jour de non-appartenance ménage des composants (à l'inverse de la logique habituelle)
+			final Divorce divorce = new Divorce(monsieur, madame, dateDivorce.getOneDayAfter(), MockCommune.Echallens.getNoOFS(), context);
 
-				// la date de l'événement divorce corresponds au premier jour de non-appartenance ménage des composants (à l'inverse de la logique habituelle)
-				final Divorce divorce = new Divorce(monsieur, madame, dateDivorce.getOneDayAfter(), MockCommune.Echallens.getNoOFS(), context);
+			final MessageCollector collector = buildMessageCollector();
+			final HandleStatus etat;
+			divorce.validate(collector, collector);
+			etat = divorce.handle(collector);
 
-				final MessageCollector collector = buildMessageCollector();
-				divorce.validate(collector, collector);
-				final HandleStatus etat = divorce.handle(collector);
-
-				assertEmpty(collector.getErreurs());
-				assertEmpty(collector.getWarnings());
-				assertEquals(HandleStatus.REDONDANT, etat);
-				return null;
-			}
+			assertEmpty(collector.getErreurs());
+			assertEmpty(collector.getWarnings());
+			assertEquals(HandleStatus.REDONDANT, etat);
+			return null;
 		});
 
 		// on s'assure que rien n'a changé

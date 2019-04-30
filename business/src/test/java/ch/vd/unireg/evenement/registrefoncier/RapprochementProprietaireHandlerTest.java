@@ -6,10 +6,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
@@ -62,11 +60,9 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		});
 
 		// réception du message de rapprochement
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws EsbBusinessException {
-				handler.addRapprochement(ids.idContribuable, ids.idTiersRF);
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.addRapprochement(ids.idContribuable, ids.idTiersRF);
+			return null;
 		});
 
 		// vérification des données en base
@@ -129,11 +125,9 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		});
 
 		// réception du message de rapprochement
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws EsbBusinessException {
-				handler.addRapprochement(ids.idContribuableNouveau, ids.idTiersRF);
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.addRapprochement(ids.idContribuableNouveau, ids.idTiersRF);
+			return null;
 		});
 
 		// vérification des données en base
@@ -224,11 +218,9 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		});
 
 		// réception du message de rapprochement
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws EsbBusinessException {
-				handler.addRapprochement(ids.idContribuableNouveau, ids.idTiersRF);
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.addRapprochement(ids.idContribuableNouveau, ids.idTiersRF);
+			return null;
 		});
 
 		// vérification des données en base
@@ -328,11 +320,9 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 
 		// réception du message de rapprochement
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws EsbBusinessException {
-					handler.addRapprochement(ids.idContribuable, ids.idTiersRF);
-				}
+			doInNewTransactionAndSession(status -> {
+				handler.addRapprochement(ids.idContribuable, ids.idTiersRF);
+				return null;
 			});
 			Assert.fail("Aurait dû sauter car le contribuable est inconnu...");
 		}
@@ -377,11 +367,9 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 
 		// réception du message de rapprochement
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws EsbBusinessException {
-					handler.addRapprochement(ids.idContribuable, ids.idTiersRF);
-				}
+			doInNewTransactionAndSession(status -> {
+				handler.addRapprochement(ids.idContribuable, ids.idTiersRF);
+				return null;
 			});
 			Assert.fail("Aurait dû sauter car le tiers RF est inconnu...");
 		}
@@ -433,11 +421,9 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 
 		// réception du message de rapprochement
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws EsbBusinessException {
-					handler.addRapprochement(ids.idContribuableExistant, ids.idTiersRF);
-				}
+			doInNewTransactionAndSession(status -> {
+				handler.addRapprochement(ids.idContribuableExistant, ids.idTiersRF);
+				return null;
 			});
 			Assert.fail("Aurait dû sauter car le tiers RF est déjà complètement couvert...");
 		}

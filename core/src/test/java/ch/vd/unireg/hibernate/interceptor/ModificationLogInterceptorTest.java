@@ -3,7 +3,6 @@ package ch.vd.unireg.hibernate.interceptor;
 import java.util.Date;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -43,16 +42,13 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 		String activeUser = "BlaBla";
 		AuthenticationHelper.pushPrincipal(activeUser);
 		try {
-			long id = doInNewTransaction(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nhab = new PersonnePhysique(false);
-					nhab.setNom("Broulis");
-					nhab.setPrenomUsuel("Broulis");
+			long id = doInNewTransaction(status -> {
+				PersonnePhysique nhab = new PersonnePhysique(false);
+				nhab.setNom("Broulis");
+				nhab.setPrenomUsuel("Broulis");
 
-					nhab = (PersonnePhysique) dao.save(nhab);
-					return nhab.getNumero();
-				}
+				nhab = (PersonnePhysique) dao.save(nhab);
+				return nhab.getNumero();
 			});
 
 			PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
@@ -78,32 +74,26 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 			final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
 			final String oldUser = "BliBli";
 
-			final long id = doInNewTransaction(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nhab = new PersonnePhysique(false);
-					nhab.setNom("Broulis");
-					nhab.setPrenomUsuel("Broulis");
-					nhab.setLogCreationUser(oldUser);
-					nhab.setLogCreationDate(modifInitalDate);
-					nhab.setLogModifUser(oldUser);
-					nhab.setLogModifMillis(modifInitalDate.getTime());
+			final long id = doInNewTransaction(status -> {
+				PersonnePhysique nhab = new PersonnePhysique(false);
+				nhab.setNom("Broulis");
+				nhab.setPrenomUsuel("Broulis");
+				nhab.setLogCreationUser(oldUser);
+				nhab.setLogCreationDate(modifInitalDate);
+				nhab.setLogModifUser(oldUser);
+				nhab.setLogModifMillis(modifInitalDate.getTime());
 
-					nhab = (PersonnePhysique) dao.save(nhab);
-					return nhab.getNumero();
-				}
+				nhab = (PersonnePhysique) dao.save(nhab);
+				return nhab.getNumero();
 			});
 
 			Date beforeTx = DateHelper.getCurrentDate();
 			Thread.sleep(100);
 
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-					nhab.setNom("Pauli");
-					return null;
-				}
+			doInNewTransaction(status -> {
+				PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
+				nhab.setNom("Pauli");
+				return null;
 			});
 
 			Thread.sleep(100);
@@ -142,57 +132,50 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 			final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
 			final String oldUser = "BliBli";
 
-			final long id = doInNewTransaction(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nhab = new PersonnePhysique(false);
-					nhab.setNom("Broulis");
-					nhab.setPrenomUsuel("Broulis");
-					nhab.setLogCreationUser(oldUser);
-					nhab.setLogCreationDate(modifInitalDate);
-					nhab.setLogModifUser(oldUser);
-					nhab.setLogModifMillis(modifInitalDate.getTime());
+			final long id = doInNewTransaction(status -> {
+				PersonnePhysique nhab = new PersonnePhysique(false);
+				nhab.setNom("Broulis");
+				nhab.setPrenomUsuel("Broulis");
+				nhab.setLogCreationUser(oldUser);
+				nhab.setLogCreationDate(modifInitalDate);
+				nhab.setLogModifUser(oldUser);
+				nhab.setLogModifMillis(modifInitalDate.getTime());
 
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-					f.setDateDebut(RegDate.get(1990, 1, 1));
-					f.setDateFin(null);
-					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					f.setNumeroOfsAutoriteFiscale(5586);
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
-					f.setMotifOuverture(MotifFor.MAJORITE);
-					f.setModeImposition(ModeImposition.ORDINAIRE);
-					nhab.addForFiscal(f);
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+				f.setDateDebut(RegDate.get(1990, 1, 1));
+				f.setDateFin(null);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(5586);
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setMotifOuverture(MotifFor.MAJORITE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				nhab.addForFiscal(f);
 
-					nhab = (PersonnePhysique) dao.save(nhab);
-					return nhab.getNumero();
-				}
+				nhab = (PersonnePhysique) dao.save(nhab);
+				return nhab.getNumero();
 			});
 
 			Date beforeTx = DateHelper.getCurrentDate();
 			Thread.sleep(100);
 
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-					ForFiscalPrincipalPP f = nhab.getDernierForFiscalPrincipal();
-					f.setDateFin(RegDate.get(2008, 10, 10));
-					f.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+			doInNewTransaction(status -> {
+				PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
+				ForFiscalPrincipalPP f = nhab.getDernierForFiscalPrincipal();
+				f.setDateFin(RegDate.get(2008, 10, 10));
+				f.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-					f = new ForFiscalPrincipalPP();
-					f.setDateDebut(RegDate.get(2008, 10, 11));
-					f.setDateFin(null);
-					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					f.setNumeroOfsAutoriteFiscale(4321);
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
-					f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-					f.setModeImposition(ModeImposition.ORDINAIRE);
-					nhab.addForFiscal(f);
-
-					return null;
-				}
+				f = new ForFiscalPrincipalPP();
+				f.setDateDebut(RegDate.get(2008, 10, 11));
+				f.setDateFin(null);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(4321);
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				nhab.addForFiscal(f);
+				return null;
 			});
 
 			Thread.sleep(100);

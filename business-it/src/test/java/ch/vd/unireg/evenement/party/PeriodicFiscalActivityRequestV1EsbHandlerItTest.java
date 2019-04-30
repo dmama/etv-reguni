@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.party;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
@@ -74,14 +73,11 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				addForPrincipal(pp, date(1980, 6, 1), MotifFor.MAJORITE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			addForPrincipal(pp, date(1980, 6, 1), MotifFor.MAJORITE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final PeriodicFiscalActivityRequest request = new PeriodicFiscalActivityRequest();
@@ -108,14 +104,11 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				addForPrincipal(pp, date(1980, 6, 1), MotifFor.MAJORITE, MockCommune.Aigle);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			addForPrincipal(pp, date(1980, 6, 1), MotifFor.MAJORITE, MockCommune.Aigle);
+			return pp.getNumero();
 		});
 
 		final PeriodicFiscalActivityRequest request = new PeriodicFiscalActivityRequest();

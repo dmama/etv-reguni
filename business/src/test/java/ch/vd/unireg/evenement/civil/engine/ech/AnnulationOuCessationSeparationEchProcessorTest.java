@@ -1,8 +1,6 @@
 package ch.vd.unireg.evenement.civil.engine.ech;
 
 
-import org.springframework.transaction.TransactionStatus;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
@@ -54,42 +52,38 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur,
+			                dateNaissance.addYears(18), MotifFor.MAJORITE,
+			                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Echallens);
+			addForPrincipal(monsieur,
+			                dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                MockCommune.Echallens);
 
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur,
-				                dateNaissance.addYears(18), MotifFor.MAJORITE,
-				                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockCommune.Echallens);
-				addForPrincipal(monsieur,
-				                dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				                MockCommune.Echallens);
-
-				final PersonnePhysique monsieurDame = addHabitant(noMonsieurDame);
-				addForPrincipal(monsieurDame,
-				                dateNaissance.addYears(18), MotifFor.MAJORITE,
-				                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockCommune.Lausanne);
-				addForPrincipal(monsieurDame,
-				                dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				                MockCommune.Echallens);
+			final PersonnePhysique monsieurDame = addHabitant(noMonsieurDame);
+			addForPrincipal(monsieurDame,
+			                dateNaissance.addYears(18), MotifFor.MAJORITE,
+			                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Lausanne);
+			addForPrincipal(monsieurDame,
+			                dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                MockCommune.Echallens);
 
 
-				final MenageCommun menage = addEnsembleTiersCouple(monsieur, monsieurDame, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
-				addForPrincipal(menage,
-				                dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				                MockCommune.Echallens);
+			final MenageCommun menage = addEnsembleTiersCouple(monsieur, monsieurDame, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
+			addForPrincipal(menage,
+			                dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                MockCommune.Echallens);
 
-				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore(), 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
-				addSituation(monsieurDame, dateNaissance, dateMariage.getOneDayBefore(), 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
-				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
-				addSituation(monsieur, dateSeparation, null, 0, etatCivilSepare);
-				addSituation(monsieurDame, dateSeparation, null, 0, etatCivilSepare);
-				return null;
-			}
+			addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore(), 0, EtatCivil.CELIBATAIRE);
+			addSituation(monsieurDame, dateNaissance, dateMariage.getOneDayBefore(), 0, EtatCivil.CELIBATAIRE);
+			addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
+			addSituation(monsieur, dateSeparation, null, 0, etatCivilSepare);
+			addSituation(monsieurDame, dateSeparation, null, 0, etatCivilSepare);
+			return null;
 		});
 
 		final RegDate dateEvenement = typeEvenement == TypeEvenementCivilEch.CESSATION_SEPARATION ? dateReconciliation : dateSeparation;
@@ -176,24 +170,21 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final MenageCommun menage = addEnsembleTiersCouple(monsieur, null, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
-				addForPrincipal(monsieur,
-				                dateNaissance.addYears(18), MotifFor.MAJORITE,
-				                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockCommune.Echallens);
-				addForPrincipal(menage,
-				                dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				                MockCommune.Echallens);
-				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore(), 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
-				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
-				addSituation(monsieur, dateSeparation, null, 0, etatCivilSepare);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final MenageCommun menage = addEnsembleTiersCouple(monsieur, null, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
+			addForPrincipal(monsieur,
+			                dateNaissance.addYears(18), MotifFor.MAJORITE,
+			                dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Echallens);
+			addForPrincipal(menage,
+			                dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			                MockCommune.Echallens);
+			addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore(), 0, EtatCivil.CELIBATAIRE);
+			addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
+			addSituation(monsieur, dateSeparation, null, 0, etatCivilSepare);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)

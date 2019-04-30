@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.adresse.AdresseService;
@@ -58,14 +57,11 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				pp.setNom("Dubouchelard");
-				pp.setHabitant(false);
-				return pp.getNumero();
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			pp.setNom("Dubouchelard");
+			pp.setHabitant(false);
+			return pp.getNumero();
 		});
 
 		assertAucunChangement(runProcessorPersonnesPhysiques(1));
@@ -84,12 +80,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long noPP = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addHabitant(noIndividu).getNumero();
-			}
-		});
+		final long noPP = doInNewTransactionAndSession(status -> addHabitant(noIndividu).getNumero());
 
 		assertUnNouveauNonHabitant(runProcessorPersonnesPhysiques(1), noPP);
 	}
@@ -108,14 +99,11 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 			}
 		});
 
-		final long noPP = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				pp.setHabitant(false);
-				pp.setNom("Dubouchelard");
-				return pp.getNumero();
-			}
+		final long noPP = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			pp.setHabitant(false);
+			pp.setNom("Dubouchelard");
+			return pp.getNumero();
 		});
 
 		assertUnNouveauHabitant(runProcessorPersonnesPhysiques(1), noPP);

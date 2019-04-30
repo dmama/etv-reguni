@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -31,12 +30,17 @@ import static org.junit.Assert.fail;
 
 public class IdentificationContribuableRequestV2ListenerItTest extends IdentificationContribuableRequestListenerItTest {
 
-	private static String requestToString(IdentificationContribuableRequest request) throws JAXBException {
-		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		Marshaller marshaller = context.createMarshaller();
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		marshaller.marshal(new ObjectFactory().createIdentificationContribuableRequest(request), out);
-		return out.toString();
+	private static String requestToString(IdentificationContribuableRequest request) {
+		try {
+			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+			Marshaller marshaller = context.createMarshaller();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			marshaller.marshal(new ObjectFactory().createIdentificationContribuableRequest(request), out);
+			return out.toString();
+		}
+		catch (JAXBException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@NotNull
@@ -50,12 +54,9 @@ public class IdentificationContribuableRequestV2ListenerItTest extends Identific
 
 		final RegDate dateNaissance = RegDate.get(1982, 6);     // date partielle, pour le faire au moins une fois
 
-		final long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier Vallard", dateNaissance, Sexe.MASCULIN);
-				return christophe.getNumero();
-			}
+		final long id = doInNewTransaction(status -> {
+			final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier Vallard", dateNaissance, Sexe.MASCULIN);
+			return christophe.getNumero();
 		});
 		globalTiersIndexer.sync();
 
@@ -65,12 +66,9 @@ public class IdentificationContribuableRequestV2ListenerItTest extends Identific
 		request.setPrenoms("Christophe");
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+			return null;
 		});
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
@@ -91,19 +89,13 @@ public class IdentificationContribuableRequestV2ListenerItTest extends Identific
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationAutomatiquePlusieurs() throws Exception {
 
-		final Long id1 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
-				return christophe.getNumero();
-			}
+		final Long id1 = doInNewTransaction(status -> {
+			final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier", date(1982, 6, 29), Sexe.MASCULIN);
+			return christophe.getNumero();
 		});
-		final Long id2 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1964,6,29), Sexe.MASCULIN);
-				return christophe.getNumero();
-			}
+		final Long id2 = doInNewTransaction(status -> {
+			final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier", date(1964, 6, 29), Sexe.MASCULIN);
+			return christophe.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -126,12 +118,9 @@ public class IdentificationContribuableRequestV2ListenerItTest extends Identific
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationAutomatiqueAucun() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
-				return christophe.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier", date(1982, 6, 29), Sexe.MASCULIN);
+			return christophe.getNumero();
 		});
 
 		globalTiersIndexer.sync();

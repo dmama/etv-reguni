@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.web.util.NestedServletException;
 
 import ch.vd.registre.base.date.RegDate;
@@ -164,17 +163,14 @@ public class RapportControllerTest extends WebTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Ragnol", date(1932, 1, 1), Sexe.MASCULIN);
-				ids.marcel = marcel.getId();
-				final PersonnePhysique geraldine = addNonHabitant("Géraldine", "Massnacht", date(1982, 1, 1), Sexe.FEMININ);
-				ids.geraldine = geraldine.getId();
-				final RepresentationConventionnelle rapport = addRepresentationConventionnelle(marcel, geraldine, date(2000, 1, 1), false);
-				ids.rapport = rapport.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique marcel = addNonHabitant("Marcel", "Ragnol", date(1932, 1, 1), Sexe.MASCULIN);
+			ids.marcel = marcel.getId();
+			final PersonnePhysique geraldine = addNonHabitant("Géraldine", "Massnacht", date(1982, 1, 1), Sexe.FEMININ);
+			ids.geraldine = geraldine.getId();
+			final RepresentationConventionnelle rapport = addRepresentationConventionnelle(marcel, geraldine, date(2000, 1, 1), false);
+			ids.rapport = rapport.getId();
+			return null;
 		});
 
 		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
@@ -191,14 +187,11 @@ public class RapportControllerTest extends WebTest {
 		res.andExpect(status().isFound());
 
 		// On vérifie que le rapport a bien été fermé
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final RepresentationConventionnelle rapport = hibernateTemplate.get(RepresentationConventionnelle.class, ids.rapport);
-				assertNotNull(rapport);
-				assertEquals(date(2010, 11, 29), rapport.getDateFin());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final RepresentationConventionnelle rapport = hibernateTemplate.get(RepresentationConventionnelle.class, ids.rapport);
+			assertNotNull(rapport);
+			assertEquals(date(2010, 11, 29), rapport.getDateFin());
+			return null;
 		});
 	}
 

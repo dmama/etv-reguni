@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.civil.engine.ech;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
@@ -52,15 +51,12 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -122,16 +118,13 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addNonHabitant("Lisette", "Bouton", date(1974, 8, 1), Sexe.FEMININ);
-				madame.setNumeroOfsNationalite(MockPays.France.getNoOFS());
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addNonHabitant("Lisette", "Bouton", date(1974, 8, 1), Sexe.FEMININ);
+			madame.setNumeroOfsNationalite(MockPays.France.getNoOFS());
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -187,17 +180,14 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 			}
 		});
 
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				final MenageCommun mc = ensemble.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			final MenageCommun mc = ensemble.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return mc.getNumero();
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -270,17 +260,14 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 			}
 		});
 
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				final MenageCommun mc = ensemble.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateSeparation.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			final MenageCommun mc = ensemble.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateSeparation.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
+			return mc.getNumero();
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)

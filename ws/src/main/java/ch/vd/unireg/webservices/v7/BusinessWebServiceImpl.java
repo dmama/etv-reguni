@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.ResourceUtils;
@@ -39,8 +38,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -583,48 +580,40 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final RegDate nouveauDelai = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getGrantedOn());
 
-		try {
-			return doInTransaction(false, new TxCallback<DeadlineResponse>() {
-				@Override
-				public DeadlineResponse execute(TransactionStatus status) throws AccessDeniedException {
+		return doInTransaction(false, status -> {
 
-					// on va chercher le contribuable et la déclaration
-					final Tiers tiers = context.tiersService.getTiers(partyNo);
-					if (tiers == null) {
-						throw new TiersNotFoundException(partyNo);
-					}
+			// on va chercher le contribuable et la déclaration
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			if (tiers == null) {
+				throw new TiersNotFoundException(partyNo);
+			}
 
-					if (!(tiers instanceof Contribuable)) {
-						throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
-					}
-					final Contribuable ctb = (Contribuable) tiers;
+			if (!(tiers instanceof Contribuable)) {
+				throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
+			}
+			final Contribuable ctb = (Contribuable) tiers;
 
-					if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-						WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PP);
-					}
-					else if (ctb instanceof Entreprise) {
-						WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PM);
-					}
+			if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+				WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PP);
+			}
+			else if (ctb instanceof Entreprise) {
+				WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PM);
+			}
 
-					final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
-					if (di == null) {
-						throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
-					}
+			final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
+			if (di == null) {
+				throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
+			}
 
-					try {
-						// on ajoute le délai
-						context.diService.ajouterDelaiDI(di, dateObtention, nouveauDelai, EtatDelaiDocumentFiscal.ACCORDE, null);
-						return new DeadlineResponse(DeadlineStatus.OK, null);
-					}
-					catch (AjoutDelaiDeclarationException e) {
-						return new DeadlineResponse(getDeadlineStatus(e.getRaison()), e.getMessage());
-					}
-				}
-			});
-		}
-		catch (TxCallbackException e) {
-			throw (AccessDeniedException) e.getCause();
-		}
+			try {
+				// on ajoute le délai
+				context.diService.ajouterDelaiDI(di, dateObtention, nouveauDelai, EtatDelaiDocumentFiscal.ACCORDE, null);
+				return new DeadlineResponse(DeadlineStatus.OK, null);
+			}
+			catch (AjoutDelaiDeclarationException e) {
+				return new DeadlineResponse(getDeadlineStatus(e.getRaison()), e.getMessage());
+			}
+		});
 	}
 
 	@NotNull
@@ -1244,24 +1233,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@Nullable
 	@Override
 	public Party getParty(final int partyNo, @Nullable final Set<InternalPartyPart> parts) throws ServiceException {
-		try {
-			return doInTransaction(true, new TxCallback<Party>() {
-				@Override
-				public Party execute(TransactionStatus status) throws ServiceException {
-					final Tiers tiers = context.tiersService.getTiers(partyNo);
-					return buildParty(tiers, parts, context);
-				}
-			});
-		}
-		catch (TxCallbackException e) {
-			final Throwable cause = e.getCause();
-			if (cause instanceof ServiceException) {
-				throw (ServiceException) cause;
-			}
-			else {
-				throw e;
-			}
-		}
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			return buildParty(tiers, parts, context);
+		});
 	}
 
 	@NotNull
@@ -1398,28 +1373,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public ImageData getAvatar(final int partyNo) throws ServiceException {
-		try {
-			return doInTransaction(true, new TxCallback<ImageData>() {
-				@Override
-				public ImageData execute(TransactionStatus status) {
-					final Tiers tiers = context.tiersService.getTiers(partyNo);
-					if (tiers == null) {
-						throw new TiersNotFoundException(partyNo);
-					}
-
-					return avatarService.getAvatar(tiers, false);
-				}
-			});
-		}
-		catch (TxCallbackException e) {
-			final Throwable cause = e.getCause();
-			if (cause instanceof ServiceException) {
-				throw (ServiceException) cause;
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			if (tiers == null) {
+				throw new TiersNotFoundException(partyNo);
 			}
-			else {
-				throw e;
-			}
-		}
+			return avatarService.getAvatar(tiers, false);
+		});
 	}
 
 	@Override

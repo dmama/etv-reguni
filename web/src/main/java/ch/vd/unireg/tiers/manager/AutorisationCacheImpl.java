@@ -16,10 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
@@ -182,12 +180,9 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	private Autorisations loadAutorisations(final Long tiersId, final String visa, final int oid) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<Autorisations>() {
-			@Override
-			public Autorisations execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersId == null ? null : tiersDAO.get(tiersId);
-				return autorisationManager.getAutorisations(tiers, visa, oid);
-			}
+		return template.execute(status -> {
+			final Tiers tiers = tiersId == null ? null : tiersDAO.get(tiersId);
+			return autorisationManager.getAutorisations(tiers, visa, oid);
 		});
 	}
 
@@ -229,23 +224,20 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	private void evictTiersLiesParDecisionAci(final long id) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final Set<Long> otherIds = template.execute(new TxCallback<Set<Long>>() {
-			@Override
-			public Set<Long> execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(id);
-				if (tiers instanceof Contribuable) {
-					final Contribuable ctb = (Contribuable)tiers;
-					if (ctb.hasDecisionsNonAnnulees()) {
-						final Set<Contribuable> listeCtb = tiersService.getContribuablesLies(ctb,null);
-						final Set<Long> ids = new HashSet<>(listeCtb.size());
-						for (Contribuable c : listeCtb) {
-							ids.add(c.getNumero());
-						}
-						return ids;
+		final Set<Long> otherIds = template.execute(status -> {
+			final Tiers tiers = tiersDAO.get(id);
+			if (tiers instanceof Contribuable) {
+				final Contribuable ctb = (Contribuable) tiers;
+				if (ctb.hasDecisionsNonAnnulees()) {
+					final Set<Contribuable> listeCtb = tiersService.getContribuablesLies(ctb, null);
+					final Set<Long> ids = new HashSet<>(listeCtb.size());
+					for (Contribuable c : listeCtb) {
+						ids.add(c.getNumero());
 					}
+					return ids;
 				}
-				return Collections.emptySet();
 			}
+			return Collections.emptySet();
 		});
 
 		// éviction du cache des tiers liés
@@ -264,22 +256,19 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 		// récupération des membres qui composent l'éventuel ménage
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final Set<Long> otherIds = template.execute(new TxCallback<Set<Long>>() {
-			@Override
-			public Set<Long> execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(id);
-				if (tiers instanceof MenageCommun) {
-					final Set<PersonnePhysique> pps = tiersService.getComposantsMenage((MenageCommun) tiers, null);
-					if (pps != null && !pps.isEmpty()) {
-						final Set<Long> ids = new HashSet<>(pps.size());
-						for (PersonnePhysique pp : pps) {
-							ids.add(pp.getNumero());
-						}
-						return ids;
+		final Set<Long> otherIds = template.execute(status -> {
+			final Tiers tiers = tiersDAO.get(id);
+			if (tiers instanceof MenageCommun) {
+				final Set<PersonnePhysique> pps = tiersService.getComposantsMenage((MenageCommun) tiers, null);
+				if (pps != null && !pps.isEmpty()) {
+					final Set<Long> ids = new HashSet<>(pps.size());
+					for (PersonnePhysique pp : pps) {
+						ids.add(pp.getNumero());
 					}
+					return ids;
 				}
-				return Collections.emptySet();
 			}
+			return Collections.emptySet();
 		});
 
 		// éviction du cache des personnes physiques trouvées

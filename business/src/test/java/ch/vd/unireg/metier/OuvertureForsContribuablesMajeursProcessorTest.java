@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -201,17 +200,14 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			}
 		});
 
-		final OuvertureForsResults rapport = doInNewTransaction(new TxCallback<OuvertureForsResults>() {
-			@Override
-			public OuvertureForsResults execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique h = addHabitant(noIndividu);
-				h.setOfficeImpotId(18);
-				ids.jean = h.getNumero();
-				// Lancement du batch
-				final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
-				processor.traiteHabitant(h.getNumero(), dateTraitement, rapport);
-				return rapport;
-			}
+		final OuvertureForsResults rapport = doInNewTransaction(status -> {
+			final PersonnePhysique h = addHabitant(noIndividu);
+			h.setOfficeImpotId(18);
+			ids.jean = h.getNumero();
+			// Lancement du batch
+			final OuvertureForsResults r = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
+			processor.traiteHabitant(h.getNumero(), dateTraitement, r);
+			return r;
 		});
 
 

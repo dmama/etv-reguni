@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.raft.ZipRaftEsbStore;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
@@ -68,16 +66,13 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		assertNotNull(raftUrl);
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.PRINCIPAL);
+			importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
@@ -95,76 +90,72 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(3, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, new MutationComparator());
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(3, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et la DB était vide
+			Collections.sort(mutations, new MutationComparator());
 
-				final EvenementRFMutation mut0 = mutations.get(0);
-				assertEquals(importId, mut0.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
-				assertEquals("3893728273382823", mut0.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonstammID>3893728273382823</PersonstammID>\n" +
-						             "    <Name>Nom</Name>\n" +
-						             "    <Gueltig>false</Gueltig>\n" +
-						             "    <NoRF>3727</NoRF>\n" +
-						             "    <Vorname>Prénom</Vorname>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>23</Tag>\n" +
-						             "        <Monat>1</Monat>\n" +
-						             "        <Jahr>1956</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <NrIROLE>827288022</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(importId, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
+			assertEquals("3893728273382823", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <PersonstammID>3893728273382823</PersonstammID>\n" +
+					             "    <Name>Nom</Name>\n" +
+					             "    <Gueltig>false</Gueltig>\n" +
+					             "    <NoRF>3727</NoRF>\n" +
+					             "    <Vorname>Prénom</Vorname>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>23</Tag>\n" +
+					             "        <Monat>1</Monat>\n" +
+					             "        <Jahr>1956</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <NrIROLE>827288022</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
 
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-				assertEquals("48349384890202", mut1.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonstammID>48349384890202</PersonstammID>\n" +
-						             "    <Name>Raison sociale</Name>\n" +
-						             "    <Gueltig>false</Gueltig>\n" +
-						             "    <NrACI>827288022</NrACI>\n" +
-						             "    <NoRF>3727</NoRF>\n" +
-						             "    <Unterart>SchweizerischeJuristischePerson</Unterart>\n" +
-						             "</JuristischePersonstamm>\n", mut1.getXmlContent());
+			final EvenementRFMutation mut1 = mutations.get(1);
+			assertEquals(importId, mut1.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
+			assertEquals("48349384890202", mut1.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <PersonstammID>48349384890202</PersonstammID>\n" +
+					             "    <Name>Raison sociale</Name>\n" +
+					             "    <Gueltig>false</Gueltig>\n" +
+					             "    <NrACI>827288022</NrACI>\n" +
+					             "    <NoRF>3727</NoRF>\n" +
+					             "    <Unterart>SchweizerischeJuristischePerson</Unterart>\n" +
+					             "</JuristischePersonstamm>\n", mut1.getXmlContent());
 
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
-				assertEquals("574739202303482", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonstammID>574739202303482</PersonstammID>\n" +
-						             "    <Name>Raison sociale</Name>\n" +
-						             "    <Gueltig>false</Gueltig>\n" +
-						             "    <NrACI>827288022</NrACI>\n" +
-						             "    <NoRF>3727</NoRF>\n" +
-						             "    <Unterart>OeffentlicheKoerperschaft</Unterart>\n" +
-						             "</JuristischePersonstamm>\n", mut2.getXmlContent());
-			}
+			final EvenementRFMutation mut2 = mutations.get(2);
+			assertEquals(importId, mut2.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
+			assertEquals("574739202303482", mut2.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <PersonstammID>574739202303482</PersonstammID>\n" +
+					             "    <Name>Raison sociale</Name>\n" +
+					             "    <Gueltig>false</Gueltig>\n" +
+					             "    <NrACI>827288022</NrACI>\n" +
+					             "    <NoRF>3727</NoRF>\n" +
+					             "    <Unterart>OeffentlicheKoerperschaft</Unterart>\n" +
+					             "</JuristischePersonstamm>\n", mut2.getXmlContent());
+			return null;
 		});
 
 	}
@@ -187,31 +178,26 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		assertNotNull(raftUrl);
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.PRINCIPAL);
+			importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
 		// on insère les données des ayant-droits dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// données équivalentes au fichier export_ayantsdroits_rf_hebdo.xm.xml
-				final PersonnePhysiqueRF pp = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
-				final PersonneMoraleRF pm = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale");
-				final CollectivitePubliqueRF coll = newCollectivitePublique("574739202303482", 3727L, 827288022L, "Raison sociale");
-				ayantDroitRFDAO.save(pp);
-				ayantDroitRFDAO.save(pm);
-				ayantDroitRFDAO.save(coll);
-			}
+		doInNewTransaction(status -> {
+			// données équivalentes au fichier export_ayantsdroits_rf_hebdo.xm.xml
+			final PersonnePhysiqueRF pp = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
+			final PersonneMoraleRF pm = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale");
+			final CollectivitePubliqueRF coll = newCollectivitePublique("574739202303482", 3727L, 827288022L, "Raison sociale");
+			ayantDroitRFDAO.save(pp);
+			ayantDroitRFDAO.save(pm);
+			ayantDroitRFDAO.save(coll);
+			return null;
 		});
 
 		// on déclenche le démarrage du job
@@ -228,22 +214,18 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie qu'il n'y a pas de mutations dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(0, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et ils sont tous identiques à ceux dans la DB
-			}
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(0, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et ils sont tous identiques à ceux dans la DB;
+			return null;
 		});
 	}
 
@@ -268,34 +250,29 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(dateSecondImport);
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.PRINCIPAL);
+			importEvent.setDateEvenement(dateSecondImport);
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
 		// on insère les données des ayant-droits dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// données partiellement différentes de celles du fichier export_ayantsdroits_rf_hebdo.xm.xml
-				//  - no RF différent
-				final PersonnePhysiqueRF pp = newPersonnePhysique("3893728273382823", 48322L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
-				// - raison sociale différente
-				final PersonneMoraleRF pm = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale différente");
-				// - no CTB différent
-				final CollectivitePubliqueRF coll = newCollectivitePublique("574739202303482", 3727L, 584323450L, "Raison sociale");
-				ayantDroitRFDAO.save(pp);
-				ayantDroitRFDAO.save(pm);
-				ayantDroitRFDAO.save(coll);
-			}
+		doInNewTransaction(status -> {
+			// données partiellement différentes de celles du fichier export_ayantsdroits_rf_hebdo.xm.xml
+			//  - no RF différent
+			final PersonnePhysiqueRF pp = newPersonnePhysique("3893728273382823", 48322L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
+			// - raison sociale différente
+			final PersonneMoraleRF pm = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale différente");
+			// - no CTB différent
+			final CollectivitePubliqueRF coll = newCollectivitePublique("574739202303482", 3727L, 584323450L, "Raison sociale");
+			ayantDroitRFDAO.save(pp);
+			ayantDroitRFDAO.save(pm);
+			ayantDroitRFDAO.save(coll);
+			return null;
 		});
 
 		// on déclenche le démarrage du job
@@ -312,76 +289,72 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(3, mutations.size());    // les 3 ayants-droits dans le fichier d'import sont tous différents
-				Collections.sort(mutations, new MutationComparator());
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(3, mutations.size());    // les 3 ayants-droits dans le fichier d'import sont tous différents
+			Collections.sort(mutations, new MutationComparator());
 
-				final EvenementRFMutation mut0 = mutations.get(0);
-				assertEquals(importId, mut0.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
-				assertEquals("3893728273382823", mut0.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonstammID>3893728273382823</PersonstammID>\n" +
-						             "    <Name>Nom</Name>\n" +
-						             "    <Gueltig>false</Gueltig>\n" +
-						             "    <NoRF>3727</NoRF>\n" +
-						             "    <Vorname>Prénom</Vorname>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>23</Tag>\n" +
-						             "        <Monat>1</Monat>\n" +
-						             "        <Jahr>1956</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <NrIROLE>827288022</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(importId, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
+			assertEquals("3893728273382823", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <PersonstammID>3893728273382823</PersonstammID>\n" +
+					             "    <Name>Nom</Name>\n" +
+					             "    <Gueltig>false</Gueltig>\n" +
+					             "    <NoRF>3727</NoRF>\n" +
+					             "    <Vorname>Prénom</Vorname>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>23</Tag>\n" +
+					             "        <Monat>1</Monat>\n" +
+					             "        <Jahr>1956</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <NrIROLE>827288022</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
 
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
-				assertEquals("48349384890202", mut1.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonstammID>48349384890202</PersonstammID>\n" +
-						             "    <Name>Raison sociale</Name>\n" +
-						             "    <Gueltig>false</Gueltig>\n" +
-						             "    <NrACI>827288022</NrACI>\n" +
-						             "    <NoRF>3727</NoRF>\n" +
-						             "    <Unterart>SchweizerischeJuristischePerson</Unterart>\n" +
-						             "</JuristischePersonstamm>\n", mut1.getXmlContent());
+			final EvenementRFMutation mut1 = mutations.get(1);
+			assertEquals(importId, mut1.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
+			assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
+			assertEquals("48349384890202", mut1.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <PersonstammID>48349384890202</PersonstammID>\n" +
+					             "    <Name>Raison sociale</Name>\n" +
+					             "    <Gueltig>false</Gueltig>\n" +
+					             "    <NrACI>827288022</NrACI>\n" +
+					             "    <NoRF>3727</NoRF>\n" +
+					             "    <Unterart>SchweizerischeJuristischePerson</Unterart>\n" +
+					             "</JuristischePersonstamm>\n", mut1.getXmlContent());
 
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut2.getTypeMutation());
-				assertEquals("574739202303482", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonstammID>574739202303482</PersonstammID>\n" +
-						             "    <Name>Raison sociale</Name>\n" +
-						             "    <Gueltig>false</Gueltig>\n" +
-						             "    <NrACI>827288022</NrACI>\n" +
-						             "    <NoRF>3727</NoRF>\n" +
-						             "    <Unterart>OeffentlicheKoerperschaft</Unterart>\n" +
-						             "</JuristischePersonstamm>\n", mut2.getXmlContent());
-			}
+			final EvenementRFMutation mut2 = mutations.get(2);
+			assertEquals(importId, mut2.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
+			assertEquals(TypeMutationRF.MODIFICATION, mut2.getTypeMutation());
+			assertEquals("574739202303482", mut2.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <PersonstammID>574739202303482</PersonstammID>\n" +
+					             "    <Name>Raison sociale</Name>\n" +
+					             "    <Gueltig>false</Gueltig>\n" +
+					             "    <NrACI>827288022</NrACI>\n" +
+					             "    <NoRF>3727</NoRF>\n" +
+					             "    <Unterart>OeffentlicheKoerperschaft</Unterart>\n" +
+					             "</JuristischePersonstamm>\n", mut2.getXmlContent());
+			return null;
 		});
 	}
 

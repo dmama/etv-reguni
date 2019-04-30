@@ -9,12 +9,10 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.foncier.AllegementFoncier;
@@ -265,12 +263,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		                                                       dateOctroi, true,
 		                                                       dateEcheanceOctroi, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
-			@Override
-			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
-				return handler.onRetourDegrevement(retour, null);
-			}
-		});
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(status -> handler.onRetourDegrevement(retour, null));
 
 		// vérification des données retournées
 		Assert.assertNotNull(quittance);
@@ -403,11 +396,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		                                                       dateOctroi, true,
 		                                                       dateEcheanceOctroi, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onRetourDegrevement(retour, null);
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onRetourDegrevement(retour, null);
+			return null;
 		});
 
 		// vérification en base
@@ -521,12 +512,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		                                                       dateOctroi, false,
 		                                                       dateEcheanceOctroi, false);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
-			@Override
-			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
-				return handler.onRetourDegrevement(retour, null);
-			}
-		});
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(status -> handler.onRetourDegrevement(retour, null));
 
 		// vérification des données retournées
 		Assert.assertNotNull(quittance);
@@ -651,12 +637,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		                                                       dateOctroi, true,
 		                                                       dateEcheanceOctroi, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
-			@Override
-			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
-				return handler.onRetourDegrevement(retour, null);
-			}
-		});
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(status -> handler.onRetourDegrevement(retour, null));
 
 		// vérification des données retournées
 		Assert.assertNotNull(quittance);
@@ -789,12 +770,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		                                                       dateOctroi, true,
 		                                                       dateEcheanceOctroi, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
-			@Override
-			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
-				return handler.onRetourDegrevement(retour, null);
-			}
-		});
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(status -> handler.onRetourDegrevement(retour, null));
 
 		// vérification des données retournées
 		Assert.assertNotNull(quittance);
@@ -1021,12 +997,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		                                                       null, true,
 		                                                       null, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
-			@Override
-			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
-				return handler.onRetourDegrevement(retour, null);
-			}
-		});
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(status -> handler.onRetourDegrevement(retour, null));
 
 		// vérification des données retournées
 		Assert.assertNotNull(quittance);

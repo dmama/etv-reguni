@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -72,12 +70,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		context = new EvenementCivilContext(serviceCivil, serviceInfra, null, tiersService, null, null, tiersDAO, null, null, null, audit);
 		dummyEvent = new DummyEvenementCivilInterne(null, null, null, null, context);
 
-		doInNewTransaction(new TxCallback<Object>(){
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				return addHabitant(NUMERO_INDIVIDU);
-			}
-		});
+		doInNewTransaction(status -> addHabitant(NUMERO_INDIVIDU));
 	}
 
 	@Test
@@ -88,83 +81,79 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		 */
 		final RegDate dateInitiale = RegDate.get(1990, 7, 1);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(NUMERO_INDIVIDU);
-				habitant = (PersonnePhysique)tiersDAO.save(habitant);
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(NUMERO_INDIVIDU);
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
-				dummyEvent.openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateInitiale, MockCommune.Cossonay.getNoOFS(), MotifFor.ARRIVEE_HC);
+			dummyEvent.openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateInitiale, MockCommune.Cossonay.getNoOFS(), MotifFor.ARRIVEE_HC);
+			assertEquals(1, habitant.getForsFiscaux().size());
+			final ForFiscalPrincipal forInitial = (ForFiscalPrincipal) habitant.getForsFiscauxSorted().get(0);
+
+			final RegDate dateChangement = RegDate.get(1998, 3, 1);
+			final RegDate veilleChangement = dateChangement.getOneDayBefore();
+
+			/*
+			 * Arrivée en doublon : aucun changement
+			 */
+			{
 				assertEquals(1, habitant.getForsFiscaux().size());
-				final ForFiscalPrincipal forInitial = (ForFiscalPrincipal) habitant.getForsFiscauxSorted().get(0);
-
-				final RegDate dateChangement = RegDate.get(1998, 3, 1);
-				final RegDate veilleChangement = dateChangement.getOneDayBefore();
-
-				/*
-				 * Arrivée en doublon : aucun changement
-				 */
-				{
-					assertEquals(1, habitant.getForsFiscaux().size());
-					dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Cossonay.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
-					assertEquals(1, habitant.getForsFiscaux().size());
-					assertNull(forInitial.getDateFin());
-				}
-
-				/*
-				 * Arrivée normale
-				 */
-				{
-					assertEquals(1, habitant.getForsFiscaux().size());
-					dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.LesClees.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
-					assertEquals(2, habitant.getForsFiscaux().size());
-					assertEquals(veilleChangement, forInitial.getDateFin());
-
-					final ForFiscalPrincipal nouveauFor = (ForFiscalPrincipal) habitant.getForsFiscauxSorted().get(1);
-					assertEquals(dateChangement, nouveauFor.getDateDebut());
-					assertNull(nouveauFor.getDateFin());
-				}
+				dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Cossonay.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
+				assertEquals(1, habitant.getForsFiscaux().size());
+				assertNull(forInitial.getDateFin());
 			}
+
+			/*
+			 * Arrivée normale
+			 */
+			{
+				assertEquals(1, habitant.getForsFiscaux().size());
+				dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.LesClees.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
+				assertEquals(2, habitant.getForsFiscaux().size());
+				assertEquals(veilleChangement, forInitial.getDateFin());
+
+				final ForFiscalPrincipal nouveauFor = (ForFiscalPrincipal) habitant.getForsFiscauxSorted().get(1);
+				assertEquals(dateChangement, nouveauFor.getDateDebut());
+				assertNull(nouveauFor.getDateFin());
+			}
+			return null;
 		});
 	}
 
 	@Test
 	public void testUpdateForFiscalPrincipalModeImpositionInvariant() throws Exception {
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(NUMERO_INDIVIDU);
-				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-				f.setDateDebut(RegDate.get(2000,1,1));
-				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(MockCommune.Cossonay.getNoOFS());
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setModeImposition(ModeImposition.SOURCE);
-				habitant.addForFiscal(f);
-				habitant = (PersonnePhysique)tiersDAO.save(habitant);
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(NUMERO_INDIVIDU);
+			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			f.setDateDebut(RegDate.get(2000, 1, 1));
+			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+			f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			f.setNumeroOfsAutoriteFiscale(MockCommune.Cossonay.getNoOFS());
+			f.setMotifRattachement(MotifRattachement.DOMICILE);
+			f.setModeImposition(ModeImposition.SOURCE);
+			habitant.addForFiscal(f);
+			habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
-				// déménagement sur Lausanne
-				dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
+			// déménagement sur Lausanne
+			dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004, 7, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, MotifFor.DEMENAGEMENT_VD, null);
 
-				// on vérifie que le type d'autorité fiscale, le motif de rattachement et le mode d'imposition restent inchangés
-				final List<ForFiscal> fors = habitant.getForsFiscauxSorted();
-				assertEquals(2, fors.size());
+			// on vérifie que le type d'autorité fiscale, le motif de rattachement et le mode d'imposition restent inchangés
+			final List<ForFiscal> fors = habitant.getForsFiscauxSorted();
+			assertEquals(2, fors.size());
 
-				final ForFiscalPrincipalPP forCossonay = (ForFiscalPrincipalPP) fors.get(0);
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forCossonay.getTypeAutoriteFiscale());
-				assertEquals(MotifRattachement.DOMICILE, forCossonay.getMotifRattachement());
-				assertEquals(ModeImposition.SOURCE, forCossonay.getModeImposition());
+			final ForFiscalPrincipalPP forCossonay = (ForFiscalPrincipalPP) fors.get(0);
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forCossonay.getTypeAutoriteFiscale());
+			assertEquals(MotifRattachement.DOMICILE, forCossonay.getMotifRattachement());
+			assertEquals(ModeImposition.SOURCE, forCossonay.getModeImposition());
 
-				final ForFiscalPrincipalPP forLausanne = (ForFiscalPrincipalPP) fors.get(1);
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forLausanne.getTypeAutoriteFiscale());
-				assertEquals(MotifRattachement.DOMICILE, forLausanne.getMotifRattachement());
-				assertEquals(ModeImposition.SOURCE, forLausanne.getModeImposition());
-			}
+			final ForFiscalPrincipalPP forLausanne = (ForFiscalPrincipalPP) fors.get(1);
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forLausanne.getTypeAutoriteFiscale());
+			assertEquals(MotifRattachement.DOMICILE, forLausanne.getMotifRattachement());
+			assertEquals(ModeImposition.SOURCE, forLausanne.getModeImposition());
+			return null;
 		});
 	}
 
@@ -184,38 +173,36 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		final MessageCollector collector = new MessageCollector();
 		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU, null);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				//test OK
-				final EvenementCivilInterne even = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1),356, context);
-				even.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+		doInNewTransactionAndSession(status -> {
+			//test OK
+			final EvenementCivilInterne even = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), 356, context);
+			even.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				//test KO date null
-				final EvenementCivilInterne evenDateNull = new DummyEvenementCivilInterne(individu, null, null, 356, context);
-				evenDateNull.validate(collector, collector);
-				assertTrue(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				assertContent(Collections.singletonList("L'événement n'est pas daté"), collector.getErreurs());
-				collector.clear();
+			//test KO date null
+			final EvenementCivilInterne evenDateNull = new DummyEvenementCivilInterne(individu, null, null, 356, context);
+			evenDateNull.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			assertContent(Collections.singletonList("L'événement n'est pas daté"), collector.getErreurs());
+			collector.clear();
 
-				//test KO date future
-				final EvenementCivilInterne evenDateFuture = new DummyEvenementCivilInterne(individu, null, RegDate.get().addYears(2), 356, context);
-				evenDateFuture.validate(collector, collector);
-				assertTrue(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				assertContent(Collections.singletonList("La date de l'événement est dans le futur"), collector.getErreurs());
-				collector.clear();
+			//test KO date future
+			final EvenementCivilInterne evenDateFuture = new DummyEvenementCivilInterne(individu, null, RegDate.get().addYears(2), 356, context);
+			evenDateFuture.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			assertContent(Collections.singletonList("La date de l'événement est dans le futur"), collector.getErreurs());
+			collector.clear();
 
-				//test OK numéro OFS commune du sentier
-				final EvenementCivilInterne evenOFSSentier = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), 8000, context);
-				evenOFSSentier.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			//test OK numéro OFS commune du sentier
+			final EvenementCivilInterne evenOFSSentier = new DummyEvenementCivilInterne(individu, null, RegDate.get(1990, 7, 1), 8000, context);
+			evenOFSSentier.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 	}
 }

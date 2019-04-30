@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.party;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.adresse.AdresseService;
@@ -185,13 +184,10 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);
@@ -289,12 +285,7 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 			request.getParts().add(PartyPart.ADDRESSES);
 
 			// web-service call
-			final PartyResponse response = doInNewTransactionAndSession(new TxCallback<PartyResponse>() {
-				@Override
-				public PartyResponse execute(TransactionStatus status) throws Exception {
-					return (PartyResponse) handler.handle(request).getResponse();
-				}
-			});
+			final PartyResponse response = doInNewTransactionAndSession(status -> (PartyResponse) handler.handle(request).getResponse());
 
 			assertNotNull(response);
 			assertNotNull(response.getParty());
@@ -329,12 +320,7 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 			request.getParts().add(PartyPart.ADDRESSES);
 
 			// web-service call
-			final PartyResponse response = doInNewTransactionAndSession(new TxCallback<PartyResponse>() {
-				@Override
-				public PartyResponse execute(TransactionStatus status) throws Exception {
-					return (PartyResponse) handler.handle(request).getResponse();
-				}
-			});
+			final PartyResponse response = doInNewTransactionAndSession(status -> (PartyResponse) handler.handle(request).getResponse());
 
 			assertNotNull(response);
 			assertNotNull(response.getParty());

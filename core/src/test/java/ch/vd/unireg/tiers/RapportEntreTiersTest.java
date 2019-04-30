@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -40,37 +39,34 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			Long mcNum;
 		}
 
-		Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
-			@Override
-			public Numeros execute(TransactionStatus status) throws Exception {
-				// CTB 1
-				PersonnePhysique ctb1 = new PersonnePhysique(true);
-				ctb1.setNumeroIndividu(12345L);
+		Numeros numeros = doInNewTransaction(status -> {
+			// CTB 1
+			PersonnePhysique ctb1 = new PersonnePhysique(true);
+			ctb1.setNumeroIndividu(12345L);
 
-				// CTB 2
-				PersonnePhysique ctb2 = new PersonnePhysique(true);
-				ctb2.setNumeroIndividu(23456L);
+			// CTB 2
+			PersonnePhysique ctb2 = new PersonnePhysique(true);
+			ctb2.setNumeroIndividu(23456L);
 
-				// Menage
-				MenageCommun menage = new MenageCommun();
+			// Menage
+			MenageCommun menage = new MenageCommun();
 
-				ctb1 = (PersonnePhysique) tiersDAO.save(ctb1);
-				ctb2 = (PersonnePhysique) tiersDAO.save(ctb2);
-				menage = (MenageCommun) tiersDAO.save(menage);
+			ctb1 = (PersonnePhysique) tiersDAO.save(ctb1);
+			ctb2 = (PersonnePhysique) tiersDAO.save(ctb2);
+			menage = (MenageCommun) tiersDAO.save(menage);
 
-				// Rattachement
-				RapportEntreTiers rapport1 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb1, menage);
-				RapportEntreTiers rapport2 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb2, menage);
+			// Rattachement
+			RapportEntreTiers rapport1 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb1, menage);
+			RapportEntreTiers rapport2 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb2, menage);
 
-				tiersDAO.save(rapport1);
-				tiersDAO.save(rapport2);
+			tiersDAO.save(rapport1);
+			tiersDAO.save(rapport2);
 
-				Numeros numeros = new Numeros();
-				numeros.hab1Num = ctb1.getNumero();
-				numeros.hab2Num = ctb2.getNumero();
-				numeros.mcNum = menage.getNumero();
-				return numeros;
-			}
+			Numeros n = new Numeros();
+			n.hab1Num = ctb1.getNumero();
+			n.hab2Num = ctb2.getNumero();
+			n.mcNum = menage.getNumero();
+			return n;
 		});
 
 		final Long hab1Num = numeros.hab1Num;
@@ -166,40 +162,34 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			Long pupilleNum;
 		}
 
-		Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
-			@Override
-			public Numeros execute(TransactionStatus status) throws Exception {
-				PersonnePhysique tuteur = new PersonnePhysique(true);
-				tuteur.setNumeroIndividu(12345L);
+		Numeros numeros = doInNewTransaction(status -> {
+			PersonnePhysique tuteur = new PersonnePhysique(true);
+			tuteur.setNumeroIndividu(12345L);
 
-				PersonnePhysique pupille = new PersonnePhysique(true);
-				pupille.setNumeroIndividu(23456L);
+			PersonnePhysique pupille = new PersonnePhysique(true);
+			pupille.setNumeroIndividu(23456L);
 
-				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
-				pupille = (PersonnePhysique) tiersDAO.save(pupille);
+			tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
+			pupille = (PersonnePhysique) tiersDAO.save(pupille);
 
-				Numeros numeros = new Numeros();
-				numeros.tuteurNum = tuteur.getNumero();
-				numeros.pupilleNum = pupille.getNumero();
-				return numeros;
-			}
+			Numeros n = new Numeros();
+			n.tuteurNum = tuteur.getNumero();
+			n.pupilleNum = pupille.getNumero();
+			return n;
 		});
 
 		final Long tuteurNum = numeros.tuteurNum;
 		final Long pupilleNum = numeros.pupilleNum;
 
 		// Création d'une tutelle
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(tuteurNum);
-				PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(pupilleNum);
+		doInNewTransaction(status -> {
+			PersonnePhysique tuteur = (PersonnePhysique) tiersDAO.get(tuteurNum);
+			PersonnePhysique pupille = (PersonnePhysique) tiersDAO.get(pupilleNum);
 
-				RapportEntreTiers tutelle = new Tutelle(RegDate.get(2006, 1, 12), null, pupille, tuteur, null);
+			RapportEntreTiers tutelle = new Tutelle(RegDate.get(2006, 1, 12), null, pupille, tuteur, null);
 
-				tutelle = tiersDAO.save(tutelle);
-				return null;
-			}
+			tutelle = tiersDAO.save(tutelle);
+			return null;
 		});
 
 		// Nombre d'éléments stockés dans la base

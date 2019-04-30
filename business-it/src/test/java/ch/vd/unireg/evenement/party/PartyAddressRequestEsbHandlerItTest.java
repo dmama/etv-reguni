@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
@@ -143,13 +142,10 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		final AddressRequest request = new AddressRequest();
@@ -210,13 +206,10 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		final AddressRequest request = new AddressRequest();
@@ -248,13 +241,10 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		handler.setSecurityProvider(provider);
 
 		// créé une personne physique avec une adresse au Kosovo qui ne possède pas de code iso et qui provoque une erreur de validation de l'adresse eCH-0010-4.
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Drago", "Mcic", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseEtrangere(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 1), null, null, null, MockPays.Kosovo);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Drago", "Mcic", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseEtrangere(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 1), null, null, null, MockPays.Kosovo);
+			return pp.getNumero();
 		});
 
 		final AddressRequest request = new AddressRequest();
@@ -298,12 +288,9 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		});
 
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			return pp.getNumero();
 		});
 
 		final AddressRequest request = new AddressRequest();
@@ -342,12 +329,9 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		});
 
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			return pp.getNumero();
 		});
 
 		final AddressRequest request = new AddressRequest();

@@ -14,7 +14,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.PartialDateException;
@@ -170,23 +169,18 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 		/*
 		 * Sauve des données dans la base de données en passant pas Hibernate
 		 */
-		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
+		final Ids ids = doInNewTransaction(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			final Ids ids1 = new Ids();
+			final TestData data1 = new TestData(RegDate.get(2000, 11, 30), RegDate.get(2012, 1, 18));
+			ids1.id1 = (Long) session.save(data1);
 
-			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
-				final Session session = sessionFactory.getCurrentSession();
-				final Ids ids = new Ids();
-				final TestData data1 = new TestData(RegDate.get(2000, 11, 30), RegDate.get(2012, 1, 18));
-				ids.id1 = (Long) session.save(data1);
+			final TestData data2 = new TestData(RegDate.get(2000, 11), RegDate.get(1991, 8, 1));
+			ids1.id2 = (Long) session.save(data2);
 
-				final TestData data2 = new TestData(RegDate.get(2000, 11), RegDate.get(1991, 8, 1));
-				ids.id2 = (Long) session.save(data2);
-
-				final TestData data3 = new TestData(RegDate.get(2000), RegDate.get(2345, 11, 30));
-				ids.id3 = (Long) session.save(data3);
-
-				return ids;
-			}
+			final TestData data3 = new TestData(RegDate.get(2000), RegDate.get(2345, 11, 30));
+			ids1.id3 = (Long) session.save(data3);
+			return ids1;
 		});
 
 		/*

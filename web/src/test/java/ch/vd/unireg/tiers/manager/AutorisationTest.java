@@ -2,9 +2,7 @@ package ch.vd.unireg.tiers.manager;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -76,20 +74,16 @@ public class AutorisationTest  extends WebTest {
 			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				//Modification autorisée sur vaudois ordinaire
-				Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
-				Assert.assertTrue(autorisationsFederico.isIdentificationEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			//Modification autorisée sur vaudois ordinaire
+			Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
+			Assert.assertTrue(autorisationsFederico.isIdentificationEntreprise());
 
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
-				Assert.assertFalse(autorisationsAlbert.isIdentificationEntreprise());
-
-
-			}
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
+			Assert.assertFalse(autorisationsAlbert.isIdentificationEntreprise());
+			return null;
 		});
 
 	}
@@ -149,37 +143,33 @@ public class AutorisationTest  extends WebTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			//Modification autorisée sur DI
+			Autorisations autorisationsDiAlbert = autorisationManager.getAutorisations(albert, visaOperateurDi, 1);
+			Assert.assertTrue(autorisationsDiAlbert.isDeclarationImpots());
+			//Modif fiscales interdites car présences d'une décisions
+			Assert.assertFalse(autorisationsDiAlbert.isDonneesFiscales());
 
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				//Modification autorisée sur DI
-				Autorisations autorisationsDiAlbert = autorisationManager.getAutorisations(albert, visaOperateurDi, 1);
-				Assert.assertTrue(autorisationsDiAlbert.isDeclarationImpots());
-				//Modif fiscales interdites car présences d'une décisions
-				Assert.assertFalse(autorisationsDiAlbert.isDonneesFiscales());
-
-				//Modification non autorisée sur DI
-				Autorisations autorisationsSimpleAlbert = autorisationManager.getAutorisations(albert, visaOperateurSimple, 1);
-				Assert.assertFalse(autorisationsSimpleAlbert.isDeclarationImpots());
-				//Modif fiscales interdites car présences d'une décisions
-				Assert.assertFalse(autorisationsSimpleAlbert.isDonneesFiscales());
+			//Modification non autorisée sur DI
+			Autorisations autorisationsSimpleAlbert = autorisationManager.getAutorisations(albert, visaOperateurSimple, 1);
+			Assert.assertFalse(autorisationsSimpleAlbert.isDeclarationImpots());
+			//Modif fiscales interdites car présences d'une décisions
+			Assert.assertFalse(autorisationsSimpleAlbert.isDonneesFiscales());
 
 
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				//Modification sur DI
-				Autorisations autorisationsDiFederico = autorisationManager.getAutorisations(federico, visaOperateurDi, 1);
-				Assert.assertTrue(autorisationsDiFederico.isDeclarationImpots());
-				//Modif fisales autorisées
-				Assert.assertTrue(autorisationsDiFederico.isDonneesFiscales());
-				//Modification non autorisée sur DI
-				Autorisations autorisationsSimpleFederico = autorisationManager.getAutorisations(federico, visaOperateurSimple, 1);
-				Assert.assertFalse(autorisationsSimpleFederico.isDeclarationImpots());
-				//Modif fisales autorisées
-				Assert.assertTrue(autorisationsSimpleFederico.isDonneesFiscales());
-
-			}
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			//Modification sur DI
+			Autorisations autorisationsDiFederico = autorisationManager.getAutorisations(federico, visaOperateurDi, 1);
+			Assert.assertTrue(autorisationsDiFederico.isDeclarationImpots());
+			//Modif fisales autorisées
+			Assert.assertTrue(autorisationsDiFederico.isDonneesFiscales());
+			//Modification non autorisée sur DI
+			Autorisations autorisationsSimpleFederico = autorisationManager.getAutorisations(federico, visaOperateurSimple, 1);
+			Assert.assertFalse(autorisationsSimpleFederico.isDeclarationImpots());
+			//Modif fisales autorisées
+			Assert.assertTrue(autorisationsSimpleFederico.isDonneesFiscales());
+			return null;
 		});
 
 	}
@@ -237,37 +227,33 @@ public class AutorisationTest  extends WebTest {
 		});
 
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			//Modification autorisée sur DI
+			Autorisations autorisationsDiAlbert = autorisationManager.getAutorisations(albert, visaOperateurDi, 1);
+			Assert.assertTrue(autorisationsDiAlbert.isDeclarationImpots());
+			//Modif fiscales autorisees
+			Assert.assertTrue(autorisationsDiAlbert.isDonneesFiscales());
 
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				//Modification autorisée sur DI
-				Autorisations autorisationsDiAlbert = autorisationManager.getAutorisations(albert, visaOperateurDi, 1);
-				Assert.assertTrue(autorisationsDiAlbert.isDeclarationImpots());
-				//Modif fiscales autorisees
-				Assert.assertTrue(autorisationsDiAlbert.isDonneesFiscales());
-
-				//Modification non autorisée sur DI
-				Autorisations autorisationsSimpleAlbert = autorisationManager.getAutorisations(albert, visaOperateurSimple, 1);
-				Assert.assertFalse(autorisationsSimpleAlbert.isDeclarationImpots());
-				//Modif fiscales autorisees
-				Assert.assertTrue(autorisationsSimpleAlbert.isDonneesFiscales());
+			//Modification non autorisée sur DI
+			Autorisations autorisationsSimpleAlbert = autorisationManager.getAutorisations(albert, visaOperateurSimple, 1);
+			Assert.assertFalse(autorisationsSimpleAlbert.isDeclarationImpots());
+			//Modif fiscales autorisees
+			Assert.assertTrue(autorisationsSimpleAlbert.isDonneesFiscales());
 
 
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				//Modification sur DI
-				Autorisations autorisationsDiFederico = autorisationManager.getAutorisations(federico, visaOperateurDi, 1);
-				Assert.assertTrue(autorisationsDiFederico.isDeclarationImpots());
-				//Modif fisales autorisées
-				Assert.assertTrue(autorisationsDiFederico.isDonneesFiscales());
-				//Modification non autorisée sur DI
-				Autorisations autorisationsSimpleFederico = autorisationManager.getAutorisations(federico, visaOperateurSimple, 1);
-				Assert.assertFalse(autorisationsSimpleFederico.isDeclarationImpots());
-				//Modif fisales autorisées
-				Assert.assertTrue(autorisationsSimpleFederico.isDonneesFiscales());
-
-			}
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			//Modification sur DI
+			Autorisations autorisationsDiFederico = autorisationManager.getAutorisations(federico, visaOperateurDi, 1);
+			Assert.assertTrue(autorisationsDiFederico.isDeclarationImpots());
+			//Modif fisales autorisées
+			Assert.assertTrue(autorisationsDiFederico.isDonneesFiscales());
+			//Modification non autorisée sur DI
+			Autorisations autorisationsSimpleFederico = autorisationManager.getAutorisations(federico, visaOperateurSimple, 1);
+			Assert.assertFalse(autorisationsSimpleFederico.isDeclarationImpots());
+			//Modif fisales autorisées
+			Assert.assertTrue(autorisationsSimpleFederico.isDonneesFiscales());
+			return null;
 		});
 
 	}
@@ -321,20 +307,16 @@ public class AutorisationTest  extends WebTest {
 			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			//Modification autorisée sur sourcier
+			Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
+			Assert.assertTrue(autorisationsAlbert.isIdentificationEntreprise());
 
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				//Modification autorisée sur sourcier
-				Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
-				Assert.assertTrue(autorisationsAlbert.isIdentificationEntreprise());
-
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
-				Assert.assertFalse(autorisationsFederico.isIdentificationEntreprise());
-
-			}
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
+			Assert.assertFalse(autorisationsFederico.isIdentificationEntreprise());
+			return null;
 		});
 
 	}
@@ -385,20 +367,16 @@ public class AutorisationTest  extends WebTest {
 			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				//Modification autorisée sur hors canton
-				Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
-				Assert.assertTrue(autorisationsFederico.isIdentificationEntreprise());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			//Modification autorisée sur hors canton
+			Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
+			Assert.assertTrue(autorisationsFederico.isIdentificationEntreprise());
 
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
-				Assert.assertFalse(autorisationsAlbert.isIdentificationEntreprise());
-
-
-			}
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
+			Assert.assertFalse(autorisationsAlbert.isIdentificationEntreprise());
+			return null;
 		});
 
 	}
@@ -434,16 +412,11 @@ public class AutorisationTest  extends WebTest {
 			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
-				Assert.assertTrue(autorisationsAlbert.isIdentificationEntreprise());
-
-
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
+			Assert.assertTrue(autorisationsAlbert.isIdentificationEntreprise());
+			return null;
 		});
 
 	}
@@ -500,28 +473,23 @@ public class AutorisationTest  extends WebTest {
 			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
+			Assert.assertTrue(autorisationsAlbert.isIdentificationEntreprise());
 
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
-				Assert.assertTrue(autorisationsAlbert.isIdentificationEntreprise());
+			final PersonnePhysique justin = (PersonnePhysique) tiersDAO.get(ids.ppJustin);
+			Autorisations autorisationsJustin = autorisationManager.getAutorisations(justin, visaOperateur, 1);
+			Assert.assertTrue(autorisationsJustin.isIdentificationEntreprise());
 
-				final PersonnePhysique justin = (PersonnePhysique) tiersDAO.get(ids.ppJustin);
-				Autorisations autorisationsJustin = autorisationManager.getAutorisations(justin, visaOperateur, 1);
-				Assert.assertTrue(autorisationsJustin.isIdentificationEntreprise());
+			final PersonnePhysique regis = (PersonnePhysique) tiersDAO.get(ids.ppRegis);
+			Autorisations autorisationsRegis = autorisationManager.getAutorisations(regis, visaOperateur, 1);
+			Assert.assertTrue(autorisationsRegis.isIdentificationEntreprise());
 
-				final PersonnePhysique regis = (PersonnePhysique) tiersDAO.get(ids.ppRegis);
-				Autorisations autorisationsRegis = autorisationManager.getAutorisations(regis, visaOperateur, 1);
-				Assert.assertTrue(autorisationsRegis.isIdentificationEntreprise());
-
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
-				Assert.assertFalse(autorisationsFederico.isIdentificationEntreprise());
-
-
-			}
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
+			Assert.assertFalse(autorisationsFederico.isIdentificationEntreprise());
+			return null;
 		});
 
 	}
@@ -589,30 +557,27 @@ public class AutorisationTest  extends WebTest {
 			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				//Hors canton
-				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
-				Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
-				Assert.assertFalse(autorisationsAlbert.isIdentificationEntreprise());
+		doInNewTransactionAndSession(status -> {
+			//Hors canton
+			final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+			Autorisations autorisationsAlbert = autorisationManager.getAutorisations(albert, visaOperateur, 1);
+			Assert.assertFalse(autorisationsAlbert.isIdentificationEntreprise());
 
-				//SOURCIER
-				final PersonnePhysique justin = (PersonnePhysique) tiersDAO.get(ids.ppJustin);
-				Autorisations autorisationsJustin = autorisationManager.getAutorisations(justin, visaOperateur, 1);
-				Assert.assertFalse(autorisationsJustin.isIdentificationEntreprise());
+			//SOURCIER
+			final PersonnePhysique justin = (PersonnePhysique) tiersDAO.get(ids.ppJustin);
+			Autorisations autorisationsJustin = autorisationManager.getAutorisations(justin, visaOperateur, 1);
+			Assert.assertFalse(autorisationsJustin.isIdentificationEntreprise());
 
-				//Non assujetti
-				final PersonnePhysique regis = (PersonnePhysique) tiersDAO.get(ids.ppRegis);
-				Autorisations autorisationsRegis = autorisationManager.getAutorisations(regis, visaOperateur, 1);
-				Assert.assertFalse(autorisationsRegis.isIdentificationEntreprise());
+			//Non assujetti
+			final PersonnePhysique regis = (PersonnePhysique) tiersDAO.get(ids.ppRegis);
+			Autorisations autorisationsRegis = autorisationManager.getAutorisations(regis, visaOperateur, 1);
+			Assert.assertFalse(autorisationsRegis.isIdentificationEntreprise());
 
-				//Vaudois ordinaire
-				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
-				Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
-				Assert.assertFalse(autorisationsFederico.isIdentificationEntreprise());
-
-			}
+			//Vaudois ordinaire
+			final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+			Autorisations autorisationsFederico = autorisationManager.getAutorisations(federico, visaOperateur, 1);
+			Assert.assertFalse(autorisationsFederico.isIdentificationEntreprise());
+			return null;
 		});
 
 	}

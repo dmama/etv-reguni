@@ -6,7 +6,6 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -27,6 +26,8 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
+
+import static org.junit.Assert.assertNull;
 
 public class EvenementCivilEchServiceTest extends BusinessTest {
 
@@ -877,12 +878,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 		// vérifications de ce que renvoie la méthode d'extraction des grappes
 		// 1 <- 2
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(1L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(1L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -891,12 +889,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertEquals(2L, grappe.get(1).getId());
 		}
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(2L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(2L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -907,12 +902,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 
 		// 5
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(5L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(5L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -922,12 +914,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 
 		// 3 <- 7
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(3L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(3L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -936,12 +925,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertEquals(7L, grappe.get(1).getId());
 		}
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(7L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(7L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -952,12 +938,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 
 		// 4 <- 8 <- 9
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(4L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(4L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -967,12 +950,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertEquals(9L, grappe.get(2).getId());
 		}
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(8L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(8L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -982,12 +962,9 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			Assert.assertEquals(9L, grappe.get(2).getId());
 		}
 		{
-			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(new TxCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> execute(TransactionStatus status) throws Exception {
-					final EvenementCivilEch ech = evenementCivilEchDAO.get(9L);
-					return service.buildGrappe(ech);
-				}
+			final List<EvenementCivilEchBasicInfo> grappe = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch ech = evenementCivilEchDAO.get(9L);
+				return service.buildGrappe(ech);
 			});
 
 			Assert.assertNotNull(grappe);
@@ -1025,13 +1002,10 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			return null;
 		});
 
-		final long noIndividuRetrouve = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementCivilEch evt = evenementCivilEchDAO.get(noEvtATraiter);
-				Assert.assertNull(evt.getNumeroIndividu());
-				return service.getNumeroIndividuPourEvent(evt);
-			}
+		final long noIndividuRetrouve = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evenementCivilEchDAO.get(noEvtATraiter);
+			assertNull(evt.getNumeroIndividu());
+			return service.getNumeroIndividuPourEvent(evt);
 		});
 
 		Assert.assertEquals(noIndividu, noIndividuRetrouve);
@@ -1074,13 +1048,10 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 			return null;
 		});
 
-		final long noIndividuRetrouve = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementCivilEch evt = evenementCivilEchDAO.get(noEvtATraiter);
-				Assert.assertNull(evt.getNumeroIndividu());
-				return service.getNumeroIndividuPourEvent(evt);
-			}
+		final long noIndividuRetrouve = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evenementCivilEchDAO.get(noEvtATraiter);
+			assertNull(evt.getNumeroIndividu());
+			return service.getNumeroIndividuPourEvent(evt);
 		});
 
 		Assert.assertEquals(noIndividu, noIndividuRetrouve);

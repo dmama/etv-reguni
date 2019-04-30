@@ -5,10 +5,8 @@ import java.util.Set;
 
 import org.hibernate.SQLQuery;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -52,23 +50,20 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 		});
 
 		// création de la personne physique à transformer en ménage
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Paul", "Trohion", date(1965, 3, 12), Sexe.MASCULIN);
-				pp.setNomNaissance("Troyas");
-				pp.setAncienNumeroSourcier(4444L);
-				pp.setNumeroAssureSocial("WWWW");
-				pp.setNumeroOfsNationalite(333);
-				pp.setOrigine(new OriginePersonnePhysique(MockCommune.Neuchatel.getNomOfficiel(), MockCommune.Neuchatel.getSigleCanton()));
-				pp.setCategorieEtranger(CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE);
-				pp.setDateDebutValiditeAutorisation(RegDate.get(2000, 1, 1));
-				pp.setDateDeces(RegDate.get());
-				pp.setMajoriteTraitee(true);
-				addSituation(pp, date(1976, 1, 12), null, 0);
-				addIdentificationPersonne(pp, CategorieIdentifiant.CH_ZAR_RCE, "WERT");
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Paul", "Trohion", date(1965, 3, 12), Sexe.MASCULIN);
+			pp.setNomNaissance("Troyas");
+			pp.setAncienNumeroSourcier(4444L);
+			pp.setNumeroAssureSocial("WWWW");
+			pp.setNumeroOfsNationalite(333);
+			pp.setOrigine(new OriginePersonnePhysique(MockCommune.Neuchatel.getNomOfficiel(), MockCommune.Neuchatel.getSigleCanton()));
+			pp.setCategorieEtranger(CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE);
+			pp.setDateDebutValiditeAutorisation(RegDate.get(2000, 1, 1));
+			pp.setDateDeces(RegDate.get());
+			pp.setMajoriteTraitee(true);
+			addSituation(pp, date(1976, 1, 12), null, 0);
+			addIdentificationPersonne(pp, CategorieIdentifiant.CH_ZAR_RCE, "WERT");
+			return pp.getNumero();
 		});
 
 		// création du futur principal
@@ -81,42 +76,40 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 		manager.transformPp2Mc(id, date(1976,1,12), null, idPrincipal, null);
 
 		// on vérifie qu'on a bien un ménage
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = hibernateTemplate.get(MenageCommun.class, id);
-				assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = hibernateTemplate.get(MenageCommun.class, id);
+			assertNotNull(mc);
 
-				final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(1, rapports.size());
+			final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(1, rapports.size());
 
-				final RapportEntreTiers rapport0 = rapports.iterator().next();
-				assertInstanceOf(AppartenanceMenage.class, rapport0);
-				final AppartenanceMenage appart0=(AppartenanceMenage) rapport0;
+			final RapportEntreTiers rapport0 = rapports.iterator().next();
+			assertInstanceOf(AppartenanceMenage.class, rapport0);
+			final AppartenanceMenage appart0 = (AppartenanceMenage) rapport0;
 
-				final PersonnePhysique principal = hibernateTemplate.get(PersonnePhysique.class, appart0.getSujetId());
-				assertNotNull(principal);
-				assertEquals(idPrincipal, principal.getNumero());
+			final PersonnePhysique principal = hibernateTemplate.get(PersonnePhysique.class, appart0.getSujetId());
+			assertNotNull(principal);
+			assertEquals(idPrincipal, principal.getNumero());
 
-				// [SIFISC-7972] on vérifie que les données spécifiques aux PP ont bien été annulées dans la base
-				hibernateTemplate.execute(session -> {
-					final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
-							                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
-							                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
-					query.setParameter(0, id);
-					final List list = query.list();
-					assertNotNull(list);
-					assertEquals(1, list.size());
+			// [SIFISC-7972] on vérifie que les données spécifiques aux PP ont bien été annulées dans la base
+			hibernateTemplate.execute(session -> {
+				final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
+						                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
+						                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
+				query.setParameter(0, id);
+				final List list = query.list();
+				assertNotNull(list);
+				assertEquals(1, list.size());
 
-					final Object line[] = (Object[]) list.get(0);
-					for (int index = 0; index < line.length; ++index) {
-						final Object o = line[index];
-						assertNull("Index " + index, o);
-					}
-					return null;
-				});
-			}
+				final Object line[] = (Object[]) list.get(0);
+				for (int index = 0; index < line.length; ++index) {
+					final Object o = line[index];
+					assertNull("Index " + index, o);
+				}
+				return null;
+			});
+			return null;
 		});
 	}
 
@@ -133,29 +126,24 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 		});
 
 		// création du ménage commun à transformer en personne physique
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Paul", "Trohion", date(1965, 3, 12), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp, null, date(1976, 1, 12), null);
-				final MenageCommun menage = ensemble.getMenage();
-				addSituation(menage, date(1976, 1, 12), null, 0, TarifImpotSource.NORMAL);
-				return menage.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Paul", "Trohion", date(1965, 3, 12), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp, null, date(1976, 1, 12), null);
+			final MenageCommun menage = ensemble.getMenage();
+			addSituation(menage, date(1976, 1, 12), null, 0, TarifImpotSource.NORMAL);
+			return menage.getNumero();
 		});
 
 		// transformation en ménage-commun
 		manager.transformMc2Pp(id, noInd);
 
 		// on vérifie qu'on a bien une personne physique
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
-				assertNotNull(pp);
-				assertEmpty(pp.getRapportsSujet());
-				assertEmpty(pp.getRapportsObjet());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
+			assertNotNull(pp);
+			assertEmpty(pp.getRapportsSujet());
+			assertEmpty(pp.getRapportsObjet());
+			return null;
 		});
 	}
 }

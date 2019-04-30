@@ -7,7 +7,7 @@ package ch.vd.unireg.evenement.fiscal;
  * @author xcifwi (last modified by $Author: $ @ $Date: $)
  * @version $Revision: $
  */
-public class EvenementFiscalException extends Exception {
+public class EvenementFiscalException extends RuntimeException {
 
     /** Serial Version UID. */
     private static final long serialVersionUID = 5007516544777492155L;

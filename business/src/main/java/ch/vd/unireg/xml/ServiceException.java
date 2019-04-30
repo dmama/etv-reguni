@@ -2,7 +2,7 @@ package ch.vd.unireg.xml;
 
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
 
 	private final ServiceExceptionInfo info;
 

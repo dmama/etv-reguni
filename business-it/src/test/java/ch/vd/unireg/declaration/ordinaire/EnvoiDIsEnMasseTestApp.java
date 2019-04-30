@@ -7,7 +7,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BusinessItTestApplication;
-import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 
 /**
@@ -72,14 +71,9 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 	private void envoyerDIsEnMasseEnTransaction(TransactionTemplate template, final CategorieEnvoiDIPP categorie) {
 
 		template.execute(status -> {
-			try {
-				LOGGER.info("Envoi des DIS vaudois ordinaires...");
-				service.envoyerDIsPPEnMasse(2008, categorie, null, null, 100000, RegDate.get(2009, 1, 15), false, 1, null);
-				return null;
-			}
-			catch (DeclarationException e) {
-				throw new RuntimeException(e);
-			}
+			LOGGER.info("Envoi des DIS vaudois ordinaires...");
+			service.envoyerDIsPPEnMasse(2008, categorie, null, null, 100000, RegDate.get(2009, 1, 15), false, 1, null);
+			return null;
 		});
 	}
 }

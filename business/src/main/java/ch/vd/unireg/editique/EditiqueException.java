@@ -6,7 +6,7 @@ package ch.vd.unireg.editique;
  * @author xcifwi (last modified by $Author: xcifwi $ @ $Date: 2007/07/30 08:08:40 $)
  * @version $Revision: 1.1 $
  */
-public class EditiqueException extends Exception {
+public class EditiqueException extends RuntimeException {
 
     /** Serial Version UID. */
     private static final long serialVersionUID = 5007516544777492155L;

@@ -1,6 +1,6 @@
 package ch.vd.unireg.activation;
 
-public class ActivationServiceException extends Exception {
+public class ActivationServiceException extends RuntimeException {
 
 	public ActivationServiceException(String message) {
 		super(message);

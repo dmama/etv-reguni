@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -64,15 +63,12 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				noOidRolleAubonne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ROLLE_AUBONNE.getNoColAdm()).getNumero();    // OID Rolle-Aubonne
-				noOidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();            // OID Lausanne
-				noOidVevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm()).getNumero();                  // OID Vevey
-				noOidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm()).getNumero();                    // OID Orbe
-				return null;
-			}
+		doInNewTransaction(status -> {
+			noOidRolleAubonne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ROLLE_AUBONNE.getNoColAdm()).getNumero();    // OID Rolle-Aubonne
+			noOidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();            // OID Lausanne
+			noOidVevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm()).getNumero();                  // OID Vevey
+			noOidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm()).getNumero();                    // OID Orbe;
+			return null;
 		});
 	}
 
@@ -491,15 +487,12 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final boolean archivesSeulement = false;
 
 		// [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-		final long numero = doInNewTransactionAndSessionWithoutValidation(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1950, 5, 21), Sexe.MASCULIN);
-				pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
+		final long numero = doInNewTransactionAndSessionWithoutValidation(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1950, 5, 21), Sexe.MASCULIN);
+			pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
 
-				addForPrincipal(pp, date(dateTraitement.year() - 1, 4, 12), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Albanie, ModeImposition.MIXTE_137_1);
-				return pp.getNumero();
-			}
+			addForPrincipal(pp, date(dateTraitement.year() - 1, 4, 12), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Albanie, ModeImposition.MIXTE_137_1);
+			return pp.getNumero();
 		});
 
 		final DeterminerMouvementsDossiersEnMasseResults results = proc.run(dateTraitement, archivesSeulement, null);

@@ -7,7 +7,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -37,6 +36,9 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeTache;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class AddDIPPTest extends BusinessTest {
 
@@ -118,28 +120,24 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// on se place en tout début d'année suivante
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		doInNewTransactionAndSession(status -> {
+			final RegDate ref = dateEnvoiMasseDI.addDays(-1);       // donc la date d'échéance normale (= prochain dimanche) est postérieure à la date limite
+			assertEquals(currentYear + 1, ref.year());       // pour être sûr qu'on n'a pas changé d'année..
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RegDate ref = dateEnvoiMasseDI.addDays(-1);       // donc la date d'échéance normale (= prochain dimanche) est postérieure à la date limite
-				Assert.assertEquals(currentYear + 1, ref.year());       // pour être sûr qu'on n'a pas changé d'année..
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+			final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+			assertNotNull(periodesImposition);
+			assertEquals(1, periodesImposition.size());
+			final PeriodeImposition periodeImposition = periodesImposition.get(0);
+			assertNotNull(periodeImposition);
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
-				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-				Assert.assertNotNull(periodesImposition);
-				Assert.assertEquals(1, periodesImposition.size());
-				final PeriodeImposition periodeImposition = periodesImposition.get(0);
-				Assert.assertNotNull(periodeImposition);
-				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
-				add.execute(ctx);
-				return null;
-			}
+			final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+			final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+			add.execute(ctx);
+			return null;
 		});
 
 		// vérification de la tâche créée
@@ -201,28 +199,24 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// on se place en tout début d'année suivante
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		doInNewTransactionAndSession(status -> {
+			final RegDate ref = dateEnvoiMasseDI.addDays(-4);       // un samedi (donc le lendemain serait la date d'échéance normale, sauf que c'est trop tôt)
+			assertEquals(currentYear + 1, ref.year());       // pour être sûr qu'on n'a pas changé d'année..
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RegDate ref = dateEnvoiMasseDI.addDays(-4);       // un samedi (donc le lendemain serait la date d'échéance normale, sauf que c'est trop tôt)
-				Assert.assertEquals(currentYear + 1, ref.year());       // pour être sûr qu'on n'a pas changé d'année..
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+			final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+			assertNotNull(periodesImposition);
+			assertEquals(1, periodesImposition.size());
+			final PeriodeImposition periodeImposition = periodesImposition.get(0);
+			assertNotNull(periodeImposition);
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
-				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-				Assert.assertNotNull(periodesImposition);
-				Assert.assertEquals(1, periodesImposition.size());
-				final PeriodeImposition periodeImposition = periodesImposition.get(0);
-				Assert.assertNotNull(periodeImposition);
-				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
-				add.execute(ctx);
-				return null;
-			}
+			final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+			final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+			add.execute(ctx);
+			return null;
 		});
 
 		// vérification de la tâche créée
@@ -278,25 +272,21 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// on se place en tout début d'année suivante
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+			final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+			assertNotNull(periodesImposition);
+			assertEquals(1, periodesImposition.size());
+			final PeriodeImposition periodeImposition = periodesImposition.get(0);
+			assertNotNull(periodeImposition);
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
-				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-				Assert.assertNotNull(periodesImposition);
-				Assert.assertEquals(1, periodesImposition.size());
-				final PeriodeImposition periodeImposition = periodesImposition.get(0);
-				Assert.assertNotNull(periodeImposition);
-				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
-				add.execute(ctx);
-				return null;
-			}
+			final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+			final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
+			add.execute(ctx);
+			return null;
 		});
 
 		// vérification de la tâche créée
@@ -376,48 +366,43 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// on se place en tout début d'année suivante
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		doInNewTransactionAndSession(status -> {
+			final RegDate ref = date(currentYear + 1, 1, 2);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+			final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RegDate ref = date(currentYear + 1, 1, 2);
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			// contribuable ordinaire
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
+				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+				assertNotNull(periodesImposition);
+				assertEquals(1, periodesImposition.size());
+				final PeriodeImposition periodeImposition = periodesImposition.get(0);
+				assertNotNull(periodeImposition);
+				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
+				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
-				// contribuable ordinaire
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
-					final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-					Assert.assertNotNull(periodesImposition);
-					Assert.assertEquals(1, periodesImposition.size());
-					final PeriodeImposition periodeImposition = periodesImposition.get(0);
-					Assert.assertNotNull(periodeImposition);
-					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
-
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
-					add.execute(ctx);
-				}
-
-				// contribuable iccd
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
-					final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-					Assert.assertNotNull(periodesImposition);
-					Assert.assertEquals(1, periodesImposition.size());
-					final PeriodeImposition periodeImposition = periodesImposition.get(0);
-					Assert.assertNotNull(periodeImposition);
-					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
-
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
-					add.execute(ctx);
-				}
-
-				return null;
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+				add.execute(ctx);
 			}
+
+			// contribuable iccd
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
+				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+				assertNotNull(periodesImposition);
+				assertEquals(1, periodesImposition.size());
+				final PeriodeImposition periodeImposition = periodesImposition.get(0);
+				assertNotNull(periodeImposition);
+				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
+				assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
+
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+				add.execute(ctx);
+			}
+			return null;
 		});
 
 		// vérification des tâches créées
@@ -514,47 +499,42 @@ public class AddDIPPTest extends BusinessTest {
 		});
 
 		// on se place en tout début d'année suivante
-		doInNewTransactionAndSession(new TxCallback<Object>() {
+		doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+			final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			// contribuable ordinaire
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
+				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+				assertNotNull(periodesImposition);
+				assertEquals(1, periodesImposition.size());
+				final PeriodeImposition periodeImposition = periodesImposition.get(0);
+				assertNotNull(periodeImposition);
+				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
+				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
-				// contribuable ordinaire
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
-					final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-					Assert.assertNotNull(periodesImposition);
-					Assert.assertEquals(1, periodesImposition.size());
-					final PeriodeImposition periodeImposition = periodesImposition.get(0);
-					Assert.assertNotNull(periodeImposition);
-					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
-
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
-					add.execute(ctx);
-				}
-
-				// contribuable iccd
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
-					final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
-					Assert.assertNotNull(periodesImposition);
-					Assert.assertEquals(1, periodesImposition.size());
-					final PeriodeImposition periodeImposition = periodesImposition.get(0);
-					Assert.assertNotNull(periodeImposition);
-					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
-					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
-
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
-					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
-					add.execute(ctx);
-				}
-
-				return null;
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
+				add.execute(ctx);
 			}
+
+			// contribuable iccd
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
+				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
+				assertNotNull(periodesImposition);
+				assertEquals(1, periodesImposition.size());
+				final PeriodeImposition periodeImposition = periodesImposition.get(0);
+				assertNotNull(periodeImposition);
+				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
+				assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
+
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
+				add.execute(ctx);
+			}
+			return null;
 		});
 
 		// vérification des tâches créées

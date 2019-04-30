@@ -108,7 +108,7 @@ public class EFactureServiceTest extends BusinessTest {
 
 		final EFactureMessageSender eFactureMessageSender = new MockEFactureMessageSender() {
 			@Override
-			public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+			public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 				assertEquals(true, retourAttendu);
 				return BUSINESS_ID;
 			}

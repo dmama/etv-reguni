@@ -8,6 +8,7 @@ import org.springframework.context.SmartLifecycle;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.EvenementHelper;
@@ -74,20 +75,30 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 		return outputQueue;
 	}
 
-	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
-		final EsbMessage m = EsbMessageFactory.createMessage();
-		m.setBusinessUser("EvenementTest");
-		m.setBusinessId(String.valueOf(m.hashCode()));
-		m.setContext("test");
-		m.setServiceDestination(queueName);
-		m.setBody(texte);
-		m.setServiceReplyTo(replyTo);
-		return m;
+	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) {
+		try {
+			final EsbMessage m = EsbMessageFactory.createMessage();
+			m.setBusinessUser("EvenementTest");
+			m.setBusinessId(String.valueOf(m.hashCode()));
+			m.setContext("test");
+			m.setServiceDestination(queueName);
+			m.setBody(texte);
+			m.setServiceReplyTo(replyTo);
+			return m;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	protected void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
+	protected void sendTextMessage(String queueName, String texte, String replyTo) {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
-		esbValidator.validate(m);
+		try {
+			esbValidator.validate(m);
+		}
+		catch (ESBValidationException e) {
+			throw new RuntimeException(e);
+		}
 		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
 	}
 

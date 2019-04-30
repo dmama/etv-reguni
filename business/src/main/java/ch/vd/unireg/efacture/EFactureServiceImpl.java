@@ -12,21 +12,21 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.editique.EditiqueCompositionService;
+import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
-import ch.vd.unireg.wsclient.efacture.EFactureClient;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.editique.EditiqueCompositionService;
-import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.utils.UniregModeHelper;
+import ch.vd.unireg.wsclient.efacture.EFactureClient;
 
 public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
@@ -70,37 +70,37 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	}
 
 	@Override
-	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		return eFactureMessageSender.envoieSuspensionContribuable(ctbId, retourAttendu, description);
 	}
 
 	@Override
-	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		return eFactureMessageSender.envoieActivationContribuable(ctbId, retourAttendu, description);
 	}
 
 	@Override
-	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		return eFactureMessageSender.envoieAcceptationDemandeInscription(idDemande, retourAttendu, description);
 	}
 
 	@Override
-	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande, description, retourAttendu);
 	}
 
 	@Override
-	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EFactureException {
 		return eFactureMessageSender.envoieDemandeChangementEmail(noCtb, newEmail, retourAttendu, description);
 	}
 
 	@Override
-	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EFactureException {
 		eFactureMessageSender.demandeDesinscriptionContribuable(noCtb, idNouvelleDemande, description);
 	}
 
 	@Override
-	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+	public ResultatQuittancement quittancer(Long noCtb) throws EFactureException {
 		final Tiers tiers = tiersService.getTiers(noCtb);
 		if (tiers == null) {
 			return ResultatQuittancement.contribuableInexistant();
@@ -130,7 +130,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	}
 
 	@Override
-	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EFactureException {
 		return eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, description, idArchivage, retourAttendu);
 	}
 

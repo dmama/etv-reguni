@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -61,14 +60,11 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		final TacheService tacheService = getBean(TacheService.class, "tacheService");
 		processor = new RecalculTachesProcessor(transactionManager, hibernateTemplate, tacheService, tacheSynchronizer);
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				for (int pf = 2003 ; pf <= RegDate.get().year() ; ++ pf) {
-					addPeriodeFiscale(pf);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			for (int pf = 2003; pf <= RegDate.get().year(); ++pf) {
+				addPeriodeFiscale(pf);
 			}
+			return null;
 		});
 
 		paramAppService = getBean(ParametreAppService.class, "parametreAppService");

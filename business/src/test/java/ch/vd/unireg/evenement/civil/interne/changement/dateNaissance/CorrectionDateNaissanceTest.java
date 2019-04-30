@@ -1,6 +1,7 @@
 package ch.vd.unireg.evenement.civil.interne.changement.dateNaissance;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.validation.ValidationException;
@@ -101,20 +101,16 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// déclenchement de l'événement
-				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
-				final CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
+		doInNewTransaction(status -> {
+			// déclenchement de l'événement
+			final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
+			final CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
 
-				final MessageCollector collector = buildMessageCollector();
-				correctionDateNaissane.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", collector.getErreurs());
-				correctionDateNaissane.handle(collector);
-
-				return null;
-			}
+			final MessageCollector collector = buildMessageCollector();
+			correctionDateNaissane.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", collector.getErreurs());
+			correctionDateNaissane.handle(collector);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -160,20 +156,16 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		});
 
 		try {
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					// déclenchement de l'événement
-					final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, date(2008, 12, 31));
-					CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
+			doInNewTransaction(status -> {
+				// déclenchement de l'événement
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, date(2008, 12, 31));
+				CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
 
-					final MessageCollector collector = buildMessageCollector();
-					correctionDateNaissane.validate(collector, collector);
-					assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", collector.getErreurs());
-					correctionDateNaissane.handle(collector);
-
-					return null;
-				}
+				final MessageCollector collector = buildMessageCollector();
+				correctionDateNaissane.validate(collector, collector);
+				assertEmpty("Une erreur est survenue lors du validate de correction de date de naissance.", collector.getErreurs());
+				correctionDateNaissane.handle(collector);
+				return null;
 			});
 			fail("On aurait dû recevoir une erreur de validation à cause premier for fiscal principal qui se retrouve avec une date de début après la date de fin.");
 		}
@@ -210,42 +202,35 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		final Ids ids = new Ids();
 
 		// Crée un individu dans la base
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique jean = addHabitant(noIndJean);
-				ids.jean = jean.getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique jean = addHabitant(noIndJean);
+			ids.jean = jean.getNumero();
+			return null;
 		});
 
 		// Flag cet individu comme dirty (on doit bypasser Hibernate, autrement l'intercepteur va réindexer le tiers automatiquement et
 		// resetter le flag)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				try (Connection con = dataSource.getConnection();
-					 Statement stat = con.createStatement()) {
-					stat.execute("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = " + ids.jean);
-				}
-				return null;
+		doInNewTransaction(status -> {
+			try (Connection con = dataSource.getConnection();
+			     Statement stat = con.createStatement()) {
+				stat.execute("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = " + ids.jean);
 			}
+			catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
 		// Déclenchement de l'événement
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndJean, date(2008, 12, 31));
+			CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
-				final Individu individu = serviceCivil.getIndividu(noIndJean, date(2008, 12, 31));
-				CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
-
-				final MessageCollector collector = buildMessageCollector();
-				correctionDateNaissane.validate(collector, collector);
-				assertEmpty(collector.getErreurs());
-				correctionDateNaissane.handle(collector);
-				return null;
-			}
+			final MessageCollector collector = buildMessageCollector();
+			correctionDateNaissane.validate(collector, collector);
+			assertEmpty(collector.getErreurs());
+			correctionDateNaissane.handle(collector);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -281,36 +266,27 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		});
 
 		// Crée un individu dans la base, avec un for principal déjà ouvert à son ancienne date de majorité
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique huguette = addHabitant(noIndHuguette);
+			addForPrincipal(huguette, ancienneDateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				final PersonnePhysique huguette = addHabitant(noIndHuguette);
-				addForPrincipal(huguette, ancienneDateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
-
-				final PeriodeFiscale periode = addPeriodeFiscale(2008);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				addDeclarationImpot(huguette, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-
-				return null;
-			}
+			final PeriodeFiscale periode = addPeriodeFiscale(2008);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			addDeclarationImpot(huguette, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			return null;
 		});
 
 		try {
 			// Déclenchement de l'événement
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+			doInNewTransaction(status -> {
+				final Individu individu = serviceCivil.getIndividu(noIndHuguette, date(2008, 12, 31));
+				CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
-					final Individu individu = serviceCivil.getIndividu(noIndHuguette, date(2008, 12, 31));
-					CorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
-
-					final MessageCollector collector = buildMessageCollector();
-					correctionDateNaissane.validate(collector, collector);
-					assertEmpty(collector.getErreurs());
-					correctionDateNaissane.handle(collector);
-					return null;
-				}
+				final MessageCollector collector = buildMessageCollector();
+				correctionDateNaissane.validate(collector, collector);
+				assertEmpty(collector.getErreurs());
+				correctionDateNaissane.handle(collector);
+				return null;
 			});
 			fail("Le changement d'année de la date de majorité aurait dû lever une exception.");
 		}

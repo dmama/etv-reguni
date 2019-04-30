@@ -10,7 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -324,19 +323,16 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				setUpForFiscal(1234L, 12346791, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
-				setUpForFiscal(1239L, 12346792, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
-				setUpForFiscal(1240L, 12346793, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
-				// for fiscal principal sur residence secondaire
-				setUpForFiscal(1241L, 12346794, MockCommune.Lausanne.getNoOFS(), ModeImposition.SOURCE);
-				setUpForFiscal(NO_IND_RAMONA, 12346795, MockCommune.Lausanne.getNoOFS(), ModeImposition.SOURCE);
-				setUpForFiscal(NO_IND_PAUL, 12346796, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
-				setUpForFiscal(NO_IND_ALBERT, 12346797, MockCommune.Cossonay.getNoOFS(), ModeImposition.ORDINAIRE);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			setUpForFiscal(1234L, 12346791, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
+			setUpForFiscal(1239L, 12346792, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
+			setUpForFiscal(1240L, 12346793, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
+			// for fiscal principal sur residence secondaire
+			setUpForFiscal(1241L, 12346794, MockCommune.Lausanne.getNoOFS(), ModeImposition.SOURCE);
+			setUpForFiscal(NO_IND_RAMONA, 12346795, MockCommune.Lausanne.getNoOFS(), ModeImposition.SOURCE);
+			setUpForFiscal(NO_IND_PAUL, 12346796, MockCommune.Cossonay.getNoOFS(), ModeImposition.SOURCE);
+			setUpForFiscal(NO_IND_ALBERT, 12346797, MockCommune.Cossonay.getNoOFS(), ModeImposition.ORDINAIRE);
+			return null;
 		});
 	}
 
@@ -374,12 +370,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement de départ secondaire alors qu'aucune adresse secondaire n'est valide");
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(NO_IND_ADRIEN);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(NO_IND_ADRIEN);
+			return null;
 		});
 		
 		final Depart depart = createValidDepart(NO_IND_ADRIEN, RegDate.get(2007, 6, 30), false, null, true);
@@ -445,7 +438,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test départ individu marié  : OK");
 	}
 
-	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale, @Nullable Integer overrideNoOfsCommuneAnnonce, boolean isRegPP) throws Exception {
+	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale, @Nullable Integer overrideNoOfsCommuneAnnonce, boolean isRegPP) {
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 
@@ -1550,27 +1543,23 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement de départ (aujourd'hui)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Depart depart = createValidDepart(noIndividu, today, true, MockCommune.Aubonne.getNoOFS(), true);
-				final MessageCollector collector = buildMessageCollector();
-				handleDepart(depart, collector, collector);
-				assertEquals(1, collector.getErreurs().size());
+		doInNewTransactionAndSession(status -> {
+			final Depart depart = createValidDepart(noIndividu, today, true, MockCommune.Aubonne.getNoOFS(), true);
+			final MessageCollector collector = buildMessageCollector();
+			handleDepart(depart, collector, collector);
+			assertEquals(1, collector.getErreurs().size());
 
-				final EvenementErreur erreur = collector.getErreurs().get(0);
-				assertEquals("Un départ HC/HS ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
+			final EvenementErreur erreur = collector.getErreurs().get(0);
+			assertEquals("Un départ HC/HS ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateOuvertureFor, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Aubonne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-
-				return null;
-			}
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateOuvertureFor, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals(MockCommune.Aubonne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 
@@ -1598,24 +1587,21 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement de départ (hier)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Depart depart = createValidDepart(noIndividu, dateDepart, true, MockCommune.Aubonne.getNoOFS(), true);
-				final MessageCollector collector = buildMessageCollector();
-				handleDepart(depart, collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+		doInNewTransactionAndSession(status -> {
+			final Depart depart = createValidDepart(noIndividu, dateDepart, true, MockCommune.Aubonne.getNoOFS(), true);
+			final MessageCollector collector = buildMessageCollector();
+			handleDepart(depart, collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+			assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 

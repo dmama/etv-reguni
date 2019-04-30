@@ -22,12 +22,10 @@ import org.apache.xmlbeans.XmlOptions;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
@@ -110,23 +108,21 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur");
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(2L);
-				InfoEnteteDocument infoEnteteDocument = impressionDIPPHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration, null));
-				Expediteur expediteur = infoEnteteDocument.getExpediteur();
-				Adresse adresseExpediteur = expediteur.getAdresse();
-				assertEquals("Office d'impôt du district", adresseExpediteur.getAdresseCourrierLigne1());
-				assertEquals("de Morges", adresseExpediteur.getAdresseCourrierLigne2());
-				assertEquals("rue de la Paix 1", adresseExpediteur.getAdresseCourrierLigne3());
-				assertEquals("1110 Morges", adresseExpediteur.getAdresseCourrierLigne4());
-				assertNull(adresseExpediteur.getAdresseCourrierLigne6());
+		doInNewTransactionAndSession(status -> {
+			DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(2L);
+			InfoEnteteDocument infoEnteteDocument = impressionDIPPHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration, null));
+			Expediteur expediteur = infoEnteteDocument.getExpediteur();
+			Adresse adresseExpediteur = expediteur.getAdresse();
+			assertEquals("Office d'impôt du district", adresseExpediteur.getAdresseCourrierLigne1());
+			assertEquals("de Morges", adresseExpediteur.getAdresseCourrierLigne2());
+			assertEquals("rue de la Paix 1", adresseExpediteur.getAdresseCourrierLigne3());
+			assertEquals("1110 Morges", adresseExpediteur.getAdresseCourrierLigne4());
+			assertNull(adresseExpediteur.getAdresseCourrierLigne6());
 
-				Date date = DateHelper.getCurrentDate();
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-				assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
-			}
+			Date date = DateHelper.getCurrentDate();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+			assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
+			return null;
 		});
 	}
 	//UNIREG-2541 Adresse de retour pour les DI hors canton 
@@ -736,44 +732,42 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		});
 
 		// test de composition
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(diId);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(diId);
 
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration));
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration));
 
-				final DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
-				assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
-				assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
-				assertEquals("CEDI 10", cediImpression.getADRES3RETOUR());
-				assertEquals("1014 Lausanne Adm cant", cediImpression.getADRES4RETOUR());
+			final DIRetour.AdresseRetour cediImpression = di.getAdresseRetour();
+			assertEquals("Centre d'enregistrement", cediImpression.getADRES1RETOUR());
+			assertEquals("des déclarations d'impôt", cediImpression.getADRES2RETOUR());
+			assertEquals("CEDI 10", cediImpression.getADRES3RETOUR());
+			assertEquals("1014 Lausanne Adm cant", cediImpression.getADRES4RETOUR());
 
-				assertEquals("12.02.1977", di.getContrib1().getINDDATENAISS1());
-				assertEquals("Marié(e)", di.getContrib1().getINDETATCIVIL1());
-				assertEquals("Monsieur Alain Dupont", di.getContrib1().getINDNOMPRENOM1());
-				//assertEquals("154.89.652.357", di.getContrib1().getNAVS13());
+			assertEquals("12.02.1977", di.getContrib1().getINDDATENAISS1());
+			assertEquals("Marié(e)", di.getContrib1().getINDETATCIVIL1());
+			assertEquals("Monsieur Alain Dupont", di.getContrib1().getINDNOMPRENOM1());
+			//assertEquals("154.89.652.357", di.getContrib1().getNAVS13());
 
-				assertEquals("18.12.1953", di.getContrib2().getINDDATENAISS2());
-				assertEquals("Marié(e)", di.getContrib2().getINDETATCIVIL2());
-				assertEquals("Madame Maria Dupont", di.getContrib2().getINDNOMPRENOM2());
-				//assertEquals("514.89.652.375", di.getContrib2().getNAVS13());
+			assertEquals("18.12.1953", di.getContrib2().getINDDATENAISS2());
+			assertEquals("Marié(e)", di.getContrib2().getINDETATCIVIL2());
+			assertEquals("Madame Maria Dupont", di.getContrib2().getINDNOMPRENOM2());
+			//assertEquals("514.89.652.375", di.getContrib2().getNAVS13());
 
-				assertEquals(Integer.toString(annee), di.getInfoDI().getANNEEFISCALE());
-				final Long noTiers = declaration.getTiers().getNumero();
-				final int noColAdm = MockOfficeImpot.OID_MORGES.getNoColAdm();
-				assertEquals(String.format("%09d%4d%02d%02d", noTiers, annee, 1, noColAdm), di.getInfoDI().getCODBARR());
-				assertEquals("31.07.2006", di.getInfoDI().getDELAIRETOUR());
-				assertEquals("Villars-sous-Yens", di.getInfoDI().getDESCOM());
-				assertEquals(FormatNumeroHelper.numeroCTBToDisplay(noTiers), di.getInfoDI().getNOCANT());
-				assertEquals(String.format("%02d-1", noColAdm), di.getInfoDI().getNOOID());
+			assertEquals(Integer.toString(annee), di.getInfoDI().getANNEEFISCALE());
+			final Long noTiers = declaration.getTiers().getNumero();
+			final int noColAdm = MockOfficeImpot.OID_MORGES.getNoColAdm();
+			assertEquals(String.format("%09d%4d%02d%02d", noTiers, annee, 1, noColAdm), di.getInfoDI().getCODBARR());
+			assertEquals("31.07.2006", di.getInfoDI().getDELAIRETOUR());
+			assertEquals("Villars-sous-Yens", di.getInfoDI().getDESCOM());
+			assertEquals(FormatNumeroHelper.numeroCTBToDisplay(noTiers), di.getInfoDI().getNOCANT());
+			assertEquals(String.format("%02d-1", noColAdm), di.getInfoDI().getNOOID());
 
-				assertEquals(1, di.getAnnexes().getAnnexe210());
-				assertEquals(1, di.getAnnexes().getAnnexe220());
-				assertEquals(1, di.getAnnexes().getAnnexe230());
-				assertEquals(1, di.getAnnexes().getAnnexe240());
-				assertFalse(di.getAnnexes().isSetAnnexe310());
-			}
+			assertEquals(1, di.getAnnexes().getAnnexe210());
+			assertEquals(1, di.getAnnexes().getAnnexe220());
+			assertEquals(1, di.getAnnexes().getAnnexe230());
+			assertEquals(1, di.getAnnexes().getAnnexe240());
+			assertFalse(di.getAnnexes().isSetAnnexe310());
+			return null;
 		});
 	}
 
@@ -807,17 +801,15 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return di.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(diId);
-				{
-					final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration));
-					assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
-					assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
-					assertEquals(1, di.getAnnexes().getAnnexe330());
-				}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(diId);
+			{
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration));
+				assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
+				assertEquals("N", di.getAnnexes().getAnnexe320().getAvecCourrierExplicatif());
+				assertEquals(1, di.getAnnexes().getAnnexe330());
 			}
+			return null;
 		});
 	}
 
@@ -842,15 +834,13 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2011.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>());
-				assertNotNull(di);
-				//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
-				assertNull(di.getEnfants());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>());
+			assertNotNull(di);
+			//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
+			assertNull(di.getEnfants());
+			return null;
 		});
 	}
 
@@ -889,44 +879,38 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		}
 		final Ids ids = new Ids();
 
-		final long idDi2011 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = addHabitant(indPere);
-				ids.pere = pere.getId();
-				final PersonnePhysique fils = addHabitant(indFils);
-				ids.fils = fils.getId();
-				final PersonnePhysique fille = addHabitant(indFille);
-				ids.fille = fille.getId();
+		final long idDi2011 = doInNewTransaction(status -> {
+			final PersonnePhysique pere = addHabitant(indPere);
+			ids.pere = pere.getId();
+			final PersonnePhysique fils = addHabitant(indFils);
+			ids.fils = fils.getId();
+			final PersonnePhysique fille = addHabitant(indFille);
+			ids.fille = fille.getId();
 
-				addParente(fils, pere, dateNaissanceFils, null);
-				addParente(fille, pere, dateNaissanceFille, null);
+			addParente(fils, pere, dateNaissanceFils, null);
+			addParente(fille, pere, dateNaissanceFille, null);
 
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée un for
-				addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+			// Crée un for
+			addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
-				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pere, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
-				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
-
-				return declaration2011.getId();
-			}
+			final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
+			final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pere, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+			declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2011.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), new ArrayList<>());
-				assertNotNull(di);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), new ArrayList<>());
+			assertNotNull(di);
 
-				assertNotNull(di.getEnfants());
-				assertEquals(2, di.getEnfants().getEnfantArray().length);
-			}
+			assertNotNull(di.getEnfants());
+			assertEquals(2, di.getEnfants().getEnfantArray().length);
+			return null;
 		});
 	}
 
@@ -948,16 +932,14 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2010.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final TypFichierImpression.Document document =
-						impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
-						                                                 null, false);
-				assertNotNull(document);
-				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final TypFichierImpression.Document document =
+					impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
+					                                                 null, false);
+			assertNotNull(document);
+			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+			return null;
 		});
 	}
 
@@ -979,16 +961,14 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2011.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>());
-				assertNotNull(di);
-				//le NIP doit être présent
-				assertNotNull(di.getInfoDI().getNIP());
-				assertEquals("D", di.getInfoDI().getCODETRAME());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>());
+			assertNotNull(di);
+			//le NIP doit être présent
+			assertNotNull(di.getInfoDI().getNIP());
+			assertEquals("D", di.getInfoDI().getCODETRAME());
+			return null;
 		});
 	}
 
@@ -1010,17 +990,15 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2010.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), new ArrayList<>());
-				assertNotNull(di);
-				//le NIP ne doit pas être présent
-				assertNull(di.getInfoDI().getNIP());
-				//La valeur de  code trame à X
-				assertEquals("X", di.getInfoDI().getCODETRAME());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), new ArrayList<>());
+			assertNotNull(di);
+			//le NIP ne doit pas être présent
+			assertNull(di.getInfoDI().getNIP());
+			//La valeur de  code trame à X
+			assertEquals("X", di.getInfoDI().getCODETRAME());
+			return null;
 		});
 	}
 
@@ -1056,42 +1034,36 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		}
 		final Ids ids = new Ids();
 
-		final long idDi2011 = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = addHabitant(indPere);
-				ids.pere = pere.getId();
-				final PersonnePhysique fils = addHabitant(indFils);
-				ids.fils = fils.getId();
-				final PersonnePhysique fille = addHabitant(indFille);
-				ids.fille = fille.getId();
+		final long idDi2011 = doInNewTransaction(status -> {
+			final PersonnePhysique pere = addHabitant(indPere);
+			ids.pere = pere.getId();
+			final PersonnePhysique fils = addHabitant(indFils);
+			ids.fils = fils.getId();
+			final PersonnePhysique fille = addHabitant(indFille);
+			ids.fille = fille.getId();
 
-				addParente(fils, pere, dateNaissanceFils, null);
-				addParente(fille, pere, dateNaissanceFille, null);
+			addParente(fils, pere, dateNaissanceFils, null);
+			addParente(fille, pere, dateNaissanceFille, null);
 
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				// Crée une for
-				addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+			// Crée une for
+			addForPrincipal(pere, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-				final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pere, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
-				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
-
-				return declaration2010.getId();
-			}
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pere, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+			declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+			return declaration2010.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), new ArrayList<>());
-				assertNotNull(di);
-				assertNull(di.getEnfants());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), new ArrayList<>());
+			assertNotNull(di);
+			assertNull(di.getEnfants());
+			return null;
 		});
 	}
 
@@ -1118,43 +1090,41 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		//L'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de laquel l'édition du document a lieu)
 		//-> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre),
 		// alors l'OID doit être l'OID de gestion courant du moment de l'édition du docuement.
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final Tiers tiers = declaration2011.getTiers();
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final Tiers tiers = declaration2011.getTiers();
 
-				// ... sur l'entête
-				final InfoEnteteDocument entete = impressionDIPPHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2011, null));
-				assertNotNull(entete);
-				final Expediteur expediteur = entete.getExpediteur();
-				assertNotNull(expediteur);
-				final Adresse adresse = expediteur.getAdresse();
-				assertEquals("Office d'impôt du district", adresse.getAdresseCourrierLigne1());
-				assertEquals("d'Aigle", adresse.getAdresseCourrierLigne2());
-				assertEquals("rue de la Gare 27", adresse.getAdresseCourrierLigne3());
-				assertEquals("1860 Aigle", adresse.getAdresseCourrierLigne4());
-				assertNull(adresse.getAdresseCourrierLigne5());
-				assertNull(adresse.getAdresseCourrierLigne6());
+			// ... sur l'entête
+			final InfoEnteteDocument entete = impressionDIPPHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration2011, null));
+			assertNotNull(entete);
+			final Expediteur expediteur = entete.getExpediteur();
+			assertNotNull(expediteur);
+			final Adresse adresse = expediteur.getAdresse();
+			assertEquals("Office d'impôt du district", adresse.getAdresseCourrierLigne1());
+			assertEquals("d'Aigle", adresse.getAdresseCourrierLigne2());
+			assertEquals("rue de la Gare 27", adresse.getAdresseCourrierLigne3());
+			assertEquals("1860 Aigle", adresse.getAdresseCourrierLigne4());
+			assertNull(adresse.getAdresseCourrierLigne5());
+			assertNull(adresse.getAdresseCourrierLigne6());
 
-				// .. sur le code bar
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>());
-				assertNotNull(di);
-				final DI.InfoDI info = di.getInfoDI();
-				assertNotNull(info);
+			// .. sur le code bar
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>());
+			assertNotNull(di);
+			final DI.InfoDI info = di.getInfoDI();
+			assertNotNull(info);
 
-				final String numCtb = String.format("%09d", tiers.getNumero());
-				assertEquals(numCtb + "20110101", info.getCODBARR());
-				assertEquals("18-0", info.getNOOID());
+			final String numCtb = String.format("%09d", tiers.getNumero());
+			assertEquals(numCtb + "20110101", info.getCODBARR());
+			assertEquals("18-0", info.getNOOID());
 
-				// ... sur l'adresse du CEDI
-				final DIRetour.AdresseRetour retour = di.getAdresseRetour();
-				assertNotNull(retour);
-				assertEquals("Centre d'enregistrement", retour.getADRES1RETOUR());
-				assertEquals("des déclarations d'impôt", retour.getADRES2RETOUR());
-				assertEquals("CEDI 18", retour.getADRES3RETOUR());
-				assertEquals("1014 Lausanne Adm cant", retour.getADRES4RETOUR());
-			}
+			// ... sur l'adresse du CEDI
+			final DIRetour.AdresseRetour retour = di.getAdresseRetour();
+			assertNotNull(retour);
+			assertEquals("Centre d'enregistrement", retour.getADRES1RETOUR());
+			assertEquals("des déclarations d'impôt", retour.getADRES2RETOUR());
+			assertEquals("CEDI 18", retour.getADRES3RETOUR());
+			assertEquals("1014 Lausanne Adm cant", retour.getADRES4RETOUR());
+			return null;
 		});
 	}
 
@@ -1553,16 +1523,14 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2012.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final TypFichierImpression.Document document= impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
-				                                                                                             null, false);
-				assertNotNull(document);
-				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
-				assertEquals("10",document.getInfoDocument().getIdEnvoi());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null), TypFichierImpression.Factory.newInstance(),
+			                                                                                                null, false);
+			assertNotNull(document);
+			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals("10", document.getInfoDocument().getIdEnvoi());
+			return null;
 		});
 	}
 
@@ -1586,16 +1554,14 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2012.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final TypFichierImpression.Document document= impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
-				                                                                                             null, false);
-				assertNotNull(document);
-				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
-				assertEquals("10",document.getInfoDocument().getIdEnvoi());
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null), TypFichierImpression.Factory.newInstance(),
+			                                                                                                null, false);
+			assertNotNull(document);
+			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals("10", document.getInfoDocument().getIdEnvoi());
+			return null;
 		});
 	}
 
@@ -1624,22 +1590,20 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			return declaration2012.getId();
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final TypFichierImpression.Document document= impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),
-				                                                                                               TypFichierImpression.Factory.newInstance(),
-				                                                                                               null,
-				                                                                                               false);
-				assertNotNull(document);
-				assertEquals(String.valueOf(MockOfficeImpot.OID_MORGES.getNoColAdm()), document.getInfoDocument().getIdEnvoi());
-				assertEquals(String.format("CEDI %d", MockCollectiviteAdministrative.noNouvelleEntite), document.getDI().getAdresseRetour().getADRES3RETOUR());
-				assertEquals(String.format("%d-0", MockCollectiviteAdministrative.noNouvelleEntite), document.getDI().getInfoDI().getNOOID());
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),
+			                                                                                                TypFichierImpression.Factory.newInstance(),
+			                                                                                                null,
+			                                                                                                false);
+			assertNotNull(document);
+			assertEquals(String.valueOf(MockOfficeImpot.OID_MORGES.getNoColAdm()), document.getInfoDocument().getIdEnvoi());
+			assertEquals(String.format("CEDI %d", MockCollectiviteAdministrative.noNouvelleEntite), document.getDI().getAdresseRetour().getADRES3RETOUR());
+			assertEquals(String.format("%d-0", MockCollectiviteAdministrative.noNouvelleEntite), document.getDI().getInfoDI().getNOOID());
 
-				assertEquals(MockOfficeImpot.OID_MORGES.getNomComplet1(), document.getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				assertEquals(MockOfficeImpot.OID_MORGES.getNomComplet2(), document.getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
-			}
+			assertEquals(MockOfficeImpot.OID_MORGES.getNomComplet1(), document.getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+			assertEquals(MockOfficeImpot.OID_MORGES.getNomComplet2(), document.getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+			return null;
 		});
 
 	}

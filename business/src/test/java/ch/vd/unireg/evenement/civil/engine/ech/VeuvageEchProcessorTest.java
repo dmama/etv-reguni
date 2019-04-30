@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -57,15 +56,12 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				return ensemble.getMenage().getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			return ensemble.getMenage().getNumero();
 		});
 
 		// décès fictif de monsieur juste pour le test
@@ -151,16 +147,13 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addDecisionAci(ensemble.getMenage(), dateVeuvage.addMonths(-6), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				return ensemble.getMenage().getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			addDecisionAci(ensemble.getMenage(), dateVeuvage.addMonths(-6), null, MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return ensemble.getMenage().getNumero();
 		});
 
 		// décès fictif de monsieur juste pour le test
@@ -257,16 +250,13 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noMonsieur);
-				final PersonnePhysique madame = addHabitant(noMadame);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateVeuvage);
-				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateVeuvage, MotifFor.VEUVAGE_DECES, MockCommune.Bussigny);
-				addForPrincipal(madame, dateVeuvage.getOneDayAfter(), MotifFor.VEUVAGE_DECES, null, null, MockCommune.ChateauDoex);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, dateVeuvage);
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateVeuvage, MotifFor.VEUVAGE_DECES, MockCommune.Bussigny);
+			addForPrincipal(madame, dateVeuvage.getOneDayAfter(), MotifFor.VEUVAGE_DECES, null, null, MockCommune.ChateauDoex);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -313,15 +303,12 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique monsieur = addHabitant(noConjoint);
-				final PersonnePhysique madame = addHabitant(noPrincipal);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateUnion, null);
-				addForPrincipal(ensemble.getMenage(), dateUnion, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				return ensemble.getMenage().getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique monsieur = addHabitant(noConjoint);
+			final PersonnePhysique madame = addHabitant(noPrincipal);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateUnion, null);
+			addForPrincipal(ensemble.getMenage(), dateUnion, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			return ensemble.getMenage().getNumero();
 		});
 
 		// décès fictif du conjoint juste pour le test

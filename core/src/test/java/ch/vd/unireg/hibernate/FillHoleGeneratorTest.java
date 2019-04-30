@@ -8,7 +8,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.common.CoreDAOTest;
 import ch.vd.unireg.migreg.MigrationError;
@@ -167,12 +166,9 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	private Long nextId() throws Exception {
-		return doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final SessionImpl session = (SessionImpl) sessionFactory.getCurrentSession();
-				return (Long) generator.generate(session, new PersonnePhysique());
-			}
+		return doInNewTransaction(status -> {
+			final SessionImpl session = (SessionImpl) sessionFactory.getCurrentSession();
+			return (Long) generator.generate(session, new PersonnePhysique());
 		});
 	}
 }

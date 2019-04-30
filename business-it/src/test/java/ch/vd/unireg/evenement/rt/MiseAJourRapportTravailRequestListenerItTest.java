@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.rt;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -60,19 +59,15 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
-				ids.idDebiteur= debiteur.getNumero();
-				PersonnePhysique sourcier = addHabitant(12365478L);
-				ids.idSourcier= sourcier.getNumero();
+		doInNewTransaction(status -> {
+			DebiteurPrestationImposable debiteur = addDebiteur();
+			addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
+			ids.idDebiteur = debiteur.getNumero();
+			PersonnePhysique sourcier = addHabitant(12365478L);
+			ids.idSourcier = sourcier.getNumero();
 
-				addRapportPrestationImposable(debiteur,sourcier,date(2012,5,1),null,false);
-
-				return null;
-			}
+			addRapportPrestationImposable(debiteur, sourcier, date(2012, 5, 1), null, false);
+			return null;
 		});
 		final MiseAJourRapportTravailRequest request = new MiseAJourRapportTravailRequest();
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();
@@ -108,22 +103,18 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSessionWithoutValidation(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
-				PeriodeFiscale periode2011 = new PeriodeFiscale();
-				periode2011.setAnnee(2011);
-				addLR(debiteur,date(2011,10,1), PeriodiciteDecompte.TRIMESTRIEL,periode2011);
-				ids.idDebiteur= debiteur.getNumero();
-				PersonnePhysique sourcier = addHabitant(12365478L);
-				ids.idSourcier= sourcier.getNumero();
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			DebiteurPrestationImposable debiteur = addDebiteur();
+			addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
+			PeriodeFiscale periode2011 = new PeriodeFiscale();
+			periode2011.setAnnee(2011);
+			addLR(debiteur, date(2011, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, periode2011);
+			ids.idDebiteur = debiteur.getNumero();
+			PersonnePhysique sourcier = addHabitant(12365478L);
+			ids.idSourcier = sourcier.getNumero();
 
-				addRapportPrestationImposable(debiteur,sourcier,date(2012,5,1),null,false);
-
-				return null;
-			}
+			addRapportPrestationImposable(debiteur, sourcier, date(2012, 5, 1), null, false);
+			return null;
 		});
 		final MiseAJourRapportTravailRequest request = new MiseAJourRapportTravailRequest();
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();
@@ -202,22 +193,18 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSessionWithoutValidation(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable debiteur = addDebiteur();
-				addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
-				PeriodeFiscale periode2011 = new PeriodeFiscale();
-				periode2011.setAnnee(2011);
-				addLR(debiteur,date(2011,10,1),PeriodiciteDecompte.TRIMESTRIEL,periode2011);
-				ids.idDebiteur= debiteur.getNumero();
-				PersonnePhysique sourcier = addHabitant(12365478L);
-				ids.idSourcier= sourcier.getNumero();
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			DebiteurPrestationImposable debiteur = addDebiteur();
+			addForDebiteur(debiteur, date(2012, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Echallens);
+			PeriodeFiscale periode2011 = new PeriodeFiscale();
+			periode2011.setAnnee(2011);
+			addLR(debiteur, date(2011, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, periode2011);
+			ids.idDebiteur = debiteur.getNumero();
+			PersonnePhysique sourcier = addHabitant(12365478L);
+			ids.idSourcier = sourcier.getNumero();
 
-				addRapportPrestationImposable(debiteur,sourcier,date(2011,5,1),date(2011,12,31),false);
-
-				return null;
-			}
+			addRapportPrestationImposable(debiteur, sourcier, date(2011, 5, 1), date(2011, 12, 31), false);
+			return null;
 		});
 		final MiseAJourRapportTravailRequest request = new MiseAJourRapportTravailRequest();
 		final IdentifiantRapportTravail identifiant = new IdentifiantRapportTravail();

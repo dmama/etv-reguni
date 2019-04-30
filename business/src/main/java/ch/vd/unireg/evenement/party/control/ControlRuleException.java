@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.party.control;
 
-public class ControlRuleException extends Exception {
+public class ControlRuleException extends RuntimeException {
 
 	private static final long serialVersionUID = -720263702768091438L;
 

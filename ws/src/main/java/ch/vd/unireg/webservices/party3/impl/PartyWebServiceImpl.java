@@ -316,12 +316,12 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 			return data;
 		}
+		catch (ServiceException e) {
+			throw ExceptionHelper.newException(e);
+		}
 		catch (RuntimeException e) {
 			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newTechnicalException(e);
-		}
-		catch (ServiceException e) {
-			throw ExceptionHelper.newException(e);
 		}
 	}
 

@@ -2,6 +2,7 @@ package ch.vd.unireg.evenement.reqdes.reception;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,9 +15,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -193,14 +192,15 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 		final String businessId = Long.toString(noAffaire);
 
 		// arrivée d'un événement
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				try (InputStream in = ReqDesEventHandlerTest.class.getResourceAsStream(path)) {
-					final Source src = new StreamSource(in);
-					handler.onMessage(src, "<empty/>", businessId);
-				}
+		doInNewTransactionAndSession(status -> {
+			try (InputStream in = ReqDesEventHandlerTest.class.getResourceAsStream(path)) {
+				final Source src = new StreamSource(in);
+				handler.onMessage(src, "<empty/>", businessId);
 			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
 		// vérification que l'on a bien deux identifiants pour les unités de traitement

@@ -2,19 +2,18 @@ package ch.vd.unireg.evenement.civil.interne.changement.filiation;
 
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.DataEventService;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
 
@@ -82,13 +81,10 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			});
 
 			// Crée le contribuable correspondant
-			final Long jeanId = doInNewTransaction(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique jean = addHabitant(jeanNoInd);
-					addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
-					return jean.getNumero();
-				}
+			final Long jeanId = doInNewTransaction(status -> {
+				final PersonnePhysique jean = addHabitant(jeanNoInd);
+				addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
+				return jean.getNumero();
 			});
 
 			// On vérifie que les individus sont bien présents dans le cache
@@ -132,14 +128,11 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			/*
 			 * Traitement d'un événement de correction de filiation
 			 */
-			doInNewTransactionAndSession(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					final Individu jean = serviceCivil.getIndividu(jeanNoInd, null, AttributeIndividu.PARENTS);
-					final CorrectionFiliation correction = new CorrectionFiliation(jean, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFS(), context);
-					assertSansErreurNiWarning(correction);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final Individu jean = serviceCivil.getIndividu(jeanNoInd, null, AttributeIndividu.PARENTS);
+				final CorrectionFiliation correction = new CorrectionFiliation(jean, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFS(), context);
+				assertSansErreurNiWarning(correction);
+				return null;
 			});
 
 			// On vérifie que les individus ont maintenant le nouveau nom (ce qui prouve que le cache des trois individus a été nettoyé)

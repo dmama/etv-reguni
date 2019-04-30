@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -189,56 +188,50 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
+		doInNewTransactionAndSession(status -> {
+			final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+			final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				obtentionPermis.handle(collector);
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			obtentionPermis.handle(collector);
 
-				assertEmpty(collector.getErreurs());
-				assertEmpty(collector.getWarnings());
-				return null;
-			}
+			assertEmpty(collector.getErreurs());
+			assertEmpty(collector.getWarnings());
+			return null;
 		});
 
 		// vérification de l'état des fors du contribuable
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				assertNull(ffp.getDateFin());
-				assertEquals(dateObtentionPermis.getOneDayAfter(), ffp.getDateDebut());
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			assertNull(ffp.getDateFin());
+			assertEquals(dateObtentionPermis.getOneDayAfter(), ffp.getDateDebut());
 
-				final List<Assujettissement> assujettissement = assujettissementService.determine(pp);
-				assertNotNull(assujettissement);
-				assertEquals(2, assujettissement.size());
-				{
-					final Assujettissement ass = assujettissement.get(0);
-					assertNotNull(ass);
-					assertInstanceOf(SourcierPur.class, ass);
-					assertEquals(dateArrivee, ass.getDateDebut());
-					assertEquals(dateObtentionPermis.getLastDayOfTheMonth(), ass.getDateFin());
-				}
-				{
-					final Assujettissement ass = assujettissement.get(1);
-					assertNotNull(ass);
-					assertInstanceOf(VaudoisOrdinaire.class, ass);
-					assertEquals(dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter(), ass.getDateDebut());
-					assertNull(ass.getDateFin());
-				}
-				return null;
+			final List<Assujettissement> assujettissement = assujettissementService.determine(pp);
+			assertNotNull(assujettissement);
+			assertEquals(2, assujettissement.size());
+			{
+				final Assujettissement ass = assujettissement.get(0);
+				assertNotNull(ass);
+				assertInstanceOf(SourcierPur.class, ass);
+				assertEquals(dateArrivee, ass.getDateDebut());
+				assertEquals(dateObtentionPermis.getLastDayOfTheMonth(), ass.getDateFin());
 			}
+			{
+				final Assujettissement ass = assujettissement.get(1);
+				assertNotNull(ass);
+				assertInstanceOf(VaudoisOrdinaire.class, ass);
+				assertEquals(dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter(), ass.getDateDebut());
+				assertNull(ass.getDateFin());
+			}
+			return null;
 		});
 	}
 
@@ -279,56 +272,50 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				return pp.getNumero();
 			});
 
-			doInNewTransactionAndSession(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					final Individu ind = serviceCivil.getIndividu(noIndividu, null);
-					final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
+			doInNewTransactionAndSession(status -> {
+				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
 
-					final MessageCollector collector = buildMessageCollector();
-					obtentionPermis.validate(collector, collector);
-					obtentionPermis.handle(collector);
+				final MessageCollector collector = buildMessageCollector();
+				obtentionPermis.validate(collector, collector);
+				obtentionPermis.handle(collector);
 
-					assertEmpty(collector.getErreurs());
-					assertEmpty(collector.getWarnings());
-					return null;
-				}
+				assertEmpty(collector.getErreurs());
+				assertEmpty(collector.getWarnings());
+				return null;
 			});
 
 			// vérification de l'état des fors du contribuable
-			doInNewTransactionAndSession(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-					assertNotNull(pp);
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-					assertNotNull(ffp);
-					assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-					assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-					assertNull(ffp.getDateFin());
-					assertEquals(dateObtentionPermis, ffp.getDateDebut());
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				assertNull(ffp.getDateFin());
+				assertEquals(dateObtentionPermis, ffp.getDateDebut());
 
-					final List<Assujettissement> assujettissement = assujettissementService.determine(pp);
-					assertNotNull(assujettissement);
-					assertEquals(2, assujettissement.size());
-					{
-						final Assujettissement ass = assujettissement.get(0);
-						assertNotNull(ass);
-						assertInstanceOf(SourcierPur.class, ass);
-						assertEquals(dateArrivee, ass.getDateDebut());
-						assertEquals(dateObtentionPermis.getLastDayOfTheMonth(), ass.getDateFin());
-					}
-					{
-						final Assujettissement ass = assujettissement.get(1);
-						assertNotNull(ass);
-						assertInstanceOf(VaudoisOrdinaire.class, ass);
-						assertEquals(dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter(), ass.getDateDebut());
-						assertNull(ass.getDateFin());
-					}
-					return null;
+				final List<Assujettissement> assujettissement = assujettissementService.determine(pp);
+				assertNotNull(assujettissement);
+				assertEquals(2, assujettissement.size());
+				{
+					final Assujettissement ass = assujettissement.get(0);
+					assertNotNull(ass);
+					assertInstanceOf(SourcierPur.class, ass);
+					assertEquals(dateArrivee, ass.getDateDebut());
+					assertEquals(dateObtentionPermis.getLastDayOfTheMonth(), ass.getDateFin());
 				}
+				{
+					final Assujettissement ass = assujettissement.get(1);
+					assertNotNull(ass);
+					assertInstanceOf(VaudoisOrdinaire.class, ass);
+					assertEquals(dateObtentionPermis.getLastDayOfTheMonth().getOneDayAfter(), ass.getDateDebut());
+					assertNull(ass.getDateFin());
+				}
+				return null;
 			});
 		}
 	}
@@ -361,41 +348,34 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
+		doInNewTransactionAndSession(status -> {
+			final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+			final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(ind, dateObtentionPermis, MockCommune.ChateauDoex.getNoOFS(), TypePermis.ETABLISSEMENT);
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertEmpty(collector.getWarnings());
-				assertEmpty(collector.getErreurs());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertEmpty(collector.getWarnings());
+			assertEmpty(collector.getErreurs());
 
-				obtentionPermis.handle(collector);
-				assertEmpty(collector.getWarnings());
-				assertEmpty(collector.getErreurs());
-
-				return null;
-			}
+			obtentionPermis.handle(collector);
+			assertEmpty(collector.getWarnings());
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		// vérification de l'état des fors du contribuable
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				assertNull(ffp.getDateFin());
-				assertEquals(dateObtentionPermis, ffp.getDateDebut());
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			assertNull(ffp.getDateFin());
+			assertEquals(dateObtentionPermis, ffp.getDateDebut());
+			return null;
 		});
 	}
 
@@ -564,22 +544,18 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel.getNoOFS());
+		doInNewTransactionAndSession(status -> {
+			final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
+			final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel.getNoOFS());
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-
-				return null;
-			}
+			obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -616,22 +592,18 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.SEJOUR);
+		doInNewTransactionAndSession(status -> {
+			final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
+			final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.SEJOUR);
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-
-				return null;
-			}
+			obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -677,21 +649,18 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// Traitement de l'événement d'obtention de permis d'établissement
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS());
+		doInNewTransactionAndSession(status -> {
+			final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
+			final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS());
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-				return null;
-			}
+			obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			return null;
 		});
 
 		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
@@ -742,21 +711,18 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// Traitement de l'événement d'obtention de permis d'établissement
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS());
+		doInNewTransactionAndSession(status -> {
+			final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
+			final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS());
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-				return null;
-			}
+			obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			return null;
 		});
 
 		// On vérifie que le tiers est flaggé comme devant être réindexé au 1er du mois suivant
@@ -815,22 +781,19 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 		
 		// traitement de l'événement d'obtention de permis d'établissement
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+			final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				final HandleStatus evStatus = obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-				assertEquals(HandleStatus.TRAITE, evStatus);
-				return null;
-			}
+			final HandleStatus evStatus = obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			assertEquals(HandleStatus.TRAITE, evStatus);
+			return null;
 		});
 		
 		// vérification que le for a bougé (= passé à l'ordinaire)
@@ -888,22 +851,19 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// traitement de l'événement d'obtention de permis d'établissement
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+			final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				final HandleStatus evStatus = obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-				assertEquals(HandleStatus.TRAITE, evStatus);
-				return null;
-			}
+			final HandleStatus evStatus = obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			assertEquals(HandleStatus.TRAITE, evStatus);
+			return null;
 		});
 
 		// vérification qu'aucun for n'a été créé
@@ -957,22 +917,19 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// traitement de l'événement d'obtention de permis d'établissement
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+			final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionPermis.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionPermis.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				final HandleStatus evStatus = obtentionPermis.handle(collector);
-				assertFalse(collector.hasWarnings());
-				assertEquals(HandleStatus.TRAITE, evStatus);
-				return null;
-			}
+			final HandleStatus evStatus = obtentionPermis.handle(collector);
+			assertFalse(collector.hasWarnings());
+			assertEquals(HandleStatus.TRAITE, evStatus);
+			return null;
 		});
 
 		// vérification que le for a bougé (= passé à l'ordinaire)

@@ -9,11 +9,8 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -66,17 +63,19 @@ public abstract class EvenementHelper {
 		}
 	}
 
-	public static void clearQueue(EsbJmsTemplate esbTemplate, String queueName, PlatformTransactionManager transactionManager) throws Exception {
+	public static void clearQueue(EsbJmsTemplate esbTemplate, String queueName, PlatformTransactionManager transactionManager) {
 		final long timeout = esbTemplate.getReceiveTimeout();
 		esbTemplate.setReceiveTimeout(100); // on ne veut pas attendre trop longtemps si la queue est déjà vide
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			while (true) {
-				final boolean found = template.execute(new TxCallback<Boolean>() {
-					@Override
-					public Boolean execute(TransactionStatus status) throws Exception {
+				final boolean found = template.execute(status -> {
+					try {
 						return esbTemplate.receive(queueName) != null;
+					}
+					catch (Exception e) {
+						throw new RuntimeException(e);
 					}
 				});
 				if (!found) {
@@ -103,25 +102,30 @@ public abstract class EvenementHelper {
 		sendMessage(esbTemplate, m, transactionManager);
 	}
 
-	public static void sendMessage(EsbJmsTemplate esbTemplate, EsbMessage message, PlatformTransactionManager transactionManager) throws Exception {
+	public static void sendMessage(EsbJmsTemplate esbTemplate, EsbMessage message, PlatformTransactionManager transactionManager) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);            // nouvelle transaction si hors transaction, en conservant la transaction existante si une existe déjà
-		template.execute(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		template.execute(status -> {
+			try {
 				esbTemplate.send(message);
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 	}
 
-	public static EsbMessage getMessage(EsbJmsTemplate esbTemplate, String queueName, long timeoutMs, PlatformTransactionManager transactionManager) throws Exception {
+	public static EsbMessage getMessage(EsbJmsTemplate esbTemplate, String queueName, long timeoutMs, PlatformTransactionManager transactionManager) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TxCallback<EsbMessage>() {
-			@Override
-			public EsbMessage execute(TransactionStatus status) throws Exception {
-				esbTemplate.setReceiveTimeout(timeoutMs);
+		return template.execute(status -> {
+			esbTemplate.setReceiveTimeout(timeoutMs);
+			try {
 				return esbTemplate.receive(queueName);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 	}

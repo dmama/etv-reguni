@@ -2,7 +2,6 @@ package ch.vd.unireg.parametrage;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.shared.validation.ValidationService;
@@ -38,13 +37,10 @@ public class PeriodeFiscaleServiceTest extends BusinessTest {
 	public void testGetPeriodeFiscaleByYearDoesntFlushSession() throws Exception {
 
 		// Crée la période fiscale 2008 dans sa propre transaction pour initialiser la base de données
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PeriodeFiscale periode = newPeriodeFiscale(2008);
-				periodeFiscaleDAO.save(periode);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode = newPeriodeFiscale(2008);
+			periodeFiscaleDAO.save(periode);
+			return null;
 		});
 
 		// Crée un habitant qui ne valide pas
@@ -67,26 +63,20 @@ public class PeriodeFiscaleServiceTest extends BusinessTest {
 	public void testInitNouvellePeriodeFiscale () throws Exception {
 		final int anneeDernierePeriode = 2008;
 		// Initialisisation de la base
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PeriodeFiscale avantDernierePeriode = newPeriodeFiscale(anneeDernierePeriode -1);
-				periodeFiscaleDAO.save(avantDernierePeriode);
-				PeriodeFiscale dernierePeriode = newPeriodeFiscale(anneeDernierePeriode);
-				dernierePeriode.setAnnee(anneeDernierePeriode);
-				periodeFiscaleDAO.save(dernierePeriode);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PeriodeFiscale avantDernierePeriode = newPeriodeFiscale(anneeDernierePeriode - 1);
+			periodeFiscaleDAO.save(avantDernierePeriode);
+			PeriodeFiscale dernierePeriode = newPeriodeFiscale(anneeDernierePeriode);
+			dernierePeriode.setAnnee(anneeDernierePeriode);
+			periodeFiscaleDAO.save(dernierePeriode);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PeriodeFiscale periodeFiscale = periodeFiscaleService.initNouvellePeriodeFiscale();
-				assertEquals(anneeDernierePeriode + 1, periodeFiscale.getAnnee().intValue());
-				checkParametresPeriodeFiscalePP(periodeFiscale);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PeriodeFiscale periodeFiscale = periodeFiscaleService.initNouvellePeriodeFiscale();
+			assertEquals(anneeDernierePeriode + 1, periodeFiscale.getAnnee().intValue());
+			checkParametresPeriodeFiscalePP(periodeFiscale);
+			return null;
 		});
 	}
 

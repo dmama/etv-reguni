@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -754,36 +753,31 @@ public class RattraperDatesMetierDroitRFProcessorTest extends BusinessTest {
 		final String idImmeubleRF1 = "_1f109152381026b501381028da172cca";
 
 		// précondition : il y a déjà deux droits dans la base de données
-		final Long immeubleId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long immeubleId = doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp0 = addPersonnePhysiqueRF(idPPRF1, "Isabelle", "Tissot", RegDate.get(1900, 1, 1));
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF(idPPRF2, "Simone", "Tissot", RegDate.get(1900, 1, 1));
 
-				final PersonnePhysiqueRF pp0 = addPersonnePhysiqueRF(idPPRF1, "Isabelle", "Tissot", RegDate.get(1900, 1, 1));
-				final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF(idPPRF2, "Simone", "Tissot", RegDate.get(1900, 1, 1));
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble = addBienFondsRF(idImmeubleRF1, "CHE393939", commune, 12);
 
-				final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondsRF immeuble = addBienFondsRF(idImmeubleRF1, "CHE393939", commune, 12);
+			// import inital du 31.12.2016
+			addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			                  null, RegDate.get(2016, 12, 31), RegDate.get(1961, 2, 4), null, "Succession", null,
+			                  new IdentifiantAffaireRF(11, null, 74634, null), "1f109152381026b5013810299b0b1905", "1f109152381026b5013810299b0b1904");
+			// second import du 01.01.2017
+			addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			                  RegDate.get(2017, 1, 1), null, RegDate.get(1980, 12, 29), null, "Changement de régime", null,
+			                  new IdentifiantAffaireRF(11, null, 95580, null), "21321321", "21321320");
 
-				// import inital du 31.12.2016
-				addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
-				                  null, RegDate.get(2016, 12, 31), RegDate.get(1961, 2, 4), null, "Succession", null,
-				                  new IdentifiantAffaireRF(11, null, 74634, null), "1f109152381026b5013810299b0b1905", "1f109152381026b5013810299b0b1904");
-				// second import du 01.01.2017
-				addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
-				                  RegDate.get(2017, 1, 1), null, RegDate.get(1980, 12, 29), null, "Changement de régime", null,
-				                  new IdentifiantAffaireRF(11, null, 95580, null), "21321321", "21321320");
-
-				// import inital du 31.12.2016
-				addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
-				                  null, RegDate.get(2016, 12, 31), RegDate.get(1980, 12, 29), null, "Changement de régime", null,
-				                  new IdentifiantAffaireRF(11, null, 95580, null), "1f109152381026b5013810299b0b1908", "1f109152381026b5013810299b0b1907");
-				// second import du 01.01.2017
-				addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
-				                  RegDate.get(2017, 1, 1), null, RegDate.get(1998, 2, 11), null, "Succession", null,
-				                  new IdentifiantAffaireRF(11, null, 115039, null), "90392039", "90392038");
-
-				return immeuble.getId();
-			}
+			// import inital du 31.12.2016
+			addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			                  null, RegDate.get(2016, 12, 31), RegDate.get(1980, 12, 29), null, "Changement de régime", null,
+			                  new IdentifiantAffaireRF(11, null, 95580, null), "1f109152381026b5013810299b0b1908", "1f109152381026b5013810299b0b1907");
+			// second import du 01.01.2017
+			addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			                  RegDate.get(2017, 1, 1), null, RegDate.get(1998, 2, 11), null, "Succession", null,
+			                  new IdentifiantAffaireRF(11, null, 115039, null), "90392039", "90392038");
+			return immeuble.getId();
 		});
 
 		// on calcule les dates métiers manquantes sur les droits

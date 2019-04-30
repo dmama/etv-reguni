@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -47,41 +46,35 @@ public class BordereauMouvementDossierDAOTest extends AbstractMouvementDossierDA
 	public void testBordereauxAReceptionner() throws Exception {
 
 		// création des objets en base
-		doInNewTransaction(new TxCallback<Object>() {
+		doInNewTransaction(status -> {
+			// on crée deux mvts de dossier de l'OID 1 à l'OID 5, trois réceptions pour archive à l'OID 5
+			final CollectiviteAdministrative oid1 = addCollectiviteAdministrative(1);
+			final CollectiviteAdministrative oid5 = addCollectiviteAdministrative(5);
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			// il me faut donc 7 contribuables (un de plus pour un mouvement déjà traité, un autre pour un mouvement à traité)
+			final PersonnePhysique pp1 = addNonHabitant("Alphonsine", "Dubois", RegDate.get(1923, 2, 12), Sexe.FEMININ);
+			final PersonnePhysique pp2 = addNonHabitant("Ernestine", "Dupont", RegDate.get(1922, 4, 5), Sexe.FEMININ);
+			final PersonnePhysique pp3 = addNonHabitant("Emile", "Pittet", RegDate.get(1912, 6, 12), Sexe.MASCULIN);
+			final PersonnePhysique pp4 = addNonHabitant("Robert", "Debout", RegDate.get(1965, 12, 4), Sexe.MASCULIN);
+			final PersonnePhysique pp5 = addNonHabitant("Valérie", "Marchand", RegDate.get(1970, 1, 3), Sexe.FEMININ);
+			final PersonnePhysique pp6 = addNonHabitant("Marcel", "Petit", RegDate.get(1945, 1, 3), Sexe.MASCULIN);
+			final PersonnePhysique pp7 = addNonHabitant("Kevin", "Martin", RegDate.get(1985, 3, 2), Sexe.MASCULIN);
 
-				// on crée deux mvts de dossier de l'OID 1 à l'OID 5, trois réceptions pour archive à l'OID 5
-				final CollectiviteAdministrative oid1 = addCollectiviteAdministrative(1);
-				final CollectiviteAdministrative oid5 = addCollectiviteAdministrative(5);
+			// création des mouvements
+			final EnvoiDossierVersCollectiviteAdministrative md1 = addMouvementDossierEnvoi(pp1, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			final EnvoiDossierVersCollectiviteAdministrative md2 = addMouvementDossierEnvoi(pp2, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			final EnvoiDossierVersCollectiviteAdministrative md3 = addMouvementDossierEnvoi(pp3, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			final EnvoiDossierVersCollectiviteAdministrative md4 = addMouvementDossierEnvoi(pp4, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			final EnvoiDossierVersCollectiviteAdministrative md5 = addMouvementDossierEnvoi(pp5, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			final EnvoiDossierVersCollectiviteAdministrative md6 = addMouvementDossierEnvoi(pp6, oid1, oid5, EtatMouvementDossier.TRAITE);        // déjà traité hors bordereau
+			final ReceptionDossierArchives md7 = addMouvementDossierArchives(pp7, oid5, EtatMouvementDossier.A_ENVOYER);
 
-				// il me faut donc 7 contribuables (un de plus pour un mouvement déjà traité, un autre pour un mouvement à traité)
-				final PersonnePhysique pp1 = addNonHabitant("Alphonsine", "Dubois", RegDate.get(1923, 2, 12), Sexe.FEMININ);
-				final PersonnePhysique pp2 = addNonHabitant("Ernestine", "Dupont", RegDate.get(1922, 4, 5), Sexe.FEMININ);
-				final PersonnePhysique pp3 = addNonHabitant("Emile", "Pittet", RegDate.get(1912, 6, 12), Sexe.MASCULIN);
-				final PersonnePhysique pp4 = addNonHabitant("Robert", "Debout", RegDate.get(1965, 12, 4), Sexe.MASCULIN);
-				final PersonnePhysique pp5 = addNonHabitant("Valérie", "Marchand", RegDate.get(1970, 1, 3), Sexe.FEMININ);
-				final PersonnePhysique pp6 = addNonHabitant("Marcel", "Petit", RegDate.get(1945, 1, 3), Sexe.MASCULIN);
-				final PersonnePhysique pp7 = addNonHabitant("Kevin", "Martin", RegDate.get(1985, 3, 2), Sexe.MASCULIN);
-
-				// création des mouvements
-				final EnvoiDossierVersCollectiviteAdministrative md1 = addMouvementDossierEnvoi(pp1, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				final EnvoiDossierVersCollectiviteAdministrative md2 = addMouvementDossierEnvoi(pp2, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				final EnvoiDossierVersCollectiviteAdministrative md3 = addMouvementDossierEnvoi(pp3, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				final EnvoiDossierVersCollectiviteAdministrative md4 = addMouvementDossierEnvoi(pp4, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				final EnvoiDossierVersCollectiviteAdministrative md5 = addMouvementDossierEnvoi(pp5, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				final EnvoiDossierVersCollectiviteAdministrative md6 = addMouvementDossierEnvoi(pp6, oid1, oid5, EtatMouvementDossier.TRAITE);        // déjà traité hors bordereau
-				final ReceptionDossierArchives md7 = addMouvementDossierArchives(pp7, oid5, EtatMouvementDossier.A_ENVOYER);
-
-				// mouvements à inclure dans un bordereau
-				final List<EnvoiDossierVersCollectiviteAdministrative> bordereauEnvoi = Arrays.asList(md1, md2, md3, md4, md5);
-				final List<ReceptionDossierArchives> bordereauReception = Collections.singletonList(md7);
-				addBordereau(bordereauEnvoi, EtatMouvementDossier.TRAITE);
-				addBordereau(bordereauReception, EtatMouvementDossier.TRAITE);
-
-				return null;
-			}
+			// mouvements à inclure dans un bordereau
+			final List<EnvoiDossierVersCollectiviteAdministrative> bordereauEnvoi = Arrays.asList(md1, md2, md3, md4, md5);
+			final List<ReceptionDossierArchives> bordereauReception = Collections.singletonList(md7);
+			addBordereau(bordereauEnvoi, EtatMouvementDossier.TRAITE);
+			addBordereau(bordereauReception, EtatMouvementDossier.TRAITE);
+			return null;
 		});
 
 		{

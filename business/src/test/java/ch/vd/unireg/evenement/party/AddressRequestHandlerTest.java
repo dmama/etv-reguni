@@ -3,11 +3,18 @@ package ch.vd.unireg.evenement.party;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
@@ -21,14 +28,6 @@ import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.security.MockSecurityProvider;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.type.TypeAdresseTiers;
-import ch.vd.unireg.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -143,13 +142,10 @@ public class AddressRequestHandlerTest extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);
@@ -228,13 +224,10 @@ public class AddressRequestHandlerTest extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,"1234 Glasgow", MockPays.PaysInconnu);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseEtrangere(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, null, "1234 Glasgow", MockPays.PaysInconnu);
+			return pp.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);
@@ -276,13 +269,10 @@ public class AddressRequestHandlerTest extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,"xxx", MockPays.France);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseEtrangere(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, null, "xxx", MockPays.France);
+			return pp.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);
@@ -326,13 +316,10 @@ public class AddressRequestHandlerTest extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Joana", "Marques Gama Caldas Pimenta Duarte", date(1950, 3, 14), Sexe.FEMININ);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Joana", "Marques Gama Caldas Pimenta Duarte", date(1950, 3, 14), Sexe.FEMININ);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		handler.setSecurityProvider(provider);

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -25,6 +24,7 @@ import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TarifImpotSource;
 
+import static java.util.Collections.sort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -81,15 +81,12 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = date(2007, 1, 1);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
-				final MenageCommun menage = ensemble.getMenage();
-				final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.NORMAL);
-				return situation.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
+			final MenageCommun menage = ensemble.getMenage();
+			final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.NORMAL);
+			return situation.getId();
 		});
 
 		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
@@ -122,20 +119,15 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
+			final MenageCommun menage = ensemble.getMenage();
+			ids.menage = menage.getNumero();
 
-				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
-				final MenageCommun menage = ensemble.getMenage();
-				ids.menage = menage.getNumero();
-
-				final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
-				ids.situation = situation.getId();
-
-				return null;
-			}
+			final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
+			ids.situation = situation.getId();
+			return null;
 		});
 
 		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
@@ -179,17 +171,14 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRetrieveSituationsDoubleGainDiversesSituations() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
-				final MenageCommun menage = ensemble.getMenage();
-				addSituation(menage, date(2001, 3, 2), date(2003, 10, 1), 0, TarifImpotSource.NORMAL);
-				addSituation(menage, date(2003, 10, 2), date(2005, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN);
-				addSituation(menage, date(2007, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
+			final MenageCommun menage = ensemble.getMenage();
+			addSituation(menage, date(2001, 3, 2), date(2003, 10, 1), 0, TarifImpotSource.NORMAL);
+			addSituation(menage, date(2003, 10, 2), date(2005, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN);
+			addSituation(menage, date(2007, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
+			return null;
 		});
 
 		assertEmpty(processor.retrieveSituationsDoubleGain(date(2000, 1, 1)));
@@ -224,20 +213,15 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
+			final MenageCommun menage = ensemble.getMenage();
+			ids.menage = menage.getNumero();
 
-				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
-				final MenageCommun menage = ensemble.getMenage();
-				ids.menage = menage.getNumero();
-
-				final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
-				ids.situation = situation.getId();
-
-				return null;
-			}
+			final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
+			ids.situation = situation.getId();
+			return null;
 		});
 
 		final ReinitialiserBaremeDoubleGainResults rapport = processor.run(date(2007, 1, 1), null);
@@ -283,20 +267,15 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
+			final MenageCommun menage = ensemble.getMenage();
+			ids.menage = menage.getNumero();
 
-				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
-				final MenageCommun menage = ensemble.getMenage();
-				ids.menage = menage.getNumero();
-
-				final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
-				ids.situation = situation.getId();
-
-				return null;
-			}
+			final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.DOUBLE_GAIN);
+			ids.situation = situation.getId();
+			return null;
 		});
 
 		// d'abord 2010
@@ -304,37 +283,32 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			final RegDate dateTraitement = date(2010, 1, 1);
 			final ReinitialiserBaremeDoubleGainResults rapport = processor.run(dateTraitement, null);
 
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+			doInNewTransaction(status -> {
+				// une situation doit avoir été traitée
+				assertEquals(1, rapport.nbSituationsTotal);
+				assertEmpty(rapport.situationsIgnorees);
+				assertEmpty(rapport.situationsEnErrors);
+				assertEquals(1, rapport.situationsTraitees.size());
 
-					// une situation doit avoir été traitée
-					assertEquals(1, rapport.nbSituationsTotal);
-					assertEmpty(rapport.situationsIgnorees);
-					assertEmpty(rapport.situationsEnErrors);
-					assertEquals(1, rapport.situationsTraitees.size());
+				final Situation traitee = rapport.situationsTraitees.get(0);
+				assertNotNull(traitee);
+				assertEquals(ids.menage, traitee.ctbId);
+				assertEquals(ids.situation, traitee.ancienneId);
+				assertNotNull(traitee.nouvelleId);
 
-					final Situation traitee = rapport.situationsTraitees.get(0);
-					assertNotNull(traitee);
-					assertEquals(ids.menage, traitee.ctbId);
-					assertEquals(ids.situation, traitee.ancienneId);
-					assertNotNull(traitee.nouvelleId);
+				assertEquals(2, dao.getCount(SituationFamilleMenageCommun.class));
 
-					assertEquals(2, dao.getCount(SituationFamilleMenageCommun.class));
+				final List<SituationFamille> list = dao.getAll();
+				assertNotNull(list);
+				assertEquals(2, list.size());
+				sort(list, new DateRangeComparator<>());
 
-					final List<SituationFamille> list = dao.getAll();
-					assertNotNull(list);
-					assertEquals(2, list.size());
-					Collections.sort(list, new DateRangeComparator<>());
+				final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
+				assertSituation(date(2005, 1, 1), date(2009, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN, situation0);
 
-					final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
-					assertSituation(date(2005, 1, 1), date(2009, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN, situation0);
-
-					final SituationFamilleMenageCommun situation1 = (SituationFamilleMenageCommun) list.get(1);
-					assertSituation(date(2010, 1, 1), null, 0, TarifImpotSource.NORMAL, situation1);
-
-					return null;
-				}
+				final SituationFamilleMenageCommun situation1 = (SituationFamilleMenageCommun) list.get(1);
+				assertSituation(date(2010, 1, 1), null, 0, TarifImpotSource.NORMAL, situation1);
+				return null;
 			});
 
 		}
@@ -344,38 +318,33 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			final RegDate dateTraitement = date(2009, 1, 1);
 			final ReinitialiserBaremeDoubleGainResults rapport = processor.run(dateTraitement, null);
 
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+			doInNewTransaction(status -> {
+				// une situation doit avoir été traitée
+				assertEquals(1, rapport.nbSituationsTotal);
+				assertEmpty(rapport.situationsIgnorees);
+				assertEmpty(rapport.situationsTraitees);
+				assertEquals(1, rapport.situationsEnErrors.size());
 
-					// une situation doit avoir été traitée
-					assertEquals(1, rapport.nbSituationsTotal);
-					assertEmpty(rapport.situationsIgnorees);
-					assertEmpty(rapport.situationsTraitees);
-					assertEquals(1, rapport.situationsEnErrors.size());
+				final Erreur erreur = rapport.situationsEnErrors.get(0);
+				assertNotNull(erreur);
+				assertEquals(0, erreur.noCtb);
+				assertEquals(ids.situation, erreur.situationId);
+				assertEquals(ErreurType.EXCEPTION, erreur.raison);
 
-					final Erreur erreur = rapport.situationsEnErrors.get(0);
-					assertNotNull(erreur);
-					assertEquals(0, erreur.noCtb);
-					assertEquals(ids.situation, erreur.situationId);
-					assertEquals(ErreurType.EXCEPTION, erreur.raison);
+				// pas de changement dans la base
+				assertEquals(2, dao.getCount(SituationFamilleMenageCommun.class));
 
-					// pas de changement dans la base
-					assertEquals(2, dao.getCount(SituationFamilleMenageCommun.class));
+				final List<SituationFamille> list = dao.getAll();
+				assertNotNull(list);
+				assertEquals(2, list.size());
+				sort(list, new DateRangeComparator<>());
 
-					final List<SituationFamille> list = dao.getAll();
-					assertNotNull(list);
-					assertEquals(2, list.size());
-					Collections.sort(list, new DateRangeComparator<>());
+				final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
+				assertSituation(date(2005, 1, 1), date(2009, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN, situation0);
 
-					final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
-					assertSituation(date(2005, 1, 1), date(2009, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN, situation0);
-
-					final SituationFamilleMenageCommun situation1 = (SituationFamilleMenageCommun) list.get(1);
-					assertSituation(date(2010, 1, 1), null, 0, TarifImpotSource.NORMAL, situation1);
-
-					return null;
-				}
+				final SituationFamilleMenageCommun situation1 = (SituationFamilleMenageCommun) list.get(1);
+				assertSituation(date(2010, 1, 1), null, 0, TarifImpotSource.NORMAL, situation1);
+				return null;
 			});
 		}
 	}

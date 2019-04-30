@@ -4,11 +4,9 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
@@ -87,11 +85,9 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationCreation() throws Exception {
 
 		// précondition : la base est vide
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				assertEquals(0, ayantDroitRFDAO.getAll().size());
-			}
+		doInNewTransaction(status -> {
+			assertEquals(0, ayantDroitRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_ayantdroit_rf.xml");
@@ -101,12 +97,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, null, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et l'ayant-droit est créé en base
@@ -120,11 +114,9 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationCreationCommunaute() throws Exception {
 
 		// précondition : la base est vide
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				assertEquals(0, ayantDroitRFDAO.getAll().size());
-			}
+		doInNewTransaction(status -> {
+			assertEquals(0, ayantDroitRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_ayantdroit_communaute_rf.xml");
@@ -134,12 +126,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, null, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et l'ayant-droit est créé en base
@@ -153,14 +143,12 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationCreationImmeubleBeneficiaire() throws Exception {
 
 		// précondition : la base contient un immeuble
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				assertEquals(0, ayantDroitRFDAO.getAll().size());
-				final ImmeubleRF immeuble = new BienFondsRF();
-				immeuble.setIdRF("48238919011");
-				immeubleRFDAO.save(immeuble);
-			}
+		doInNewTransaction(status -> {
+			assertEquals(0, ayantDroitRFDAO.getAll().size());
+			final ImmeubleRF immeuble = new BienFondsRF();
+			immeuble.setIdRF("48238919011");
+			immeubleRFDAO.save(immeuble);
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_ayantdroit_immeuble_rf.xml");
@@ -170,12 +158,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, "48238919011", null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et l'ayant-droit est créé en base
@@ -189,12 +175,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationModification() throws Exception {
 
 		// précondition : il y a déjà un ayant-droit dans la base avec un prénom différent de celui de la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				addPersonnePhysiqueRF("Autre prénom", "Nom", date(1956, 1, 23), "3893728273382823", 3727, 827288022L);
-				assertEquals(1, ayantDroitRFDAO.getAll().size());
-			}
+		doInNewTransaction(status -> {
+			addPersonnePhysiqueRF("Autre prénom", "Nom", date(1956, 1, 23), "3893728273382823", 3727, 827288022L);
+			assertEquals(1, ayantDroitRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_ayantdroit_rf.xml");
@@ -204,12 +188,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, null, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée, l'ayant-droit est mis-à-jour en base
@@ -223,11 +205,9 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationCreationServitude() throws Exception {
 
 		// précondition : la base est vide
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				assertEquals(0, ayantDroitRFDAO.getAll().size());
-			}
+		doInNewTransaction(status -> {
+			assertEquals(0, ayantDroitRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_ayantdroit_servitude_rf.xml");
@@ -237,12 +217,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, null, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et l'ayant-droit est créé en base
@@ -256,12 +234,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 	public void testProcessMutationModificationServitude() throws Exception {
 
 		// précondition : il y a déjà un ayant-droit dans la base avec un prénom différent de celui de la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				addPersonnePhysiqueRF("Autre prénom", "Nom", date(1956, 1, 23), "3893728273382823", 3727, 827288022L);
-				assertEquals(1, ayantDroitRFDAO.getAll().size());
-			}
+		doInNewTransaction(status -> {
+			addPersonnePhysiqueRF("Autre prénom", "Nom", date(1956, 1, 23), "3893728273382823", 3727, 827288022L);
+			assertEquals(1, ayantDroitRFDAO.getAll().size());
+			return null;
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_ayantdroit_servitude_rf.xml");
@@ -271,12 +247,10 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, null, null);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, false, null);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée, l'ayant-droit est mis-à-jour en base

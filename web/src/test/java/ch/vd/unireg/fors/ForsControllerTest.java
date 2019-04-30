@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationMessage;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -80,12 +78,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 	@Test
 	public void testAddForPrincipalSansMotifOuverture() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans motif d'ouverture
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -115,25 +108,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("motifDebut", error.getField());
 		assertEquals("error.motif.ouverture.vide", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
 	@Test
 	public void testAddForPrincipalFermeSansMotifFermeture() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans motif de fermeture
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -163,25 +149,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("motifFin", error.getField());
 		assertEquals("error.motif.fermeture.vide", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
 	@Test
 	public void testAddForPrincipalSansDateDebut() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans date début
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -211,25 +190,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("dateDebut", error.getField());
 		assertEquals("error.date.debut.vide", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
 	@Test
 	public void testAddForPrincipalDateDebutDansLeFutur() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans date début
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -258,25 +230,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("dateDebut", error.getField());
 		assertEquals("error.date.debut.future", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
 	@Test
 	public void testAddForPrincipalDateFinDansLeFutur() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans date début
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -307,25 +272,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("dateFin", error.getField());
 		assertEquals("error.date.fin.dans.futur", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
 	@Test
 	public void testAddForPrincipalDateFinAvantDateDebut() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans date début
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -356,25 +314,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("dateFin", error.getField());
 		assertEquals("error.date.fin.avant.debut", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
 	@Test
 	public void testAddForPrincipalOk() throws Exception {
 
-		final Long noCtb = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				return addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero();
-			}
-		});
+		final Long noCtb = doInNewTransactionAndSession(status -> addNonHabitant("Turlu", "Tutu", date(1960, 3, 2), Sexe.MASCULIN).getNumero());
 
 		//création d'un for principal sans date début
 		request.addParameter("tiersId", String.valueOf(noCtb));
@@ -399,18 +350,16 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(result);
 		assertEquals(0, result.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(noCtb);
-				assertNotNull(tiers);
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(noCtb);
+			assertNotNull(tiers);
 
-				final Set<ForFiscal> fors = tiers.getForsFiscaux();
-				assertEquals(1, fors.size());
+			final Set<ForFiscal> fors = tiers.getForsFiscaux();
+			assertEquals(1, fors.size());
 
-				final ForFiscalPrincipalPP ffp0 = (ForFiscalPrincipalPP) fors.iterator().next();
-				assertForPrincipal(date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 1), MotifFor.FUSION_COMMUNES, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
-			}
+			final ForFiscalPrincipalPP ffp0 = (ForFiscalPrincipalPP) fors.iterator().next();
+			assertForPrincipal(date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 1), MotifFor.FUSION_COMMUNES, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
+			return null;
 		});
 	}
 
@@ -420,12 +369,9 @@ public class ForsControllerTest extends WebTestSpring3 {
 	@Test
 	public void testAddForPrincipalSurPaysInvalide() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>(){
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		// création d'un for principal sur un pays invalide
@@ -455,13 +401,11 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals("noAutoriteFiscale", error.getField());
 		assertEquals("error.pays.non.valide", error.getCode());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(id);
-				assertNotNull(tiers);
-				assertEmpty(tiers.getForsFiscaux());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(id);
+			assertNotNull(tiers);
+			assertEmpty(tiers.getForsFiscaux());
+			return null;
 		});
 	}
 
@@ -490,47 +434,43 @@ public class ForsControllerTest extends WebTestSpring3 {
 			}
 		});
 
-		final Long numeroMenage = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long numeroMenage = doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
+			final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
+			final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			final ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2005);
+			final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+			final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-				final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
-				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				final ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2005);
-				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+			final PersonnePhysique laurent = addHabitant(noIndLaurent);
+			addForPrincipal(laurent, date(1978, 10, 20), MotifFor.DEMENAGEMENT_VD, date(1985, 2, 14),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
 
-				final PersonnePhysique laurent = addHabitant(noIndLaurent);
-				addForPrincipal(laurent, date(1978, 10, 20), MotifFor.DEMENAGEMENT_VD, date(1985, 2, 14),
-				                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
+			final PersonnePhysique christine = addHabitant(noIndChristine);
+			addForPrincipal(christine, date(1979, 2, 9), MotifFor.DEMENAGEMENT_VD, date(1985, 2, 14),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
 
-				final PersonnePhysique christine = addHabitant(noIndChristine);
-				addForPrincipal(christine, date(1979, 2, 9), MotifFor.DEMENAGEMENT_VD, date(1985, 2, 14),
-				                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.VillarsSousYens);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(laurent, christine, date(1985, 2, 15), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(laurent, christine, date(1985, 2, 15), null);
-				final MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, date(1985, 2, 15), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.VillarsSousYens);
 
-				addForPrincipal(menage, date(1985, 2, 15), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockCommune.VillarsSousYens);
+			final DeclarationImpotOrdinaire declaration2005 = addDeclarationImpot(menage, periode2005, date(2005, 1, 1), date(2005, 12,
+			                                                                                                                  31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
+			addDeclarationImpot(menage, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2006);
+			addDeclarationImpot(menage, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2007);
 
-				final DeclarationImpotOrdinaire declaration2005 = addDeclarationImpot(menage, periode2005, date(2005, 1, 1), date(2005, 12,
-				                                                                                                                  31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
-				addDeclarationImpot(menage, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    modele2006);
-				addDeclarationImpot(menage, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    modele2007);
-
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null, null, colAdm);
-				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage, colAdm);
-				addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage, colAdm);
-				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage, colAdm);
-				return menage.getNumero();
-			}
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null, null, colAdm);
+			addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage, colAdm);
+			addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage, colAdm);
+			addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage, colAdm);
+			return menage.getNumero();
 		});
 		assertNotNull(numeroMenage);
 
@@ -551,31 +491,28 @@ public class ForsControllerTest extends WebTestSpring3 {
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, numeroMenage);
-				assertNotNull(menage);
+		doInNewTransaction(status -> {
+			final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, numeroMenage);
+			assertNotNull(menage);
 
-				final List<ForFiscal> fors = menage.getForsFiscauxSorted();
-				assertNotNull(fors);
-				assertEquals(2, fors.size());
+			final List<ForFiscal> fors = menage.getForsFiscauxSorted();
+			assertNotNull(fors);
+			assertEquals(2, fors.size());
 
-				final ForFiscalPrincipal forSuisse = (ForFiscalPrincipal) fors.get(0);
-				assertNotNull(forSuisse);
-				assertEquals(date(1985, 2, 15), forSuisse.getDateDebut());
-				assertEquals(date(2009, 6, 7), forSuisse.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forSuisse.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.VillarsSousYens.getNoOFS(), forSuisse.getNumeroOfsAutoriteFiscale().intValue());
+			final ForFiscalPrincipal forSuisse = (ForFiscalPrincipal) fors.get(0);
+			assertNotNull(forSuisse);
+			assertEquals(date(1985, 2, 15), forSuisse.getDateDebut());
+			assertEquals(date(2009, 6, 7), forSuisse.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forSuisse.getTypeAutoriteFiscale());
+			assertEquals(MockCommune.VillarsSousYens.getNoOFS(), forSuisse.getNumeroOfsAutoriteFiscale().intValue());
 
-				final ForFiscalPrincipal forFrancais = (ForFiscalPrincipal) fors.get(1);
-				assertNotNull(forFrancais);
-				assertEquals(date(2009, 6, 8), forFrancais.getDateDebut());
-				assertNull(forFrancais.getDateFin());
-				assertEquals(TypeAutoriteFiscale.PAYS_HS, forFrancais.getTypeAutoriteFiscale());
-				assertEquals(MockPays.France.getNoOFS(), forFrancais.getNumeroOfsAutoriteFiscale().intValue());
-				return null;
-			}
+			final ForFiscalPrincipal forFrancais = (ForFiscalPrincipal) fors.get(1);
+			assertNotNull(forFrancais);
+			assertEquals(date(2009, 6, 8), forFrancais.getDateDebut());
+			assertNull(forFrancais.getDateFin());
+			assertEquals(TypeAutoriteFiscale.PAYS_HS, forFrancais.getTypeAutoriteFiscale());
+			assertEquals(MockPays.France.getNoOFS(), forFrancais.getNumeroOfsAutoriteFiscale().intValue());
+			return null;
 		});
 	}
 
@@ -604,46 +541,42 @@ public class ForsControllerTest extends WebTestSpring3 {
 			}
 		});
 
-		final Long numeroChristine = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long numeroChristine = doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_AIGLE.getNoColAdm());
+			final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
+			final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			final ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2005);
+			final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+			final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-				final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
-				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				final ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2005);
-				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+			final PersonnePhysique laurent = addHabitant(noIndLaurent);
+			addForPrincipal(laurent, date(1978, 10, 20), MotifFor.DEMENAGEMENT_VD, date(1985, 2, 14),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
 
-				final PersonnePhysique laurent = addHabitant(noIndLaurent);
-				addForPrincipal(laurent, date(1978, 10, 20), MotifFor.DEMENAGEMENT_VD, date(1985, 2, 14),
-				                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
-
-				final PersonnePhysique christine = addHabitant(noIndChristine);
+			final PersonnePhysique christine = addHabitant(noIndChristine);
 
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(laurent, christine, date(1985, 2, 15), null);
-				final MenageCommun menage = ensemble.getMenage();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(laurent, christine, date(1985, 2, 15), null);
+			final MenageCommun menage = ensemble.getMenage();
 
-				addForPrincipal(menage, date(1985, 2, 15), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockCommune.VillarsSousYens);
+			addForPrincipal(menage, date(1985, 2, 15), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.VillarsSousYens);
 
-				final DeclarationImpotOrdinaire declaration2005 = addDeclarationImpot(menage, periode2005, date(2005, 1, 1), date(2005, 12,
-				                                                                                                                  31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
-				addDeclarationImpot(menage, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    modele2006);
-				addDeclarationImpot(menage, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    modele2007);
+			final DeclarationImpotOrdinaire declaration2005 = addDeclarationImpot(menage, periode2005, date(2005, 1, 1), date(2005, 12,
+			                                                                                                                  31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
+			addDeclarationImpot(menage, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2006);
+			addDeclarationImpot(menage, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2007);
 
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null, null, colAdm);
-				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage, colAdm);
-				addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage, colAdm);
-				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage, colAdm);
-				return christine.getNumero();
-			}
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null, null, colAdm);
+			addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage, colAdm);
+			addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage, colAdm);
+			addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage, colAdm);
+			return christine.getNumero();
 		});
 		assertNotNull(numeroChristine);
 
@@ -669,24 +602,21 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals(0, bindingResult.getErrorCount());
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christine = hibernateTemplate.get(PersonnePhysique.class, numeroChristine);
-				assertNotNull(christine);
+		doInNewTransaction(status -> {
+			final PersonnePhysique christine = hibernateTemplate.get(PersonnePhysique.class, numeroChristine);
+			assertNotNull(christine);
 
-				final List<ForFiscal> fors = christine.getForsFiscauxSorted();
-				assertNotNull(fors);
-				assertEquals(1, fors.size());
+			final List<ForFiscal> fors = christine.getForsFiscauxSorted();
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 
-				final ForFiscalPrincipal forSuisse = (ForFiscalPrincipal) fors.get(0);
-				assertNotNull(forSuisse);
-				assertEquals(date(1979, 6, 8), forSuisse.getDateDebut());
-				assertEquals(date(1985, 2, 14), forSuisse.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forSuisse.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.VillarsSousYens.getNoOFS(), forSuisse.getNumeroOfsAutoriteFiscale().intValue());
-				return null;
-			}
+			final ForFiscalPrincipal forSuisse = (ForFiscalPrincipal) fors.get(0);
+			assertNotNull(forSuisse);
+			assertEquals(date(1979, 6, 8), forSuisse.getDateDebut());
+			assertEquals(date(1985, 2, 14), forSuisse.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forSuisse.getTypeAutoriteFiscale());
+			assertEquals(MockCommune.VillarsSousYens.getNoOFS(), forSuisse.getNumeroOfsAutoriteFiscale().intValue());
+			return null;
 		});
 	}
 
@@ -737,13 +667,11 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 
 		// On vérifie qu'aucun for fiscal n'a été créé
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(dpiId);
-				assertNotNull(tiers);
-				assertEquals(1, tiers.getForsFiscaux().size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(dpiId);
+			assertNotNull(tiers);
+			assertEquals(1, tiers.getForsFiscaux().size());
+			return null;
 		});
 	}
 
@@ -887,15 +815,12 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1960, 1, 1), MotifFor.ARRIVEE_HS, MockPays.RDA);
-				ids.pp = pp.getId();
-				ids.ffp = ffp.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1960, 1, 1), MotifFor.ARRIVEE_HS, MockPays.RDA);
+			ids.pp = pp.getId();
+			ids.ffp = ffp.getId();
+			return null;
 		});
 
 		// mise-à-jour des dates sur un for principal pré-existant avec un pays invalide
@@ -948,17 +873,15 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final Ids ids = new Ids();
 
 		// mise en place fiscale
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				final ForDebiteurPrestationImposable ff = addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			final ForDebiteurPrestationImposable ff = addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
-				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
-				ids.debiteur = dpi.getId();
-				ids.forDebiteur = ff.getId();
-			}
+			final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+			addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+			ids.debiteur = dpi.getId();
+			ids.forDebiteur = ff.getId();
+			return null;
 		});
 
 		// Fermeture du for sur le débiteur
@@ -1017,23 +940,19 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Un contribuable avec un for principal et un for secondaire
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getId();
 
-				// Un contribuable avec un for principal et un for secondaire
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getId();
+			ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ids.forPrincipalId = forPrincipal.getId();
+			forPrincipal.setTiers(eric);
 
-				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ids.forPrincipalId = forPrincipal.getId();
-				forPrincipal.setTiers(eric);
-
-				ForFiscalSecondaire forSecondaire = addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER,
-				                                                     MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				forSecondaire.setTiers(eric);
-				return null;
-			}
+			ForFiscalSecondaire forSecondaire = addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER,
+			                                                     MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			forSecondaire.setTiers(eric);
+			return null;
 		});
 
 		// simulation de l'annulation du for principal
@@ -1071,25 +990,21 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Un contribuable avec deux fors principaux adjacent
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getId();
 
-				// Un contribuable avec deux fors principaux adjacent
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getId();
+			ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
+			                                                         MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			ids.premierForPrincipalId = premierForPrincipal.getId();
+			premierForPrincipal.setTiers(eric);
 
-				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
-				                                                         MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				ids.premierForPrincipalId = premierForPrincipal.getId();
-				premierForPrincipal.setTiers(eric);
-
-				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD,
-				                                                        MockCommune.Cossonay);
-				ids.secondForPrincipalId = secondForPrincipal.getId();
-				secondForPrincipal.setTiers(eric);
-				return null;
-			}
+			ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD,
+			                                                        MockCommune.Cossonay);
+			ids.secondForPrincipalId = secondForPrincipal.getId();
+			secondForPrincipal.setTiers(eric);
+			return null;
 		});
 
 		// simulation de l'annulation du second for principal
@@ -1100,33 +1015,31 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final ModelAndView mav = handle(request, response);
 		assertNotNull(mav);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// vérification que le second for est bien annulé
-				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
-				assertNotNull(secondForPrincipal);
-				assertTrue(secondForPrincipal.isAnnule());
+		doInNewTransactionAndSession(status -> {
+			// vérification que le second for est bien annulé
+			final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+			assertNotNull(secondForPrincipal);
+			assertTrue(secondForPrincipal.isAnnule());
 
-				// vérification que le premier for est bien annulé aussi,,,
-				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-				assertNotNull(premierForPrincipal);
-				assertTrue(premierForPrincipal.isAnnule());
-				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
-				assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
-				assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
+			// vérification que le premier for est bien annulé aussi,,,
+			final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+			assertNotNull(premierForPrincipal);
+			assertTrue(premierForPrincipal.isAnnule());
+			assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
+			assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
+			assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
 
-				// ... et remplacé par un nouveau for ré-ouvert
-				final PersonnePhysique eric = (PersonnePhysique) tiersDAO.get(ids.ericId);
-				final ForFiscalPrincipal reouvert = eric.getDernierForFiscalPrincipal();
-				assertNotNull(reouvert);
-				assertFalse(reouvert.isAnnule());
-				assertEquals(date(1983, 4, 13), reouvert.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, reouvert.getMotifOuverture());
-				assertNull(reouvert.getDateFin());
-				assertNull(reouvert.getMotifFermeture());
-			}
+			// ... et remplacé par un nouveau for ré-ouvert
+			final PersonnePhysique eric = (PersonnePhysique) tiersDAO.get(ids.ericId);
+			final ForFiscalPrincipal reouvert = eric.getDernierForFiscalPrincipal();
+			assertNotNull(reouvert);
+			assertFalse(reouvert.isAnnule());
+			assertEquals(date(1983, 4, 13), reouvert.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, reouvert.getMotifOuverture());
+			assertNull(reouvert.getDateFin());
+			assertNull(reouvert.getMotifFermeture());
+			return null;
 		});
 	}
 
@@ -1143,24 +1056,20 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Un contribuable avec deux fors principaux non-adjacents
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getId();
 
-				// Un contribuable avec deux fors principaux non-adjacents
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getId();
+			ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28),
+			                                                         MotifFor.DEPART_HC, MockCommune.Lausanne);
+			ids.premierForPrincipalId = premierForPrincipal.getId();
+			premierForPrincipal.setTiers(eric);
 
-				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28),
-				                                                         MotifFor.DEPART_HC, MockCommune.Lausanne);
-				ids.premierForPrincipalId = premierForPrincipal.getId();
-				premierForPrincipal.setTiers(eric);
-
-				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 11, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
-				ids.secondForPrincipalId = secondForPrincipal.getId();
-				secondForPrincipal.setTiers(eric);
-				return null;
-			}
+			ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 11, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+			ids.secondForPrincipalId = secondForPrincipal.getId();
+			secondForPrincipal.setTiers(eric);
+			return null;
 		});
 
 		// simulation de l'annulation du second for principal
@@ -1171,23 +1080,21 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final ModelAndView mav = handle(request, response);
 		assertNotNull(mav);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// vérification que le second for est bien annulé
-				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
-				assertNotNull(secondForPrincipal);
-				assertTrue(secondForPrincipal.isAnnule());
+		doInNewTransactionAndSession(status -> {
+			// vérification que le second for est bien annulé
+			final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+			assertNotNull(secondForPrincipal);
+			assertTrue(secondForPrincipal.isAnnule());
 
-				// vérification que le premier for n'est pas ré-ouvert
-				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-				assertNotNull(premierForPrincipal);
-				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
-				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
-				assertEquals(date(2008, 2, 28), premierForPrincipal.getDateFin());
-				assertEquals(MotifFor.DEPART_HC, premierForPrincipal.getMotifFermeture());
-				assertFalse(premierForPrincipal.isAnnule());
-			}
+			// vérification que le premier for n'est pas ré-ouvert
+			final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+			assertNotNull(premierForPrincipal);
+			assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
+			assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
+			assertEquals(date(2008, 2, 28), premierForPrincipal.getDateFin());
+			assertEquals(MotifFor.DEPART_HC, premierForPrincipal.getMotifFermeture());
+			assertFalse(premierForPrincipal.isAnnule());
+			return null;
 		});
 	}
 
@@ -1203,15 +1110,12 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				ids.tiers = pp.getNumero();
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, date(2005, 10, 31), MotifFor.DEPART_HS, MockCommune.GrangesMarnand);
-				ids.ffp = ffp.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			ids.tiers = pp.getNumero();
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, date(2005, 10, 31), MotifFor.DEPART_HS, MockCommune.GrangesMarnand);
+			ids.ffp = ffp.getId();
+			return null;
 		});
 
 		// mise-à-jour du motif de fermeture d'un for principal
@@ -1231,19 +1135,17 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(ids.tiers);
-				assertNotNull(tiers);
-				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.principauxPP.size());
-				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
-				assertNotNull(ffp);
-				assertEquals(date(2005, 10, 31), ffp.getDateFin());
-				assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture()); // le motif doit avoir changé
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ids.tiers);
+			assertNotNull(tiers);
+			final ForsParType fors = tiers.getForsParType(false);
+			assertEquals(1, fors.principauxPP.size());
+			final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
+			assertNotNull(ffp);
+			assertEquals(date(2005, 10, 31), ffp.getDateFin());
+			assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture()); // le motif doit avoir changé;
+			return null;
 		});
 	}
 
@@ -1259,15 +1161,12 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				ids.tiers = pp.getNumero();
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2004, 5, 1), MotifFor.INDETERMINE, date(2005, 10, 31), MotifFor.DEPART_HS, MockCommune.GrangesMarnand);
-				ids.ffp = ffp.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			ids.tiers = pp.getNumero();
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2004, 5, 1), MotifFor.INDETERMINE, date(2005, 10, 31), MotifFor.DEPART_HS, MockCommune.GrangesMarnand);
+			ids.ffp = ffp.getId();
+			return null;
 		});
 
 		// mise-à-jour du motif de fermeture d'un for principal
@@ -1287,20 +1186,18 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(ids.tiers);
-				assertNotNull(tiers);
-				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.principauxPP.size());
-				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
-				assertNotNull(ffp);
-				assertEquals(date(2005, 10, 31), ffp.getDateFin());
-				assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture()); // le motif d'ouverture est toujours le même
-				assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture()); // le motif de fermeture doit avoir changé
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ids.tiers);
+			assertNotNull(tiers);
+			final ForsParType fors = tiers.getForsParType(false);
+			assertEquals(1, fors.principauxPP.size());
+			final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
+			assertNotNull(ffp);
+			assertEquals(date(2005, 10, 31), ffp.getDateFin());
+			assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture()); // le motif d'ouverture est toujours le même
+			assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture()); // le motif de fermeture doit avoir changé;
+			return null;
 		});
 	}
 
@@ -1316,17 +1213,14 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				ids.tiers = pp.getNumero();
-				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, date(2005, 10, 31),
-				                                                 MotifFor.MAJORITE, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
-				ids.ffs = ffs.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			ids.tiers = pp.getNumero();
+			addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
+			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, date(2005, 10, 31),
+			                                                 MotifFor.MAJORITE, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
+			ids.ffs = ffs.getId();
+			return null;
 		});
 
 		// mise-à-jour du motif de fermeture d'un for secondaire
@@ -1348,19 +1242,17 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(ids.tiers);
-				assertNotNull(tiers);
-				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.secondaires.size());
-				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
-				assertNotNull(ffs);
-				assertEquals(date(2005, 10, 31), ffs.getDateFin());
-				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture()); // le motif doit avoir changé
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ids.tiers);
+			assertNotNull(tiers);
+			final ForsParType fors = tiers.getForsParType(false);
+			assertEquals(1, fors.secondaires.size());
+			final ForFiscalSecondaire ffs = fors.secondaires.get(0);
+			assertNotNull(ffs);
+			assertEquals(date(2005, 10, 31), ffs.getDateFin());
+			assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture()); // le motif doit avoir changé;
+			return null;
 		});
 	}
 
@@ -1376,16 +1268,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				ids.tiers = pp.getNumero();
-				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
-				ids.ffs = ffs.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			ids.tiers = pp.getNumero();
+			addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
+			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
+			ids.ffs = ffs.getId();
+			return null;
 		});
 
 		// mise-à-jour du motif d'ouverture d'un for secondaire
@@ -1405,19 +1294,17 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(ids.tiers);
-				assertNotNull(tiers);
-				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.secondaires.size());
-				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
-				assertNotNull(ffs);
-				assertEquals(date(2004, 5, 1), ffs.getDateDebut());
-				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(MotifFor.FUSION_COMMUNES, ffs.getMotifOuverture()); // le motif doit avoir changé
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ids.tiers);
+			assertNotNull(tiers);
+			final ForsParType fors = tiers.getForsParType(false);
+			assertEquals(1, fors.secondaires.size());
+			final ForFiscalSecondaire ffs = fors.secondaires.get(0);
+			assertNotNull(ffs);
+			assertEquals(date(2004, 5, 1), ffs.getDateDebut());
+			assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifFor.FUSION_COMMUNES, ffs.getMotifOuverture()); // le motif doit avoir changé;
+			return null;
 		});
 	}
 
@@ -1433,17 +1320,14 @@ public class ForsControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
-				ids.tiers = pp.getNumero();
-				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
-				final ForFiscalAutreElementImposable ffaei = addForAutreElementImposable(pp, date(2004, 5, 1), date(2005, 10, 31), MockCommune.ChateauDoex, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                                   MotifRattachement.CREANCIER_HYPOTHECAIRE);
-				ids.ffaei = ffaei.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+			ids.tiers = pp.getNumero();
+			addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
+			final ForFiscalAutreElementImposable ffaei = addForAutreElementImposable(pp, date(2004, 5, 1), date(2005, 10, 31), MockCommune.ChateauDoex, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			                                                                         MotifRattachement.CREANCIER_HYPOTHECAIRE);
+			ids.ffaei = ffaei.getId();
+			return null;
 		});
 
 		// mise-à-jour du motif de fermeture d'un for secondaire
@@ -1463,19 +1347,17 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers tiers = tiersDAO.get(ids.tiers);
-				assertNotNull(tiers);
-				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.autreElementImpot.size());
-				final ForFiscalAutreElementImposable ffaei = fors.autreElementImpot.get(0);
-				assertNotNull(ffaei);
-				assertEquals(date(2005, 10, 31), ffaei.getDateFin());
-				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffaei.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(MotifFor.FUSION_COMMUNES, ffaei.getMotifFermeture()); // le motif doit avoir changé
-			}
+		doInNewTransactionAndSession(status -> {
+			final Tiers tiers = tiersDAO.get(ids.tiers);
+			assertNotNull(tiers);
+			final ForsParType fors = tiers.getForsParType(false);
+			assertEquals(1, fors.autreElementImpot.size());
+			final ForFiscalAutreElementImposable ffaei = fors.autreElementImpot.get(0);
+			assertNotNull(ffaei);
+			assertEquals(date(2005, 10, 31), ffaei.getDateFin());
+			assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffaei.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(MotifFor.FUSION_COMMUNES, ffaei.getMotifFermeture()); // le motif doit avoir changé;
+			return null;
 		});
 	}
 
@@ -1488,16 +1370,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final RegDate dateDebutInitiale = date(2015, 5, 12);
 		final RegDate dateDebutNouvelle = date(2015, 3, 1);
 
-		final long pmId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebutInitiale, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebutInitiale, null, "Tralala SA");
-				addRegimeFiscalCH(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebutInitiale, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebutInitiale, null, "Tralala SA");
+			addRegimeFiscalCH(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			return entreprise.getNumero();
 		});
 
 		// mise-à-jour du motif de fermeture d'un for secondaire
@@ -1520,75 +1399,73 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				assertNotNull(entreprise);
-				final ForsParType fors = entreprise.getForsParType(false);
-				assertEquals(1, fors.principauxPM.size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			assertNotNull(entreprise);
+			final ForsParType fors = entreprise.getForsParType(false);
+			assertEquals(1, fors.principauxPM.size());
 
-				// on vérifie l'existence du for principal
-				final ForFiscalPrincipalPM ffp = fors.principauxPM.get(0);
-				assertNotNull(ffp);
-				assertEquals(dateDebutNouvelle, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
-				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
-				assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
-				assertNull(ffp.getMotifFermeture());
-				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
-				assertNull(ffp.getMotifFermeture());
+			// on vérifie l'existence du for principal
+			final ForFiscalPrincipalPM ffp = fors.principauxPM.get(0);
+			assertNotNull(ffp);
+			assertEquals(dateDebutNouvelle, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+			assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+			assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+			assertNull(ffp.getMotifFermeture());
+			assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+			assertNull(ffp.getMotifFermeture());
 
-				// et la modification des régimes fiscaux
-				final Set<RegimeFiscal> tousRegimes = entreprise.getRegimesFiscaux();
-				final List<RegimeFiscal> regimesVD = new ArrayList<>(tousRegimes.size());
-				final List<RegimeFiscal> regimesCH = new ArrayList<>(tousRegimes.size());
-				for (RegimeFiscal rf : tousRegimes) {
-					if (rf.getPortee() == RegimeFiscal.Portee.VD) {
-						regimesVD.add(rf);
-					}
-					else if (rf.getPortee() == RegimeFiscal.Portee.CH) {
-						regimesCH.add(rf);
-					}
-					else {
-						Assert.fail("Portée inconnue : " + rf.getPortee());
-					}
+			// et la modification des régimes fiscaux
+			final Set<RegimeFiscal> tousRegimes = entreprise.getRegimesFiscaux();
+			final List<RegimeFiscal> regimesVD = new ArrayList<>(tousRegimes.size());
+			final List<RegimeFiscal> regimesCH = new ArrayList<>(tousRegimes.size());
+			for (RegimeFiscal rf : tousRegimes) {
+				if (rf.getPortee() == RegimeFiscal.Portee.VD) {
+					regimesVD.add(rf);
 				}
-				final Comparator<RegimeFiscal> comparateur = new DateRangeComparator<>();
-				Collections.sort(regimesCH, comparateur);
-				Collections.sort(regimesVD, comparateur);
-				Assert.assertEquals(2, regimesCH.size());
-				Assert.assertEquals(2, regimesVD.size());
-				{
-					final RegimeFiscal rf = regimesCH.get(0);
-					Assert.assertFalse(rf.isAnnule());
-					Assert.assertEquals(dateDebutNouvelle, rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				else if (rf.getPortee() == RegimeFiscal.Portee.CH) {
+					regimesCH.add(rf);
 				}
-				{
-					final RegimeFiscal rf = regimesCH.get(1);
-					Assert.assertTrue(rf.isAnnule());
-					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
-				}
-				{
-					final RegimeFiscal rf = regimesVD.get(0);
-					Assert.assertFalse(rf.isAnnule());
-					Assert.assertEquals(dateDebutNouvelle, rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
-				}
-				{
-					final RegimeFiscal rf = regimesVD.get(1);
-					Assert.assertTrue(rf.isAnnule());
-					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				else {
+					Assert.fail("Portée inconnue : " + rf.getPortee());
 				}
 			}
+			final Comparator<RegimeFiscal> comparateur = new DateRangeComparator<>();
+			Collections.sort(regimesCH, comparateur);
+			Collections.sort(regimesVD, comparateur);
+			Assert.assertEquals(2, regimesCH.size());
+			Assert.assertEquals(2, regimesVD.size());
+			{
+				final RegimeFiscal rf = regimesCH.get(0);
+				Assert.assertFalse(rf.isAnnule());
+				Assert.assertEquals(dateDebutNouvelle, rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			{
+				final RegimeFiscal rf = regimesCH.get(1);
+				Assert.assertTrue(rf.isAnnule());
+				Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			{
+				final RegimeFiscal rf = regimesVD.get(0);
+				Assert.assertFalse(rf.isAnnule());
+				Assert.assertEquals(dateDebutNouvelle, rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			{
+				final RegimeFiscal rf = regimesVD.get(1);
+				Assert.assertTrue(rf.isAnnule());
+				Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			return null;
 		});
 	}
 
@@ -1601,16 +1478,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 		final RegDate dateDebutInitiale = date(2015, 5, 12);
 		final RegDate dateDebutNouvelle = date(2004, 3, 1);
 
-		final long pmId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebutInitiale, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebutInitiale, null, "Tralala SA");
-				addRegimeFiscalCH(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebutInitiale, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebutInitiale, null, "Tralala SA");
+			addRegimeFiscalCH(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			return entreprise.getNumero();
 		});
 
 		// mise-à-jour du motif de fermeture d'un for secondaire
@@ -1633,75 +1507,73 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(bindingResult);
 		assertEquals(0, bindingResult.getErrorCount());
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				assertNotNull(entreprise);
-				final ForsParType fors = entreprise.getForsParType(false);
-				assertEquals(1, fors.principauxPM.size());
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			assertNotNull(entreprise);
+			final ForsParType fors = entreprise.getForsParType(false);
+			assertEquals(1, fors.principauxPM.size());
 
-				// on vérifie l'existence du for principal
-				final ForFiscalPrincipalPM ffp = fors.principauxPM.get(0);
-				assertNotNull(ffp);
-				assertEquals(dateDebutNouvelle, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
-				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
-				assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
-				assertNull(ffp.getMotifFermeture());
-				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
-				assertNull(ffp.getMotifFermeture());
+			// on vérifie l'existence du for principal
+			final ForFiscalPrincipalPM ffp = fors.principauxPM.get(0);
+			assertNotNull(ffp);
+			assertEquals(dateDebutNouvelle, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+			assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+			assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+			assertNull(ffp.getMotifFermeture());
+			assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+			assertNull(ffp.getMotifFermeture());
 
-				// et la modification des régimes fiscaux
-				final Set<RegimeFiscal> tousRegimes = entreprise.getRegimesFiscaux();
-				final List<RegimeFiscal> regimesVD = new ArrayList<>(tousRegimes.size());
-				final List<RegimeFiscal> regimesCH = new ArrayList<>(tousRegimes.size());
-				for (RegimeFiscal rf : tousRegimes) {
-					if (rf.getPortee() == RegimeFiscal.Portee.VD) {
-						regimesVD.add(rf);
-					}
-					else if (rf.getPortee() == RegimeFiscal.Portee.CH) {
-						regimesCH.add(rf);
-					}
-					else {
-						Assert.fail("Portée inconnue : " + rf.getPortee());
-					}
+			// et la modification des régimes fiscaux
+			final Set<RegimeFiscal> tousRegimes = entreprise.getRegimesFiscaux();
+			final List<RegimeFiscal> regimesVD = new ArrayList<>(tousRegimes.size());
+			final List<RegimeFiscal> regimesCH = new ArrayList<>(tousRegimes.size());
+			for (RegimeFiscal rf : tousRegimes) {
+				if (rf.getPortee() == RegimeFiscal.Portee.VD) {
+					regimesVD.add(rf);
 				}
-				final Comparator<RegimeFiscal> comparateur = new DateRangeComparator<>();
-				Collections.sort(regimesCH, comparateur);
-				Collections.sort(regimesVD, comparateur);
-				Assert.assertEquals(2, regimesCH.size());
-				Assert.assertEquals(2, regimesVD.size());
-				{
-					final RegimeFiscal rf = regimesCH.get(0);
-					Assert.assertFalse(rf.isAnnule());
-					Assert.assertEquals(date(2009, 1, 1), rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				else if (rf.getPortee() == RegimeFiscal.Portee.CH) {
+					regimesCH.add(rf);
 				}
-				{
-					final RegimeFiscal rf = regimesCH.get(1);
-					Assert.assertTrue(rf.isAnnule());
-					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
-				}
-				{
-					final RegimeFiscal rf = regimesVD.get(0);
-					Assert.assertFalse(rf.isAnnule());
-					Assert.assertEquals(date(2009, 1, 1), rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
-				}
-				{
-					final RegimeFiscal rf = regimesVD.get(1);
-					Assert.assertTrue(rf.isAnnule());
-					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
-					Assert.assertNull(rf.getDateFin());
-					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				else {
+					Assert.fail("Portée inconnue : " + rf.getPortee());
 				}
 			}
+			final Comparator<RegimeFiscal> comparateur = new DateRangeComparator<>();
+			Collections.sort(regimesCH, comparateur);
+			Collections.sort(regimesVD, comparateur);
+			Assert.assertEquals(2, regimesCH.size());
+			Assert.assertEquals(2, regimesVD.size());
+			{
+				final RegimeFiscal rf = regimesCH.get(0);
+				Assert.assertFalse(rf.isAnnule());
+				Assert.assertEquals(date(2009, 1, 1), rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			{
+				final RegimeFiscal rf = regimesCH.get(1);
+				Assert.assertTrue(rf.isAnnule());
+				Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			{
+				final RegimeFiscal rf = regimesVD.get(0);
+				Assert.assertFalse(rf.isAnnule());
+				Assert.assertEquals(date(2009, 1, 1), rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			{
+				final RegimeFiscal rf = regimesVD.get(1);
+				Assert.assertTrue(rf.isAnnule());
+				Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+			}
+			return null;
 		});
 	}
 

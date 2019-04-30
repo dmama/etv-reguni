@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -62,76 +61,63 @@ public class EvenementCediServiceTest extends BusinessTest {
 	public void testModifierInformationsPersonnelles() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 
 
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2008);
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2008);
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de scan de DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RetourDI scan = new RetourDI();
-				scan.setNoContribuable(id.intValue());
-				scan.setEmail("zuzu@gmail.com");
-				scan.setIban("CFE2145000321457");
-				scan.setNoMobile("0789651243");
-				scan.setNoTelephone("0215478936");
-				scan.setTitulaireCompte("Famille devel");
-				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
-				scan.setPeriodeFiscale(2008);
-				scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
-				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan, Collections.emptyMap());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final RetourDI scan = new RetourDI();
+			scan.setNoContribuable(id.intValue());
+			scan.setEmail("zuzu@gmail.com");
+			scan.setIban("CFE2145000321457");
+			scan.setNoMobile("0789651243");
+			scan.setNoTelephone("0215478936");
+			scan.setTitulaireCompte("Famille devel");
+			scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
+			scan.setPeriodeFiscale(2008);
+			scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
+			scan.setNoSequenceDI(1);
+			service.onRetourDI(scan, Collections.emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
+			assertEquals("0215478936", eric.getNumeroTelephonePrive());
+			assertEquals("0789651243", eric.getNumeroTelephonePortable());
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
-				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
-				assertEquals("0215478936", eric.getNumeroTelephonePrive());
-				assertEquals("0789651243", eric.getNumeroTelephonePortable());
+			final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+			assertNotNull(coords);
+			assertEquals("Famille devel", coords.getTitulaire());
 
-				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
-				assertNotNull(coords);
-				assertEquals("Famille devel", coords.getTitulaire());
+			final CompteBancaire compteBancaire = coords.getCompteBancaire();
+			assertNotNull(compteBancaire);
+			assertEquals("CFE2145000321457", compteBancaire.getIban());
 
-				final CompteBancaire compteBancaire = coords.getCompteBancaire();
-				assertNotNull(compteBancaire);
-				assertEquals("CFE2145000321457", compteBancaire.getIban());
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
-				
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, declaration.getModeleDocument().getTypeDocument());
-
-				return null;
-			}
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, declaration.getModeleDocument().getTypeDocument());
+			return null;
 		});
 	}
 
@@ -142,76 +128,63 @@ public class EvenementCediServiceTest extends BusinessTest {
 		assertEquals("La valeur de la constante a changé, le test doit être modifié", 35, LengthConstants.TIERS_NUMTEL);
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 
 
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2008);
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2008);
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de scan de DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RetourDI scan = new RetourDI();
-				scan.setNoContribuable(id.intValue());
-				scan.setEmail("Maison: zuzu@gmail.com    Boulot: toto@monentreprise.ch");
-				scan.setIban("CFE2145000321457    ");
-				scan.setNoMobile    ("Moi 0789651243    Ma copine 0791234567");
-				scan.setNoTelephone ("Rez: 0215478936 A l'étage tout en haut: 0213456789");
-				scan.setTitulaireCompte("Famille  devel");
-				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
-				scan.setPeriodeFiscale(2008);
-				scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
-				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan, Collections.emptyMap());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final RetourDI scan = new RetourDI();
+			scan.setNoContribuable(id.intValue());
+			scan.setEmail("Maison: zuzu@gmail.com    Boulot: toto@monentreprise.ch");
+			scan.setIban("CFE2145000321457    ");
+			scan.setNoMobile("Moi 0789651243    Ma copine 0791234567");
+			scan.setNoTelephone("Rez: 0215478936 A l'étage tout en haut: 0213456789");
+			scan.setTitulaireCompte("Famille  devel");
+			scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
+			scan.setPeriodeFiscale(2008);
+			scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
+			scan.setNoSequenceDI(1);
+			service.onRetourDI(scan, Collections.emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			assertEquals("Maison: zuzu@gmail.com Boulot: toto@monentreprise.ch", eric.getAdresseCourrierElectronique());
+			assertEquals("Rez: 0215478936 A l'étage tout en h", eric.getNumeroTelephonePrive());
+			assertEquals("Moi 0789651243 Ma copine 0791234567", eric.getNumeroTelephonePortable());
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
-				assertEquals("Maison: zuzu@gmail.com Boulot: toto@monentreprise.ch", eric.getAdresseCourrierElectronique());
-				assertEquals("Rez: 0215478936 A l'étage tout en h", eric.getNumeroTelephonePrive());
-				assertEquals("Moi 0789651243 Ma copine 0791234567", eric.getNumeroTelephonePortable());
+			final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+			assertNotNull(coords);
+			assertEquals("Famille devel", coords.getTitulaire());
 
-				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
-				assertNotNull(coords);
-				assertEquals("Famille devel", coords.getTitulaire());
+			final CompteBancaire compteBancaire = coords.getCompteBancaire();
+			assertNotNull(compteBancaire);
+			assertEquals("CFE2145000321457", compteBancaire.getIban());
 
-				final CompteBancaire compteBancaire = coords.getCompteBancaire();
-				assertNotNull(compteBancaire);
-				assertEquals("CFE2145000321457", compteBancaire.getIban());
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
-
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, declaration.getModeleDocument().getTypeDocument());
-
-				return null;
-			}
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, declaration.getModeleDocument().getTypeDocument());
+			return null;
 		});
 	}
 
@@ -251,61 +224,51 @@ public class EvenementCediServiceTest extends BusinessTest {
 	private void doTestModificationIban(final String ibanInitial, final String nouvelIban, final boolean replacementExpected) throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2008 = pfDao.getPeriodeFiscaleByYear(2008);
+			final ModeleDocument declarationComplete2008 = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode2008, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 
-				final PeriodeFiscale periode2008 = pfDao.getPeriodeFiscaleByYear(2008);
-				final ModeleDocument declarationComplete2008 = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode2008, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2008);
 
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationComplete2008);
-
-				// le numéro présent en base avant réception du nouveau
-				if (StringUtils.isNotBlank(ibanInitial)) {
-					eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, ibanInitial, null));
-				}
-
-				return eric.getNumero();
+			// le numéro présent en base avant réception du nouveau
+			if (StringUtils.isNotBlank(ibanInitial)) {
+				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, ibanInitial, null));
 			}
+			;
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de scan de DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RetourDI scan = new RetourDI();
-				scan.setNoContribuable(id.intValue());
-				scan.setIban(nouvelIban);
-				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
-				scan.setPeriodeFiscale(2008);
-				scan.setNoSequenceDI(1);
-				scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
-				service.onRetourDI(scan, Collections.emptyMap());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final RetourDI scan = new RetourDI();
+			scan.setNoContribuable(id.intValue());
+			scan.setIban(nouvelIban);
+			scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
+			scan.setPeriodeFiscale(2008);
+			scan.setNoSequenceDI(1);
+			scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
+			service.onRetourDI(scan, Collections.emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
-				if ((!replacementExpected && ibanInitial == null) || (replacementExpected && nouvelIban == null)) {
-					assertNull(eric.getCoordonneesFinancieresCourantes());
-				}
-				else {
-					final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
-					assertNotNull(coords);
-					final CompteBancaire compteBancaire = coords.getCompteBancaire();
-					assertNotNull(compteBancaire);
-					assertEquals(replacementExpected ? nouvelIban : ibanInitial, compteBancaire.getIban());
-				}
-				return null;
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			if ((!replacementExpected && ibanInitial == null) || (replacementExpected && nouvelIban == null)) {
+				assertNull(eric.getCoordonneesFinancieresCourantes());
 			}
+			else {
+				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+				assertNotNull(coords);
+				final CompteBancaire compteBancaire = coords.getCompteBancaire();
+				assertNotNull(compteBancaire);
+				assertEquals(replacementExpected ? nouvelIban : ibanInitial, compteBancaire.getIban());
+			}
+			return null;
 		});
 	}
 
@@ -315,77 +278,64 @@ public class EvenementCediServiceTest extends BusinessTest {
 	public void testModifierInformationsPersonnellesPourDiAnnulee() throws Exception {
 
 		// Création d'un contribuable ordinaire et de sa DI
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
+			final ModeleDocument declarationComplete2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2014);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2014);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2014);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2014);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2014);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2014);
 
-				final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
-				final ModeleDocument declarationComplete2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2014);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2014);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2014);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2014);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2014);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2014);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				final DeclarationImpotOrdinaire d2014_1 = addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2014);
-				d2014_1.setAnnule(true);
-				addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2014);
-
-
-				return eric.getNumero();
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			final DeclarationImpotOrdinaire d2014_1 = addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                              declarationComplete2014);
+			d2014_1.setAnnule(true);
+			addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2014);
+			return eric.getNumero();
 		});
 
 		// Simule la réception d'un événement de scan de DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RetourDI scan = new RetourDI();
-				scan.setNoContribuable(id.intValue());
-				scan.setEmail("zuzu@gmail.com");
-				scan.setIban("CFE2145000321457");
-				scan.setNoMobile("0789651243");
-				scan.setNoTelephone("0215478936");
-				scan.setTitulaireCompte("Famille devel");
-				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
-				scan.setPeriodeFiscale(2014);
-				scan.setNoSequenceDI(1);
-				scan.setDateTraitement(RegDate.get(2015, 3, 1).asJavaDate());
-				service.onRetourDI(scan, Collections.emptyMap());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final RetourDI scan = new RetourDI();
+			scan.setNoContribuable(id.intValue());
+			scan.setEmail("zuzu@gmail.com");
+			scan.setIban("CFE2145000321457");
+			scan.setNoMobile("0789651243");
+			scan.setNoTelephone("0215478936");
+			scan.setTitulaireCompte("Famille devel");
+			scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
+			scan.setPeriodeFiscale(2014);
+			scan.setNoSequenceDI(1);
+			scan.setDateTraitement(RegDate.get(2015, 3, 1).asJavaDate());
+			service.onRetourDI(scan, Collections.emptyMap());
+			return null;
 		});
 
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
+			assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
+			assertEquals("0215478936", eric.getNumeroTelephonePrive());
+			assertEquals("0789651243", eric.getNumeroTelephonePortable());
 
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
-				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
-				assertEquals("0215478936", eric.getNumeroTelephonePrive());
-				assertEquals("0789651243", eric.getNumeroTelephonePortable());
+			final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+			assertNotNull(coords);
+			assertEquals("Famille devel", coords.getTitulaire());
 
-				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
-				assertNotNull(coords);
-				assertEquals("Famille devel", coords.getTitulaire());
+			final CompteBancaire compteBancaire = coords.getCompteBancaire();
+			assertNotNull(compteBancaire);
+			assertEquals("CFE2145000321457", compteBancaire.getIban());
 
-				final CompteBancaire compteBancaire = coords.getCompteBancaire();
-				assertNotNull(compteBancaire);
-				assertEquals("CFE2145000321457", compteBancaire.getIban());
+			final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2014, false);
+			assertNotNull(list);
+			assertEquals(1, list.size());
 
-				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2014, false);
-				assertNotNull(list);
-				assertEquals(1, list.size());
-
-				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				assertEquals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, declaration.getModeleDocument().getTypeDocument());
-				return null;
-			}
+			final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+			assertEquals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, declaration.getModeleDocument().getTypeDocument());
+			return null;
 		});
 	}
 

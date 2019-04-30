@@ -6,7 +6,6 @@ import java.util.Set;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -23,6 +22,9 @@ import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class EvenementCivilEchTranslatorTest extends BusinessTest {
 	
@@ -84,23 +86,20 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		Assert.assertNotNull(translator.getStrategy(new EvenementCivilEchTranslatorImpl.EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.ANNULATION)));
 		Assert.assertFalse(appel.booleanValue());
 		
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EvenementCivilEch evtCivil = new EvenementCivilEch();
-				evtCivil.setId(12367L);
-				evtCivil.setType(TypeEvenementCivilEch.TESTING);
-				evtCivil.setAction(ActionEvenementCivilEch.ANNULATION);
-				evtCivil.setEtat(EtatEvenementCivil.A_TRAITER);
-				evtCivil.setDateEvenement(RegDate.get());
-				evtCivil.setNumeroIndividu(12L);
-				final EvenementCivilEch evt = hibernateTemplate.merge(evtCivil);
-				
-				final EvenementCivilInterne interne = translator.toInterne(evt, new EvenementCivilOptions(true));
-				Assert.assertNull(interne);
-				Assert.assertTrue(appel.booleanValue());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evtCivil = new EvenementCivilEch();
+			evtCivil.setId(12367L);
+			evtCivil.setType(TypeEvenementCivilEch.TESTING);
+			evtCivil.setAction(ActionEvenementCivilEch.ANNULATION);
+			evtCivil.setEtat(EtatEvenementCivil.A_TRAITER);
+			evtCivil.setDateEvenement(RegDate.get());
+			evtCivil.setNumeroIndividu(12L);
+			final EvenementCivilEch evt = hibernateTemplate.merge(evtCivil);
+
+			final EvenementCivilInterne interne = translator.toInterne(evt, new EvenementCivilOptions(true));
+			assertNull(interne);
+			assertTrue(appel.booleanValue());
+			return null;
 		});
 	}
 }

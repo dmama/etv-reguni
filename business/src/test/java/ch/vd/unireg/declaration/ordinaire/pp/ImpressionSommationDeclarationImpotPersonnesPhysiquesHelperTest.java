@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -207,13 +206,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		// Test Sommation
 		doInNewTransaction(status -> {
 			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-			FichierImpressionDocument fichier;
-			try {
-				fichier = impressionSommationDIHelper.remplitSommationDI(params);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
+			FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
 			assertEquals("On devrait avoir 2 documents pour les séparés", 2, fichier.getFichierImpression().getDocumentArray().length);
 			assertNotNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
 			assertNotNull(fichier.getFichierImpression().getDocumentArray(1).getInfoDocument().getSepares());
@@ -242,13 +235,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 
 		doInNewTransaction(status -> {
 			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-			FichierImpressionDocument fichier;
-			try {
-				fichier = impressionSommationDIHelper.remplitSommationDI(params);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
+			FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
 			assertEquals("Le Sentier", fichier.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getLocaliteExpedition());
 			return null;
 		});
@@ -276,13 +263,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 
 		doInNewTransaction(status -> {
 			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-			FichierImpressionDocument fichier;
-			try {
-				fichier = impressionSommationDIHelper.remplitSommationDI(params);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
+			FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
 			assertEquals("Vevey", fichier.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getLocaliteExpedition());
 			return null;
 		});
@@ -322,25 +303,22 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// test de construction des données des sommations à envoyer à l'éditique
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// di 2011 -> sans code de contrôle sur la sommation
-				{
-					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diSans);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-					assertNull(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
-				}
-				// di 2012 -> avec code de contrôle sur la sommation
-				{
-					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diAvec);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-					assertEquals("J75397", doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			// di 2011 -> sans code de contrôle sur la sommation
+			{
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diSans);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+				assertNull(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
 			}
+			// di 2012 -> avec code de contrôle sur la sommation
+			{
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diAvec);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+				assertEquals("J75397", doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
+			}
+			return null;
 		});
 	}
 
@@ -398,29 +376,17 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// test de construction des données des sommations à envoyer à l'éditique
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			{
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diId);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+				FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
 
-				{
-					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diId);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-					FichierImpressionDocument fichier;
-					try {
-						fichier = impressionSommationDIHelper.remplitSommationDI(params);
-					}
-					catch (EditiqueException e) {
-						throw new RuntimeException(e);
-
-					}
-
-					// On ne doit avoir qu'une seule sommation et pas 2 sommations séparés
-					assertEquals("On devrait avoir 1 document pour le survivant", 1, fichier.getFichierImpression().getDocumentArray().length);
-					assertNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
-				}
-
-				return null;
+				// On ne doit avoir qu'une seule sommation et pas 2 sommations séparés
+				assertEquals("On devrait avoir 1 document pour le survivant", 1, fichier.getFichierImpression().getDocumentArray().length);
+				assertNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
 			}
+			return null;
 		});
 
 	}
@@ -457,26 +423,23 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// test de construction des données des sommations à envoyer à l'éditique
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// di 2011 -> sans émolument
-				{
-					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diSans);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-					assertFalse(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
-				}
-				// di 2012 -> avec émolument de 46 francs
-				{
-					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diAvec);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), 46);
-					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-					assertTrue(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
-					assertEquals(46, doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getMontantEmolument());
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			// di 2011 -> sans émolument
+			{
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diSans);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+				assertFalse(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
 			}
+			// di 2012 -> avec émolument de 46 francs
+			{
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diAvec);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), 46);
+				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+				assertTrue(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
+				assertEquals(46, doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getMontantEmolument());
+			}
+			return null;
 		});
 	}
 
@@ -501,16 +464,13 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// sommation de la DI
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-				assertEquals(MockCollectiviteAdministrative.ACI.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				assertEquals(MockCollectiviteAdministrative.ACI.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+			final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+			assertEquals(MockCollectiviteAdministrative.ACI.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+			assertEquals(MockCollectiviteAdministrative.ACI.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+			return null;
 		});
 	}
 
@@ -539,16 +499,13 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// sommation de la DI
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
-				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-				assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+			final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+			assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+			assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+			return null;
 		});
 	}
 }

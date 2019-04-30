@@ -5,7 +5,7 @@ package ch.vd.unireg.metier.assujettissement;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class AssujettissementException extends Exception {
+public class AssujettissementException extends RuntimeException {
 
 	private static final long serialVersionUID = -5347701763768846767L;
 

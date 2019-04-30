@@ -4,7 +4,6 @@ import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessTest;
@@ -58,23 +57,20 @@ public class IdentificationContribuableRequestHandlerV2Test extends BusinessTest
 		// attente de la fin de l'indexation
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
-				request.setNom("Pittet");
-				request.setDateNaissance(new PartialDate(1980, 1, 24));
+		doInNewTransactionAndSession(status -> {
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
+			request.setNom("Pittet");
+			request.setDateNaissance(new PartialDate(1980, 1, 24));
 
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response.getErreur());
-				assertNull(response.getContribuable());
-				assertNull("Pourquoi aucun, il y en a deux...", response.getErreur().getAucun());            // on en a trouvé deux...
-				assertNotNull("Pourquoi pas plusieurs ? il y en a deux, non ?", response.getErreur().getPlusieurs());     // on en a trouvé deux...
-				return null;
-			}
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response.getErreur());
+			assertNull(response.getContribuable());
+			assertNull("Pourquoi aucun, il y en a deux...", response.getErreur().getAucun());            // on en a trouvé deux...
+			assertNotNull("Pourquoi pas plusieurs ? il y en a deux, non ?", response.getErreur().getPlusieurs());     // on en a trouvé deux...;
+			return null;
 		});
 	}
 
@@ -97,21 +93,18 @@ public class IdentificationContribuableRequestHandlerV2Test extends BusinessTest
 		// attente de la fin de l'indexation
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
-				request.setNom("Pittet");
-				request.setDateNaissance(new PartialDate(1980, 1, 24));
+		doInNewTransactionAndSession(status -> {
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest();
+			request.setNom("Pittet");
+			request.setDateNaissance(new PartialDate(1980, 1, 24));
 
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNull(response.getErreur());
-				assertNotNull(response.getContribuable());
-				return null;
-			}
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNull(response.getErreur());
+			assertNotNull(response.getContribuable());
+			return null;
 		});
 	}
 
@@ -136,22 +129,19 @@ public class IdentificationContribuableRequestHandlerV2Test extends BusinessTest
 		globalTiersIndexer.sync();
 
 		// identification
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(null, null, nom, prenom, null, null);
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+		doInNewTransactionAndSession(status -> {
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest(null, null, nom, prenom, null, null);
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNull(response.getErreur());
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNull(response.getErreur());
 
-				final IdentificationContribuableResponse.Contribuable ctb = response.getContribuable();
-				assertNotNull(ctb);
-				assertEquals(StringUtils.abbreviate(prenom, 100), ctb.getPrenom());
-				assertEquals(StringUtils.abbreviate(nom.replaceAll("\\s+", " "), 100), ctb.getNom());
-				return null;
-			}
+			final IdentificationContribuableResponse.Contribuable ctb = response.getContribuable();
+			assertNotNull(ctb);
+			assertEquals(StringUtils.abbreviate(prenom, 100), ctb.getPrenom());
+			assertEquals(StringUtils.abbreviate(nom.replaceAll("\\s+", " "), 100), ctb.getNom());
+			return null;
 		});
 	}
 

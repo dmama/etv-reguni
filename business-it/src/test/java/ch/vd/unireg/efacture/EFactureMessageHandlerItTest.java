@@ -44,7 +44,7 @@ public class EFactureMessageHandlerItTest extends BusinessItTest {
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.setHandler(new EFactureEventHandlerImpl() {
 			@Override
-			public void handle(Demande event) {
+			public void handle(Demande event) throws EFactureException {
 				evenementsRecus.add(event);
 			}
 		});

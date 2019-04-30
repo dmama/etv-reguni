@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement.party.control;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -29,22 +28,16 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getNumero();
-			}
+		final Long idPP = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			return pp.getNumero();
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertPasDeParent(result);
@@ -73,26 +66,20 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppParent = addHabitant(noIndParent);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppParent.getId();
-				addParente(ppFille, ppParent, dateNaissance, null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppParent = addHabitant(noIndParent);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppParent.getId();
+			addParente(ppFille, ppParent, dateNaissance, null);
+			return null;
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertUnParentNonAssujetti(ids.idPere, result);
@@ -121,27 +108,21 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppParent = addHabitant(noIndParent);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppParent.getId();
-				addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
-				addParente(ppFille, ppParent, dateNaissance, null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppParent = addHabitant(noIndParent);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppParent.getId();
+			addForPrincipal(ppParent, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
+			addParente(ppFille, ppParent, dateNaissance, null);
+			return null;
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertTiersAssujetti(ids.idPere, result);
@@ -171,31 +152,24 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndParent);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				addParente(ppFille, ppPere, dateNaissance, null);
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndParent);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			addParente(ppFille, ppPere, dateNaissance, null);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
-				final MenageCommun menage = ensemble.getMenage();
-				ids.idMenagePere = menage.getId();
-
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 5, 5), null);
+			final MenageCommun menage = ensemble.getMenage();
+			ids.idMenagePere = menage.getId();
+			return null;
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertUnParentWithMCNonAssujetti(ids.idPere, ids.idMenagePere, result);
@@ -225,32 +199,25 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndParent);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				addParente(ppFille, ppPere, dateNaissance, null);
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndParent);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			addParente(ppFille, ppPere, dateNaissance, null);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
-				final MenageCommun menage = ensemble.getMenage();
-				ids.idMenagePere = menage.getId();
-				addForPrincipal(menage, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
-
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ppPere, null, date(2000, 1, 5), null);
+			final MenageCommun menage = ensemble.getMenage();
+			ids.idMenagePere = menage.getId();
+			addForPrincipal(menage, date(2000, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Moudon);
+			return null;
 		});
 
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertTiersAssujetti(ids.idMenagePere, result);
@@ -281,29 +248,23 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndPere);
-				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addParente(ppFille, ppPere, dateNaissance, null);
-				addParente(ppFille, ppMere, dateNaissance, null);
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndPere);
+			final PersonnePhysique ppMere = addHabitant(noIndMere);
+			addParente(ppFille, ppPere, dateNaissance, null);
+			addParente(ppFille, ppMere, dateNaissance, null);
 
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
-				return null;
-			}
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			ids.idMere = ppMere.getId();
+			return null;
 		});
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertDeuxParentsNonAssujettis(ids.idPere, ids.idMere, result);
@@ -335,32 +296,26 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndPere);
-				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addParente(ppFille, ppPere, dateNaissance, null);
-				addParente(ppFille, ppMere, dateNaissance, null);
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndPere);
+			final PersonnePhysique ppMere = addHabitant(noIndMere);
+			addParente(ppFille, ppPere, dateNaissance, null);
+			addParente(ppFille, ppMere, dateNaissance, null);
 
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
-				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
-				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
-				ids.idMenagePere = menageCommunPere.getId();
-				return null;
-			}
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			ids.idMere = ppMere.getId();
+			final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
+			final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+			ids.idMenagePere = menageCommunPere.getId();
+			return null;
 		});
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertDeuxParentUnMCNonAssujetti(ids.idPere, ids.idMere, ids.idMenagePere, result);
@@ -394,36 +349,30 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndPere);
-				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addParente(ppFille, ppPere, dateNaissance, null);
-				addParente(ppFille, ppMere, dateNaissance, null);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndPere);
+			final PersonnePhysique ppMere = addHabitant(noIndMere);
+			addParente(ppFille, ppPere, dateNaissance, null);
+			addParente(ppFille, ppMere, dateNaissance, null);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			ids.idMere = ppMere.getId();
 
-				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
-				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
-				ids.idMenagePere = menageCommunPere.getId();
+			final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2006, 7, 8), null);
+			final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+			ids.idMenagePere = menageCommunPere.getId();
 
-				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2006, 7, 8), null);
-				final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
-				ids.idMenageMere = menageCommunMere.getId();
-				return null;
-			}
+			final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2006, 7, 8), null);
+			final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
+			ids.idMenageMere = menageCommunMere.getId();
+			return null;
 		});
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertDeuxParentsDeuxMCNonAssujetti(ids.idPere, ids.idMere, ids.idMenagePere, ids.idMenageMere, result);
@@ -456,38 +405,32 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndPere);
-				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addParente(ppFille, ppPere, dateNaissance, null);
-				addParente(ppFille, ppMere, dateNaissance, null);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndPere);
+			final PersonnePhysique ppMere = addHabitant(noIndMere);
+			addParente(ppFille, ppPere, dateNaissance, null);
+			addParente(ppFille, ppMere, dateNaissance, null);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			ids.idMere = ppMere.getId();
 
-				final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2010, 1, 5), null);
-				final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
-				ids.idMenagePere = menageCommunPere.getId();
-				addForPrincipal(menageCommunPere, date(2010, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
+			final EnsembleTiersCouple ensembleTiersCouplePere = addEnsembleTiersCouple(ppPere, null, date(2010, 1, 5), null);
+			final MenageCommun menageCommunPere = ensembleTiersCouplePere.getMenage();
+			ids.idMenagePere = menageCommunPere.getId();
+			addForPrincipal(menageCommunPere, date(2010, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
 
-				final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2009, 1, 5), null);
-				final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
-				addForPrincipal(menageCommunMere, date(2009, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.idMenageMere = menageCommunMere.getId();
-				return null;
-			}
+			final EnsembleTiersCouple ensembleTiersCoupleMere = addEnsembleTiersCouple(ppMere, null, date(2009, 1, 5), null);
+			final MenageCommun menageCommunMere = ensembleTiersCoupleMere.getMenage();
+			addForPrincipal(menageCommunMere, date(2009, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.idMenageMere = menageCommunMere.getId();
+			return null;
 		});
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertDeuxPArentsWithDeuxMenagesAssujetti(ids.idPere, ids.idMere, ids.idMenagePere, ids.idMenageMere, result);
@@ -520,34 +463,27 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndPere);
-				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addParente(ppFille, ppMere, dateNaissance, null);
-				addParente(ppFille, ppPere, dateNaissance, null);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndPere);
+			final PersonnePhysique ppMere = addHabitant(noIndMere);
+			addParente(ppFille, ppMere, dateNaissance, null);
+			addParente(ppFille, ppPere, dateNaissance, null);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			ids.idMere = ppMere.getId();
 
-				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
-				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
-				ids.idMenage = menageCommun.getId();
-				addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2012, 2, 1), MotifFor.DEPART_HC, MockCommune.Moudon);
-
-				return null;
-			}
+			final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
+			final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+			ids.idMenage = menageCommun.getId();
+			addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2012, 2, 1), MotifFor.DEPART_HC, MockCommune.Moudon);
+			return null;
 		});
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertDeuxParentsWithUnMCNonAssujetti(ids.idPere, ids.idMere, ids.idMenage, result);
@@ -579,34 +515,27 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 		});
 
 		// on crée un habitant vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppFille = addHabitant(noIndFille);
-				final PersonnePhysique ppPere = addHabitant(noIndPere);
-				final PersonnePhysique ppMere = addHabitant(noIndMere);
-				addParente(ppFille, ppPere, dateNaissance, null);
-				addParente(ppFille, ppMere, dateNaissance, null);
-				ids.idFille = ppFille.getId();
-				ids.idPere = ppPere.getId();
-				ids.idMere = ppMere.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique ppFille = addHabitant(noIndFille);
+			final PersonnePhysique ppPere = addHabitant(noIndPere);
+			final PersonnePhysique ppMere = addHabitant(noIndMere);
+			addParente(ppFille, ppPere, dateNaissance, null);
+			addParente(ppFille, ppMere, dateNaissance, null);
+			ids.idFille = ppFille.getId();
+			ids.idPere = ppPere.getId();
+			ids.idMere = ppMere.getId();
 
-				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
-				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
-				ids.idMenage = menageCommun.getId();
-				addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
-
-				return null;
-			}
+			final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(ppPere, ppMere, date(2006, 7, 8), null);
+			final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+			ids.idMenage = menageCommun.getId();
+			addForPrincipal(menageCommun, date(2006, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
+			return null;
 		});
 		final Integer periode = 2012;
 		final ControlRuleForParentPeriode controlRuleForParentPeriode = new ControlRuleForParentPeriode(periode, tiersService, assujettissementService);
-		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
-			@Override
-			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp, null);
-			}
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
+			return controlRuleForParentPeriode.check(pp, null);
 		});
 
 		assertTiersAssujetti(ids.idMenage, result);

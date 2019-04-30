@@ -6,17 +6,16 @@ import java.util.Comparator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
-import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -73,15 +72,12 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_SEUL, null, DATE_RECONCILIATION);
 
 		final MessageCollector collector = buildMessageCollector();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", collector.getErreurs());
+		doInNewTransaction(status -> {
+			reconciliation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", collector.getErreurs());
 
-				reconciliation.handle(collector);
-				return null;
-			}
+			reconciliation.handle(collector);
+			return null;
 		});
 
 		PersonnePhysique habitantReconcilie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_SEPARE_SEUL);
@@ -125,15 +121,12 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION);
 
 		final MessageCollector collector = buildMessageCollector();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", collector.getErreurs());
+		doInNewTransaction(status -> {
+			reconciliation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de la réconciliation.", collector.getErreurs());
 
-				reconciliation.handle(collector);
-				return null;
-			}
+			reconciliation.handle(collector);
+			return null;
 		});
 
 		PersonnePhysique habitantReconcilie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_SEPARE_MARIE);
@@ -183,12 +176,9 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION_FUTURE);
 
 		final MessageCollector collector = buildMessageCollector();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				reconciliation.validate(collector, collector);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			reconciliation.validate(collector, collector);
+			return null;
 		});
 
 		assertEquals("Il devrait y avoir exactement une erreur", 1, collector.getErreurs().size());

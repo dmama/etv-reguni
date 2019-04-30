@@ -3,7 +3,6 @@ package ch.vd.unireg.declaration.ordinaire.pp;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -1081,52 +1080,47 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final RegDate dateDepart = date(2008, 5, 3);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationVaudTax2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2008);
+			ids.periodeId = periode2008.getId();
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationVaudTax2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2008);
-				ids.periodeId = periode2008.getId();
+			// cas #1: un tiers avec une DI libre "honorée" (cas simple)
+			PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.arnoldId = arnold.getNumero();
+			addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addDeclarationImpot(arnold, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
-				// cas #1: un tiers avec une DI libre "honorée" (cas simple)
-				PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.arnoldId = arnold.getNumero();
-				addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addDeclarationImpot(arnold, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
+			// cas #2: un tiers avec une DI libre, parti après (cas d'erreur)
+			PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
+			ids.malkoId = malko.getNumero();
+			addForPrincipal(malko, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2008, 6, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addDeclarationImpot(malko, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
-				// cas #2: un tiers avec une DI libre, parti après (cas d'erreur)
-				PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
-				ids.malkoId = malko.getNumero();
-				addForPrincipal(malko, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2008, 6, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addDeclarationImpot(malko, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
+			// cas #3: un tiers avec une DI libre, jamais parti (cas d'erreur)
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
-				// cas #3: un tiers avec une DI libre, jamais parti (cas d'erreur)
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
+			// cas #4: un tiers avec un DI libre, parti puis revenu (cas de traitement normal)
+			PersonnePhysique salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.salvatoreId = salvatore.getNumero();
+			addForPrincipal(salvatore, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(salvatore, dateDepart.addMonths(6), MotifFor.ARRIVEE_HS, MockCommune.Vevey);
+			addDeclarationImpot(salvatore, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
 
-				// cas #4: un tiers avec un DI libre, parti puis revenu (cas de traitement normal)
-				PersonnePhysique salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.salvatoreId = salvatore.getNumero();
-				addForPrincipal(salvatore, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(salvatore, dateDepart.addMonths(6), MotifFor.ARRIVEE_HS, MockCommune.Vevey);
-				addDeclarationImpot(salvatore, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
-
-				// cas #5: un tiers avec une DI libre, parti avant la date annoncée, puis revenu (cas d'erreur)
-				PersonnePhysique greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.gregId = greg.getNumero();
-				addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2008, 4, 25), MotifFor.DEPART_HS, MockCommune.Lausanne); // date de départ effective != date de départ annoncée
-				addForPrincipal(greg, dateDepart.addMonths(5), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				addDeclarationImpot(greg, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
-
-				return null;
-			}
+			// cas #5: un tiers avec une DI libre, parti avant la date annoncée, puis revenu (cas d'erreur)
+			PersonnePhysique greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.gregId = greg.getNumero();
+			addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2008, 4, 25), MotifFor.DEPART_HS, MockCommune.Lausanne); // date de départ effective != date de départ annoncée
+			addForPrincipal(greg, dateDepart.addMonths(5), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			addDeclarationImpot(greg, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2008);
+			return null;
 		});
 
 		final PeriodeFiscale periode2008 = hibernateTemplate.get(PeriodeFiscale.class, ids.periodeId);

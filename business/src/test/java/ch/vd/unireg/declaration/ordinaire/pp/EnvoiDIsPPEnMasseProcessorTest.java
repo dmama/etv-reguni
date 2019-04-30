@@ -13,7 +13,6 @@ import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
@@ -47,6 +46,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -220,12 +220,9 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testInitCacheModelDocumentInexistant() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addPeriodeFiscale(2007);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addPeriodeFiscale(2007);
+			return null;
 		});
 
 		try {
@@ -248,27 +245,23 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
-				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
+			// Contribuable sans for de gestion
+			PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			ids.ctb = contribuable.getNumero();
 
-				// Contribuable sans for de gestion
-				PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
-				ids.ctb = contribuable.getNumero();
-
-				TacheEnvoiDeclarationImpotPP tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                       TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
-				ids.tache = tache.getId();
-				return null;
-			}
+			TacheEnvoiDeclarationImpotPP tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                       TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			ids.tache = tache.getId();
+			return null;
 		});
 
 		final RegDate dateTraitement = date(2008, 1, 23);
@@ -294,49 +287,45 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un tiers sans déclaration
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.marcId = marc.getNumero();
 
-				// Un tiers sans déclaration
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.marcId = marc.getNumero();
+			// Un tiers avec une déclaration sur toute l'année 2007
+			final PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.jeanId = jean.getNumero();
+			addDeclarationImpot(jean, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
-				// Un tiers avec une déclaration sur toute l'année 2007
-				final PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.jeanId = jean.getNumero();
-				addDeclarationImpot(jean, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+			// Un tiers avec une déclaration sur une partie de l'année 2007
+			final PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.jacquesId = jacques.getNumero();
+			addDeclarationImpot(jacques, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
-				// Un tiers avec une déclaration sur une partie de l'année 2007
-				final PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.jacquesId = jacques.getNumero();
-				addDeclarationImpot(jacques, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+			// Un tiers avec deux déclarations partielles dans l'année 2007
+			final PersonnePhysique pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.pierreId = pierre.getNumero();
+			addDeclarationImpot(pierre, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+			addDeclarationImpot(pierre, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
-				// Un tiers avec deux déclarations partielles dans l'année 2007
-				final PersonnePhysique pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.pierreId = pierre.getNumero();
-				addDeclarationImpot(pierre, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
-				addDeclarationImpot(pierre, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
-
-				// un tiers avec trois déclarations dont une annulée dans l'année 2007
-				final PersonnePhysique alfred = addNonHabitant("Alfred", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.alfredId = alfred.getNumero();
-				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(alfred, periode2007, date(2007, 2, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
-				diAnnulee.setAnnule(true);
-				addDeclarationImpot(alfred, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
-				addDeclarationImpot(alfred, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
-				return null;
-			}
+			// un tiers avec trois déclarations dont une annulée dans l'année 2007
+			final PersonnePhysique alfred = addNonHabitant("Alfred", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.alfredId = alfred.getNumero();
+			final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(alfred, periode2007, date(2007, 2, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+			diAnnulee.setAnnule(true);
+			addDeclarationImpot(alfred, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+			addDeclarationImpot(alfred, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
+			return null;
 		});
 
 		{
@@ -401,47 +390,39 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final int annee = 2012;
 
 		// initialisation des contribuables, fors, tâches
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final PeriodeFiscale periode = addPeriodeFiscale(annee);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode = addPeriodeFiscale(annee);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// for fiscal ouvert à Lausanne -> assujetti
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1961, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(marc, date(1980, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(marc, date(annee, 7, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// for fiscal ouvert à Lausanne -> assujetti
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1961, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(marc, date(1980, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(marc, date(annee, 7, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
-
-				final TacheEnvoiDeclarationImpot tache1 = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 31), date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.tache1Id = tache1.getId();
-				final TacheEnvoiDeclarationImpot tache2 = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 31), date(annee, 7, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.tache2Id = tache2.getId();
-				return null;
-			}
+			final TacheEnvoiDeclarationImpot tache1 = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 31), date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.tache1Id = tache1.getId();
+			final TacheEnvoiDeclarationImpot tache2 = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 31), date(annee, 7, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.tache2Id = tache2.getId();
+			return null;
 		});
 
 		// traitement des tâches
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final RegDate dateTraitement = date(annee + 1, 1, 15);
+			final List<Long> idsCtb = Collections.singletonList(ids.marcId);
 
-				final RegDate dateTraitement = date(annee + 1, 1, 15);
-				final List<Long> idsCtb = Collections.singletonList(ids.marcId);
-
-				final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
-				processor.traiterBatch(idsCtb, rapport, annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement);
-				return null;
-			}
+			final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+			processor.traiterBatch(idsCtb, rapport, annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement);
+			return null;
 		});
 
 		// vérification des DIs
@@ -489,48 +470,43 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un tiers sans exclusion
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.marcId = marc.getNumero();
 
-				// Un tiers sans exclusion
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.marcId = marc.getNumero();
+			// Un tiers avec une exclusion passée
+			final PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			jean.setDateLimiteExclusionEnvoiDeclarationImpot(date(1995, 1, 1));
+			ids.jeanId = jean.getNumero();
 
-				// Un tiers avec une exclusion passée
-				final PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				jean.setDateLimiteExclusionEnvoiDeclarationImpot(date(1995, 1, 1));
-				ids.jeanId = jean.getNumero();
+			// Un tiers avec une exclusion dans le futur
+			final PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			jacques.setDateLimiteExclusionEnvoiDeclarationImpot(date(2010, 1, 1));
+			ids.jacquesId = jacques.getNumero();
 
-				// Un tiers avec une exclusion dans le futur
-				final PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				jacques.setDateLimiteExclusionEnvoiDeclarationImpot(date(2010, 1, 1));
-				ids.jacquesId = jacques.getNumero();
+			final TacheEnvoiDeclarationImpotPP tacheMarc = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                                                                 date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.tacheMarcId = tacheMarc.getId();
 
-				final TacheEnvoiDeclarationImpotPP tacheMarc = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                                                                 date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.tacheMarcId = tacheMarc.getId();
+			final TacheEnvoiDeclarationImpotPP tacheJean = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                                                                 date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null, null, colAdm);
+			ids.tacheJeanId = tacheJean.getId();
 
-				final TacheEnvoiDeclarationImpotPP tacheJean = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                                                                 date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null, null, colAdm);
-				ids.tacheJeanId = tacheJean.getId();
-
-				final TacheEnvoiDeclarationImpotPP tacheJacques = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1,
-				                                                                                                                      1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques,
-				                                                                    null, null, colAdm);
-				ids.tacheJacquesId = tacheJacques.getId();
-
-				return null;
-			}
+			final TacheEnvoiDeclarationImpotPP tacheJacques = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1,
+			                                                                                                                      1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques,
+			                                                                    null, null, colAdm);
+			ids.tacheJacquesId = tacheJacques.getId();
+			return null;
 		});
 
 		{
@@ -579,41 +555,36 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable habitant à Lausanne
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable habitant à Lausanne
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
+			// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année 2008
+			final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                                                                   date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.premiereTacheId = premiereTache.getId();
 
-				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année 2008
-				final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                                                                   date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.premiereTacheId = premiereTache.getId();
-
-				// arrivée d'un événement de décès en retard -> fermeture du for principal au milieu 2008 et génération d'une nouvelle tâche correspondante
-				ffp.setDateFin(dateDeces);
-				ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
-				final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                                                                  dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.secondeTacheId = secondeTache.getId();
-
-				return null;
-			}
+			// arrivée d'un événement de décès en retard -> fermeture du for principal au milieu 2008 et génération d'une nouvelle tâche correspondante
+			ffp.setDateFin(dateDeces);
+			ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
+			final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                                                                  dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.secondeTacheId = secondeTache.getId();
+			return null;
 		});
 
 		final RegDate dateTraitement = date(2009, 1, 15);
@@ -695,41 +666,36 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable habitant à Lausanne décédé courant 2008
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable habitant à Lausanne décédé courant 2008
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
+			// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
+			final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                                                                   dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.premiereTacheId = premiereTache.getId();
 
-				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
-				final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                                                                   dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.premiereTacheId = premiereTache.getId();
-
-				// arrivée d'un événement d'annulation de décès en retard -> réouverture du for principal et génération d'une nouvelle tâche sur toute l'année 2008
-				ffp.setDateFin(null);
-				ffp.setMotifFermeture(null);
-				final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                                                                  date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				ids.secondeTacheId = secondeTache.getId();
-
-				return null;
-			}
+			// arrivée d'un événement d'annulation de décès en retard -> réouverture du for principal et génération d'une nouvelle tâche sur toute l'année 2008
+			ffp.setDateFin(null);
+			ffp.setMotifFermeture(null);
+			final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                                                                  date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			ids.secondeTacheId = secondeTache.getId();
+			return null;
 		});
 
 
@@ -782,32 +748,28 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable habitant à Lausanne décédé courant 2008
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable habitant à Lausanne décédé courant 2008
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
-
-				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-				                  dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				return null;
-			}
+			// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
+			                  dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			return null;
 		});
 
 
@@ -840,32 +802,28 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable habitant à Lausanne
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable habitant à Lausanne
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
-
-				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				                  marc, null, null, colAdm);
-				return null;
-			}
+			// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			                  marc, null, null, colAdm);
+			return null;
 		});
 
 
@@ -1098,33 +1056,29 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.ACI.getNoColAdm());
+			ids.aci = aci.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
-				ids.aci = aci.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable indigent habitant à Lausanne, décédé en 2008
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable indigent habitant à Lausanne, décédé en 2008
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
-				ids.marcId = marc.getNumero();
-
-				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
-				TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				t.setAdresseRetour(TypeAdresseRetour.ACI);
-				return null;
-			}
+			// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
+			TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			t.setAdresseRetour(TypeAdresseRetour.ACI);
+			return null;
 		});
 
 
@@ -1159,33 +1113,29 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.ACI.getNoColAdm());
+			ids.aci = aci.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
-				ids.aci = aci.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable indigent habitant à Lausanne, décédé en 2008
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable indigent habitant à Lausanne, décédé en 2008
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
-
-				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
-				TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				t.setAdresseRetour(TypeAdresseRetour.ACI);
-				return null;
-			}
+			// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
+			TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			t.setAdresseRetour(TypeAdresseRetour.ACI);
+			return null;
 		});
 
 
@@ -1219,33 +1169,29 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.ACI.getNoColAdm());
+			ids.aci = aci.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
-				ids.aci = aci.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable indigent habitant à Lausanne, décédé en 2008
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable indigent habitant à Lausanne, décédé en 2008
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ids.marcId = marc.getNumero();
-
-				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
-				TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				t.setAdresseRetour(TypeAdresseRetour.ACI);
-				return null;
-			}
+			// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
+			TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			t.setAdresseRetour(TypeAdresseRetour.ACI);
+			return null;
 		});
 
 
@@ -1277,33 +1223,29 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
+			// Un contribuable indigent habitant à Lausanne
+			final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+			addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			ids.marcId = marc.getNumero();
 
-				// Un contribuable indigent habitant à Lausanne
-				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
-				ids.marcId = marc.getNumero();
-
-				// simulation du traitement du batch de détermination des DIs
-				TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
-				t.setAdresseRetour(TypeAdresseRetour.ACI);
-				return null;
-			}
+			// simulation du traitement du batch de détermination des DIs
+			TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                   TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
+			t.setAdresseRetour(TypeAdresseRetour.ACI);
+			return null;
 		});
 
 

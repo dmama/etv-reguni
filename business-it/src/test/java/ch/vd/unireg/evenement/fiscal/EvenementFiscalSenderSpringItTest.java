@@ -54,12 +54,14 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 		super.onTearDown();
 	}
 
-	protected void clearQueue(String queueName) throws Exception {
+	protected void clearQueue(String queueName) {
 		while (true) {
-			final boolean found = doInNewReadOnlyTransaction(new TxCallback<Boolean>() {
-				@Override
-				public Boolean execute(TransactionStatus status) throws Exception {
+			final boolean found = doInNewReadOnlyTransaction(status -> {
+				try {
 					return esbTemplate.receive(queueName) != null;
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
 				}
 			});
 			if (!found) {
@@ -68,12 +70,14 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 		}
 	}
 
-	protected EsbMessage receive(String queueName, long timeoutMs) throws Exception {
-		return doInNewTransactionAndSession(new TxCallback<EsbMessage>() {
-			@Override
-			public EsbMessage execute(TransactionStatus status) throws Exception {
-				esbTemplate.setReceiveTimeout(timeoutMs);
+	protected EsbMessage receive(String queueName, long timeoutMs) {
+		return doInNewTransactionAndSession(status -> {
+			esbTemplate.setReceiveTimeout(timeoutMs);
+			try {
 				return esbTemplate.receive(queueName);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 	}
@@ -157,18 +161,11 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2009, 12, 9), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			final EvenementFiscalFor event = hibernateTemplate.merge(new EvenementFiscalFor(ffp.getDateDebut(), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE));
 			ppId.setValue(pp.getNumero());
-
-			try {
-				sender.sendEvent(event);
-			}
-			catch (EvenementFiscalException e) {
-				throw new RuntimeException("Exception inattendue", e);
-			}
+			sender.sendEvent(event);
 
 			if (saute) {
 				throw new RuntimeException("Exception de test");
 			}
-			;
 			return null;
 		});
 	}
@@ -216,13 +213,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 			final EvenementFiscalFor event = hibernateTemplate.merge(new EvenementFiscalFor(RegDate.get(2009, 12, 9), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE));
 
 			// Envoi du message
-			try {
-				sender.sendEvent(event);
-			}
-			catch (EvenementFiscalException e) {
-				throw new RuntimeException(e);
-			}
-
+			sender.sendEvent(event);
 			return null;
 		}
 	}}

@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.indexer.GlobalIndexInterface;
@@ -275,36 +274,31 @@ public class DatabaseIndexationProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Contribuable sans for
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Dupres");
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			ids.dupres = nh.getNumero();
 
-				// Contribuable sans for
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Dupres");
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				ids.dupres = nh.getNumero();
-
-				// Contribuable avec for
-				nh = new PersonnePhysique(false);
-				nh.setNom("Duclou");
-				{
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-					f.setDateDebut(date(2000, 1, 1));
-					f.setDateFin(null);
-					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
-					f.setModeImposition(ModeImposition.ORDINAIRE);
-					f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-					nh.addForFiscal(f);
-				}
-				nh = (PersonnePhysique) tiersDAO.save(nh);
-				ids.duclou = nh.getNumero();
-
-				return null;
+			// Contribuable avec for
+			nh = new PersonnePhysique(false);
+			nh.setNom("Duclou");
+			{
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+				f.setDateDebut(date(2000, 1, 1));
+				f.setDateFin(null);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				nh.addForFiscal(f);
 			}
+			nh = (PersonnePhysique) tiersDAO.save(nh);
+			ids.duclou = nh.getNumero();
+			return null;
 		});
 
 		indexationProcessor.run(GlobalTiersIndexer.Mode.FULL, EnumSet.allOf(TypeTiers.class), 1, null);

@@ -8,15 +8,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.technical.esb.util.EsbDataHandler;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
-import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.security.MockSecurityProvider;
@@ -30,6 +24,11 @@ import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
+import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.party.v1.PartyType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -100,53 +99,50 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp0 = addNonHabitant("Marie", "Gooert", date(1965, 3, 22), Sexe.FEMININ);
-				PersonnePhysique pp1 = addNonHabitant("Georgette", "van Zum", date(1934, 4, 19), Sexe.FEMININ);
-				pp1.setAnnule(true);
+		doInNewTransaction(status -> {
+			PersonnePhysique pp0 = addNonHabitant("Marie", "Gooert", date(1965, 3, 22), Sexe.FEMININ);
+			PersonnePhysique pp1 = addNonHabitant("Georgette", "van Zum", date(1934, 4, 19), Sexe.FEMININ);
+			pp1.setAnnule(true);
 
-				MenageCommun menage0 = addMenageCommun(null);
-				MenageCommun menage1 = addMenageCommun(null);
-				menage1.setAnnule(true);
+			MenageCommun menage0 = addMenageCommun(null);
+			MenageCommun menage1 = addMenageCommun(null);
+			menage1.setAnnule(true);
 
-				Etablissement etablissement0 = addEtablissement(null);
-				Etablissement etablissement1 = addEtablissement(null);
-				etablissement1.setAnnule(true);
+			Etablissement etablissement0 = addEtablissement(null);
+			Etablissement etablissement1 = addEtablissement(null);
+			etablissement1.setAnnule(true);
 
-				Entreprise entreprise0 = addEntrepriseInconnueAuCivil();
-				Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-				entreprise1.setAnnule(true);
+			Entreprise entreprise0 = addEntrepriseInconnueAuCivil();
+			Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+			entreprise1.setAnnule(true);
 
-				DebiteurPrestationImposable debiteur0 = addDebiteur();
-				DebiteurPrestationImposable debiteur1 = addDebiteur();
-				debiteur1.setAnnule(true);
+			DebiteurPrestationImposable debiteur0 = addDebiteur();
+			DebiteurPrestationImposable debiteur1 = addDebiteur();
+			debiteur1.setAnnule(true);
 
-				CollectiviteAdministrative colladm0 = addCollAdm(666);
-				CollectiviteAdministrative colladm1 = addCollAdm(42);
-				colladm1.setAnnule(true);
+			CollectiviteAdministrative colladm0 = addCollAdm(666);
+			CollectiviteAdministrative colladm1 = addCollAdm(42);
+			colladm1.setAnnule(true);
 
-				AutreCommunaute autre0 = addAutreCommunaute("dollar est ton dieu");
-				AutreCommunaute autre1 = addAutreCommunaute("en voilà un qui voit");
-				autre1.setAnnule(true);
+			AutreCommunaute autre0 = addAutreCommunaute("dollar est ton dieu");
+			AutreCommunaute autre1 = addAutreCommunaute("en voilà un qui voit");
+			autre1.setAnnule(true);
 
-				ids.pp0 = pp0.getNumero();
-				ids.pp1 = pp1.getNumero();
-				ids.menage0 = menage0.getNumero();
-				ids.menage1 = menage1.getNumero();
-				ids.etablissement0 = etablissement0.getNumero();
-				ids.etablissement1 = etablissement0.getNumero();
-				ids.entreprise0 = entreprise0.getNumero();
-				ids.entreprise1 = entreprise1.getNumero();
-				ids.debiteur0 = debiteur0.getNumero();
-				ids.debiteur1 = debiteur1.getNumero();
-				ids.colladm0 = colladm0.getNumero();
-				ids.colladm1 = colladm1.getNumero();
-				ids.autre0 = autre0.getNumero();
-				ids.autre1 = autre1.getNumero();
-				return null;
-			}
+			ids.pp0 = pp0.getNumero();
+			ids.pp1 = pp1.getNumero();
+			ids.menage0 = menage0.getNumero();
+			ids.menage1 = menage1.getNumero();
+			ids.etablissement0 = etablissement0.getNumero();
+			ids.etablissement1 = etablissement0.getNumero();
+			ids.entreprise0 = entreprise0.getNumero();
+			ids.entreprise1 = entreprise1.getNumero();
+			ids.debiteur0 = debiteur0.getNumero();
+			ids.debiteur1 = debiteur1.getNumero();
+			ids.colladm0 = colladm0.getNumero();
+			ids.colladm1 = colladm1.getNumero();
+			ids.autre0 = autre0.getNumero();
+			ids.autre1 = autre1.getNumero();
+			return null;
 		});
 
 		handler.setSecurityProvider(provider);

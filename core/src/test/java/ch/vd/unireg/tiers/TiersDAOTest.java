@@ -17,12 +17,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -251,12 +249,9 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	private void insertAndTestNumeroTiers(final Tiers tiers, long first, long last) throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Tiers t = dao.save(tiers);
-				return t.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final Tiers t = dao.save(tiers);
+			return t.getId();
 		});
 
 		{
@@ -278,14 +273,11 @@ public class TiersDAOTest extends CoreDAOTest {
 		final RegDate date1 = RegDate.get(1970, 1, 23);
 		final RegDate date2 = RegDate.get(1969, 3, 1);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nonHab = (PersonnePhysique) dao.get(id);
-				assertEquals(date1, nonHab.getDateNaissance());
-				nonHab.setDateNaissance(date2);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique nonHab = (PersonnePhysique) dao.get(id);
+			assertEquals(date1, nonHab.getDateNaissance());
+			nonHab.setDateNaissance(date2);
+			return null;
 		});
 
 		{
@@ -329,15 +321,12 @@ public class TiersDAOTest extends CoreDAOTest {
 		/*
 		Cas nominal
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Entreprise entreprise = new Entreprise();
-				entreprise.setNumeroEntreprise(noEntrepriseCivile);
+		doInNewTransaction(status -> {
+			Entreprise entreprise = new Entreprise();
+			entreprise.setNumeroEntreprise(noEntrepriseCivile);
 
-				dao.save(entreprise);
-				return null;
-			}
+			dao.save(entreprise);
+			return null;
 		});
 
 		// On a bien récupéré le tiers
@@ -349,15 +338,12 @@ public class TiersDAOTest extends CoreDAOTest {
 		/*
 		Ajout d'une entrée en doublon
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Entreprise entreprise = new Entreprise();
-				entreprise.setNumeroEntreprise(noEntrepriseCivile);
+		doInNewTransaction(status -> {
+			Entreprise entreprise = new Entreprise();
+			entreprise.setNumeroEntreprise(noEntrepriseCivile);
 
-				dao.save(entreprise);
-				return null;
-			}
+			dao.save(entreprise);
+			return null;
 		});
 
 		try {
@@ -371,15 +357,12 @@ public class TiersDAOTest extends CoreDAOTest {
 		/*
 		 Annulation d'une des deux entrée
 		  */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Entreprise entreprise = (Entreprise) dao.get(numeroEntreprise);
-				entreprise.setAnnulationDate(new Date());
+		doInNewTransaction(status -> {
+			Entreprise entreprise = (Entreprise) dao.get(numeroEntreprise);
+			entreprise.setAnnulationDate(new Date());
 
-				dao.save(entreprise);
-				return null;
-			}
+			dao.save(entreprise);
+			return null;
 		});
 
 		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
@@ -398,15 +381,12 @@ public class TiersDAOTest extends CoreDAOTest {
 		/*
 		Cas nominal
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Etablissement etablissement = new Etablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		doInNewTransaction(status -> {
+			Etablissement etablissement = new Etablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				dao.save(etablissement);
-				return null;
-			}
+			dao.save(etablissement);
+			return null;
 		});
 
 		// On a bien récupéré le tiers
@@ -418,15 +398,12 @@ public class TiersDAOTest extends CoreDAOTest {
 		/*
 		Ajout d'une entrée en doublon
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Etablissement etablissement = new Etablissement();
-				etablissement.setNumeroEtablissement(noEtablissement);
+		doInNewTransaction(status -> {
+			Etablissement etablissement = new Etablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
 
-				dao.save(etablissement);
-				return null;
-			}
+			dao.save(etablissement);
+			return null;
 		});
 
 		try {
@@ -440,15 +417,12 @@ public class TiersDAOTest extends CoreDAOTest {
 		/*
 		 Annulation d'une des deux entrée
 		  */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Etablissement etablissement = (Etablissement) dao.get(numeroEtablissement);
-				etablissement.setAnnulationDate(new Date());
+		doInNewTransaction(status -> {
+			Etablissement etablissement = (Etablissement) dao.get(numeroEtablissement);
+			etablissement.setAnnulationDate(new Date());
 
-				dao.save(etablissement);
-				return null;
-			}
+			dao.save(etablissement);
+			return null;
 		});
 
 		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
@@ -477,17 +451,14 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final long id = 12345678L;
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nonHab = new PersonnePhysique(false);
-				nonHab.setNumero(id);
-				nonHab.setNom("Bla");
-				nonHab.setPrenomUsuel("Bli");
+		doInNewTransaction(status -> {
+			PersonnePhysique nonHab = new PersonnePhysique(false);
+			nonHab.setNumero(id);
+			nonHab.setNom("Bla");
+			nonHab.setPrenomUsuel("Bli");
 
-				dao.save(nonHab);
-				return null;
-			}
+			dao.save(nonHab);
+			return null;
 		});
 
 		{
@@ -506,12 +477,9 @@ public class TiersDAOTest extends CoreDAOTest {
 		final long noIndividu = 1234567890L;
 
 		// mise en place
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noIndividu);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(noIndividu);
+			return null;
 		});
 
 		final PersonnePhysique pp = dao.getPPByNumeroIndividu(noIndividu);
@@ -526,13 +494,10 @@ public class TiersDAOTest extends CoreDAOTest {
 		final long noIndividu = 1234567890L;
 
 		// mise en place
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+			return null;
 		});
 
 		final PersonnePhysique pp = dao.getPPByNumeroIndividu(noIndividu);
@@ -546,14 +511,11 @@ public class TiersDAOTest extends CoreDAOTest {
 		final long noIndividu = 1234567890L;
 
 		// mise en place
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
-				addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+			addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+			return null;
 		});
 
 		final PersonnePhysique pp = dao.getPPByNumeroIndividu(noIndividu);
@@ -622,12 +584,9 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final int NOMBRE_TIERS = 23;
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				doInsertTiers(NOMBRE_TIERS);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			doInsertTiers(NOMBRE_TIERS);
+			return null;
 		});
 
 
@@ -669,7 +628,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(NOMBRE_TIERS, tiersIndex);
 	}
 
-	private void doInsertTiers(int nbTiers) throws Exception {
+	private void doInsertTiers(int nbTiers) {
 
 		PersonnePhysique ppPrecedent = null;
 
@@ -857,107 +816,103 @@ public class TiersDAOTest extends CoreDAOTest {
 			Long numeroMenage;
 		}
 
-		Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
-			@Override
-			public Numeros execute(TransactionStatus status) throws Exception {
+		Numeros numeros = doInNewTransaction(status -> {
+			Numeros n = new Numeros();
 
-				Numeros numeros = new Numeros();
-
-				// Pour le rattachement
+			// Pour le rattachement
+			{
+				// CTB 1
+				PersonnePhysique ctb1;
 				{
-					// CTB 1
-					PersonnePhysique ctb1;
-					{
-						PersonnePhysique ctb = new PersonnePhysique(true);
-						ctb1 = ctb;
-						ctb.setNumeroIndividu(12345L);
+					PersonnePhysique ctb = new PersonnePhysique(true);
+					ctb1 = ctb;
+					ctb.setNumeroIndividu(12345L);
 
-						// For fermé
-						HashSet<ForFiscal> fors = new HashSet<>();
-						ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
-						forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
-						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
-						forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
-						forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-						forFiscal.setNumeroOfsAutoriteFiscale(563);
-						forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
-						forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-						forFiscal.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-						fors.add(forFiscal);
-						ctb.setForsFiscaux(fors);
-
-						LOGGER.debug("Enregistrement du tiers=" + ctb);
-						ctb1 = (PersonnePhysique) dao.save(ctb1);
-						numeros.numeroCtb1 = ctb1.getNumero();
-					}
-
-					// CTB 2
-					PersonnePhysique ctb2;
-					{
-						PersonnePhysique ctb = new PersonnePhysique(true);
-						ctb2 = ctb;
-						ctb.setNumeroIndividu(23456L);
-
-						// For fermé
-						HashSet<ForFiscal> fors = new HashSet<>();
-						ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
-						forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
-						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
-						forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
-						forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-						forFiscal.setNumeroOfsAutoriteFiscale(876);
-						forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
-						forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-						forFiscal.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-						fors.add(forFiscal);
-						ctb.setForsFiscaux(fors);
-
-						LOGGER.debug("Enregistrement du tiers=" + ctb);
-						ctb2 = (PersonnePhysique) dao.save(ctb2);
-						numeros.numeroCtb2 = ctb2.getNumero();
-					}
-
-					// setComplete();
-					// endTransaction();
-					// startNewTransaction();
-
-					// Menage
-					MenageCommun menage;
-					{
-						menage = new MenageCommun();
-						menage = (MenageCommun) dao.save(menage);
-
-						numeros.numeroMenage = menage.getNumero();
-					}
-
-					// Rattachement
-					RapportEntreTiers rapport1;
-					RapportEntreTiers rapport2;
-					{
-						// CTB1 <=> Couple
-						rapport1 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb1, menage);
-						rapport1 = dao.save(rapport1);
-						menage.addRapportObjet(rapport1);
-
-						// CTB2 <=> Couple
-						rapport2 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb2, menage);
-						rapport2 = dao.save(rapport2);
-						menage.addRapportObjet(rapport2);
-					}
-
-					// For ouvert sur le ménage (on ne peut l'ajouter qu'après avoir définit les rapport-entre-tiers, autrement le
-					// ménage-commun ne valide pas)
+					// For fermé
+					HashSet<ForFiscal> fors = new HashSet<>();
 					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
-					forFiscal.setDateDebut(RegDate.get(2006, 12, 1));
+					forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
+					forFiscal.setDateFin(RegDate.get(2006, 11, 30));
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
-					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 					forFiscal.setNumeroOfsAutoriteFiscale(563);
 					forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
-					forFiscal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-					menage.addForFiscal(forFiscal);
+					forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
+					forFiscal.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+					fors.add(forFiscal);
+					ctb.setForsFiscaux(fors);
+
+					LOGGER.debug("Enregistrement du tiers=" + ctb);
+					ctb1 = (PersonnePhysique) dao.save(ctb1);
+					n.numeroCtb1 = ctb1.getNumero();
 				}
-				return numeros;
+
+				// CTB 2
+				PersonnePhysique ctb2;
+				{
+					PersonnePhysique ctb = new PersonnePhysique(true);
+					ctb2 = ctb;
+					ctb.setNumeroIndividu(23456L);
+
+					// For fermé
+					HashSet<ForFiscal> fors = new HashSet<>();
+					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+					forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
+					forFiscal.setDateFin(RegDate.get(2006, 11, 30));
+					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+					forFiscal.setNumeroOfsAutoriteFiscale(876);
+					forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+					forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
+					forFiscal.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+					fors.add(forFiscal);
+					ctb.setForsFiscaux(fors);
+
+					LOGGER.debug("Enregistrement du tiers=" + ctb);
+					ctb2 = (PersonnePhysique) dao.save(ctb2);
+					n.numeroCtb2 = ctb2.getNumero();
+				}
+
+				// setComplete();
+				// endTransaction();
+				// startNewTransaction();
+
+				// Menage
+				MenageCommun menage;
+				{
+					menage = new MenageCommun();
+					menage = (MenageCommun) dao.save(menage);
+
+					n.numeroMenage = menage.getNumero();
+				}
+
+				// Rattachement
+				RapportEntreTiers rapport1;
+				RapportEntreTiers rapport2;
+				{
+					// CTB1 <=> Couple
+					rapport1 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb1, menage);
+					rapport1 = dao.save(rapport1);
+					menage.addRapportObjet(rapport1);
+
+					// CTB2 <=> Couple
+					rapport2 = new AppartenanceMenage(RegDate.get(2002, 2, 1), null, ctb2, menage);
+					rapport2 = dao.save(rapport2);
+					menage.addRapportObjet(rapport2);
+				}
+
+				// For ouvert sur le ménage (on ne peut l'ajouter qu'après avoir définit les rapport-entre-tiers, autrement le
+				// ménage-commun ne valide pas)
+				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				forFiscal.setDateDebut(RegDate.get(2006, 12, 1));
+				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+				forFiscal.setNumeroOfsAutoriteFiscale(563);
+				forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+				forFiscal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+				menage.addForFiscal(forFiscal);
 			}
+			return n;
 		});
 
 		// Nombre d'éléments stockés dans la base
@@ -1010,64 +965,60 @@ public class TiersDAOTest extends CoreDAOTest {
 		}
 
 		// Pour le rattachement
-		Tierss tierss = doInNewTransaction(new TxCallback<Tierss>() {
-			@Override
-			public Tierss execute(TransactionStatus status) throws Exception {
+		Tierss tierss = doInNewTransaction(status -> {
+			Tierss tss = new Tierss();
 
-				Tierss tierss = new Tierss();
+			// CTB 1
+			{
+				PersonnePhysique ctb = new PersonnePhysique(true);
+				tss.tuteur = ctb;
+				ctb.setNumeroIndividu(12345L);
 
-				// CTB 1
-				{
-					PersonnePhysique ctb = new PersonnePhysique(true);
-					tierss.tuteur = ctb;
-					ctb.setNumeroIndividu(12345L);
+				// For fermé
+				HashSet<ForFiscal> fors = new HashSet<>();
+				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
+				forFiscal.setDateFin(null);
+				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+				forFiscal.setNumeroOfsAutoriteFiscale(563);
+				forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				fors.add(forFiscal);
+				ctb.setForsFiscaux(fors);
 
-					// For fermé
-					HashSet<ForFiscal> fors = new HashSet<>();
-					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
-					forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
-					forFiscal.setDateFin(null);
-					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
-					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
-					forFiscal.setNumeroOfsAutoriteFiscale(563);
-					forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-					fors.add(forFiscal);
-					ctb.setForsFiscaux(fors);
-
-					LOGGER.debug("Enregistrement du tiers=" + ctb);
-					tierss.tuteur = (PersonnePhysique) dao.save(tierss.tuteur);
-				}
-
-				// CTB 2
-				{
-					PersonnePhysique ctb = new PersonnePhysique(true);
-					tierss.pupille = ctb;
-					ctb.setNumeroIndividu(23456L);
-
-					// For fermé
-					HashSet<ForFiscal> fors = new HashSet<>();
-					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
-					forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
-					forFiscal.setDateFin(null);
-					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
-					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
-					forFiscal.setNumeroOfsAutoriteFiscale(876);
-					forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-					fors.add(forFiscal);
-					ctb.setForsFiscaux(fors);
-
-					LOGGER.debug("Enregistrement du tiers=" + ctb);
-					tierss.pupille = (PersonnePhysique) dao.save(tierss.pupille);
-				}
-
-				{
-					// pupille <=> tuteur
-					tierss.rapport1 = addTutelle(tierss.pupille, tierss.tuteur, null, RegDate.get(2002, 2, 1), null);
-				}
-				return tierss;
+				LOGGER.debug("Enregistrement du tiers=" + ctb);
+				tss.tuteur = (PersonnePhysique) dao.save(tss.tuteur);
 			}
+
+			// CTB 2
+			{
+				PersonnePhysique ctb = new PersonnePhysique(true);
+				tss.pupille = ctb;
+				ctb.setNumeroIndividu(23456L);
+
+				// For fermé
+				HashSet<ForFiscal> fors = new HashSet<>();
+				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
+				forFiscal.setDateFin(null);
+				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
+				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
+				forFiscal.setNumeroOfsAutoriteFiscale(876);
+				forFiscal.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				fors.add(forFiscal);
+				ctb.setForsFiscaux(fors);
+
+				LOGGER.debug("Enregistrement du tiers=" + ctb);
+				tss.pupille = (PersonnePhysique) dao.save(tss.pupille);
+			}
+
+			{
+				// pupille <=> tuteur
+				tss.rapport1 = addTutelle(tss.pupille, tss.tuteur, null, RegDate.get(2002, 2, 1), null);
+			}
+			return tss;
 		});
 
 		{
@@ -1091,30 +1042,27 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSituationFamille() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				HashSet<SituationFamille> sit = new HashSet<>();
-				SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
-				s.setDateDebut(RegDate.get(2002, 11, 1));
-				s.setDateFin(RegDate.get(2005, 1, 31));
-				s.setNombreEnfants(2);
-				s.setTarifApplicable(TarifImpotSource.NORMAL);
-				sit.add(s);
-				s = new SituationFamilleMenageCommun();
-				s.setDateDebut(RegDate.get(2005, 2, 20));
-				s.setDateFin(RegDate.get(2007, 12, 31));
-				s.setNombreEnfants(3);
-				s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
-				sit.add(s);
+		doInNewTransaction(status -> {
+			HashSet<SituationFamille> sit = new HashSet<>();
+			SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
+			s.setDateDebut(RegDate.get(2002, 11, 1));
+			s.setDateFin(RegDate.get(2005, 1, 31));
+			s.setNombreEnfants(2);
+			s.setTarifApplicable(TarifImpotSource.NORMAL);
+			sit.add(s);
+			s = new SituationFamilleMenageCommun();
+			s.setDateDebut(RegDate.get(2005, 2, 20));
+			s.setDateFin(RegDate.get(2007, 12, 31));
+			s.setNombreEnfants(3);
+			s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
+			sit.add(s);
 
-				PersonnePhysique nh1 = new PersonnePhysique(false);
-				nh1.setNom("titi");
-				nh1.setSituationsFamille(sit);
+			PersonnePhysique nh1 = new PersonnePhysique(false);
+			nh1.setNom("titi");
+			nh1.setSituationsFamille(sit);
 
-				dao.save(nh1);
-				return null;
-			}
+			dao.save(nh1);
+			return null;
 		});
 
 		{
@@ -1137,73 +1085,70 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSituationFamilleMapping() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh1 = new PersonnePhysique(false);
-				nh1.setNom("nh-un");
-				nh1 = (PersonnePhysique) dao.save(nh1);
+		doInNewTransaction(status -> {
+			PersonnePhysique nh1 = new PersonnePhysique(false);
+			nh1.setNom("nh-un");
+			nh1 = (PersonnePhysique) dao.save(nh1);
 
-				PersonnePhysique nh2 = new PersonnePhysique(false);
-				nh2.setNom("nh-deux");
-				nh2 = (PersonnePhysique) dao.save(nh2);
+			PersonnePhysique nh2 = new PersonnePhysique(false);
+			nh2.setNom("nh-deux");
+			nh2 = (PersonnePhysique) dao.save(nh2);
 
-				MenageCommun mc = new MenageCommun();
-				mc = (MenageCommun) dao.save(mc);
+			MenageCommun mc = new MenageCommun();
+			mc = (MenageCommun) dao.save(mc);
 
-				RapportEntreTiers rapport1 = new AppartenanceMenage();
-				rapport1.setDateDebut(RegDate.get(2000, 1, 1));
-				rapport1.setSujet(nh1);
-				rapport1.setObjet(mc);
-				rapport1 = dao.save(rapport1);
+			RapportEntreTiers rapport1 = new AppartenanceMenage();
+			rapport1.setDateDebut(RegDate.get(2000, 1, 1));
+			rapport1.setSujet(nh1);
+			rapport1.setObjet(mc);
+			rapport1 = dao.save(rapport1);
 
-				RapportEntreTiers rapport2 = new AppartenanceMenage();
-				rapport2.setDateDebut(RegDate.get(2000, 1, 1));
-				rapport2.setSujet(nh2);
-				rapport2.setObjet(mc);
-				rapport2 = dao.save(rapport2);
+			RapportEntreTiers rapport2 = new AppartenanceMenage();
+			rapport2.setDateDebut(RegDate.get(2000, 1, 1));
+			rapport2.setSujet(nh2);
+			rapport2.setObjet(mc);
+			rapport2 = dao.save(rapport2);
 
-				{
-					HashSet<SituationFamille> sit = new HashSet<>();
-					SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
-					s.setDateDebut(RegDate.get(2002, 11, 1));
-					s.setDateFin(RegDate.get(2005, 1, 31));
-					s.setNombreEnfants(2);
-					s.setTarifApplicable(TarifImpotSource.NORMAL);
-					s.setContribuablePrincipalId(nh2.getId());
-					sit.add(s);
-					s = new SituationFamilleMenageCommun();
-					s.setDateDebut(RegDate.get(2005, 2, 20));
-					s.setDateFin(RegDate.get(2007, 12, 31));
-					s.setNombreEnfants(3);
-					s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
-					s.setContribuablePrincipalId(nh2.getId());
-					sit.add(s);
+			{
+				HashSet<SituationFamille> sit = new HashSet<>();
+				SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
+				s.setDateDebut(RegDate.get(2002, 11, 1));
+				s.setDateFin(RegDate.get(2005, 1, 31));
+				s.setNombreEnfants(2);
+				s.setTarifApplicable(TarifImpotSource.NORMAL);
+				s.setContribuablePrincipalId(nh2.getId());
+				sit.add(s);
+				s = new SituationFamilleMenageCommun();
+				s.setDateDebut(RegDate.get(2005, 2, 20));
+				s.setDateFin(RegDate.get(2007, 12, 31));
+				s.setNombreEnfants(3);
+				s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
+				s.setContribuablePrincipalId(nh2.getId());
+				sit.add(s);
 
-					nh1.setSituationsFamille(sit);
-				}
-
-				{
-					HashSet<SituationFamille> sit = new HashSet<>();
-					SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
-					s.setDateDebut(RegDate.get(2002, 11, 1));
-					s.setDateFin(RegDate.get(2005, 1, 31));
-					s.setNombreEnfants(2);
-					s.setTarifApplicable(TarifImpotSource.NORMAL);
-					s.setContribuablePrincipalId(nh2.getId());
-					sit.add(s);
-					s = new SituationFamilleMenageCommun();
-					s.setDateDebut(RegDate.get(2005, 2, 20));
-					s.setDateFin(RegDate.get(2007, 12, 31));
-					s.setNombreEnfants(3);
-					s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
-					s.setContribuablePrincipalId(nh2.getId());
-					sit.add(s);
-
-					nh2.setSituationsFamille(sit);
-				}
-				return null;
+				nh1.setSituationsFamille(sit);
 			}
+
+			{
+				HashSet<SituationFamille> sit = new HashSet<>();
+				SituationFamilleMenageCommun s = new SituationFamilleMenageCommun();
+				s.setDateDebut(RegDate.get(2002, 11, 1));
+				s.setDateFin(RegDate.get(2005, 1, 31));
+				s.setNombreEnfants(2);
+				s.setTarifApplicable(TarifImpotSource.NORMAL);
+				s.setContribuablePrincipalId(nh2.getId());
+				sit.add(s);
+				s = new SituationFamilleMenageCommun();
+				s.setDateDebut(RegDate.get(2005, 2, 20));
+				s.setDateFin(RegDate.get(2007, 12, 31));
+				s.setNombreEnfants(3);
+				s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
+				s.setContribuablePrincipalId(nh2.getId());
+				sit.add(s);
+
+				nh2.setSituationsFamille(sit);
+			}
+			return null;
 		});
 
 		{
@@ -1277,32 +1222,28 @@ public class TiersDAOTest extends CoreDAOTest {
 			Long numeroCtb2;
 		}
 
-		Tierss tierss = doInNewTransaction(new TxCallback<Tierss>() {
-			@Override
-			public Tierss execute(TransactionStatus status) throws Exception {
+		Tierss tierss = doInNewTransaction(status -> {
+			Tierss tss = new Tierss();
+			{
+				PersonnePhysique ctb1 = new PersonnePhysique(true);
+				ctb1.setNumeroIndividu(12345L);
+				ctb1 = (PersonnePhysique) dao.save(ctb1);
+				tss.numeroCtb1 = ctb1.getNumero();
 
-				Tierss tierss = new Tierss();
-				{
-					PersonnePhysique ctb1 = new PersonnePhysique(true);
-					ctb1.setNumeroIndividu(12345L);
-					ctb1 = (PersonnePhysique) dao.save(ctb1);
-					tierss.numeroCtb1 = ctb1.getNumero();
+				PersonnePhysique ctb2 = new PersonnePhysique(true);
+				ctb2.setNumeroIndividu(23456L);
+				ctb2 = (PersonnePhysique) dao.save(ctb2);
+				tss.numeroCtb2 = ctb2.getNumero();
 
-					PersonnePhysique ctb2 = new PersonnePhysique(true);
-					ctb2.setNumeroIndividu(23456L);
-					ctb2 = (PersonnePhysique) dao.save(ctb2);
-					tierss.numeroCtb2 = ctb2.getNumero();
-
-					AdresseAutreTiers adresse = new AdresseAutreTiers();
-					adresse.setDateDebut(RegDate.get(2000, 1, 1));
-					adresse.setDateFin(null);
-					adresse.setUsage(TypeAdresseTiers.COURRIER);
-					adresse.setType(TypeAdresseTiers.COURRIER);
-					adresse.setAutreTiersId(ctb2.getId());
-					ctb1.addAdresseTiers(adresse);
-				}
-				return tierss;
+				AdresseAutreTiers adresse = new AdresseAutreTiers();
+				adresse.setDateDebut(RegDate.get(2000, 1, 1));
+				adresse.setDateFin(null);
+				adresse.setUsage(TypeAdresseTiers.COURRIER);
+				adresse.setType(TypeAdresseTiers.COURRIER);
+				adresse.setAutreTiersId(ctb2.getId());
+				ctb1.addAdresseTiers(adresse);
 			}
+			return tss;
 		});
 
 		// Nombre d'éléments stockés dans la base
@@ -1337,12 +1278,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final Set<Parts> parts = EnumSet.allOf(Parts.class);
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
-		final List<Tiers> listBatch = doInNewReadOnlyTransaction(new TxCallback<List<Tiers>>() {
-			@Override
-			public List<Tiers> execute(TransactionStatus status) throws Exception {
-				return dao.getBatch(ids, parts);
-			}
-		});
+		final List<Tiers> listBatch = doInNewReadOnlyTransaction(status -> dao.getBatch(ids, parts));
 		assertNotNull(listBatch);
 		assertEquals(ids.size(), listBatch.size());
 
@@ -1384,12 +1320,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final Set<Parts> parts = EnumSet.allOf(Parts.class);
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
-		final List<Tiers> listBatch = doInNewReadOnlyTransaction(new TxCallback<List<Tiers>>() {
-			@Override
-			public List<Tiers> execute(TransactionStatus status) throws Exception {
-				return dao.getBatch(ids, parts);
-			}
-		});
+		final List<Tiers> listBatch = doInNewReadOnlyTransaction(status -> dao.getBatch(ids, parts));
 		assertNotNull(listBatch);
 		assertEquals(ids.size(), listBatch.size());
 
@@ -1443,80 +1374,76 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testGetBatchAvecRapportEntreTiersEtForsFiscaux() throws Exception {
 
 		// Crée un couple normal, assujetti vaudois ordinaire
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long id = doInNewTransaction(status -> {
+			final RegDate dateMariage = date(1990, 1, 1);
+			final RegDate veilleMariage = dateMariage.getOneDayBefore();
 
-				final RegDate dateMariage = date(1990, 1, 1);
-				final RegDate veilleMariage = dateMariage.getOneDayBefore();
-
-				PersonnePhysique paul = new PersonnePhysique(false);
-				paul.setNom("Paul");
-				{
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-					f.setDateDebut(date(1974, 3, 31));
-					f.setMotifOuverture(MotifFor.MAJORITE);
-					f.setDateFin(veilleMariage);
-					f.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					f.setNumeroOfsAutoriteFiscale(5586);
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
-					f.setModeImposition(ModeImposition.ORDINAIRE);
-					paul.addForFiscal(f);
-				}
-				paul = merge(paul);
-
-				PersonnePhysique janine = new PersonnePhysique(false);
-				janine.setNom("Janine");
-				{
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-					f.setDateDebut(date(1974, 3, 31));
-					f.setMotifOuverture(MotifFor.MAJORITE);
-					f.setDateFin(veilleMariage);
-					f.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					f.setNumeroOfsAutoriteFiscale(5586);
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
-					f.setModeImposition(ModeImposition.ORDINAIRE);
-					janine.addForFiscal(f);
-				}
-				janine = merge(janine);
-
-				MenageCommun menage = merge(new MenageCommun());
-				{
-					RapportEntreTiers rapport = new AppartenanceMenage();
-					rapport.setDateDebut(dateMariage);
-					rapport.setObjet(menage);
-					rapport.setSujet(paul);
-					rapport = merge(rapport);
-
-					menage.addRapportObjet(rapport);
-					paul.addRapportSujet(rapport);
-
-					rapport = new AppartenanceMenage();
-					rapport.setDateDebut(dateMariage);
-					rapport.setObjet(menage);
-					rapport.setSujet(janine);
-					rapport = merge(rapport);
-
-					menage.addRapportObjet(rapport);
-					janine.addRapportSujet(rapport);
-
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
-					f.setDateDebut(dateMariage);
-					f.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					f.setNumeroOfsAutoriteFiscale(5586);
-					f.setMotifRattachement(MotifRattachement.DOMICILE);
-					f.setModeImposition(ModeImposition.ORDINAIRE);
-					menage.addForFiscal(f);
-				}
-
-				return paul.getNumero();
+			PersonnePhysique paul = new PersonnePhysique(false);
+			paul.setNom("Paul");
+			{
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+				f.setDateDebut(date(1974, 3, 31));
+				f.setMotifOuverture(MotifFor.MAJORITE);
+				f.setDateFin(veilleMariage);
+				f.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(5586);
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				paul.addForFiscal(f);
 			}
+			paul = merge(paul);
+
+			PersonnePhysique janine = new PersonnePhysique(false);
+			janine.setNom("Janine");
+			{
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+				f.setDateDebut(date(1974, 3, 31));
+				f.setMotifOuverture(MotifFor.MAJORITE);
+				f.setDateFin(veilleMariage);
+				f.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(5586);
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				janine.addForFiscal(f);
+			}
+			janine = merge(janine);
+
+			MenageCommun menage = merge(new MenageCommun());
+			{
+				RapportEntreTiers rapport = new AppartenanceMenage();
+				rapport.setDateDebut(dateMariage);
+				rapport.setObjet(menage);
+				rapport.setSujet(paul);
+				rapport = merge(rapport);
+
+				menage.addRapportObjet(rapport);
+				paul.addRapportSujet(rapport);
+
+				rapport = new AppartenanceMenage();
+				rapport.setDateDebut(dateMariage);
+				rapport.setObjet(menage);
+				rapport.setSujet(janine);
+				rapport = merge(rapport);
+
+				menage.addRapportObjet(rapport);
+				janine.addRapportSujet(rapport);
+
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+				f.setDateDebut(dateMariage);
+				f.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(5586);
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				menage.addForFiscal(f);
+			}
+			;
+			return paul.getNumero();
 		});
 
 		// Charge le contribuable principal à travers getBatch et en demandant les rapports-entre-tiers (va tirer le ménage commun) et la liste des fors fiscaux
@@ -1555,25 +1482,20 @@ public class TiersDAOTest extends CoreDAOTest {
 		final int size = 1200;
 
 		// crée un débiteur avec 600 sourciers
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long id = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+			dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
-				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi = (DebiteurPrestationImposable) dao.save(dpi);
+			for (int i = 0; i < size; ++i) {
+				PersonnePhysique pp = new PersonnePhysique(false);
+				pp.setNom(buildNomSourcier(i));
+				pp.setDateNaissance(RegDate.get(2000, 1, 1));
+				pp = (PersonnePhysique) dao.save(pp);
 
-				for (int i = 0; i < size; ++i) {
-					PersonnePhysique pp = new PersonnePhysique(false);
-					pp.setNom(buildNomSourcier(i));
-					pp.setDateNaissance(RegDate.get(2000, 1, 1));
-					pp = (PersonnePhysique) dao.save(pp);
-
-					RapportPrestationImposable r = new RapportPrestationImposable(RegDate.get(2000, 1, 1), null, pp, dpi);
-					dao.save(r);
-				}
-
-				return dpi.getNumero();
+				RapportPrestationImposable r = new RapportPrestationImposable(RegDate.get(2000, 1, 1), null, pp, dpi);
+				dao.save(r);
 			}
+			return dpi.getNumero();
 		});
 
 		// charge le débiteur
@@ -1702,49 +1624,42 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testOrphaningIdentificationPersonne() throws Exception {
 
 		// Crée une personne physique avec deux identifications existantes
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp = new PersonnePhysique(false);
-				pp.setNom("John");
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique pp = new PersonnePhysique(false);
+			pp.setNom("John");
 
-				final Set<IdentificationPersonne> idents = new HashSet<>();
-				{
-					final IdentificationPersonne ident = new IdentificationPersonne();
-					ident.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
-					ident.setIdentifiant("123456-654321");
-					idents.add(ident);
-				}
-				{
-					final IdentificationPersonne ident = new IdentificationPersonne();
-					ident.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
-					ident.setIdentifiant("abcde-edcba");
-					idents.add(ident);
-				}
-				pp.setIdentificationsPersonnes(idents);
-				pp = (PersonnePhysique) dao.save(pp);
-				return pp.getNumero();
+			final Set<IdentificationPersonne> idents = new HashSet<>();
+			{
+				final IdentificationPersonne ident = new IdentificationPersonne();
+				ident.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
+				ident.setIdentifiant("123456-654321");
+				idents.add(ident);
 			}
+			{
+				final IdentificationPersonne ident = new IdentificationPersonne();
+				ident.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
+				ident.setIdentifiant("abcde-edcba");
+				idents.add(ident);
+			}
+			pp.setIdentificationsPersonnes(idents);
+			pp = (PersonnePhysique) dao.save(pp);
+			return pp.getNumero();
 		});
 
 		// On a bien deux identifications au total dans la base
 		assertEquals(2, dao.getCount(IdentificationPersonne.class));
 
 		// Vide la collection d'identifications sur la personne physique
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) dao.get(id);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) dao.get(id);
-				assertNotNull(pp);
+			final Set<IdentificationPersonne> idents = pp.getIdentificationsPersonnes();
+			assertNotNull(idents);
+			assertEquals(2, idents.size());
 
-				final Set<IdentificationPersonne> idents = pp.getIdentificationsPersonnes();
-				assertNotNull(idents);
-				assertEquals(2, idents.size());
-
-				idents.clear();
-				return null;
-			}
+			idents.clear();
+			return null;
 		});
 
 		// Les deux identifications précédentes doivent avoir été supprimées
@@ -1801,14 +1716,11 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetRelatedIdsTiersNonLies() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				addNonHabitant("Arnold", "Terminator", date(1945, 3, 4), Sexe.MASCULIN);
-				addNonHabitant("Jean", "Quinquin", date(1932, 1, 23), Sexe.MASCULIN);
-				final PersonnePhysique gudrun = addNonHabitant("Gudrun", "Schnitzel", date(1939, 9, 11), Sexe.FEMININ);
-				return gudrun.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			addNonHabitant("Arnold", "Terminator", date(1945, 3, 4), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Quinquin", date(1932, 1, 23), Sexe.MASCULIN);
+			final PersonnePhysique gudrun = addNonHabitant("Gudrun", "Schnitzel", date(1939, 9, 11), Sexe.FEMININ);
+			return gudrun.getNumero();
 		});
 
 		final Set<Long> ids = tiersDAO.getRelatedIds(id, 2);
@@ -1828,18 +1740,15 @@ public class TiersDAOTest extends CoreDAOTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addNonHabitant("Arnold", "Terminator", date(1945, 3, 4), Sexe.MASCULIN);
-				final PersonnePhysique jean = addNonHabitant("Jean", "Quinquin", date(1932, 1, 23), Sexe.MASCULIN);
-				final PersonnePhysique gudrun = addNonHabitant("Gudrun", "Schnitzel", date(1939, 9, 11), Sexe.FEMININ);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jean, gudrun, date(1960, 4, 12), null);
-				ids.jean = jean.getNumero();
-				ids.gudrun = gudrun.getNumero();
-				ids.menage = ensemble.getMenage().getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addNonHabitant("Arnold", "Terminator", date(1945, 3, 4), Sexe.MASCULIN);
+			final PersonnePhysique jean = addNonHabitant("Jean", "Quinquin", date(1932, 1, 23), Sexe.MASCULIN);
+			final PersonnePhysique gudrun = addNonHabitant("Gudrun", "Schnitzel", date(1939, 9, 11), Sexe.FEMININ);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jean, gudrun, date(1960, 4, 12), null);
+			ids.jean = jean.getNumero();
+			ids.gudrun = gudrun.getNumero();
+			ids.menage = ensemble.getMenage().getNumero();
+			return null;
 		});
 
 		// 1 niveau de profondeur
@@ -1898,53 +1807,50 @@ public class TiersDAOTest extends CoreDAOTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp0 = addNonHabitant("Marie", "Gooert", date(1965, 3, 22), Sexe.FEMININ);
-				PersonnePhysique pp1 = addNonHabitant("Georgette", "van Zum", date(1934, 4, 19), Sexe.FEMININ);
-				pp1.setAnnule(true);
+		doInNewTransaction(status -> {
+			PersonnePhysique pp0 = addNonHabitant("Marie", "Gooert", date(1965, 3, 22), Sexe.FEMININ);
+			PersonnePhysique pp1 = addNonHabitant("Georgette", "van Zum", date(1934, 4, 19), Sexe.FEMININ);
+			pp1.setAnnule(true);
 
-				MenageCommun menage0 = addMenageCommun(null);
-				MenageCommun menage1 = addMenageCommun(null);
-				menage1.setAnnule(true);
+			MenageCommun menage0 = addMenageCommun(null);
+			MenageCommun menage1 = addMenageCommun(null);
+			menage1.setAnnule(true);
 
-				Etablissement etablissement0 = addEtablissement(null);
-				Etablissement etablissement1 = addEtablissement(null);
-				etablissement1.setAnnule(true);
+			Etablissement etablissement0 = addEtablissement(null);
+			Etablissement etablissement1 = addEtablissement(null);
+			etablissement1.setAnnule(true);
 
-				Entreprise entreprise0 = addEntrepriseInconnueAuCivil();
-				Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-				entreprise1.setAnnule(true);
+			Entreprise entreprise0 = addEntrepriseInconnueAuCivil();
+			Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+			entreprise1.setAnnule(true);
 
-				DebiteurPrestationImposable debiteur0 = addDebiteur();
-				DebiteurPrestationImposable debiteur1 = addDebiteur();
-				debiteur1.setAnnule(true);
+			DebiteurPrestationImposable debiteur0 = addDebiteur();
+			DebiteurPrestationImposable debiteur1 = addDebiteur();
+			debiteur1.setAnnule(true);
 
-				CollectiviteAdministrative colladm0 = addCollAdm(0);
-				CollectiviteAdministrative colladm1 = addCollAdm(1);
-				colladm1.setAnnule(true);
+			CollectiviteAdministrative colladm0 = addCollAdm(0);
+			CollectiviteAdministrative colladm1 = addCollAdm(1);
+			colladm1.setAnnule(true);
 
-				AutreCommunaute autre0 = addAutreCommunaute("dollar est ton dieu");
-				AutreCommunaute autre1 = addAutreCommunaute("en voilà un qui voit");
-				autre1.setAnnule(true);
+			AutreCommunaute autre0 = addAutreCommunaute("dollar est ton dieu");
+			AutreCommunaute autre1 = addAutreCommunaute("en voilà un qui voit");
+			autre1.setAnnule(true);
 
-				ids.pp0 = pp0.getNumero();
-				ids.pp1 = pp1.getNumero();
-				ids.menage0 = menage0.getNumero();
-				ids.menage1 = menage1.getNumero();
-				ids.etablissement0 = etablissement0.getNumero();
-				ids.etablissement1 = etablissement0.getNumero();
-				ids.entreprise0 = entreprise0.getNumero();
-				ids.entreprise1 = entreprise1.getNumero();
-				ids.debiteur0 = debiteur0.getNumero();
-				ids.debiteur1 = debiteur1.getNumero();
-				ids.colladm0 = colladm0.getNumero();
-				ids.colladm1 = colladm1.getNumero();
-				ids.autre0 = autre0.getNumero();
-				ids.autre1 = autre1.getNumero();
-				return null;
-			}
+			ids.pp0 = pp0.getNumero();
+			ids.pp1 = pp1.getNumero();
+			ids.menage0 = menage0.getNumero();
+			ids.menage1 = menage1.getNumero();
+			ids.etablissement0 = etablissement0.getNumero();
+			ids.etablissement1 = etablissement0.getNumero();
+			ids.entreprise0 = entreprise0.getNumero();
+			ids.entreprise1 = entreprise1.getNumero();
+			ids.debiteur0 = debiteur0.getNumero();
+			ids.debiteur1 = debiteur1.getNumero();
+			ids.colladm0 = colladm0.getNumero();
+			ids.colladm1 = colladm1.getNumero();
+			ids.autre0 = autre0.getNumero();
+			ids.autre1 = autre1.getNumero();
+			return null;
 		});
 
 		// tous les ids, y compris les annulés
@@ -2082,30 +1988,25 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final int SIZE = 1020;
 
-		final List<Long> ids = doInNewTransaction(new TxCallback<List<Long>>() {
-			@Override
-			public List<Long> execute(TransactionStatus status) throws Exception {
-				final List<Long> ids = new ArrayList<>(SIZE);
-				for (int i = 0; i < SIZE; ++i) {
-					PersonnePhysique pp = new PersonnePhysique(i);
-					pp = merge(pp);
-					ids.add(pp.getId());
-				}
-				return ids;
+		final List<Long> ids = doInNewTransaction(status -> {
+			final List<Long> ids1 = new ArrayList<>(SIZE);
+			for (int i = 0; i < SIZE; ++i) {
+				PersonnePhysique pp = new PersonnePhysique(i);
+				pp = merge(pp);
+				ids1.add(pp.getId());
 			}
+			return ids1;
 		});
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Set<Long> numeros = tiersDAO.getNumerosIndividu(ids, false);
-				assertNotNull(numeros);
-				assertEquals(SIZE, numeros.size());
+		doInNewTransaction(status -> {
+			final Set<Long> numeros = tiersDAO.getNumerosIndividu(ids, false);
+			assertNotNull(numeros);
+			assertEquals(SIZE, numeros.size());
 
-				for (int i = 0; i < SIZE; ++i) {
-					assertTrue(numeros.contains((long) i));
-				}
+			for (int i = 0; i < SIZE; ++i) {
+				assertTrue(numeros.contains((long) i));
 			}
+			return null;
 		});
 	}
 
@@ -2156,86 +2057,81 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final List<Long> expectedIds = new ArrayList<>();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				// Entreprise ancienne sans régime fiscal -> doit être prise en compte
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(1902, 4, 24), null, true);
-					merge(entreprise);
-					expectedIds.add(entreprise.getNumero());
-				}
-
-				// Entreprise ancienne dotée d'un régime fiscal -> ignorée
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(2009, 1, 1), null, true);
-					final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
-					entreprise.addRegimeFiscal(rf);
-					merge(entreprise);
-				}
-
-				// Entreprise récente sans régime fiscal -> doit être prise en compte
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(2014, 11, 30), null, true);
-					merge(entreprise);
-					expectedIds.add(entreprise.getNumero());
-				}
-
-				// Entreprise débutant au seuil d'utilité des régimes fiscaux Unireg, dotée d'un régime fiscal -> ignorée
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(2009, 1, 1), null, true);
-					final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
-					entreprise.addRegimeFiscal(rf);
-					merge(entreprise);
-				}
-
-				// Entreprise annulée, avec un régime fiscal -> ignorée
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(2017, 1, 1), null, true);
-					final RegimeFiscal rf3 = new RegimeFiscal(date(2017, 1, 1), null, RegimeFiscal.Portee.VD, "01");
-					entreprise.addRegimeFiscal(rf3);
-					entreprise.setAnnulationDate(date(2017, 2, 28).asJavaDate());
-					entreprise.setAnnulationUser("testUser");
-					merge(entreprise);
-				}
-
-				// Entreprise avec un unique régime fiscal annulé -> doit être prise en compte
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(2017, 2, 28), null, true);
-					// Régime annulé == pas de régime
-					final RegimeFiscal rf = new RegimeFiscal(date(2017, 2, 28), null, RegimeFiscal.Portee.VD, "01");
-					rf.setAnnulationDate(date(2017, 2, 28).asJavaDate());
-					rf.setAnnulationUser("testUser");
-					entreprise.addRegimeFiscal(rf);
-					merge(entreprise);
-					expectedIds.add(entreprise.getNumero());
-				}
-
-				// Entreprise récente dotée d'un régime fiscal -> ignorée
-				{
-					Etablissement etablissement = addEtablissement(null);
-					Entreprise entreprise = addEntrepriseInconnueAuCivil();
-					addActiviteEconomique(entreprise, etablissement, date(2017, 4, 24), null, true);
-					final RegimeFiscal rf = new RegimeFiscal(date(2017, 4, 24), null, RegimeFiscal.Portee.VD, "01");
-					entreprise.addRegimeFiscal(rf);
-					merge(entreprise);
-				}
-
-				return null;
+		doInNewTransaction(status -> {
+			// Entreprise ancienne sans régime fiscal -> doit être prise en compte
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(1902, 4, 24), null, true);
+				merge(entreprise);
+				expectedIds.add(entreprise.getNumero());
 			}
+
+			// Entreprise ancienne dotée d'un régime fiscal -> ignorée
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(2009, 1, 1), null, true);
+				final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+				entreprise.addRegimeFiscal(rf);
+				merge(entreprise);
+			}
+
+			// Entreprise récente sans régime fiscal -> doit être prise en compte
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(2014, 11, 30), null, true);
+				merge(entreprise);
+				expectedIds.add(entreprise.getNumero());
+			}
+
+			// Entreprise débutant au seuil d'utilité des régimes fiscaux Unireg, dotée d'un régime fiscal -> ignorée
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(2009, 1, 1), null, true);
+				final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+				entreprise.addRegimeFiscal(rf);
+				merge(entreprise);
+			}
+
+			// Entreprise annulée, avec un régime fiscal -> ignorée
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(2017, 1, 1), null, true);
+				final RegimeFiscal rf3 = new RegimeFiscal(date(2017, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+				entreprise.addRegimeFiscal(rf3);
+				entreprise.setAnnulationDate(date(2017, 2, 28).asJavaDate());
+				entreprise.setAnnulationUser("testUser");
+				merge(entreprise);
+			}
+
+			// Entreprise avec un unique régime fiscal annulé -> doit être prise en compte
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(2017, 2, 28), null, true);
+				// Régime annulé == pas de régime
+				final RegimeFiscal rf = new RegimeFiscal(date(2017, 2, 28), null, RegimeFiscal.Portee.VD, "01");
+				rf.setAnnulationDate(date(2017, 2, 28).asJavaDate());
+				rf.setAnnulationUser("testUser");
+				entreprise.addRegimeFiscal(rf);
+				merge(entreprise);
+				expectedIds.add(entreprise.getNumero());
+			}
+
+			// Entreprise récente dotée d'un régime fiscal -> ignorée
+			{
+				Etablissement etablissement = addEtablissement(null);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addActiviteEconomique(entreprise, etablissement, date(2017, 4, 24), null, true);
+				final RegimeFiscal rf = new RegimeFiscal(date(2017, 4, 24), null, RegimeFiscal.Portee.VD, "01");
+				entreprise.addRegimeFiscal(rf);
+				merge(entreprise);
+			}
+			return null;
 		});
 
 		// les ids des entreprises possèdant un régime fiscal valide

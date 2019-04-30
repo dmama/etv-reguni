@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
  * Exception lancée par le traitement des événements civils unitaires, et qui
  * détermine le remplissage d'une queue d'erreur
  */
-public class EvenementCivilException extends Exception {
+public class EvenementCivilException extends RuntimeException {
 
     private static final long serialVersionUID = -2525541800388242452L;
 

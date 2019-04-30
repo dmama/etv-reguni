@@ -1,7 +1,6 @@
 package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -77,15 +76,12 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 	public void testTraiterDISansEtat() throws Exception {
 
 		// Crée une déclaration sans état
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				return declaration.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			return declaration.getId();
 		});
 
 		try {
@@ -107,16 +103,13 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2009, 1, 1);
 
 		// Crée une déclaration à l'état émise
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				return declaration.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, date(2008, 1, 15));
+			return declaration.getId();
 		});
 
 		final EchoirDIsPPResults rapport = new EchoirDIsPPResults(dateTraitement, tiersService, adresseService);
@@ -140,16 +133,13 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2009, 1, 1);
 
 		// Crée une déclaration à l'état émise
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				return declaration.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, date(2008, 1, 15));
+			return declaration.getId();
 		});
 
 		final EchoirDIsPPResults rapport = processor.run(dateTraitement, null);
@@ -166,18 +156,15 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateSommation = date(2008, 6, 30); // [UNIREG-1468] le délai s'applique à partir de la date de sommation
 
 		// Crée une déclaration à l'état sommé mais avec un délai non dépassé
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation,dateSommation.addDays(3), null);
-				return declaration.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, date(2008, 1, 15));
+			addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
+			return declaration.getId();
 		});
 
 		// la date de traitement (1er août 2008) est avant le délai (dateSommation + 30 jours + 15 jours = 15 août 2008)
@@ -195,18 +182,15 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateSommation = date(2008, 6, 30);
 
 		// Crée une déclaration à l'état sommé et avec un délai dépassé
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
-				return declaration.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, date(2008, 1, 15));
+			addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
+			return declaration.getId();
 		});
 
 		// la date de traitement (1er septembre 2008) est après le délai (dateSommation + 30 jours + 15 jours = 15 août 2008)
@@ -258,18 +242,15 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2009, 1, 1);
 
 		// Crée une déclaration à l'état échue
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
-				final PeriodeFiscale periode = addPeriodeFiscale(2007);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				addEtatDeclarationSommee(declaration, date(2008, 6, 30), date(2008, 6, 30), null);
-				addEtatDeclarationEchue(declaration, date(2008, 10, 15));
-				return declaration.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique marco = addNonHabitant("Marco", "Polorose", date(1953, 3, 27), Sexe.MASCULIN);
+			final PeriodeFiscale periode = addPeriodeFiscale(2007);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(declaration, date(2008, 1, 15));
+			addEtatDeclarationSommee(declaration, date(2008, 6, 30), date(2008, 6, 30), null);
+			addEtatDeclarationEchue(declaration, date(2008, 10, 15));
+			return declaration.getId();
 		});
 
 		final EchoirDIsPPResults rapport = new EchoirDIsPPResults(dateTraitement, tiersService, adresseService);

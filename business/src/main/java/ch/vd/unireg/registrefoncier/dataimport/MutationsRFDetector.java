@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
@@ -32,8 +31,6 @@ import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.EsbStore;
 import ch.vd.unireg.common.DefaultThreadFactory;
 import ch.vd.unireg.common.DefaultThreadNameGenerator;
@@ -397,12 +394,7 @@ public class MutationsRFDetector {
 	private EvenementRFImport getEvent(final long eventId) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<EvenementRFImport>() {
-			@Override
-			public EvenementRFImport execute(TransactionStatus status) {
-				return evenementRFImportDAO.get(eventId);
-			}
-		});
+		return template.execute(status -> evenementRFImportDAO.get(eventId));
 	}
 
 	/**
@@ -437,12 +429,9 @@ public class MutationsRFDetector {
 	private Long findOldestImportWithUnprocessedMutations(long importId, TypeImportRF type) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final EvenementRFImport previous = evenementRFImportDAO.findOldestImportWithUnprocessedMutations(importId, type);
-				return previous == null ? null : previous.getId();
-			}
+		return template.execute(status -> {
+			final EvenementRFImport previous = evenementRFImportDAO.findOldestImportWithUnprocessedMutations(importId, type);
+			return previous == null ? null : previous.getId();
 		});
 	}
 
@@ -455,24 +444,22 @@ public class MutationsRFDetector {
 
 	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable Exception exception) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) {
-				final EvenementRFImport event = evenementRFImportDAO.get(eventId);
-				if (event == null) {
-					throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + eventId + "] n'existe pas.");
-				}
-
-				event.setEtat(etat);
-				if (exception == null) {
-					event.setErrorMessage(null);
-					event.setCallstack(null);
-				}
-				else {
-					event.setErrorMessage(LengthConstants.streamlineField(ExceptionHelper.getMessage(exception), 1000, true));
-					event.setCallstack(ExceptionUtils.getStackTrace(exception));
-				}
+		template.execute(status -> {
+			final EvenementRFImport event = evenementRFImportDAO.get(eventId);
+			if (event == null) {
+				throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + eventId + "] n'existe pas.");
 			}
+
+			event.setEtat(etat);
+			if (exception == null) {
+				event.setErrorMessage(null);
+				event.setCallstack(null);
+			}
+			else {
+				event.setErrorMessage(LengthConstants.streamlineField(ExceptionHelper.getMessage(exception), 1000, true));
+				event.setCallstack(ExceptionUtils.getStackTrace(exception));
+			}
+			return null;
 		});
 	}
 

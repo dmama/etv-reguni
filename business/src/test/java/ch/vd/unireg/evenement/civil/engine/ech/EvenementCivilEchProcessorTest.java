@@ -6,7 +6,6 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -398,12 +397,9 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				addHabitant(noIndividu);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addHabitant(noIndividu);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)

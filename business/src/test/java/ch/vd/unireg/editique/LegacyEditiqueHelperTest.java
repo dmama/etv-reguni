@@ -3,7 +3,6 @@ package ch.vd.unireg.editique;
 
 import noNamespace.InfoDocumentDocument1;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -78,52 +77,43 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique jeromeCtb = addHabitant(numeroIndJerome);
-				ids.jerome = jeromeCtb.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique jeromeCtb = addHabitant(numeroIndJerome);
+			ids.jerome = jeromeCtb.getId();
 
-				final PersonnePhysique jacquesCtb = addHabitant(numeroIndJacques);
-				ids.jacques = jacquesCtb.getId();
+			final PersonnePhysique jacquesCtb = addHabitant(numeroIndJacques);
+			ids.jacques = jacquesCtb.getId();
 
-				final PersonnePhysique georgesCtb = addHabitant(numeroIndGeorges);
-				ids.georges = georgesCtb.getId();
+			final PersonnePhysique georgesCtb = addHabitant(numeroIndGeorges);
+			ids.georges = georgesCtb.getId();
 
-				final PersonnePhysique theotimeCtb = addHabitant(numeroIndTheotime);
-				ids.theotime = theotimeCtb.getId();
-				return null;
-
-
-			}
+			final PersonnePhysique theotimeCtb = addHabitant(numeroIndTheotime);
+			ids.theotime = theotimeCtb.getId();
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				Tiers jerome = tiersService.getTiers(ids.jerome);
-				Tiers jacques = tiersService.getTiers(ids.jacques);
-				Tiers georges = tiersService.getTiers(ids.georges);
-				Tiers theotime = tiersService.getTiers(ids.theotime);
+		doInNewTransaction(status -> {
+			Tiers jerome = tiersService.getTiers(ids.jerome);
+			Tiers jacques = tiersService.getTiers(ids.jacques);
+			Tiers georges = tiersService.getTiers(ids.georges);
+			Tiers theotime = tiersService.getTiers(ids.theotime);
 
-				InfoDocumentDocument1.InfoDocument infoDocumentJerome = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-				editiqueHelper.remplitAffranchissement(infoDocumentJerome, jerome);
-				assertEquals(ZoneAffranchissementEditique.SUISSE.getCode(), infoDocumentJerome.getAffranchissement().getZone());
+			InfoDocumentDocument1.InfoDocument infoDocumentJerome = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+			editiqueHelper.remplitAffranchissement(infoDocumentJerome, jerome);
+			assertEquals(ZoneAffranchissementEditique.SUISSE.getCode(), infoDocumentJerome.getAffranchissement().getZone());
 
-				InfoDocumentDocument1.InfoDocument infoDocumentJacques = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-				editiqueHelper.remplitAffranchissement(infoDocumentJacques, jacques);
-				assertEquals(ZoneAffranchissementEditique.EUROPE.getCode(), infoDocumentJacques.getAffranchissement().getZone());
+			InfoDocumentDocument1.InfoDocument infoDocumentJacques = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+			editiqueHelper.remplitAffranchissement(infoDocumentJacques, jacques);
+			assertEquals(ZoneAffranchissementEditique.EUROPE.getCode(), infoDocumentJacques.getAffranchissement().getZone());
 
-				InfoDocumentDocument1.InfoDocument infoDocumentGeorges = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-				editiqueHelper.remplitAffranchissement(infoDocumentGeorges, georges);
-				assertEquals(ZoneAffranchissementEditique.RESTE_MONDE.getCode(), infoDocumentGeorges.getAffranchissement().getZone());
+			InfoDocumentDocument1.InfoDocument infoDocumentGeorges = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+			editiqueHelper.remplitAffranchissement(infoDocumentGeorges, georges);
+			assertEquals(ZoneAffranchissementEditique.RESTE_MONDE.getCode(), infoDocumentGeorges.getAffranchissement().getZone());
 
-				InfoDocumentDocument1.InfoDocument infoDocumentTheotime = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-				editiqueHelper.remplitAffranchissement(infoDocumentTheotime, theotime);
-				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), infoDocumentTheotime.getAffranchissement().getZone());
-
-				return null;
-			}
+			InfoDocumentDocument1.InfoDocument infoDocumentTheotime = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+			editiqueHelper.remplitAffranchissement(infoDocumentTheotime, theotime);
+			assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), infoDocumentTheotime.getAffranchissement().getZone());
+			return null;
 		});
 	}
 
@@ -161,13 +151,8 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 
 			final Declaration di = pp.getDeclarationActiveAt(dateVenteImmeuble);
 			assertNotNull(di);
-			try {
-				final String commune = editiqueHelper.getCommune(di);
-				assertEquals(MockCommune.Cossonay.getNomCourt(), commune);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
+			final String commune = editiqueHelper.getCommune(di);
+			assertEquals(MockCommune.Cossonay.getNomCourt(), commune);
 			return null;
 		});
 	}

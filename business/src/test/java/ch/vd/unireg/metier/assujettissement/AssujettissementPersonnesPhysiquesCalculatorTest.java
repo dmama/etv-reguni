@@ -10,7 +10,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -18,7 +17,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.webscreenshot.WebScreenshot;
 import ch.vd.registre.webscreenshot.WebScreenshotDoc;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -4147,18 +4145,16 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		// pour permettre aux fors que l'on veut utiliser d'être valides
 		ForFiscalValidator.setFutureBeginDate(RegDateHelper.maximum(date(2014, 10, 31), RegDate.get(), NullDateBehavior.LATEST));
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique ctb = createContribuableSansFor();
-					addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.MIXTE_137_2);
-					addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique ctb = createContribuableSansFor();
+				addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.MIXTE_137_2);
+				addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
 
-					final List<Assujettissement> liste = determine(ctb);
-					assertEquals(2, liste.size());
-					assertSourcierMixteArt137Al2(arrivee, depart.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-					assertSourcierPur(depart.getLastDayOfTheMonth().getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
-				}
+				final List<Assujettissement> liste = determine(ctb);
+				assertEquals(2, liste.size());
+				assertSourcierMixteArt137Al2(arrivee, depart.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+				assertSourcierPur(depart.getLastDayOfTheMonth().getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+				return null;
 			});
 		}
 		finally {
@@ -4198,18 +4194,16 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		ForFiscalValidator.setFutureBeginDate(RegDateHelper.maximum(date(2014, 10, 31), RegDate.get(), NullDateBehavior.LATEST));
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique ctb = createContribuableSansFor();
-					addForPrincipal(ctb, date(2013, 1, 1), MotifFor.ARRIVEE_HS, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon, ModeImposition.SOURCE);
-					addForPrincipal(ctb, obtention, MotifFor.PERMIS_C_SUISSE, obtention.addMonths(5), MotifFor.DEPART_HS, MockCommune.Moudon);
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique ctb = createContribuableSansFor();
+				addForPrincipal(ctb, date(2013, 1, 1), MotifFor.ARRIVEE_HS, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon, ModeImposition.SOURCE);
+				addForPrincipal(ctb, obtention, MotifFor.PERMIS_C_SUISSE, obtention.addMonths(5), MotifFor.DEPART_HS, MockCommune.Moudon);
 
-					final List<Assujettissement> liste = determine(ctb);
-					assertEquals(2, liste.size());
-					assertSourcierPur(date(2013, 1, 1), obtention.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-					assertOrdinaire(obtention.getLastDayOfTheMonth().getOneDayAfter(), obtention.addMonths(5), MotifAssujettissement.PERMIS_C_SUISSE, MotifAssujettissement.DEPART_HS, liste.get(1));
-				}
+				final List<Assujettissement> liste = determine(ctb);
+				assertEquals(2, liste.size());
+				assertSourcierPur(date(2013, 1, 1), obtention.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+				assertOrdinaire(obtention.getLastDayOfTheMonth().getOneDayAfter(), obtention.addMonths(5), MotifAssujettissement.PERMIS_C_SUISSE, MotifAssujettissement.DEPART_HS, liste.get(1));
+				return null;
 			});
 		}
 		finally {

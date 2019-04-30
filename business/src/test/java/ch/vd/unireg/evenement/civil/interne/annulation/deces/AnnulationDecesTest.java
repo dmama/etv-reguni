@@ -1,8 +1,6 @@
 package ch.vd.unireg.evenement.civil.interne.annulation.deces;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -29,6 +27,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 
@@ -77,19 +76,16 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
-				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
+		doInNewTransactionAndSession(status -> {
+			final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
+			final AnnulationDeces annulation = createValidAnnulationDeces(ind);
 
-				final MessageCollector collector = buildMessageCollector();
-				annulation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
+			final MessageCollector collector = buildMessageCollector();
+			annulation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
 
-				annulation.handle(collector);
-				return null;
-			}
+			annulation.handle(collector);
+			return null;
 		});
 
 		// test du résultat
@@ -140,24 +136,21 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
-				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
+		doInNewTransactionAndSession(status -> {
+			final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008, 12, 31));
+			final AnnulationDeces annulation = createValidAnnulationDeces(ind);
 
-				final MessageCollector collector = buildMessageCollector();
+			final MessageCollector collector = buildMessageCollector();
 
-				try {
-					annulation.validate(collector, collector);
-					Assert.fail("L'événement n'aurait pas dû valider : l'individu possède une décision ACI");
-				}
-				catch (EvenementCivilException e) {
-					final String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI", FormatNumeroHelper.numeroCTBToDisplay(ppId));
-					Assert.assertEquals(message, e.getMessage());
-				}
-				return null;
+			try {
+				annulation.validate(collector, collector);
+				fail("L'événement n'aurait pas dû valider : l'individu possède une décision ACI");
 			}
+			catch (EvenementCivilException e) {
+				final String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI", FormatNumeroHelper.numeroCTBToDisplay(ppId));
+				assertEquals(message, e.getMessage());
+			}
+			return null;
 		});
 
 
@@ -197,19 +190,16 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
-				final AnnulationDeces annulation = createValidAnnulationDeces(individu);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, date(2008, 12, 31));
+			final AnnulationDeces annulation = createValidAnnulationDeces(individu);
 
-				final MessageCollector collector = buildMessageCollector();
-				annulation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
+			final MessageCollector collector = buildMessageCollector();
+			annulation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
 
-				annulation.handle(collector);
-				return null;
-			}
+			annulation.handle(collector);
+			return null;
 		});
 
 		// vérification du résultat
@@ -300,20 +290,17 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2008, 12, 31));
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
-				final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, date(2008, 12, 31));
+			final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_CONJOINT, date(2008, 12, 31));
+			final AnnulationDeces annulation = createValidAnnulationDeces(individu, conjoint);
 
-				final MessageCollector collector = buildMessageCollector();
-				annulation.validate(collector, collector);
-				assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
+			final MessageCollector collector = buildMessageCollector();
+			annulation.validate(collector, collector);
+			assertEmpty("Une erreur est survenue lors du validate de l'annulation de décès", collector.getErreurs());
 
-				annulation.handle(collector);
-				return null;
-			}
+			annulation.handle(collector);
+			return null;
 		});
 
 		// test des résultats

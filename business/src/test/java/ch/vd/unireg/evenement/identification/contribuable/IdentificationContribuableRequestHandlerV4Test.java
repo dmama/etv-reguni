@@ -8,10 +8,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -85,27 +83,24 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		// attente de la fin de l'indexation
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new NaturalPersonIdentificationData(null, null, null, "Pittet", null, new PartialDate(1980, 1, 24), null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
+		doInNewTransactionAndSession(status -> {
+			final IdentificationData data = new NaturalPersonIdentificationData(null, null, null, "Pittet", null, new PartialDate(1980, 1, 24), null);
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response);
-				assertNotNull(response.getIdentificationResult());
-				assertEquals(1, response.getIdentificationResult().size());
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response);
+			assertNotNull(response.getIdentificationResult());
+			assertEquals(1, response.getIdentificationResult().size());
 
-				final IdentificationResult result = response.getIdentificationResult().get(0);
-				assertNotNull(result.getErreur());
-				assertNull(result.getContribuable());
-				assertNull("Pourquoi aucun, il y en a deux...", result.getErreur().getAucun());            // on en a trouvé deux...
-				assertNotNull("Pourquoi pas plusieurs ? il y en a deux, non ?", result.getErreur().getPlusieurs());     // on en a trouvé deux...
-				return null;
-			}
+			final IdentificationResult result = response.getIdentificationResult().get(0);
+			assertNotNull(result.getErreur());
+			assertNull(result.getContribuable());
+			assertNull("Pourquoi aucun, il y en a deux...", result.getErreur().getAucun());            // on en a trouvé deux...
+			assertNotNull("Pourquoi pas plusieurs ? il y en a deux, non ?", result.getErreur().getPlusieurs());     // on en a trouvé deux...;
+			return null;
 		});
 	}
 
@@ -128,25 +123,22 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		// attente de la fin de l'indexation
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new NaturalPersonIdentificationData(null, null, null, "Pittet", null, new PartialDate(1980, 1, 24), null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
+		doInNewTransactionAndSession(status -> {
+			final IdentificationData data = new NaturalPersonIdentificationData(null, null, null, "Pittet", null, new PartialDate(1980, 1, 24), null);
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response);
-				assertNotNull(response.getIdentificationResult());
-				assertEquals(1, response.getIdentificationResult().size());
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response);
+			assertNotNull(response.getIdentificationResult());
+			assertEquals(1, response.getIdentificationResult().size());
 
-				final IdentificationResult result = response.getIdentificationResult().get(0);
-				assertNull(result.getErreur());
-				assertNotNull(result.getContribuable());
-				return null;
-			}
+			final IdentificationResult result = response.getIdentificationResult().get(0);
+			assertNull(result.getErreur());
+			assertNotNull(result.getContribuable());
+			return null;
 		});
 	}
 
@@ -171,33 +163,30 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		globalTiersIndexer.sync();
 
 		// identification
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new NaturalPersonIdentificationData("Très grand", null, null, nom, prenom, null, null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+		doInNewTransactionAndSession(status -> {
+			final IdentificationData data = new NaturalPersonIdentificationData("Très grand", null, null, nom, prenom, null, null);
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response);
-				assertNotNull(response.getIdentificationResult());
-				assertEquals(1, response.getIdentificationResult().size());
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response);
+			assertNotNull(response.getIdentificationResult());
+			assertEquals(1, response.getIdentificationResult().size());
 
-				final IdentificationResult result = response.getIdentificationResult().get(0);
-				assertNull(result.getErreur());
-				assertEquals("Très grand", result.getId());
+			final IdentificationResult result = response.getIdentificationResult().get(0);
+			assertNull(result.getErreur());
+			assertEquals("Très grand", result.getId());
 
-				final IdentifiedTaxpayer ctb = result.getContribuable();
-				assertNotNull(ctb);
-				assertEquals(IdentifiedNaturalPerson.class, ctb.getClass());
-				assertEquals(id, ctb.getNumeroContribuable());
+			final IdentifiedTaxpayer ctb = result.getContribuable();
+			assertNotNull(ctb);
+			assertEquals(IdentifiedNaturalPerson.class, ctb.getClass());
+			assertEquals(id, ctb.getNumeroContribuable());
 
-				final IdentifiedNaturalPerson pp = (IdentifiedNaturalPerson) ctb;
-				assertEquals(StringUtils.abbreviate(prenom, 100), pp.getPrenom());
-				assertEquals(StringUtils.abbreviate(nom.replaceAll("\\s+", " "), 100), pp.getNom());
-				return null;
-			}
+			final IdentifiedNaturalPerson pp = (IdentifiedNaturalPerson) ctb;
+			assertEquals(StringUtils.abbreviate(prenom, 100), pp.getPrenom());
+			assertEquals(StringUtils.abbreviate(nom.replaceAll("\\s+", " "), 100), pp.getNom());
+			return null;
 		});
 	}
 
@@ -256,105 +245,104 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		globalTiersIndexer.sync();
 
 		// demande d'identifications multiples
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final int nbGroupes = 13;
-				final int tailleGroupe = 5;     // pour chacun des cas et une réponse négative
-				final List<IdentificationData> dataList = new ArrayList<>(nbGroupes * tailleGroupe);
-				for (int idxGroupe = 0; idxGroupe < nbGroupes; ++idxGroupe) {
-					for (int idx = 0; idx < tailleGroupe; ++idx) {
-						final String nom;
-						final String prenom;
-						final String id;
-						switch (idx) {
-						case 0:
-							nom = "Baudet";
-							prenom = "Alphonse";
-							id = null;
-							break;
-						case 1:
-							nom = "Basquette";
-							prenom = "Richard";
-							id = "RB";
-							break;
-						case 2:
-							nom = "Trumbledaure";
-							prenom = "Albus";
-							id = null;
-							break;
-						case 3:
-							nom = "Peticlou";
-							prenom = "Justin";
-							id = null;
-							break;
-						case 4:
-							nom = "Pittet";
-							prenom = "Georges";
-							id = "GP";
-							break;
-						default:
-							throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");
-						}
-
-						final IdentificationData data = new NaturalPersonIdentificationData(id, null, null, nom, prenom, null, null);
-						dataList.add(data);
-					}
-				}
-
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(new IdentificationContribuableRequest(dataList), "toto");
-				assertNotNull(jaxbResponse);
-
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response);
-				assertNotNull(response.getIdentificationResult());
-				assertEquals(nbGroupes * tailleGroupe, response.getIdentificationResult().size());
-
-				for (int index = 0; index < nbGroupes * tailleGroupe; ++index) {
-					final IdentificationResult result = response.getIdentificationResult().get(index);
-					assertNotNull(result);
-					switch (index % tailleGroupe) {
+		doInNewTransactionAndSession(status -> {
+			final int nbGroupes = 13;
+			final int tailleGroupe = 5;     // pour chacun des cas et une réponse négative
+			final List<IdentificationData> dataList = new ArrayList<>(nbGroupes * tailleGroupe);
+			for (int idxGroupe = 0; idxGroupe < nbGroupes; ++idxGroupe) {
+				for (int idx = 0; idx < tailleGroupe; ++idx) {
+					final String nom;
+					final String prenom;
+					final String id;
+					switch (idx) {
 					case 0:
-						// Alphonse Baudet doit avoir été trouvé
-						assertNotNull(Integer.toString(index), result.getContribuable());
-						assertNull(Integer.toString(index), result.getErreur());
-						assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuable());
-						assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuable());
-						assertNull(result.getId());
+						nom = "Baudet";
+						prenom = "Alphonse";
+						id = null;
 						break;
 					case 1:
-						// Richard Basquette doit avoir été trouvé
-						assertNotNull(Integer.toString(index), result.getContribuable());
-						assertNull(Integer.toString(index), result.getErreur());
-						assertEquals(Integer.toString(index), ids.ppDeux, result.getContribuable().getNumeroContribuable());
-						assertEquals("RB", result.getId());
+						nom = "Basquette";
+						prenom = "Richard";
+						id = "RB";
 						break;
 					case 2:
-						// Albus Trumbledaure doit avoir été trouvé
-						assertNotNull(Integer.toString(index), result.getContribuable());
-						assertNull(Integer.toString(index), result.getErreur());
-						assertEquals(Integer.toString(index), ids.ppTrois, result.getContribuable().getNumeroContribuable());
-						assertNull(result.getId());
+						nom = "Trumbledaure";
+						prenom = "Albus";
+						id = null;
 						break;
 					case 3:
-						// Personne ne doit avoir été trouvé (aucun)
-						assertNull(Integer.toString(index), result.getContribuable());
-						assertNotNull(Integer.toString(index), result.getErreur());
-						assertNotNull(Integer.toString(index), result.getErreur().getAucun());
-						assertNull(result.getId());
+						nom = "Peticlou";
+						prenom = "Justin";
+						id = null;
 						break;
 					case 4:
-						// Personne ne doit avoir été trouvé (plusieurs)
-						assertNull(Integer.toString(index), result.getContribuable());
-						assertNotNull(Integer.toString(index), result.getErreur());
-						assertNotNull(Integer.toString(index), result.getErreur().getPlusieurs());
-						assertEquals("GP", result.getId());
+						nom = "Pittet";
+						prenom = "Georges";
+						id = "GP";
 						break;
 					default:
 						throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");
 					}
+
+					final IdentificationData data = new NaturalPersonIdentificationData(id, null, null, nom, prenom, null, null);
+					dataList.add(data);
 				}
 			}
+
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(new IdentificationContribuableRequest(dataList), "toto");
+			assertNotNull(jaxbResponse);
+
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response);
+			assertNotNull(response.getIdentificationResult());
+			assertEquals(nbGroupes * tailleGroupe, response.getIdentificationResult().size());
+
+			for (int index = 0; index < nbGroupes * tailleGroupe; ++index) {
+				final IdentificationResult result = response.getIdentificationResult().get(index);
+				assertNotNull(result);
+				switch (index % tailleGroupe) {
+				case 0:
+					// Alphonse Baudet doit avoir été trouvé
+					assertNotNull(Integer.toString(index), result.getContribuable());
+					assertNull(Integer.toString(index), result.getErreur());
+					assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuable());
+					assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuable());
+					assertNull(result.getId());
+					break;
+				case 1:
+					// Richard Basquette doit avoir été trouvé
+					assertNotNull(Integer.toString(index), result.getContribuable());
+					assertNull(Integer.toString(index), result.getErreur());
+					assertEquals(Integer.toString(index), ids.ppDeux, result.getContribuable().getNumeroContribuable());
+					assertEquals("RB", result.getId());
+					break;
+				case 2:
+					// Albus Trumbledaure doit avoir été trouvé
+					assertNotNull(Integer.toString(index), result.getContribuable());
+					assertNull(Integer.toString(index), result.getErreur());
+					assertEquals(Integer.toString(index), ids.ppTrois, result.getContribuable().getNumeroContribuable());
+					assertNull(result.getId());
+					break;
+				case 3:
+					// Personne ne doit avoir été trouvé (aucun)
+					assertNull(Integer.toString(index), result.getContribuable());
+					assertNotNull(Integer.toString(index), result.getErreur());
+					assertNotNull(Integer.toString(index), result.getErreur().getAucun());
+					assertNull(result.getId());
+					break;
+				case 4:
+					// Personne ne doit avoir été trouvé (plusieurs)
+					assertNull(Integer.toString(index), result.getContribuable());
+					assertNotNull(Integer.toString(index), result.getErreur());
+					assertNotNull(Integer.toString(index), result.getErreur().getPlusieurs());
+					assertEquals("GP", result.getId());
+					break;
+				default:
+					throw new RuntimeException("On a prévu des groupes de 5... s'ils sont plus gros, il y a des choses à changer ici...");
+				}
+			}
+			;
+			return null;
 		});
 	}
 
@@ -388,31 +376,29 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		globalTiersIndexer.sync();
 
 		// identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new CorporationIdentificationData("idàmoi", ide, null, null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+		doInNewTransactionAndSession(status -> {
+			final IdentificationData data = new CorporationIdentificationData("idàmoi", ide, null, null);
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response);
-				assertNotNull(response.getIdentificationResult());
-				assertEquals(1, response.getIdentificationResult().size());
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response);
+			assertNotNull(response.getIdentificationResult());
+			assertEquals(1, response.getIdentificationResult().size());
 
-				final IdentificationResult result = response.getIdentificationResult().get(0);
-				assertNull(result.getErreur());
-				assertEquals("idàmoi", result.getId());
+			final IdentificationResult result = response.getIdentificationResult().get(0);
+			assertNull(result.getErreur());
+			assertEquals("idàmoi", result.getId());
 
-				final IdentifiedTaxpayer ctb = result.getContribuable();
-				assertNotNull(ctb);
-				assertEquals(IdentifiedCorporation.class, ctb.getClass());
-				assertEquals(idPM, ctb.getNumeroContribuable());
+			final IdentifiedTaxpayer ctb = result.getContribuable();
+			assertNotNull(ctb);
+			assertEquals(IdentifiedCorporation.class, ctb.getClass());
+			assertEquals(idPM, ctb.getNumeroContribuable());
 
-				final IdentifiedCorporation pm = (IdentifiedCorporation) ctb;
-				assertEquals(StringUtils.abbreviate(raisonSociale, 100), pm.getRaisonSociale());
-			}
+			final IdentifiedCorporation pm = (IdentifiedCorporation) ctb;
+			assertEquals(StringUtils.abbreviate(raisonSociale, 100), pm.getRaisonSociale());
+			return null;
 		});
 
 	}
@@ -448,24 +434,22 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		globalTiersIndexer.sync();
 
 		// identification
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final IdentificationData data = new CorporationIdentificationData("idàmoi", ide, null, null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
-				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
-				assertNotNull(jaxbResponse);
+		doInNewTransactionAndSession(status -> {
+			final IdentificationData data = new CorporationIdentificationData("idàmoi", ide, null, null);
+			final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
+			final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+			assertNotNull(jaxbResponse);
 
-				final IdentificationContribuableResponse response = jaxbResponse.getValue();
-				assertNotNull(response);
-				assertNotNull(response.getIdentificationResult());
-				assertEquals(1, response.getIdentificationResult().size());
+			final IdentificationContribuableResponse response = jaxbResponse.getValue();
+			assertNotNull(response);
+			assertNotNull(response.getIdentificationResult());
+			assertEquals(1, response.getIdentificationResult().size());
 
-				final IdentificationResult result = response.getIdentificationResult().get(0);
-				assertNotNull(result.getErreur());
-				assertEquals("idàmoi", result.getId());
-				assertTrue(StringUtils.containsIgnoreCase(result.getErreur().getAucun().toString(), "Aucun contribuable trouvé pour le message"));
-			}
+			final IdentificationResult result = response.getIdentificationResult().get(0);
+			assertNotNull(result.getErreur());
+			assertEquals("idàmoi", result.getId());
+			assertTrue(StringUtils.containsIgnoreCase(result.getErreur().getAucun().toString(), "Aucun contribuable trouvé pour le message"));
+			return null;
 		});
 
 	}

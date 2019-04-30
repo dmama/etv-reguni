@@ -10,10 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -67,12 +65,7 @@ public class CalculParentesProcessor {
 	private int removeExisting(StatusManager status) {
 		status.setMessage("Effacement des parentés existantes...");
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return template.execute(new TxCallback<Integer>() {
-			@Override
-			public Integer execute(TransactionStatus status) throws Exception {
-				return rapportDAO.removeAllOfKind(TypeRapportEntreTiers.PARENTE);
-			}
-		});
+		return template.execute(s -> rapportDAO.removeAllOfKind(TypeRapportEntreTiers.PARENTE));
 	}
 
 	private CalculParentesResults refreshParentes(final int nbThreads, final CalculParentesMode mode, final StatusManager status) {
@@ -151,24 +144,14 @@ public class CalculParentesProcessor {
 		status.setMessage("Récupération des identifiants des personnes physiques connues du civil...");
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<List<Long>>() {
-			@Override
-			public List<Long> execute(TransactionStatus status) throws Exception {
-				return tiersDAO.getIdsConnusDuCivil();
-			}
-		});
+		return template.execute(s -> tiersDAO.getIdsConnusDuCivil());
 	}
 
 	private List<Long> getNumerosPersonnesPhysiquesDirty(StatusManager status) {
 		status.setMessage("Récupération des identifiants des personnes physiques à rafraîchir...");
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<List<Long>>() {
-			@Override
-			public List<Long> execute(TransactionStatus status) throws Exception {
-				return tiersDAO.getIdsParenteDirty();
-			}
-		});
+		return template.execute(s -> tiersDAO.getIdsParenteDirty());
 	}
 
 	private void eliminationDoublonsParentes(int nbThreads, StatusManager status) {

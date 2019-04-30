@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -50,15 +49,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -119,15 +115,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -237,15 +230,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -432,15 +422,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(2009, 2, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(2009, 2, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -476,15 +463,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// On crée un marié seul dans unireg avec monsieur
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
-				MenageCommun menage = addEnsembleTiersCouple(monsieur, null, dateMariage, null).getMenage();
-				tiersService.closeForFiscalPrincipal(monsieur, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+			MenageCommun menage = addEnsembleTiersCouple(monsieur, null, dateMariage, null).getMenage();
+			tiersService.closeForFiscalPrincipal(monsieur, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return null;
 		});
 
 
@@ -565,15 +549,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
@@ -671,16 +652,13 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = addHabitant(noMonsieur);
-				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
-				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-				addDecisionAci(monsieur, date(2000, 1, 1), null, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique monsieur = addHabitant(noMonsieur);
+			addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+			PersonnePhysique madame = addHabitant(noMadame);
+			addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+			addDecisionAci(monsieur, date(2000, 1, 1), null, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return null;
 		});
 
 		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)

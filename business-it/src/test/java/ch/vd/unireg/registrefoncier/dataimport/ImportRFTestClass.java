@@ -8,10 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.common.BusinessItTestingConstants;
 import ch.vd.unireg.common.BusinessTestingConstants;
@@ -369,31 +367,26 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	protected void assertEtatMutations(final int count, final EtatEvenementRF etat) throws Exception {
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(count, mutations.size());
-				Collections.sort(mutations, new MutationComparator());
-				for (EvenementRFMutation mutation : mutations) {
-					assertEquals(etat, mutation.getEtat());
-				}
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(count, mutations.size());
+			Collections.sort(mutations, new MutationComparator());
+			for (EvenementRFMutation mutation : mutations) {
+				assertEquals(etat, mutation.getEtat());
 			}
+			return null;
 		});
 	}
 
 	protected Long insertImport(final TypeImportRF type, final RegDate dateEvenement, final EtatEvenementRF etat, final String fileUrl) throws Exception {
 		// on insère les données de l'import dans la base
-		return doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(type);
-				importEvent.setDateEvenement(dateEvenement);
-				importEvent.setEtat(etat);
-				importEvent.setFileUrl(fileUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		return doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(type);
+			importEvent.setDateEvenement(dateEvenement);
+			importEvent.setEtat(etat);
+			importEvent.setFileUrl(fileUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 	}
 }

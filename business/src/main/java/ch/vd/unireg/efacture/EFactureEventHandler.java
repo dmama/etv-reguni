@@ -15,7 +15,7 @@ public interface EFactureEventHandler {
 	 * Appelé à la réception d'un événement e-facture
 	 * @param event l'événement reçu
 	 */
-	void handle(Demande event) throws Exception;
+	void handle(Demande event) throws EFactureException;
 
 	/**
 	 * @return Les resources utiles au parsing du fichier XML reçu

@@ -1,17 +1,16 @@
 package ch.vd.unireg.fourreNeutre;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.fourreNeutre.view.FourreNeutreView;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.fourreNeutre.view.FourreNeutreView;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -49,13 +48,10 @@ public class FourreNeutreControllerTest extends WebTestSpring3 {
 	@Test
 	public void testImprimerFourreNeutreGet() throws Exception {
 
-		final Long tiersId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, MockCommune.Vaulion);
-				return pp.getId();
-			}
+		final Long tiersId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, MockCommune.Vaulion);
+			return pp.getId();
 		});
 
 		// affiche la page de création d'une nouvelle DI
@@ -85,12 +81,9 @@ public class FourreNeutreControllerTest extends WebTestSpring3 {
 	@Test
 	public void testImprimerFourreNeutrePostAvecMauvaisType() throws Exception {
 
-		final Long tiersId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable d = addDebiteur();
-				return d.getId();
-			}
+		final Long tiersId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable d = addDebiteur();
+			return d.getId();
 		});
 
 		request.setMethod("POST");
@@ -107,28 +100,4 @@ public class FourreNeutreControllerTest extends WebTestSpring3 {
 
 
 	}
-	/**
-	 * Teste l'impression d'une nouvelle fourre neutre
-	 */
-//	@Test
-//	public void testImprimerFourreNeutrePost() throws Exception {
-//
-//		final Long tiersId = doInNewTransactionAndSession(new TxCallback<Long>() {
-//			@Override
-//			public Long execute(TransactionStatus status) throws Exception {
-//				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-//				return pp.getId();
-//			}
-//		});
-//
-//		request.setMethod("POST");
-//		request.addParameter("tiersId", tiersId.toString());
-//		request.addParameter("periodeFiscale", "2013");
-//		request.setRequestURI("/fourre-neutre/imprimer.do");
-//
-//		// exécution de la requête
-//		final ModelAndView results = handle(request, response);
-//		assertNull(results); // si le résultat est différent de null, c'est qu'il y a eu une erreur et qu'on a reçu un redirect
-//	}
-
 }

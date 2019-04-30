@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.raft.ZipRaftEsbStore;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
@@ -89,15 +87,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		waitForJobCompletion(job);
 		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
-				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date.", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date."));
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
+			assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date.", importEvent.getErrorMessage());
+			assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date."));
+			return null;
 		});
 	}
 
@@ -125,15 +121,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		waitForJobCompletion(job);
 		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
-				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité.", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité."));
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
+			assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité.", importEvent.getErrorMessage());
+			assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité."));
+			return null;
 		});
 	}
 
@@ -186,15 +180,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		waitForJobCompletion(job);
 		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
-				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date.", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date."));
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
+			assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date.", importEvent.getErrorMessage());
+			assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date."));
+			return null;
 		});
 	}
 
@@ -219,16 +211,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 10, 1), EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.SERVITUDES);
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.SERVITUDES);
+			importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
@@ -246,278 +235,274 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(5, mutations.size());    // il y a 2 usufruits + 3 personnes physiques
-				mutations.sort(new MutationComparator());
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(5, mutations.size());    // il y a 2 usufruits + 3 personnes physiques
+			mutations.sort(new MutationComparator());
 
-				final EvenementRFMutation mut0 = mutations.get(0);
-				assertEquals(importId, mut0.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda5511644", mut0.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <PersonstammID>_1f109152380ffd8901380ffda5511644</PersonstammID>\n" +
-						             "    <Name>Lassueur</Name>\n" +
-						             "    <Gueltig>true</Gueltig>\n" +
-						             "    <ClientRegulier>false</ClientRegulier>\n" +
-						             "    <NoSCC>0</NoSCC>\n" +
-						             "    <Status>definitiv</Status>\n" +
-						             "    <Sprache>\n" +
-						             "        <TextDe>Französisch</TextDe>\n" +
-						             "        <TextFr>Français</TextFr>\n" +
-						             "    </Sprache>\n" +
-						             "    <Anrede>\n" +
-						             "        <TextDe>*Monsieur</TextDe>\n" +
-						             "        <TextFr>Monsieur</TextFr>\n" +
-						             "    </Anrede>\n" +
-						             "    <NrACI>0</NrACI>\n" +
-						             "    <Adressen>\n" +
-						             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
-						             "        <PLZ>1347</PLZ>\n" +
-						             "        <Ort>Le Sentier</Ort>\n" +
-						             "        <Rolle>ACI</Rolle>\n" +
-						             "    </Adressen>\n" +
-						             "    <Vorname>Jean-Claude</Vorname>\n" +
-						             "    <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>27</Tag>\n" +
-						             "        <Monat>6</Monat>\n" +
-						             "        <Jahr>1941</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <NameDerEltern>René</NameDerEltern>\n" +
-						             "    <Geschlecht>unbekannt</Geschlecht>\n" +
-						             "    <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "    <NrIROLE>10385019</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(importId, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
+			assertEquals("_1f109152380ffd8901380ffda5511644", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <PersonstammID>_1f109152380ffd8901380ffda5511644</PersonstammID>\n" +
+					             "    <Name>Lassueur</Name>\n" +
+					             "    <Gueltig>true</Gueltig>\n" +
+					             "    <ClientRegulier>false</ClientRegulier>\n" +
+					             "    <NoSCC>0</NoSCC>\n" +
+					             "    <Status>definitiv</Status>\n" +
+					             "    <Sprache>\n" +
+					             "        <TextDe>Französisch</TextDe>\n" +
+					             "        <TextFr>Français</TextFr>\n" +
+					             "    </Sprache>\n" +
+					             "    <Anrede>\n" +
+					             "        <TextDe>*Monsieur</TextDe>\n" +
+					             "        <TextFr>Monsieur</TextFr>\n" +
+					             "    </Anrede>\n" +
+					             "    <NrACI>0</NrACI>\n" +
+					             "    <Adressen>\n" +
+					             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
+					             "        <PLZ>1347</PLZ>\n" +
+					             "        <Ort>Le Sentier</Ort>\n" +
+					             "        <Rolle>ACI</Rolle>\n" +
+					             "    </Adressen>\n" +
+					             "    <Vorname>Jean-Claude</Vorname>\n" +
+					             "    <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>27</Tag>\n" +
+					             "        <Monat>6</Monat>\n" +
+					             "        <Jahr>1941</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <NameDerEltern>René</NameDerEltern>\n" +
+					             "    <Geschlecht>unbekannt</Geschlecht>\n" +
+					             "    <WeitereVornamen>René</WeitereVornamen>\n" +
+					             "    <NrIROLE>10385019</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
 
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda8131c65", mut1.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <PersonstammID>_1f109152380ffd8901380ffda8131c65</PersonstammID>\n" +
-						             "    <Name>Lassueur</Name>\n" +
-						             "    <Gueltig>true</Gueltig>\n" +
-						             "    <ClientRegulier>false</ClientRegulier>\n" +
-						             "    <NoSCC>0</NoSCC>\n" +
-						             "    <Status>definitiv</Status>\n" +
-						             "    <Sprache>\n" +
-						             "        <TextDe>Französisch</TextDe>\n" +
-						             "        <TextFr>Français</TextFr>\n" +
-						             "    </Sprache>\n" +
-						             "    <Anrede>\n" +
-						             "        <TextDe>*Madame</TextDe>\n" +
-						             "        <TextFr>Madame</TextFr>\n" +
-						             "    </Anrede>\n" +
-						             "    <NrACI>0</NrACI>\n" +
-						             "    <Adressen>\n" +
-						             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
-						             "        <PLZ>1347</PLZ>\n" +
-						             "        <Ort>Le Sentier</Ort>\n" +
-						             "        <Rolle>ACI</Rolle>\n" +
-						             "    </Adressen>\n" +
-						             "    <Vorname>Anne-Lise</Vorname>\n" +
-						             "    <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>9</Tag>\n" +
-						             "        <Monat>3</Monat>\n" +
-						             "        <Jahr>1945</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <LedigName>Audemars</LedigName>\n" +
-						             "    <NameDerEltern>Louis</NameDerEltern>\n" +
-						             "    <Geschlecht>unbekannt</Geschlecht>\n" +
-						             "    <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "    <NrIROLE>10385020</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut1.getXmlContent());
+			final EvenementRFMutation mut1 = mutations.get(1);
+			assertEquals(importId, mut1.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
+			assertEquals("_1f109152380ffd8901380ffda8131c65", mut1.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <PersonstammID>_1f109152380ffd8901380ffda8131c65</PersonstammID>\n" +
+					             "    <Name>Lassueur</Name>\n" +
+					             "    <Gueltig>true</Gueltig>\n" +
+					             "    <ClientRegulier>false</ClientRegulier>\n" +
+					             "    <NoSCC>0</NoSCC>\n" +
+					             "    <Status>definitiv</Status>\n" +
+					             "    <Sprache>\n" +
+					             "        <TextDe>Französisch</TextDe>\n" +
+					             "        <TextFr>Français</TextFr>\n" +
+					             "    </Sprache>\n" +
+					             "    <Anrede>\n" +
+					             "        <TextDe>*Madame</TextDe>\n" +
+					             "        <TextFr>Madame</TextFr>\n" +
+					             "    </Anrede>\n" +
+					             "    <NrACI>0</NrACI>\n" +
+					             "    <Adressen>\n" +
+					             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
+					             "        <PLZ>1347</PLZ>\n" +
+					             "        <Ort>Le Sentier</Ort>\n" +
+					             "        <Rolle>ACI</Rolle>\n" +
+					             "    </Adressen>\n" +
+					             "    <Vorname>Anne-Lise</Vorname>\n" +
+					             "    <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>9</Tag>\n" +
+					             "        <Monat>3</Monat>\n" +
+					             "        <Jahr>1945</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <LedigName>Audemars</LedigName>\n" +
+					             "    <NameDerEltern>Louis</NameDerEltern>\n" +
+					             "    <Geschlecht>unbekannt</Geschlecht>\n" +
+					             "    <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
+					             "    <NrIROLE>10385020</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut1.getXmlContent());
 
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffdabcc2441", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <PersonstammID>_1f109152380ffd8901380ffdabcc2441</PersonstammID>\n" +
-						             "    <Name>Gaillard</Name>\n" +
-						             "    <Gueltig>true</Gueltig>\n" +
-						             "    <ClientRegulier>false</ClientRegulier>\n" +
-						             "    <NoSCC>0</NoSCC>\n" +
-						             "    <Status>definitiv</Status>\n" +
-						             "    <Sprache>\n" +
-						             "        <TextDe>Französisch</TextDe>\n" +
-						             "        <TextFr>Français</TextFr>\n" +
-						             "    </Sprache>\n" +
-						             "    <Anrede>\n" +
-						             "        <TextDe>*Monsieur</TextDe>\n" +
-						             "        <TextFr>Monsieur</TextFr>\n" +
-						             "    </Anrede>\n" +
-						             "    <NrACI>0</NrACI>\n" +
-						             "    <Adressen>\n" +
-						             "        <Strasse>Le Charroux 1</Strasse>\n" +
-						             "        <PLZ>1345</PLZ>\n" +
-						             "        <Ort>Le Lieu</Ort>\n" +
-						             "        <Rolle>ACI</Rolle>\n" +
-						             "    </Adressen>\n" +
-						             "    <Vorname>Roger</Vorname>\n" +
-						             "    <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>2</Tag>\n" +
-						             "        <Monat>2</Monat>\n" +
-						             "        <Jahr>1938</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <NameDerEltern>Albert</NameDerEltern>\n" +
-						             "    <Geschlecht>unbekannt</Geschlecht>\n" +
-						             "    <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "    <NrIROLE>10386724</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut2.getXmlContent());
+			final EvenementRFMutation mut2 = mutations.get(2);
+			assertEquals(importId, mut2.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
+			assertEquals("_1f109152380ffd8901380ffdabcc2441", mut2.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <PersonstammID>_1f109152380ffd8901380ffdabcc2441</PersonstammID>\n" +
+					             "    <Name>Gaillard</Name>\n" +
+					             "    <Gueltig>true</Gueltig>\n" +
+					             "    <ClientRegulier>false</ClientRegulier>\n" +
+					             "    <NoSCC>0</NoSCC>\n" +
+					             "    <Status>definitiv</Status>\n" +
+					             "    <Sprache>\n" +
+					             "        <TextDe>Französisch</TextDe>\n" +
+					             "        <TextFr>Français</TextFr>\n" +
+					             "    </Sprache>\n" +
+					             "    <Anrede>\n" +
+					             "        <TextDe>*Monsieur</TextDe>\n" +
+					             "        <TextFr>Monsieur</TextFr>\n" +
+					             "    </Anrede>\n" +
+					             "    <NrACI>0</NrACI>\n" +
+					             "    <Adressen>\n" +
+					             "        <Strasse>Le Charroux 1</Strasse>\n" +
+					             "        <PLZ>1345</PLZ>\n" +
+					             "        <Ort>Le Lieu</Ort>\n" +
+					             "        <Rolle>ACI</Rolle>\n" +
+					             "    </Adressen>\n" +
+					             "    <Vorname>Roger</Vorname>\n" +
+					             "    <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>2</Tag>\n" +
+					             "        <Monat>2</Monat>\n" +
+					             "        <Jahr>1938</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <NameDerEltern>Albert</NameDerEltern>\n" +
+					             "    <Geschlecht>unbekannt</Geschlecht>\n" +
+					             "    <WeitereVornamen>Albert</WeitereVornamen>\n" +
+					             "    <NrIROLE>10386724</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut2.getXmlContent());
 
-				final EvenementRFMutation mut3 = mutations.get(3);
-				assertEquals(importId, mut3.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut3.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
-				assertEquals("1f109152380ffd8901380ffed6694392", mut3.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
-						             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
-						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
-						             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
-						             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
-						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "        <AmtNummer>8</AmtNummer>\n" +
-						             "        <Stichwort>\n" +
-						             "            <TextDe>*Usufruit</TextDe>\n" +
-						             "            <TextFr>Usufruit</TextFr>\n" +
-						             "        </Stichwort>\n" +
-						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "        <BelegAlt>2002/392</BelegAlt>\n" +
-						             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
-						             "        <Entschaedigung>0</Entschaedigung>\n" +
-						             "        <Wert>0</Wert>\n" +
-						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "    </Dienstbarkeit>\n" +
-						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
-						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
-						             "                <Name>Gaillard</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Roger</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>2</Tag>\n" +
-						             "                    <Monat>2</Monat>\n" +
-						             "                    <Jahr>1938</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Albert</NameEltern>\n" +
-						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "    </LastRechtGruppe>\n" +
-						             "</DienstbarkeitExtended>\n", mut3.getXmlContent());
+			final EvenementRFMutation mut3 = mutations.get(3);
+			assertEquals(importId, mut3.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut3.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffed6694392", mut3.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+					             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
+					             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
+					             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
+					             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
+					             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+					             "        <AmtNummer>8</AmtNummer>\n" +
+					             "        <Stichwort>\n" +
+					             "            <TextDe>*Usufruit</TextDe>\n" +
+					             "            <TextFr>Usufruit</TextFr>\n" +
+					             "        </Stichwort>\n" +
+					             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+					             "        <BelegAlt>2002/392</BelegAlt>\n" +
+					             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
+					             "        <Entschaedigung>0</Entschaedigung>\n" +
+					             "        <Wert>0</Wert>\n" +
+					             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+					             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+					             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+					             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+					             "    </Dienstbarkeit>\n" +
+					             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
+					             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
+					             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
+					             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
+					             "        </BelastetesGrundstueck>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
+					             "                <Name>Gaillard</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Roger</Vorname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>2</Tag>\n" +
+					             "                    <Monat>2</Monat>\n" +
+					             "                    <Jahr>1938</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>Albert</NameEltern>\n" +
+					             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "    </LastRechtGruppe>\n" +
+					             "</DienstbarkeitExtended>\n", mut3.getXmlContent());
 
-				final EvenementRFMutation mut4 = mutations.get(4);
-				assertEquals(importId, mut4.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut4.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut4.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut4.getTypeMutation());
-				assertEquals("1f109152380ffd8901380ffefad54360", mut4.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
-						             "        <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
-						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
-						             "        <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
-						             "        <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
-						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "        <AmtNummer>8</AmtNummer>\n" +
-						             "        <Stichwort>\n" +
-						             "            <TextDe>*Usufruit</TextDe>\n" +
-						             "            <TextFr>Usufruit</TextFr>\n" +
-						             "        </Stichwort>\n" +
-						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "        <Beleg>\n" +
-						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <BelegJahr>2006</BelegJahr>\n" +
-						             "            <BelegNummer>285</BelegNummer>\n" +
-						             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						             "        </Beleg>\n" +
-						             "        <BeginDatum>2006-06-30</BeginDatum>\n" +
-						             "        <Entschaedigung>0</Entschaedigung>\n" +
-						             "        <Wert>0</Wert>\n" +
-						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "    </Dienstbarkeit>\n" +
-						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffefad743bc\">\n" +
-						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "    </LastRechtGruppe>\n" +
-						             "</DienstbarkeitExtended>\n", mut4.getXmlContent());
-			}
+			final EvenementRFMutation mut4 = mutations.get(4);
+			assertEquals(importId, mut4.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut4.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut4.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut4.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffefad54360", mut4.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
+					             "        <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
+					             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
+					             "        <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
+					             "        <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
+					             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+					             "        <AmtNummer>8</AmtNummer>\n" +
+					             "        <Stichwort>\n" +
+					             "            <TextDe>*Usufruit</TextDe>\n" +
+					             "            <TextFr>Usufruit</TextFr>\n" +
+					             "        </Stichwort>\n" +
+					             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+					             "        <Beleg>\n" +
+					             "            <AmtNummer>8</AmtNummer>\n" +
+					             "            <BelegJahr>2006</BelegJahr>\n" +
+					             "            <BelegNummer>285</BelegNummer>\n" +
+					             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
+					             "        </Beleg>\n" +
+					             "        <BeginDatum>2006-06-30</BeginDatum>\n" +
+					             "        <Entschaedigung>0</Entschaedigung>\n" +
+					             "        <Wert>0</Wert>\n" +
+					             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+					             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+					             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+					             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+					             "    </Dienstbarkeit>\n" +
+					             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffefad743bc\">\n" +
+					             "        <StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>\n" +
+					             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
+					             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
+					             "        </BelastetesGrundstueck>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
+					             "                <Name>Lassueur</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Anne-Lise</Vorname>\n" +
+					             "                <Ledigname>Audemars</Ledigname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>9</Tag>\n" +
+					             "                    <Monat>3</Monat>\n" +
+					             "                    <Jahr>1945</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>Louis</NameEltern>\n" +
+					             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
+					             "                <Name>Lassueur</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Jean-Claude</Vorname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>27</Tag>\n" +
+					             "                    <Monat>6</Monat>\n" +
+					             "                    <Jahr>1941</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>René</NameEltern>\n" +
+					             "                <WeitereVornamen>René</WeitereVornamen>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "    </LastRechtGruppe>\n" +
+					             "</DienstbarkeitExtended>\n", mut4.getXmlContent());
+			return null;
 		});
 
 	}
@@ -546,50 +531,44 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		assertNotNull(raftUrl);
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.SERVITUDES);
-				importEvent.setDateEvenement(dateSecondImport);
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.SERVITUDES);
+			importEvent.setDateEvenement(dateSecondImport);
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
 		// on insère les données des immeubles et des servitudes dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// données équivalentes au fichier export_servitudes_rf.xml
+			BienFondsRF bienFonds1 = new BienFondsRF();
+			bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+			bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				// données équivalentes au fichier export_servitudes_rf.xml
-				BienFondsRF bienFonds1 = new BienFondsRF();
-				bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
-				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
+			BienFondsRF bienFonds2 = new BienFondsRF();
+			bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
+			bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
-				BienFondsRF bienFonds2 = new BienFondsRF();
-				bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
-				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
+			PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
+			pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
 
-				PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
-				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
+			PersonnePhysiqueRF pp2 = newPersonnePhysique("_1f109152380ffd8901380ffda8131c65", 0L, 10385020L, "Lassueur", "Anne-Lise", RegDate.get(1945, 3, 9));
+			pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 
-				PersonnePhysiqueRF pp2 = newPersonnePhysique("_1f109152380ffd8901380ffda8131c65", 0L, 10385020L, "Lassueur", "Anne-Lise", RegDate.get(1945, 3, 9));
-				pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
+			PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
+			pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
-				PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
-				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
-
-				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
-				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
-				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
-				droitRFDAO.save(usu1);
-				droitRFDAO.save(usu2);
-			}
+			// les servitudes
+			UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+			                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
+			UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+			                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
+			droitRFDAO.save(usu1);
+			droitRFDAO.save(usu2);
+			return null;
 		});
 
 		// on déclenche le démarrage du job
@@ -645,53 +624,47 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		insertImport(TypeImportRF.PRINCIPAL, dateSecondImport, EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.SERVITUDES);
-				importEvent.setDateEvenement(dateSecondImport);
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.SERVITUDES);
+			importEvent.setDateEvenement(dateSecondImport);
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
 		// on insère les données des immeubles et des servitudes dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
-				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
+			// données équivalentes au fichier export_servitudes_rf.xml
+			BienFondsRF bienFonds1 = new BienFondsRF();
+			bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+			bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				// données équivalentes au fichier export_servitudes_rf.xml
-				BienFondsRF bienFonds1 = new BienFondsRF();
-				bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
-				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
+			BienFondsRF bienFonds2 = new BienFondsRF();
+			bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
+			bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
-				BienFondsRF bienFonds2 = new BienFondsRF();
-				bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
-				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
+			PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
+			pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
 
-				PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
-				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
+			PersonnePhysiqueRF pp2 = newPersonnePhysique("_1f109152380ffd8901380ffda8131c65", 0L, 10385020L, "Lassueur", "Anne-Lise", RegDate.get(1945, 3, 9));
+			pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 
-				PersonnePhysiqueRF pp2 = newPersonnePhysique("_1f109152380ffd8901380ffda8131c65", 0L, 10385020L, "Lassueur", "Anne-Lise", RegDate.get(1945, 3, 9));
-				pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
+			PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
+			pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
-				PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
-				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
-
-				// identifiant du droit différent
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
-				                                new IdentifiantDroitRF(8, 2002, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				// index non-renseigné
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
-				                                null, null, new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
-				droitRFDAO.save(usu1);
-				droitRFDAO.save(usu2);
-			}
+			// identifiant du droit différent
+			UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+			                                new IdentifiantDroitRF(8, 2002, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
+			// index non-renseigné
+			UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
+			                                null, null, new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
+			droitRFDAO.save(usu1);
+			droitRFDAO.save(usu2);
+			return null;
 		});
 
 		// on déclenche le démarrage du job
@@ -708,151 +681,147 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(2, mutations.size());    // les 2 usufruits dans le fichier d'import sont différents
-				mutations.sort(new MutationComparator());
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(2, mutations.size());    // les 2 usufruits dans le fichier d'import sont différents
+			mutations.sort(new MutationComparator());
 
-				final EvenementRFMutation mut0 = mutations.get(0);
-				assertEquals(importId, mut0.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
-				assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
-						             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
-						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
-						             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
-						             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
-						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "        <AmtNummer>8</AmtNummer>\n" +
-						             "        <Stichwort>\n" +
-						             "            <TextDe>*Usufruit</TextDe>\n" +
-						             "            <TextFr>Usufruit</TextFr>\n" +
-						             "        </Stichwort>\n" +
-						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "        <BelegAlt>2002/392</BelegAlt>\n" +
-						             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
-						             "        <Entschaedigung>0</Entschaedigung>\n" +
-						             "        <Wert>0</Wert>\n" +
-						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "    </Dienstbarkeit>\n" +
-						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
-						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
-						             "                <Name>Gaillard</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Roger</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>2</Tag>\n" +
-						             "                    <Monat>2</Monat>\n" +
-						             "                    <Jahr>1938</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Albert</NameEltern>\n" +
-						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "    </LastRechtGruppe>\n" +
-						             "</DienstbarkeitExtended>\n", mut0.getXmlContent());
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(importId, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+					             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
+					             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
+					             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
+					             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
+					             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+					             "        <AmtNummer>8</AmtNummer>\n" +
+					             "        <Stichwort>\n" +
+					             "            <TextDe>*Usufruit</TextDe>\n" +
+					             "            <TextFr>Usufruit</TextFr>\n" +
+					             "        </Stichwort>\n" +
+					             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+					             "        <BelegAlt>2002/392</BelegAlt>\n" +
+					             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
+					             "        <Entschaedigung>0</Entschaedigung>\n" +
+					             "        <Wert>0</Wert>\n" +
+					             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+					             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+					             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+					             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+					             "    </Dienstbarkeit>\n" +
+					             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
+					             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
+					             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
+					             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
+					             "        </BelastetesGrundstueck>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
+					             "                <Name>Gaillard</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Roger</Vorname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>2</Tag>\n" +
+					             "                    <Monat>2</Monat>\n" +
+					             "                    <Jahr>1938</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>Albert</NameEltern>\n" +
+					             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "    </LastRechtGruppe>\n" +
+					             "</DienstbarkeitExtended>\n", mut0.getXmlContent());
 
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
-				assertEquals("1f109152380ffd8901380ffefad54360", mut1.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
-						             "        <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
-						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
-						             "        <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
-						             "        <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
-						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "        <AmtNummer>8</AmtNummer>\n" +
-						             "        <Stichwort>\n" +
-						             "            <TextDe>*Usufruit</TextDe>\n" +
-						             "            <TextFr>Usufruit</TextFr>\n" +
-						             "        </Stichwort>\n" +
-						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "        <Beleg>\n" +
-						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <BelegJahr>2006</BelegJahr>\n" +
-						             "            <BelegNummer>285</BelegNummer>\n" +
-						             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						             "        </Beleg>\n" +
-						             "        <BeginDatum>2006-06-30</BeginDatum>\n" +
-						             "        <Entschaedigung>0</Entschaedigung>\n" +
-						             "        <Wert>0</Wert>\n" +
-						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "    </Dienstbarkeit>\n" +
-						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffefad743bc\">\n" +
-						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "    </LastRechtGruppe>\n" +
-						             "</DienstbarkeitExtended>\n", mut1.getXmlContent());
-			}
+			final EvenementRFMutation mut1 = mutations.get(1);
+			assertEquals(importId, mut1.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
+			assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffefad54360", mut1.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
+					             "        <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
+					             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
+					             "        <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
+					             "        <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
+					             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+					             "        <AmtNummer>8</AmtNummer>\n" +
+					             "        <Stichwort>\n" +
+					             "            <TextDe>*Usufruit</TextDe>\n" +
+					             "            <TextFr>Usufruit</TextFr>\n" +
+					             "        </Stichwort>\n" +
+					             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+					             "        <Beleg>\n" +
+					             "            <AmtNummer>8</AmtNummer>\n" +
+					             "            <BelegJahr>2006</BelegJahr>\n" +
+					             "            <BelegNummer>285</BelegNummer>\n" +
+					             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
+					             "        </Beleg>\n" +
+					             "        <BeginDatum>2006-06-30</BeginDatum>\n" +
+					             "        <Entschaedigung>0</Entschaedigung>\n" +
+					             "        <Wert>0</Wert>\n" +
+					             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+					             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+					             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+					             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+					             "    </Dienstbarkeit>\n" +
+					             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffefad743bc\">\n" +
+					             "        <StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>\n" +
+					             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
+					             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
+					             "        </BelastetesGrundstueck>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
+					             "                <Name>Lassueur</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Anne-Lise</Vorname>\n" +
+					             "                <Ledigname>Audemars</Ledigname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>9</Tag>\n" +
+					             "                    <Monat>3</Monat>\n" +
+					             "                    <Jahr>1945</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>Louis</NameEltern>\n" +
+					             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
+					             "                <Name>Lassueur</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Jean-Claude</Vorname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>27</Tag>\n" +
+					             "                    <Monat>6</Monat>\n" +
+					             "                    <Jahr>1941</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>René</NameEltern>\n" +
+					             "                <WeitereVornamen>René</WeitereVornamen>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "    </LastRechtGruppe>\n" +
+					             "</DienstbarkeitExtended>\n", mut1.getXmlContent());
+			return null;
 		});
 	}
 
@@ -880,50 +849,44 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		insertImport(TypeImportRF.PRINCIPAL, dateSecondImport, EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.SERVITUDES);
-				importEvent.setDateEvenement(dateSecondImport);
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.SERVITUDES);
+			importEvent.setDateEvenement(dateSecondImport);
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
 		// on insère les données des immeubles dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// données équivalentes au fichier export_servitudes_rf.xml
+			BienFondsRF bienFonds1 = new BienFondsRF();
+			bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+			bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				// données équivalentes au fichier export_servitudes_rf.xml
-				BienFondsRF bienFonds1 = new BienFondsRF();
-				bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
-				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
+			BienFondsRF bienFonds2 = new BienFondsRF();
+			bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
+			bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
-				BienFondsRF bienFonds2 = new BienFondsRF();
-				bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
-				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
+			PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
+			pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
 
-				PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
-				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
+			PersonnePhysiqueRF pp2 = newPersonnePhysique("_1f109152380ffd8901380ffda8131c65", 0L, 10385020L, "Lassueur", "Anne-Lise", RegDate.get(1945, 3, 9));
+			pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 
-				PersonnePhysiqueRF pp2 = newPersonnePhysique("_1f109152380ffd8901380ffda8131c65", 0L, 10385020L, "Lassueur", "Anne-Lise", RegDate.get(1945, 3, 9));
-				pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
+			PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
+			pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
-				PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
-				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
-
-				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
-				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
-				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
-				droitRFDAO.save(usu1);
-				droitRFDAO.save(usu2);
-			}
+			// les servitudes
+			UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+			                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
+			UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+			                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
+			droitRFDAO.save(usu1);
+			droitRFDAO.save(usu2);
+			return null;
 		});
 
 		// on déclenche le démarrage du job
@@ -940,13 +903,11 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
@@ -995,16 +956,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 10, 1), EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.SERVITUDES);
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl(raftUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
+		final Long importId = doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = new EvenementRFImport();
+			importEvent.setType(TypeImportRF.SERVITUDES);
+			importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+			importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+			importEvent.setFileUrl(raftUrl);
+			return evenementRFImportDAO.save(importEvent).getId();
 		});
 		assertNotNull(importId);
 
@@ -1022,241 +980,236 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
 
 		// on vérifie que l'import est bien passé au statut TRAITE
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			assertNotNull(importEvent);
+			assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			return null;
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(4, mutations.size());    // il y a 1 usufruit + 3 personnes physiques
-				mutations.sort(new MutationComparator());
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(4, mutations.size());    // il y a 1 usufruit + 3 personnes physiques
+			mutations.sort(new MutationComparator());
 
-				final EvenementRFMutation mut0 = mutations.get(0);
-				assertEquals(importId, mut0.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda5511644", mut0.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <PersonstammID>_1f109152380ffd8901380ffda5511644</PersonstammID>\n" +
-						             "    <Name>Lassueur</Name>\n" +
-						             "    <Gueltig>true</Gueltig>\n" +
-						             "    <ClientRegulier>false</ClientRegulier>\n" +
-						             "    <NoSCC>0</NoSCC>\n" +
-						             "    <Status>definitiv</Status>\n" +
-						             "    <Sprache>\n" +
-						             "        <TextDe>Französisch</TextDe>\n" +
-						             "        <TextFr>Français</TextFr>\n" +
-						             "    </Sprache>\n" +
-						             "    <Anrede>\n" +
-						             "        <TextDe>*Monsieur</TextDe>\n" +
-						             "        <TextFr>Monsieur</TextFr>\n" +
-						             "    </Anrede>\n" +
-						             "    <NrACI>0</NrACI>\n" +
-						             "    <Adressen>\n" +
-						             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
-						             "        <PLZ>1347</PLZ>\n" +
-						             "        <Ort>Le Sentier</Ort>\n" +
-						             "        <Rolle>ACI</Rolle>\n" +
-						             "    </Adressen>\n" +
-						             "    <Vorname>Jean-Claude</Vorname>\n" +
-						             "    <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>27</Tag>\n" +
-						             "        <Monat>6</Monat>\n" +
-						             "        <Jahr>1941</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <NameDerEltern>René</NameDerEltern>\n" +
-						             "    <Geschlecht>unbekannt</Geschlecht>\n" +
-						             "    <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "    <NrIROLE>10385019</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(importId, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
+			assertEquals("_1f109152380ffd8901380ffda5511644", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <PersonstammID>_1f109152380ffd8901380ffda5511644</PersonstammID>\n" +
+					             "    <Name>Lassueur</Name>\n" +
+					             "    <Gueltig>true</Gueltig>\n" +
+					             "    <ClientRegulier>false</ClientRegulier>\n" +
+					             "    <NoSCC>0</NoSCC>\n" +
+					             "    <Status>definitiv</Status>\n" +
+					             "    <Sprache>\n" +
+					             "        <TextDe>Französisch</TextDe>\n" +
+					             "        <TextFr>Français</TextFr>\n" +
+					             "    </Sprache>\n" +
+					             "    <Anrede>\n" +
+					             "        <TextDe>*Monsieur</TextDe>\n" +
+					             "        <TextFr>Monsieur</TextFr>\n" +
+					             "    </Anrede>\n" +
+					             "    <NrACI>0</NrACI>\n" +
+					             "    <Adressen>\n" +
+					             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
+					             "        <PLZ>1347</PLZ>\n" +
+					             "        <Ort>Le Sentier</Ort>\n" +
+					             "        <Rolle>ACI</Rolle>\n" +
+					             "    </Adressen>\n" +
+					             "    <Vorname>Jean-Claude</Vorname>\n" +
+					             "    <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>27</Tag>\n" +
+					             "        <Monat>6</Monat>\n" +
+					             "        <Jahr>1941</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <NameDerEltern>René</NameDerEltern>\n" +
+					             "    <Geschlecht>unbekannt</Geschlecht>\n" +
+					             "    <WeitereVornamen>René</WeitereVornamen>\n" +
+					             "    <NrIROLE>10385019</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut0.getXmlContent());
 
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda8131c65", mut1.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <PersonstammID>_1f109152380ffd8901380ffda8131c65</PersonstammID>\n" +
-						             "    <Name>Lassueur</Name>\n" +
-						             "    <Gueltig>true</Gueltig>\n" +
-						             "    <ClientRegulier>false</ClientRegulier>\n" +
-						             "    <NoSCC>0</NoSCC>\n" +
-						             "    <Status>definitiv</Status>\n" +
-						             "    <Sprache>\n" +
-						             "        <TextDe>Französisch</TextDe>\n" +
-						             "        <TextFr>Français</TextFr>\n" +
-						             "    </Sprache>\n" +
-						             "    <Anrede>\n" +
-						             "        <TextDe>*Madame</TextDe>\n" +
-						             "        <TextFr>Madame</TextFr>\n" +
-						             "    </Anrede>\n" +
-						             "    <NrACI>0</NrACI>\n" +
-						             "    <Adressen>\n" +
-						             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
-						             "        <PLZ>1347</PLZ>\n" +
-						             "        <Ort>Le Sentier</Ort>\n" +
-						             "        <Rolle>ACI</Rolle>\n" +
-						             "    </Adressen>\n" +
-						             "    <Vorname>Anne-Lise</Vorname>\n" +
-						             "    <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>9</Tag>\n" +
-						             "        <Monat>3</Monat>\n" +
-						             "        <Jahr>1945</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <LedigName>Audemars</LedigName>\n" +
-						             "    <NameDerEltern>Louis</NameDerEltern>\n" +
-						             "    <Geschlecht>unbekannt</Geschlecht>\n" +
-						             "    <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "    <NrIROLE>10385020</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut1.getXmlContent());
+			final EvenementRFMutation mut1 = mutations.get(1);
+			assertEquals(importId, mut1.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
+			assertEquals("_1f109152380ffd8901380ffda8131c65", mut1.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <PersonstammID>_1f109152380ffd8901380ffda8131c65</PersonstammID>\n" +
+					             "    <Name>Lassueur</Name>\n" +
+					             "    <Gueltig>true</Gueltig>\n" +
+					             "    <ClientRegulier>false</ClientRegulier>\n" +
+					             "    <NoSCC>0</NoSCC>\n" +
+					             "    <Status>definitiv</Status>\n" +
+					             "    <Sprache>\n" +
+					             "        <TextDe>Französisch</TextDe>\n" +
+					             "        <TextFr>Français</TextFr>\n" +
+					             "    </Sprache>\n" +
+					             "    <Anrede>\n" +
+					             "        <TextDe>*Madame</TextDe>\n" +
+					             "        <TextFr>Madame</TextFr>\n" +
+					             "    </Anrede>\n" +
+					             "    <NrACI>0</NrACI>\n" +
+					             "    <Adressen>\n" +
+					             "        <Strasse>Rue des Sauges 22</Strasse>\n" +
+					             "        <PLZ>1347</PLZ>\n" +
+					             "        <Ort>Le Sentier</Ort>\n" +
+					             "        <Rolle>ACI</Rolle>\n" +
+					             "    </Adressen>\n" +
+					             "    <Vorname>Anne-Lise</Vorname>\n" +
+					             "    <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>9</Tag>\n" +
+					             "        <Monat>3</Monat>\n" +
+					             "        <Jahr>1945</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <LedigName>Audemars</LedigName>\n" +
+					             "    <NameDerEltern>Louis</NameDerEltern>\n" +
+					             "    <Geschlecht>unbekannt</Geschlecht>\n" +
+					             "    <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
+					             "    <NrIROLE>10385020</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut1.getXmlContent());
 
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffdabcc2441", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <PersonstammID>_1f109152380ffd8901380ffdabcc2441</PersonstammID>\n" +
-						             "    <Name>Gaillard</Name>\n" +
-						             "    <Gueltig>true</Gueltig>\n" +
-						             "    <ClientRegulier>false</ClientRegulier>\n" +
-						             "    <NoSCC>0</NoSCC>\n" +
-						             "    <Status>definitiv</Status>\n" +
-						             "    <Sprache>\n" +
-						             "        <TextDe>Französisch</TextDe>\n" +
-						             "        <TextFr>Français</TextFr>\n" +
-						             "    </Sprache>\n" +
-						             "    <Anrede>\n" +
-						             "        <TextDe>*Monsieur</TextDe>\n" +
-						             "        <TextFr>Monsieur</TextFr>\n" +
-						             "    </Anrede>\n" +
-						             "    <NrACI>0</NrACI>\n" +
-						             "    <Adressen>\n" +
-						             "        <Strasse>Le Charroux 1</Strasse>\n" +
-						             "        <PLZ>1345</PLZ>\n" +
-						             "        <Ort>Le Lieu</Ort>\n" +
-						             "        <Rolle>ACI</Rolle>\n" +
-						             "    </Adressen>\n" +
-						             "    <Vorname>Roger</Vorname>\n" +
-						             "    <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "    <Geburtsdatum>\n" +
-						             "        <Tag>2</Tag>\n" +
-						             "        <Monat>2</Monat>\n" +
-						             "        <Jahr>1938</Jahr>\n" +
-						             "    </Geburtsdatum>\n" +
-						             "    <NameDerEltern>Albert</NameDerEltern>\n" +
-						             "    <Geschlecht>unbekannt</Geschlecht>\n" +
-						             "    <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "    <NrIROLE>10386724</NrIROLE>\n" +
-						             "</NatuerlichePersonstamm>\n", mut2.getXmlContent());
+			final EvenementRFMutation mut2 = mutations.get(2);
+			assertEquals(importId, mut2.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
+			assertEquals("_1f109152380ffd8901380ffdabcc2441", mut2.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <PersonstammID>_1f109152380ffd8901380ffdabcc2441</PersonstammID>\n" +
+					             "    <Name>Gaillard</Name>\n" +
+					             "    <Gueltig>true</Gueltig>\n" +
+					             "    <ClientRegulier>false</ClientRegulier>\n" +
+					             "    <NoSCC>0</NoSCC>\n" +
+					             "    <Status>definitiv</Status>\n" +
+					             "    <Sprache>\n" +
+					             "        <TextDe>Französisch</TextDe>\n" +
+					             "        <TextFr>Français</TextFr>\n" +
+					             "    </Sprache>\n" +
+					             "    <Anrede>\n" +
+					             "        <TextDe>*Monsieur</TextDe>\n" +
+					             "        <TextFr>Monsieur</TextFr>\n" +
+					             "    </Anrede>\n" +
+					             "    <NrACI>0</NrACI>\n" +
+					             "    <Adressen>\n" +
+					             "        <Strasse>Le Charroux 1</Strasse>\n" +
+					             "        <PLZ>1345</PLZ>\n" +
+					             "        <Ort>Le Lieu</Ort>\n" +
+					             "        <Rolle>ACI</Rolle>\n" +
+					             "    </Adressen>\n" +
+					             "    <Vorname>Roger</Vorname>\n" +
+					             "    <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "    <Geburtsdatum>\n" +
+					             "        <Tag>2</Tag>\n" +
+					             "        <Monat>2</Monat>\n" +
+					             "        <Jahr>1938</Jahr>\n" +
+					             "    </Geburtsdatum>\n" +
+					             "    <NameDerEltern>Albert</NameDerEltern>\n" +
+					             "    <Geschlecht>unbekannt</Geschlecht>\n" +
+					             "    <WeitereVornamen>Albert</WeitereVornamen>\n" +
+					             "    <NrIROLE>10386724</NrIROLE>\n" +
+					             "</NatuerlichePersonstamm>\n", mut2.getXmlContent());
 
-				// les bénéficiaires sont fusionnés dans la même mutation
-				final EvenementRFMutation mut3 = mutations.get(3);
-				assertEquals(importId, mut3.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut3.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
-				assertEquals("1f109152380ffd8901380ffed6694392", mut3.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
-						             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
-						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
-						             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
-						             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
-						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "        <AmtNummer>8</AmtNummer>\n" +
-						             "        <Stichwort>\n" +
-						             "            <TextDe>*Usufruit</TextDe>\n" +
-						             "            <TextFr>Usufruit</TextFr>\n" +
-						             "        </Stichwort>\n" +
-						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "        <BelegAlt>2002/392</BelegAlt>\n" +
-						             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
-						             "        <Entschaedigung>0</Entschaedigung>\n" +
-						             "        <Wert>0</Wert>\n" +
-						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "    </Dienstbarkeit>\n" +
-						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
-						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
-						             "                <Name>Gaillard</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Roger</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>2</Tag>\n" +
-						             "                    <Monat>2</Monat>\n" +
-						             "                    <Jahr>1938</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Albert</NameEltern>\n" +
-						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "    </LastRechtGruppe>\n" +
-						             "</DienstbarkeitExtended>\n", mut3.getXmlContent());
-
-			}
+			// les bénéficiaires sont fusionnés dans la même mutation
+			final EvenementRFMutation mut3 = mutations.get(3);
+			assertEquals(importId, mut3.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut3.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffed6694392", mut3.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+					             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+					             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
+					             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
+					             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
+					             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
+					             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+					             "        <AmtNummer>8</AmtNummer>\n" +
+					             "        <Stichwort>\n" +
+					             "            <TextDe>*Usufruit</TextDe>\n" +
+					             "            <TextFr>Usufruit</TextFr>\n" +
+					             "        </Stichwort>\n" +
+					             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+					             "        <BelegAlt>2002/392</BelegAlt>\n" +
+					             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
+					             "        <Entschaedigung>0</Entschaedigung>\n" +
+					             "        <Wert>0</Wert>\n" +
+					             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+					             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+					             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+					             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+					             "    </Dienstbarkeit>\n" +
+					             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
+					             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
+					             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
+					             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
+					             "        </BelastetesGrundstueck>\n" +
+					             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
+					             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
+					             "        </BelastetesGrundstueck>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
+					             "                <Name>Gaillard</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Roger</Vorname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>2</Tag>\n" +
+					             "                    <Monat>2</Monat>\n" +
+					             "                    <Jahr>1938</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>Albert</NameEltern>\n" +
+					             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
+					             "                <Name>Lassueur</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Anne-Lise</Vorname>\n" +
+					             "                <Ledigname>Audemars</Ledigname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>9</Tag>\n" +
+					             "                    <Monat>3</Monat>\n" +
+					             "                    <Jahr>1945</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>Louis</NameEltern>\n" +
+					             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
+					             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
+					             "                <Name>Lassueur</Name>\n" +
+					             "                <Status>definitiv</Status>\n" +
+					             "                <Vorname>Jean-Claude</Vorname>\n" +
+					             "                <Geburtsdatum>\n" +
+					             "                    <Tag>27</Tag>\n" +
+					             "                    <Monat>6</Monat>\n" +
+					             "                    <Jahr>1941</Jahr>\n" +
+					             "                </Geburtsdatum>\n" +
+					             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+					             "                <NameEltern>René</NameEltern>\n" +
+					             "                <WeitereVornamen>René</WeitereVornamen>\n" +
+					             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
+					             "            </NatuerlichePersonGb>\n" +
+					             "        </BerechtigtePerson>\n" +
+					             "    </LastRechtGruppe>\n" +
+					             "</DienstbarkeitExtended>\n", mut3.getXmlContent());
+			return null;
 		});
 
 	}

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -156,18 +155,13 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		}
 
 		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(false);
-		doInNewTransaction(new TxCallback<Object>() {
-
-			@Override
-			public Object execute(TransactionStatus status) {
-				// Ajout d'un Habitant qui ne se reindexe pas
-				PersonnePhysique hab = new PersonnePhysique(true);
-				hab.setNumero(12345678L);
-				hab.setNumeroIndividu(123456L);     // ce numéro n'existe pas dans le mock civil
-				tiersDAO.save(hab);
-				return null;
-			}
-
+		doInNewTransaction(status -> {
+			// Ajout d'un Habitant qui ne se reindexe pas
+			PersonnePhysique hab = new PersonnePhysique(true);
+			hab.setNumero(12345678L);
+			hab.setNumeroIndividu(123456L);     // ce numéro n'existe pas dans le mock civil
+			tiersDAO.save(hab);
+			return null;
 		});
 		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 

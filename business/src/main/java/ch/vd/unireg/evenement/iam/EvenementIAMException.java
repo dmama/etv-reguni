@@ -5,7 +5,7 @@ import ch.vd.unireg.jms.EsbBusinessCode;
 /**
  * Exception métier liée à un événement IAM.
  */
-public class EvenementIAMException extends Exception {
+public class EvenementIAMException extends RuntimeException {
 
 	private final EsbBusinessCode businessCode;
 

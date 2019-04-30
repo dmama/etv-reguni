@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -62,29 +61,24 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbDpi;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2000, 1, 1), null));
+			dpi = (DebiteurPrestationImposable) dao.save(dpi);
+			numeros.noCtbDpi = dpi.getNumero();
 
-				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2000,1,1),null));
-				dpi = (DebiteurPrestationImposable) dao.save(dpi);
-				numeros.noCtbDpi = dpi.getNumero();
+			addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.BoulevardGrancy);
 
-				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Lausanne.BoulevardGrancy);
+			PersonnePhysique nh = new PersonnePhysique(false);
+			nh.setNom("Entrepreneur");
+			nh = (PersonnePhysique) dao.save(nh);
+			numeros.noCtbNh = nh.getNumero();
 
-				PersonnePhysique nh = new PersonnePhysique(false);
-				nh.setNom("Entrepreneur");
-				nh = (PersonnePhysique) dao.save(nh);
-				numeros.noCtbNh = nh.getNumero();
+			addAdresseSuisse(nh, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Chamblon.RueDesUttins);
 
-				addAdresseSuisse(nh, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Chamblon.RueDesUttins);
-
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nh, dpi);
-				hibernateTemplate.merge(contact);
-
-				return null;
-			}
+			ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nh, dpi);
+			hibernateTemplate.merge(contact);
+			return null;
 		});
 
 		/* On vérifie que les liens sont bien établis */
@@ -146,24 +140,20 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbDpi;
 		}
 
-		final Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
-			@Override
-			public Numeros execute(TransactionStatus status) throws Exception {
+		final Numeros numeros = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.MENSUEL, date(2011, 1, 1));
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.MENSUEL, date(2011, 1, 1));
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, date(2011, 1, 1), null, "Toto SA");
+			addFormeJuridique(entreprise, date(2011, 1, 1), null, FormeJuridiqueEntreprise.SA);
 
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, date(2011, 1, 1), null, "Toto SA");
-				addFormeJuridique(entreprise, date(2011, 1, 1), null, FormeJuridiqueEntreprise.SA);
+			final ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, entreprise, dpi);
+			hibernateTemplate.merge(contact);
 
-				final ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, entreprise, dpi);
-				hibernateTemplate.merge(contact);
-
-				final Numeros numeros = new Numeros();
-				numeros.noCtbDpi = dpi.getNumero();
-				numeros.noCtbEnt = entreprise.getNumero();
-				return numeros;
-			}
+			final Numeros n = new Numeros();
+			n.noCtbDpi = dpi.getNumero();
+			n.noCtbEnt = entreprise.getNumero();
+			return n;
 		});
 
 		globalTiersIndexer.sync();
@@ -189,14 +179,11 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		}
 
 		// On modifie l'entreprise et on cherche sur la modif => 2 hits
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) dao.get(numeros.noCtbEnt);
-				assertNotNull(entreprise);
-				tiersService.addRaisonSocialeFiscale(entreprise, "Tata SA", date(2016, 1, 1), null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = (Entreprise) dao.get(numeros.noCtbEnt);
+			assertNotNull(entreprise);
+			tiersService.addRaisonSocialeFiscale(entreprise, "Tata SA", date(2016, 1, 1), null);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -220,31 +207,27 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbEtb;
 			Long noCtbDpi;
 		}
-		final Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
-			@Override
-			public Numeros execute(TransactionStatus status) throws Exception {
+		final Numeros numeros = doInNewTransaction(status -> {
+			final RegDate dateDebut = date(2011, 1, 1);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.MENSUEL, dateDebut);
 
-				final RegDate dateDebut = date(2011, 1, 1);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.MENSUEL, dateDebut);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
 
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			final Etablissement principal = addEtablissement();
+			principal.setRaisonSociale("Toto SA");
+			addDomicileEtablissement(principal, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(entreprise, principal, dateDebut, null, true);
 
-				final Etablissement principal = addEtablissement();
-				principal.setRaisonSociale("Toto SA");
-				addDomicileEtablissement(principal, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(entreprise, principal, dateDebut, null, true);
+			ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, principal, dpi);
+			hibernateTemplate.merge(contact);
 
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, principal, dpi);
-				hibernateTemplate.merge(contact);
-
-				final Numeros numeros = new Numeros();
-				numeros.noCtbDpi = dpi.getNumero();
-				numeros.noCtbEnt = entreprise.getNumero();
-				numeros.noCtbEtb = principal.getNumero();
-				return numeros;
-			}
+			final Numeros n = new Numeros();
+			n.noCtbDpi = dpi.getNumero();
+			n.noCtbEnt = entreprise.getNumero();
+			n.noCtbEtb = principal.getNumero();
+			return n;
 		});
 
 		globalTiersIndexer.sync();
@@ -272,14 +255,11 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		}
 
 		// On modifie l'établissement et on cherche sur la modif => 2 hits
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Etablissement etablissement = (Etablissement) dao.get(numeros.noCtbEtb);
-				assertNotNull(etablissement);
-				etablissement.setRaisonSociale("Tata SA");
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Etablissement etablissement = (Etablissement) dao.get(numeros.noCtbEtb);
+			assertNotNull(etablissement);
+			etablissement.setRaisonSociale("Tata SA");
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -304,37 +284,33 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbEtbSec;
 			Long noCtbDpi;
 		}
-		final Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
-			@Override
-			public Numeros execute(TransactionStatus status) throws Exception {
+		final Numeros numeros = doInNewTransaction(status -> {
+			final RegDate dateDebut = date(2011, 1, 1);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.MENSUEL, dateDebut);
 
-				final RegDate dateDebut = date(2011, 1, 1);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.MENSUEL, dateDebut);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
 
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			final Etablissement principal = addEtablissement();
+			principal.setRaisonSociale("Toto SA");
+			addDomicileEtablissement(principal, dateDebut, null, MockCommune.Lausanne);
+			addActiviteEconomique(entreprise, principal, dateDebut, null, true);
 
-				final Etablissement principal = addEtablissement();
-				principal.setRaisonSociale("Toto SA");
-				addDomicileEtablissement(principal, dateDebut, null, MockCommune.Lausanne);
-				addActiviteEconomique(entreprise, principal, dateDebut, null, true);
+			final Etablissement secondaire = addEtablissement();
+			secondaire.setRaisonSociale("Toto SA, Orbe");
+			addDomicileEtablissement(secondaire, dateDebut, null, MockCommune.Orbe);
+			addActiviteEconomique(entreprise, secondaire, dateDebut, null, false);
 
-				final Etablissement secondaire = addEtablissement();
-				secondaire.setRaisonSociale("Toto SA, Orbe");
-				addDomicileEtablissement(secondaire, dateDebut, null, MockCommune.Orbe);
-				addActiviteEconomique(entreprise, secondaire, dateDebut, null, false);
+			ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, secondaire, dpi);
+			hibernateTemplate.merge(contact);
 
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, secondaire, dpi);
-				hibernateTemplate.merge(contact);
-
-				final Numeros numeros = new Numeros();
-				numeros.noCtbDpi = dpi.getNumero();
-				numeros.noCtbEnt = entreprise.getNumero();
-				numeros.noCtbEtbPrn = principal.getNumero();
-				numeros.noCtbEtbSec = secondaire.getNumero();
-				return numeros;
-			}
+			final Numeros n = new Numeros();
+			n.noCtbDpi = dpi.getNumero();
+			n.noCtbEnt = entreprise.getNumero();
+			n.noCtbEtbPrn = principal.getNumero();
+			n.noCtbEtbSec = secondaire.getNumero();
+			return n;
 		});
 
 		globalTiersIndexer.sync();
@@ -364,14 +340,11 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		}
 
 		// On modifie l'établissement et on cherche sur la modif => 2 hits
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Etablissement etablissement = (Etablissement) dao.get(numeros.noCtbEtbSec);
-				assertNotNull(etablissement);
-				etablissement.setRaisonSociale("Tata SA");
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Etablissement etablissement = (Etablissement) dao.get(numeros.noCtbEtbSec);
+			assertNotNull(etablissement);
+			etablissement.setRaisonSociale("Tata SA");
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -397,30 +370,25 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		final long idAC = 2001400L; // Bollet SA
 
 		// Création d'un contribuable et d'un débiteur lié au contribuable
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+			dpi.setNumero(idDpi);
+			dpi.setPersonneContact("Jean-François Burnier");
+			dpi.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
+			dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
-				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi.setNumero(idDpi);
-				dpi.setPersonneContact("Jean-François Burnier");
-				dpi.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
-				dpi = (DebiteurPrestationImposable) dao.save(dpi);
+			addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009,1,1), null,  MockRue.Lausanne.AvenueDeBeaulieu);
-				addForDebiteur(dpi, date(2009,1,1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			AutreCommunaute ac = new AutreCommunaute();
+			ac.setNumero(idAC);
+			ac.setNom("Bollet SA");
+			ac.setComplementNom("Vive les champignons !");
+			ac = (AutreCommunaute) dao.save(ac);
 
-				AutreCommunaute ac = new AutreCommunaute();
-				ac.setNumero(idAC);
-				ac.setNom("Bollet SA");
-				ac.setComplementNom("Vive les champignons !");
-				ac = (AutreCommunaute) dao.save(ac);
-
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
-				hibernateTemplate.merge(contact);
-
-				return null;
-			}
+			ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
+			hibernateTemplate.merge(contact);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -459,21 +427,16 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	public void testIndexationDebiteurCategorieIS() throws Exception {
 
 		// Création d'un débiteur avec catégorie impôt source prestation de prévoyance
-		final Long idDpi = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+		final Long idDpi = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+			dpi.setPersonneContact("Jean-François Burnier");
+			dpi.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
+			dpi.setCategorieImpotSource(CategorieImpotSource.PRESTATIONS_PREVOYANCE);
+			dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
-				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi.setPersonneContact("Jean-François Burnier");
-				dpi.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
-				dpi.setCategorieImpotSource(CategorieImpotSource.PRESTATIONS_PREVOYANCE);
-				dpi = (DebiteurPrestationImposable) dao.save(dpi);
-
-				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009,1,1), null,  MockRue.Lausanne.AvenueDeBeaulieu);
-				addForDebiteur(dpi, date(2009,1,1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
-
-				return dpi.getNumero();
-			}
+			addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			return dpi.getNumero();
 		});
 
 		globalTiersIndexer.sync();

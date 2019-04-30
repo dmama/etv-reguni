@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -131,16 +130,13 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testChangeModeCommunicationDebiteur() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
+			return dpi.getNumero();
 		});
 
 		DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
@@ -207,16 +203,13 @@ public class TiersEditManagerTest extends WebTest {
 	@Test
 	public void testChangeCategorieImpotSource() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
-				dpi.setModeCommunication(ModeCommunication.PAPIER);
-				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2010, 1, 1));
+			dpi.setModeCommunication(ModeCommunication.PAPIER);
+			dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+			dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL, null, date(2010, 1, 1), null));
+			return dpi.getNumero();
 		});
 
 		DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);

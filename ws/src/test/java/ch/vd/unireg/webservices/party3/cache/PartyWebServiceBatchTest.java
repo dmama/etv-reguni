@@ -12,9 +12,7 @@ import org.hibernate.dialect.Dialect;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
@@ -95,16 +93,13 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
-		final List<Integer> ids = doInNewTransaction(new TxCallback<List<Integer>>() {
-			@Override
-			public List<Integer> execute(TransactionStatus status) throws Exception {
-				List<Integer> ids = new ArrayList<>();
-				for (int i = 0; i < 40; ++i) {
-					DebiteurPrestationImposable deb = addDebiteur();
-					ids.add(deb.getId().intValue());
-				}
-				return ids;
+		final List<Integer> ids = doInNewTransaction(status -> {
+			List<Integer> ids1 = new ArrayList<>();
+			for (int i = 0; i < 40; ++i) {
+				DebiteurPrestationImposable deb = addDebiteur();
+				ids1.add(deb.getId().intValue());
 			}
+			return ids1;
 		});
 
 		// on exécute une requête batch qui va provoquer le crash du thread de mapping
@@ -135,22 +130,26 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 			assertEquals("Exception [Exception de test] dans le thread de mapping du getBatchParty", e.getMessage());
 		}
 
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// on vérifie que le crash de l'appel batch n'a pas corrompu le cache et que les requêtes unitaires passent toujours bien
-				for (Integer id : ids) {
-					final GetPartyRequest r = new GetPartyRequest();
-					r.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
-					r.getParts().add(PartyPart.VIRTUAL_TAX_RESIDENCES);
-					r.getParts().add(PartyPart.TAX_DECLARATIONS);
-					r.setPartyNumber(id);
+		doInNewTransaction(status -> {
+			// on vérifie que le crash de l'appel batch n'a pas corrompu le cache et que les requêtes unitaires passent toujours bien
+			for (Integer id : ids) {
+				final GetPartyRequest r = new GetPartyRequest();
+				r.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
+				r.getParts().add(PartyPart.VIRTUAL_TAX_RESIDENCES);
+				r.getParts().add(PartyPart.TAX_DECLARATIONS);
+				r.setPartyNumber(id);
 
-					final Party party = cache.getParty(r);
-					assertNotNull("Le tiers n°" + id + " est null !", party);
-					assertEquals(id.intValue(), party.getNumber());
+				final Party party;
+				try {
+					party = cache.getParty(r);
 				}
+				catch (WebServiceException e) {
+					throw new RuntimeException(e);
+				}
+				assertNotNull("Le tiers n°" + id + " est null !", party);
+				assertEquals(id.intValue(), party.getNumber());
 			}
+			return null;
 		});
 	}
 

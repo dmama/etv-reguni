@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.RequestHandlerResult;
@@ -76,14 +75,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		final String noAvs = "7565115001333";
 		Assert.assertNotNull(serviceUpi.getPersonInfo(noAvs));
 
-		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(new TxCallback<RequestHandlerResult<Response>>() {
-			@Override
-			public RequestHandlerResult<Response> execute(TransactionStatus status) throws Exception {
-				final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
-				final RequestHandlerResult<Response> result = handler.handle(request);
-				Assert.assertNotNull(result);
-				return result;
-			}
+		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
+			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
+			final RequestHandlerResult<Response> r = handler.handle(request);
+			Assert.assertNotNull(r);
+			return r;
 		});
 		final Response response = result.getResponse();
 		Assert.assertNotNull(response);
@@ -124,14 +120,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		final String noAvsRemplacant = "7565115001333";
 		Assert.assertNotNull(serviceUpi.getPersonInfo(noAvs));
 
-		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(new TxCallback<RequestHandlerResult<Response>>() {
-			@Override
-			public RequestHandlerResult<Response> execute(TransactionStatus status) throws Exception {
-				final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
-				final RequestHandlerResult<Response> result = handler.handle(request);
-				Assert.assertNotNull(result);
-				return result;
-			}
+		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
+			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
+			final RequestHandlerResult<Response> r = handler.handle(request);
+			Assert.assertNotNull(r);
+			return r;
 		});
 		final Response response = result.getResponse();
 		Assert.assertNotNull(response);
@@ -171,14 +164,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		final String noAvs = "7569999999991";
 		Assert.assertNull(serviceUpi.getPersonInfo(noAvs));
 
-		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(new TxCallback<RequestHandlerResult<Response>>() {
-			@Override
-			public RequestHandlerResult<Response> execute(TransactionStatus status) throws Exception {
-				final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
-				final RequestHandlerResult<Response> result = handler.handle(request);
-				Assert.assertNotNull(result);
-				return result;
-			}
+		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
+			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
+			final RequestHandlerResult<Response> r = handler.handle(request);
+			Assert.assertNotNull(r);
+			return r;
 		});
 		final Response response = result.getResponse();
 		Assert.assertNotNull(response);
@@ -221,14 +211,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		// attente de fin d'indexation
 		globalTiersIndexer.sync();
 
-		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(new TxCallback<RequestHandlerResult<Response>>() {
-			@Override
-			public RequestHandlerResult<Response> execute(TransactionStatus status) throws Exception {
-				final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
-				final RequestHandlerResult<Response> result = handler.handle(request);
-				Assert.assertNotNull(result);
-				return result;
-			}
+		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
+			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
+			final RequestHandlerResult<Response> r = handler.handle(request);
+			Assert.assertNotNull(r);
+			return r;
 		});
 		final Response response = result.getResponse();
 		Assert.assertNotNull(response);
@@ -277,14 +264,11 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		// attente de fin d'indexation
 		globalTiersIndexer.sync();
 
-		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(new TxCallback<RequestHandlerResult<Response>>() {
-			@Override
-			public RequestHandlerResult<Response> execute(TransactionStatus status) throws Exception {
-				final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
-				final RequestHandlerResult<Response> result = handler.handle(request);
-				Assert.assertNotNull(result);
-				return result;
-			}
+		final RequestHandlerResult<Response> result = doInNewTransactionAndSession(status -> {
+			final CreateNonresidentByVNRequest request = new CreateNonresidentByVNRequest(USER_LOGIN, Long.parseLong(noAvs));
+			final RequestHandlerResult<Response> r = handler.handle(request);
+			Assert.assertNotNull(r);
+			return r;
 		});
 		final Response response = result.getResponse();
 		Assert.assertNotNull(response);

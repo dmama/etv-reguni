@@ -59,10 +59,10 @@ public interface DeclarationImpotEditManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocaleDI(Long ctbId, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
-	                                          RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
+	                                          RegDate delaiAccorde, @Nullable RegDate dateRetour);
 
 	@Transactional(rollbackFor = Throwable.class)
-	void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
+	void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour);
 
 	/**
 	 * Persiste en base la nouvelle demande de delai

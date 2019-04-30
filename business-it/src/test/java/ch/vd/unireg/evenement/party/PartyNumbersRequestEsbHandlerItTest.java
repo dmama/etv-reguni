@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
@@ -83,13 +82,10 @@ public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		final NumbersRequest request = new NumbersRequest();
@@ -120,13 +116,10 @@ public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		handler.setSecurityProvider(provider);
 
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
-				return pp.getNumero();
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+			return pp.getNumero();
 		});
 
 		final NumbersRequest request = new NumbersRequest();

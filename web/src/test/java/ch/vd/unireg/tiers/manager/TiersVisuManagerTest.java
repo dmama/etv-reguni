@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -162,45 +161,38 @@ public class TiersVisuManagerTest extends WebTest {
 			long numeroContribuableMenage;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitantZotan=	addHabitant(185386);
-				PersonnePhysique habitantMarie=	addHabitant(185387);
-				// Crée le ménage
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, habitantZotan, date(2004, 5, 1), null);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				numeros.numeroContribuableMenage = menage.getNumero();
-				numeros.numeroContribuablePrincipal = habitantZotan.getNumero();
+		doInNewTransaction(status -> {
+			PersonnePhysique habitantZotan = addHabitant(185386);
+			PersonnePhysique habitantMarie = addHabitant(185387);
+			// Crée le ménage
+			MenageCommun menage = new MenageCommun();
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, habitantZotan, date(2004, 5, 1), null);
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			numeros.numeroContribuableMenage = menage.getNumero();
+			numeros.numeroContribuablePrincipal = habitantZotan.getNumero();
 
-				rapport = tiersService.addTiersToCouple(menage, habitantMarie, date(2004, 5, 1), null);
+			rapport = tiersService.addTiersToCouple(menage, habitantMarie, date(2004, 5, 1), null);
 
-				numeros.numeroContribuableConjoint = habitantMarie.getNumero();
-
-				return null;
-			}
+			numeros.numeroContribuableConjoint = habitantMarie.getNumero();
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-				final TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage,
-				                                                    buildHistoFlags(true, true, true, true, true, true, true, true, true, false, false),
-				                                                    true, true, true, true, webParamPagination);
-				final List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
-				final List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
-				final List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
+		doInNewTransaction(status -> {
+			final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+			final TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage,
+			                                                    buildHistoFlags(true, true, true, true, true, true, true, true, true, false, false),
+			                                                    true, true, true, true, webParamPagination);
+			final List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
+			final List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
+			final List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
 
-				// 2 * courrier
-				// 2 * representation (1 fiscale + 1 défaut)
-				// 2 * poursuite (1 défaut)
-				assertEquals(2, adressesZotan.size());
-				assertEquals(date(2009, 12, 18), adressesZotan.get(0).getDateDebut());
-				assertNull(adressesZotan.get(0).getLocalite());
-				return null;
-			}
+			// 2 * courrier
+			// 2 * representation (1 fiscale + 1 défaut)
+			// 2 * poursuite (1 défaut)
+			assertEquals(2, adressesZotan.size());
+			assertEquals(date(2009, 12, 18), adressesZotan.get(0).getDateDebut());
+			assertNull(adressesZotan.get(0).getLocalite());
+			return null;
 		});
 	}
 
@@ -224,13 +216,10 @@ public class TiersVisuManagerTest extends WebTest {
 		});
 
 		// on construit la vue 'web' de l'entreprise
-		final TiersVisuView view = doInNewTransaction(new TxCallback<TiersVisuView>() {
-			@Override
-			public TiersVisuView execute(TransactionStatus status) throws Exception {
-				final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-				final HistoFlags flags = buildHistoFlags(true, true, false, false, false, false, false, false, false, false, false);
-				return tiersVisuManager.getView(id, flags, false, false, false, false, webParamPagination);
-			}
+		final TiersVisuView view = doInNewTransaction(status -> {
+			final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+			final HistoFlags flags = buildHistoFlags(true, true, false, false, false, false, false, false, false, false, false);
+			return tiersVisuManager.getView(id, flags, false, false, false, false, webParamPagination);
 		});
 		assertNotNull(view);
 
@@ -266,13 +255,10 @@ public class TiersVisuManagerTest extends WebTest {
 		});
 
 		// on construit la vue 'web' de l'entreprise
-		final TiersVisuView view = doInNewTransaction(new TxCallback<TiersVisuView>() {
-			@Override
-			public TiersVisuView execute(TransactionStatus status) throws Exception {
-				final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-				final HistoFlags flags = buildHistoFlags(true, true, false, false, false, false, false, false, false, false, false);
-				return tiersVisuManager.getView(id, flags, false, false, false, false, webParamPagination);
-			}
+		final TiersVisuView view = doInNewTransaction(status -> {
+			final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+			final HistoFlags flags = buildHistoFlags(true, true, false, false, false, false, false, false, false, false, false);
+			return tiersVisuManager.getView(id, flags, false, false, false, false, webParamPagination);
 		});
 		assertNotNull(view);
 

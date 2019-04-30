@@ -3,7 +3,6 @@ package ch.vd.unireg.di;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -52,12 +51,9 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testEditDelai() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp = addNonHabitant("Eric", "Masserey", date(1976, 3, 12), Sexe.MASCULIN);
-				return pp.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique pp = addNonHabitant("Eric", "Masserey", date(1976, 3, 12), Sexe.MASCULIN);
+			return pp.getId();
 		});
 
 		ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
@@ -88,27 +84,23 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
-				// Un contribuable quelconque
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(eric, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2010);
-				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				ids.declarationId = declaration2010.getId();
-
-				return null;
-			}
+			// Un contribuable quelconque
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(eric, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                                declarationComplete2010);
+			addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
+			ids.declarationId = declaration2010.getId();
+			return null;
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
@@ -144,28 +136,24 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
-				// Un contribuable quelconque
-				PersonnePhysique jeanne = addNonHabitant("Jeanne", "dupont", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.jeanneId = jeanne.getNumero();
-				addForPrincipal(jeanne, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(jeanne, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2010);
-				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				addEtatDeclarationRetournee(declaration2010, date(2011, 3, 26));
-				ids.declarationId = declaration2010.getId();
-
-				return null;
-			}
+			// Un contribuable quelconque
+			PersonnePhysique jeanne = addNonHabitant("Jeanne", "dupont", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.jeanneId = jeanne.getNumero();
+			addForPrincipal(jeanne, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(jeanne, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                                declarationComplete2010);
+			addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
+			addEtatDeclarationRetournee(declaration2010, date(2011, 3, 26));
+			ids.declarationId = declaration2010.getId();
+			return null;
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
@@ -192,28 +180,24 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
-				// Un contribuable quelconque
-				PersonnePhysique gustave = addNonHabitant("Gustave", "Eiffel", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.gustaveId = gustave.getNumero();
-				addForPrincipal(gustave, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(gustave, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2010);
-				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				addEtatDeclarationSommee(declaration2010, date(2011, 4, 26), date(2011, 4, 28), null);
-				ids.declarationId = declaration2010.getId();
-
-				return null;
-			}
+			// Un contribuable quelconque
+			PersonnePhysique gustave = addNonHabitant("Gustave", "Eiffel", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.gustaveId = gustave.getNumero();
+			addForPrincipal(gustave, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(gustave, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                                declarationComplete2010);
+			addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
+			addEtatDeclarationSommee(declaration2010, date(2011, 4, 26), date(2011, 4, 28), null);
+			ids.declarationId = declaration2010.getId();
+			return null;
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
@@ -249,28 +233,24 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+			final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
-				// Un contribuable quelconque
-				PersonnePhysique coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.coridonId = coridon.getNumero();
-				addForPrincipal(coridon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(coridon, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2010);
-				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				addEtatDeclarationSommee(declaration2010, date(2011, 7, 26), date(2011, 7, 28), null);
-				ids.declarationId = declaration2010.getId();
-
-				return null;
-			}
+			// Un contribuable quelconque
+			PersonnePhysique coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.coridonId = coridon.getNumero();
+			addForPrincipal(coridon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(coridon, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                                                                declarationComplete2010);
+			addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
+			addEtatDeclarationSommee(declaration2010, date(2011, 7, 26), date(2011, 7, 28), null);
+			ids.declarationId = declaration2010.getId();
+			return null;
 		});
 
 		//On tente de la quittancer au 20.06.2011 -> Blocage et message d'erreur

@@ -2,10 +2,8 @@ package ch.vd.unireg.tiers.manager;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
@@ -136,14 +134,12 @@ public class AutorisationCacheTest extends WebTest {
 		});
 
 		// départ de Monsieur, partie fiscale
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
-				final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(lui, noIndividuLui, null);
-				Assert.assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, res);
-				Assert.assertFalse(lui.isHabitantVD());
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+			final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(lui, noIndividuLui, null);
+			Assert.assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, res);
+			Assert.assertFalse(lui.isHabitantVD());
+			return null;
 		});
 
 		// contenu du cache -> le cache de monsieur a dû être effacé (mais pas les autres)
@@ -177,21 +173,19 @@ public class AutorisationCacheTest extends WebTest {
 		});
 
 		// départ de Madame, partie fiscale
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// recalcul du flag "habitant" sur Madame
-				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
-				final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(elle, noIndividuElle, null);
-				Assert.assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, res);
-				Assert.assertFalse(elle.isHabitantVD());
+		doInNewTransactionAndSession(status -> {
+			// recalcul du flag "habitant" sur Madame
+			final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+			final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(elle, noIndividuElle, null);
+			Assert.assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, res);
+			Assert.assertFalse(elle.isHabitantVD());
 
-				// tout le monde est parti, il faut donc maintenant déplacer le for principal du couple aussi
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(elle, dateMariage);
-				final MenageCommun mc = couple.getMenage();
-				tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HC);
-				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockCommune.Geneve.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.DEPART_HC);
-			}
+			// tout le monde est parti, il faut donc maintenant déplacer le for principal du couple aussi
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(elle, dateMariage);
+			final MenageCommun mc = couple.getMenage();
+			tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HC);
+			tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockCommune.Geneve.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.DEPART_HC);
+			return null;
 		});
 
 		// contenu du cache -> le cache de tout le monde a dû être effacé

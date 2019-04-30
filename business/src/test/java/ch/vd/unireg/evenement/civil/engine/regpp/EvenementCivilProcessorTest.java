@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.cache.UniregCacheManager;
@@ -229,18 +228,15 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		final long noInd2 = 89123L;
 		final long noInd1 = 78912L;
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique hab1 = new PersonnePhysique(true);
-				hab1.setNumeroIndividu(noInd1);
-				tiersDAO.save(hab1);
+		doInNewTransaction(status -> {
+			final PersonnePhysique hab1 = new PersonnePhysique(true);
+			hab1.setNumeroIndividu(noInd1);
+			tiersDAO.save(hab1);
 
-				final PersonnePhysique hab2 = new PersonnePhysique(true);
-				hab2.setNumeroIndividu(noInd2);
-				tiersDAO.save(hab2);
-				return null;
-			}
+			final PersonnePhysique hab2 = new PersonnePhysique(true);
+			hab2.setNumeroIndividu(noInd2);
+			tiersDAO.save(hab2);
+			return null;
 		});
 
 		saveEvenement(125L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402, EtatEvenementCivil.A_TRAITER);
@@ -282,14 +278,11 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		final long noInd1 = 78912L;
 		final long noInd2 = 89123L;
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique hab = new PersonnePhysique(true);
-				hab.setNumeroIndividu(noInd1);
-				tiersDAO.save(hab);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique hab = new PersonnePhysique(true);
+			hab.setNumeroIndividu(noInd1);
+			tiersDAO.save(hab);
+			return null;
 		});
 
 		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402, EtatEvenementCivil.A_TRAITER);
@@ -398,14 +391,11 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	private void traiterEvenementTesting(long noEventTesting, final AfterHandleCallback callback) throws Exception {
 
 		final long noInd1 = 12345L;
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique hab = new PersonnePhysique(true);
-				hab.setNumeroIndividu(noInd1);
-				tiersDAO.save(hab);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique hab = new PersonnePhysique(true);
+			hab.setNumeroIndividu(noInd1);
+			tiersDAO.save(hab);
+			return null;
 		});
 
 		saveEvenement(noEventTesting, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, null, 5402, EtatEvenementCivil.A_TRAITER);
@@ -627,17 +617,14 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		final long noIndividu = 34567; // Sophie Dupuis
 
 		// Crée un habitant
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique habitant = new PersonnePhysique(true);
-				habitant.setNumeroIndividu(noIndividu);
-				habitant.setNumero(67919191L);
-				addForPrincipal(habitant, RegDate.get(1980, 11, 2), null, MockCommune.Cossonay.getNoOFS());
+		doInNewTransaction(status -> {
+			final PersonnePhysique habitant = new PersonnePhysique(true);
+			habitant.setNumeroIndividu(noIndividu);
+			habitant.setNumero(67919191L);
+			addForPrincipal(habitant, RegDate.get(1980, 11, 2), null, MockCommune.Cossonay.getNoOFS());
 
-				tiersDAO.save(habitant);
-				return null;
-			}
+			tiersDAO.save(habitant);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -708,33 +695,29 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		traiteEvenements();
 
 		// vérification
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
+			criterion.setNumeroIndividu(noIndividuMonsieur);
+			final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
+			assertNotNull(evts);
+			assertEquals(1, evts.size());
 
-				final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
-				criterion.setNumeroIndividu(noIndividuMonsieur);
-				final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
-				assertNotNull(evts);
-				assertEquals(1, evts.size());
+			final EvenementCivilRegPP externe = evts.get(0);
+			assertNotNull(externe);
+			assertEquals(TypeEvenementCivil.CORREC_CONJOINT, externe.getType());
+			assertEquals(EtatEvenementCivil.EN_ERREUR, externe.getEtat());
+			assertEquals(1, externe.getErreurs().size());
 
-				final EvenementCivilRegPP externe = evts.get(0);
-				assertNotNull(externe);
-				assertEquals(TypeEvenementCivil.CORREC_CONJOINT, externe.getType());
-				assertEquals(EtatEvenementCivil.EN_ERREUR, externe.getEtat());
-				assertEquals(1, externe.getErreurs().size());
+			final EvenementCivilRegPPErreur erreur = externe.getErreurs().iterator().next();
+			assertNotNull(erreur);
 
-				final EvenementCivilRegPPErreur erreur = externe.getErreurs().iterator().next();
-				assertNotNull(erreur);
-
-				final String msg = erreur.getMessage();
-				final String[] lignes = msg.split("\n");
-				assertEquals(3, lignes.length);
-				assertTrue(lignes[0].endsWith("2 erreur(s) - 0 avertissement(s):"));
-				assertTrue(lignes[1].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
-				assertTrue(lignes[2].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
-				return null;
-			}
+			final String msg = erreur.getMessage();
+			final String[] lignes = msg.split("\n");
+			assertEquals(3, lignes.length);
+			assertTrue(lignes[0].endsWith("2 erreur(s) - 0 avertissement(s):"));
+			assertTrue(lignes[1].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
+			assertTrue(lignes[2].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
+			return null;
 		});
 	}
 
@@ -779,27 +762,23 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		//  - l'événement est en erreur
 		//  - que l'événement civil a été correctement associé avec son individu
 		//  - que le message d'erreur est bien renseigné
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
+			criterion.setNumeroIndividu(noIndividuMonsieur);
+			final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
+			assertNotNull(evts);
+			assertEquals(1, evts.size());
 
-				final EvenementCivilCriteria criterion = new EvenementCivilCriteria();
-				criterion.setNumeroIndividu(noIndividuMonsieur);
-				final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.find(criterion, null);
-				assertNotNull(evts);
-				assertEquals(1, evts.size());
+			final EvenementCivilRegPP externe = evts.get(0);
+			assertNotNull(externe);
+			assertEquals(TypeEvenementCivil.SUP_INDIVIDU, externe.getType());
+			assertEquals(EtatEvenementCivil.EN_ERREUR, externe.getEtat());
+			assertEquals(1, externe.getErreurs().size());
 
-				final EvenementCivilRegPP externe = evts.get(0);
-				assertNotNull(externe);
-				assertEquals(TypeEvenementCivil.SUP_INDIVIDU, externe.getType());
-				assertEquals(EtatEvenementCivil.EN_ERREUR, externe.getEtat());
-				assertEquals(1, externe.getErreurs().size());
-
-				final EvenementCivilRegPPErreur erreur = externe.getErreurs().iterator().next();
-				assertNotNull(erreur);
-				assertEquals("Veuillez effectuer cette opération manuellement", erreur.getMessage());
-				return null;
-			}
+			final EvenementCivilRegPPErreur erreur = externe.getErreurs().iterator().next();
+			assertNotNull(erreur);
+			assertEquals("Veuillez effectuer cette opération manuellement", erreur.getMessage());
+			return null;
 		});
 	}
 

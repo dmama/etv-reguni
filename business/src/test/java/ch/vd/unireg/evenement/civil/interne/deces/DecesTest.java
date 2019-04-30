@@ -6,7 +6,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -241,20 +240,17 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, date(2008, 12, 31));
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
-				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
+		doInNewTransaction(status -> {
+			final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, date(2008, 12, 31));
+			final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
+			final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
-				final MessageCollector collector = buildMessageCollector();
-				deces.validate(collector, collector);
-				deces.handle(collector);
+			final MessageCollector collector = buildMessageCollector();
+			deces.validate(collector, collector);
+			deces.handle(collector);
 
-				assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
-				return null;
-			}
+			assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
+			return null;
 		});
 
 		/*
@@ -332,20 +328,17 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, date(2008, 12, 31));
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31), AttributeIndividu.ADRESSES);
-				final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
+		doInNewTransaction(status -> {
+			final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, date(2008, 12, 31));
+			final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31), AttributeIndividu.ADRESSES);
+			final Deces deces = createValidDeces(marie, conjoint, DATE_DECES);
 
-				final MessageCollector collector = buildMessageCollector();
-				deces.validate(collector, collector);
-				deces.handle(collector);
+			final MessageCollector collector = buildMessageCollector();
+			deces.validate(collector, collector);
+			deces.handle(collector);
 
-				assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
-				return null;
-			}
+			assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
+			return null;
 		});
 
 		/*
@@ -454,19 +447,16 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// envoi de l'événement civil de décès
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu ind = serviceCivil.getIndividu(noIndividu, null);
-				final Deces deces = createValidDeces(ind, null, dateDeces);
+		doInNewTransactionAndSession(status -> {
+			final Individu ind = serviceCivil.getIndividu(noIndividu, null);
+			final Deces deces = createValidDeces(ind, null, dateDeces);
 
-				final MessageCollector collector = buildMessageCollector();
-				deces.validate(collector, collector);
-				deces.handle(collector);
+			final MessageCollector collector = buildMessageCollector();
+			deces.validate(collector, collector);
+			deces.handle(collector);
 
-				assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
-				return null;
-			}
+			assertEmpty("Une erreur est survenue lors du traitement du deces", collector.getErreurs());
+			return null;
 		});
 
 		// vérification du flag habitant sur le contribuable

@@ -44,7 +44,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
@@ -273,12 +272,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * virtual method to truncate the database
 	 */
 	protected void truncateDatabase() throws Exception {
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				deleteFromTables(getTableNames(false));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			deleteFromTables(getTableNames(false));
+			return null;
 		});
 	}
 
@@ -301,7 +297,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Charge le fichier DbUnit après avoir vidé la base de données
 	 */
-	protected void loadDatabase(final String filename) throws Exception {
+	protected void loadDatabase(final String filename) {
 
 		File file = getFile(filename);
 		loadDataSet(file);
@@ -362,23 +358,18 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param file
 	 *            le fichier à utiliser
 	 */
-	private void loadDataSet(final File file) throws Exception {
+	private void loadDataSet(final File file) {
 
-		doInNewTransaction(new TxCallback<Object>() {
-
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				try (Connection sql = DataSourceUtils.getConnection(dataSource)) {
-					IDatabaseConnection connection = createNewConnection(sql);
-					IDataSet dataSet = getSrcDataSet(file, getProducerType(), false);
-					DatabaseOperation.INSERT.execute(connection, dataSet);
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-				return null;
+		doInNewTransaction(status -> {
+			try (Connection sql = DataSourceUtils.getConnection(dataSource)) {
+				IDatabaseConnection connection = createNewConnection(sql);
+				IDataSet dataSet = getSrcDataSet(file, getProducerType(), false);
+				DatabaseOperation.INSERT.execute(connection, dataSet);
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
 	}

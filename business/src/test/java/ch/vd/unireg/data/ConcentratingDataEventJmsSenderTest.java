@@ -8,7 +8,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
@@ -21,6 +20,8 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
+
+import static org.junit.Assert.assertNotNull;
 
 public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 
@@ -104,16 +105,13 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 		buildConcentrator(buildCollectingSender(collected), true);
 
 		// ajout d'un for principal sur l'entité créée au préalable
-		final long idEvtFiscal = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				final EvenementFiscalFor evtFiscal = addEvenementFiscalFor(pp, ffp, ffp.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
-				concentrator.sendEvent(evtFiscal);
-				return evtFiscal.getId();
-			}
+		final long idEvtFiscal = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			final EvenementFiscalFor evtFiscal = addEvenementFiscalFor(pp, ffp, ffp.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			concentrator.sendEvent(evtFiscal);
+			return evtFiscal.getId();
 		});
 
 		// que s'est-il passé ?
@@ -158,16 +156,13 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 		buildConcentrator(buildCollectingSender(collected), false);     // desactivation des événements fiscaux
 
 		// ajout d'un for principal sur l'entité créée au préalable
-		final long idEvtFiscal = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				final EvenementFiscalFor evtFiscal = addEvenementFiscalFor(pp, ffp, ffp.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
-				concentrator.sendEvent(evtFiscal);
-				return evtFiscal.getId();
-			}
+		final long idEvtFiscal = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			final EvenementFiscalFor evtFiscal = addEvenementFiscalFor(pp, ffp, ffp.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			concentrator.sendEvent(evtFiscal);
+			return evtFiscal.getId();
 		});
 
 		// que s'est-il passé ?
@@ -213,26 +208,23 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 		}
 
 		// ajout d'un for principal sur l'entité créée au préalable
-		final IdsEvtsFiscaux idsEvts = doInNewTransactionAndSession(new TxCallback<IdsEvtsFiscaux>() {
-			@Override
-			public IdsEvtsFiscaux execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp1 = (PersonnePhysique) tiersDAO.get(ids.pp1);
-				Assert.assertNotNull(pp1);
-				final ForFiscalPrincipal ffp1 = addForPrincipal(pp1, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				final EvenementFiscalFor evtFiscal1 = addEvenementFiscalFor(pp1, ffp1, ffp1.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
-				concentrator.sendEvent(evtFiscal1);
+		final IdsEvtsFiscaux idsEvts = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp1 = (PersonnePhysique) tiersDAO.get(ids.pp1);
+			assertNotNull(pp1);
+			final ForFiscalPrincipal ffp1 = addForPrincipal(pp1, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			final EvenementFiscalFor evtFiscal1 = addEvenementFiscalFor(pp1, ffp1, ffp1.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			concentrator.sendEvent(evtFiscal1);
 
-				final PersonnePhysique pp2 = (PersonnePhysique) tiersDAO.get(ids.pp2);
-				Assert.assertNotNull(pp2);
-				final ForFiscalPrincipal ffp2 = addForPrincipal(pp2, date(1998, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				final EvenementFiscalFor evtFiscal2 = addEvenementFiscalFor(pp2, ffp2, ffp2.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
-				concentrator.sendEvent(evtFiscal2);
+			final PersonnePhysique pp2 = (PersonnePhysique) tiersDAO.get(ids.pp2);
+			assertNotNull(pp2);
+			final ForFiscalPrincipal ffp2 = addForPrincipal(pp2, date(1998, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			final EvenementFiscalFor evtFiscal2 = addEvenementFiscalFor(pp2, ffp2, ffp2.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			concentrator.sendEvent(evtFiscal2);
 
-				final IdsEvtsFiscaux res = new IdsEvtsFiscaux();
-				res.evt1 = evtFiscal1.getId();
-				res.evt2 = evtFiscal2.getId();
-				return res;
-			}
+			final IdsEvtsFiscaux res = new IdsEvtsFiscaux();
+			res.evt1 = evtFiscal1.getId();
+			res.evt2 = evtFiscal2.getId();
+			return res;
 		});
 
 		// que s'est-il passé ?
@@ -272,20 +264,16 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 		buildConcentrator(buildCollectingSender(collected), true);
 
 		// ajout d'un for principal sur l'entité créée au préalable
-		final long idEvtFiscal = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
-				final EvenementFiscalFor evtFiscal = addEvenementFiscalFor(pp, ffp, ffp.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
-				concentrator.sendEvent(evtFiscal);
+		final long idEvtFiscal = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1995, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+			final EvenementFiscalFor evtFiscal = addEvenementFiscalFor(pp, ffp, ffp.getDateDebut(), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			concentrator.sendEvent(evtFiscal);
 
-				// la transaction sera de toute façon annulée
-				status.setRollbackOnly();
-
-				return evtFiscal.getId();
-			}
+			// la transaction sera de toute façon annulée
+			status.setRollbackOnly();
+			return evtFiscal.getId();
 		});
 
 		// que s'est-il passé ?

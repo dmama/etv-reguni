@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.party;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.BusinessItTest;
@@ -78,13 +77,10 @@ public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRe
 		handler.setSecurityProvider(provider);
 
 		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Ramaldadji", date(1965, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(1986, 3, 12), MotifFor.MAJORITE, MockCommune.Vevey);
-				return pp.getNumero();
-			}
+		final Long idPP = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Ramaldadji", date(1965, 3, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(1986, 3, 12), MotifFor.MAJORITE, MockCommune.Vevey);
+			return pp.getNumero();
 		});
 
 		final AperiodicTaxLiabilityRequest request = new AperiodicTaxLiabilityRequest();
@@ -114,12 +110,9 @@ public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRe
 		handler.setSecurityProvider(provider);
 
 		// on crée un habitant vaudois ordinaire
-		final Long idPP = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Jacques", "Ramaldadji", date(1965, 3, 12), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final Long idPP = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jacques", "Ramaldadji", date(1965, 3, 12), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		final AperiodicTaxLiabilityRequest request = new AperiodicTaxLiabilityRequest();

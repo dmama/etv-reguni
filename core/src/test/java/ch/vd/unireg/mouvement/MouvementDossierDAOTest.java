@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -51,35 +50,29 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testProtoBordereaux() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
+		doInNewTransaction(status -> {
+			// on crée deux mvts de dossier de l'OID 1 à l'OID 5, trois réceptions pour archive à l'OID 5
+			final CollectiviteAdministrative oid1 = addCollectiviteAdministrative(1);
+			final CollectiviteAdministrative oid5 = addCollectiviteAdministrative(5);
 
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			// il me faut donc 7 contribuables (un de plus pour un mouvement déjà traité, un autre pour un mouvement à traité)
+			final PersonnePhysique pp1 = addNonHabitant("Alphonsine", "Dubois", RegDate.get(1923, 2, 12), Sexe.FEMININ);
+			final PersonnePhysique pp2 = addNonHabitant("Ernestine", "Dupont", RegDate.get(1922, 4, 5), Sexe.FEMININ);
+			final PersonnePhysique pp3 = addNonHabitant("Emile", "Pittet", RegDate.get(1912, 6, 12), Sexe.MASCULIN);
+			final PersonnePhysique pp4 = addNonHabitant("Robert", "Debout", RegDate.get(1965, 12, 4), Sexe.MASCULIN);
+			final PersonnePhysique pp5 = addNonHabitant("Valérie", "Marchand", RegDate.get(1970, 1, 3), Sexe.FEMININ);
+			final PersonnePhysique pp6 = addNonHabitant("Marcel", "Petit", RegDate.get(1945, 1, 3), Sexe.MASCULIN);
+			final PersonnePhysique pp7 = addNonHabitant("Kevin", "Martin", RegDate.get(1985, 3, 2), Sexe.MASCULIN);
 
-				// on crée deux mvts de dossier de l'OID 1 à l'OID 5, trois réceptions pour archive à l'OID 5
-				final CollectiviteAdministrative oid1 = addCollectiviteAdministrative(1);
-				final CollectiviteAdministrative oid5 = addCollectiviteAdministrative(5);
-
-				// il me faut donc 7 contribuables (un de plus pour un mouvement déjà traité, un autre pour un mouvement à traité)
-				final PersonnePhysique pp1 = addNonHabitant("Alphonsine", "Dubois", RegDate.get(1923, 2, 12), Sexe.FEMININ);
-				final PersonnePhysique pp2 = addNonHabitant("Ernestine", "Dupont", RegDate.get(1922, 4, 5), Sexe.FEMININ);
-				final PersonnePhysique pp3 = addNonHabitant("Emile", "Pittet", RegDate.get(1912, 6, 12), Sexe.MASCULIN);
-				final PersonnePhysique pp4 = addNonHabitant("Robert", "Debout", RegDate.get(1965, 12, 4), Sexe.MASCULIN);
-				final PersonnePhysique pp5 = addNonHabitant("Valérie", "Marchand", RegDate.get(1970, 1, 3), Sexe.FEMININ);
-				final PersonnePhysique pp6 = addNonHabitant("Marcel", "Petit", RegDate.get(1945, 1, 3), Sexe.MASCULIN);
-				final PersonnePhysique pp7 = addNonHabitant("Kevin", "Martin", RegDate.get(1985, 3, 2), Sexe.MASCULIN);
-
-				// création des mouvements
-				addMouvementDossierEnvoi(pp1, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				addMouvementDossierEnvoi(pp2, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
-				addMouvementDossierEnvoi(pp3, oid1, oid5, EtatMouvementDossier.A_TRAITER);
-				addMouvementDossierArchives(pp4, oid5, EtatMouvementDossier.A_ENVOYER);
-				addMouvementDossierArchives(pp5, oid5, EtatMouvementDossier.A_ENVOYER);
-				addMouvementDossierArchives(pp6, oid5, EtatMouvementDossier.A_ENVOYER);
-				addMouvementDossierArchives(pp7, oid5, EtatMouvementDossier.TRAITE);
-
-				return null;
-			}
+			// création des mouvements
+			addMouvementDossierEnvoi(pp1, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			addMouvementDossierEnvoi(pp2, oid1, oid5, EtatMouvementDossier.A_ENVOYER);
+			addMouvementDossierEnvoi(pp3, oid1, oid5, EtatMouvementDossier.A_TRAITER);
+			addMouvementDossierArchives(pp4, oid5, EtatMouvementDossier.A_ENVOYER);
+			addMouvementDossierArchives(pp5, oid5, EtatMouvementDossier.A_ENVOYER);
+			addMouvementDossierArchives(pp6, oid5, EtatMouvementDossier.A_ENVOYER);
+			addMouvementDossierArchives(pp7, oid5, EtatMouvementDossier.TRAITE);
+			return null;
 		});
 
 		{

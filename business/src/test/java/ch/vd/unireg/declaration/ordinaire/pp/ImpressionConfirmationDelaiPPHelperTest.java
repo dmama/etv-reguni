@@ -7,11 +7,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DelaiDeclaration;
@@ -87,19 +85,17 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 		});
 
 		// demande d'impression de confirmation de délai
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null, null);
-				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
-				Assert.assertNotNull(doc);
+			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null, null);
+			final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
+			Assert.assertNotNull(doc);
 
-				Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
-			}
+			Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+			Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+			return null;
 		});
 	}
 
@@ -126,19 +122,17 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 		});
 
 		// demande d'impression de confirmation de délai
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+			final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null, null);
-				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
-				Assert.assertNotNull(doc);
+			final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate(), null, null);
+			final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
+			Assert.assertNotNull(doc);
 
-				Assert.assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				Assert.assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
-			}
+			Assert.assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+			Assert.assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+			return null;
 		});
 	}
 

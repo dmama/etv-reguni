@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.infra;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest;
@@ -34,12 +33,9 @@ public class TaxOfficesRequestEsbHandlerV1ItTest extends InfraRequestEsbHandlerI
 		request.setMunicipalityFSOId(5477);     // Cossonay
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+			return null;
 		});
 
 		final Response response = parseResponse(getEsbMessage(getOutputQueue()));
@@ -68,12 +64,9 @@ public class TaxOfficesRequestEsbHandlerV1ItTest extends InfraRequestEsbHandlerI
 		request.setMunicipalityFSOId(6458);     // Neuchâtel
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+			return null;
 		});
 
 		final Response response = parseResponse(getEsbMessage(getOutputQueue()));

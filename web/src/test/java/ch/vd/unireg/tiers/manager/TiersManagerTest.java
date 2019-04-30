@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.common.pagination.WebParamPagination;
@@ -71,47 +70,45 @@ public class TiersManagerTest extends WebTest {
 		});
 
 		// allons maintenant chercher les rapports prestations de ce débiteur
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
-				final WebParamPagination pagination = new WebParamPagination(1, 10, "id", true);
-				final List<RapportPrestationView> rapports = tiersManager.getRapportsPrestation(dpi, pagination, true);
-				Assert.assertEquals(4, rapports.size());
-				{
-					final RapportPrestationView view = rapports.get(0);
-					Assert.assertNotNull(view);
-					Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
-					Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
-					Assert.assertEquals(date(2010, 1, 1), view.getDateDebut());
-					Assert.assertEquals(date(2011, 12, 31), view.getDateFin());
-				}
-				{
-					final RapportPrestationView view = rapports.get(1);
-					Assert.assertNotNull(view);
-					Assert.assertEquals((Long) ids.habitantNotOk, view.getNumero());
-					Assert.assertNull(view.getNomCourrier());
-					Assert.assertEquals(date(2011, 1, 1), view.getDateDebut());
-					Assert.assertNull(view.getDateFin());
-				}
-				{
-					final RapportPrestationView view = rapports.get(2);
-					Assert.assertNotNull(view);
-					Assert.assertEquals((Long) ids.habitantMine, view.getNumero());
-					Assert.assertNull(view.getNomCourrier());
-					Assert.assertEquals(date(2012, 1, 1), view.getDateDebut());
-					Assert.assertEquals(date(2012, 6, 30), view.getDateFin());
-				}
-				{
-					final RapportPrestationView view = rapports.get(3);
-					Assert.assertNotNull(view);
-					Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
-					Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
-					Assert.assertEquals(date(2013, 1, 1), view.getDateDebut());
-					Assert.assertNull(view.getDateFin());
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.dpi);
+			final WebParamPagination pagination = new WebParamPagination(1, 10, "id", true);
+			final List<RapportPrestationView> rapports = tiersManager.getRapportsPrestation(dpi, pagination, true);
+			Assert.assertEquals(4, rapports.size());
+			{
+				final RapportPrestationView view = rapports.get(0);
+				Assert.assertNotNull(view);
+				Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
+				Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
+				Assert.assertEquals(date(2010, 1, 1), view.getDateDebut());
+				Assert.assertEquals(date(2011, 12, 31), view.getDateFin());
 			}
+			{
+				final RapportPrestationView view = rapports.get(1);
+				Assert.assertNotNull(view);
+				Assert.assertEquals((Long) ids.habitantNotOk, view.getNumero());
+				Assert.assertNull(view.getNomCourrier());
+				Assert.assertEquals(date(2011, 1, 1), view.getDateDebut());
+				Assert.assertNull(view.getDateFin());
+			}
+			{
+				final RapportPrestationView view = rapports.get(2);
+				Assert.assertNotNull(view);
+				Assert.assertEquals((Long) ids.habitantMine, view.getNumero());
+				Assert.assertNull(view.getNomCourrier());
+				Assert.assertEquals(date(2012, 1, 1), view.getDateDebut());
+				Assert.assertEquals(date(2012, 6, 30), view.getDateFin());
+			}
+			{
+				final RapportPrestationView view = rapports.get(3);
+				Assert.assertNotNull(view);
+				Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
+				Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
+				Assert.assertEquals(date(2013, 1, 1), view.getDateDebut());
+				Assert.assertNull(view.getDateFin());
+			}
+			;
+			return null;
 		});
 	}
 }

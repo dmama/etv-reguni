@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
@@ -82,12 +81,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 		});
 
 		// lancement du processeur
-		final ListeTachesEnInstanceParOID res = doInNewTransactionAndSession(new TxCallback<ListeTachesEnInstanceParOID>() {
-			@Override
-			public ListeTachesEnInstanceParOID execute(TransactionStatus status) throws Exception {
-				return processor.run(RegDate.get(), null);
-			}
-		});
+		final ListeTachesEnInstanceParOID res = doInNewTransactionAndSession(status -> processor.run(RegDate.get(), null));
 
 		// dans les statistiques, la tâche doit être placée sur la nouvelle entité même si le tiers est lié à l'OID 7...
 

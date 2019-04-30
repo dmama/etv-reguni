@@ -3,7 +3,6 @@ package ch.vd.unireg.fourreNeutre;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -32,12 +31,9 @@ public class FourreNeutreControllerValidatorTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSelectionnerPeriode() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp = addNonHabitant("Eric", "Masserey", date(1976, 3, 12), Sexe.MASCULIN);
-				return pp.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique pp = addNonHabitant("Eric", "Masserey", date(1976, 3, 12), Sexe.MASCULIN);
+			return pp.getId();
 		});
 
 		FourreNeutreView view = new FourreNeutreView();

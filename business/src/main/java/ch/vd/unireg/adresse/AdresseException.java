@@ -3,7 +3,7 @@ package ch.vd.unireg.adresse;
 /**
  * Classe de base des exceptions touchant les adresses fiscales.
  */
-public abstract class AdresseException extends Exception {
+public abstract class AdresseException extends RuntimeException {
 
 	public AdresseException() {
 	}

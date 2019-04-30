@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -103,18 +102,15 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	public void testEnvoiLRPeriodiciteUnique() throws Exception {
 
 		final int anneeReference = 2010;
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setSansListeRecapitulative(false);
+		final long dpiId = doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setSansListeRecapitulative(false);
 
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
+			addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				addPeriodeFiscale(anneeReference);
-				return dpi.getNumero();
-			}
+			addPeriodeFiscale(anneeReference);
+			return dpi.getNumero();
 		});
 
 		final List<Pair<Long, DateRange>> imprimees = new ArrayList<>();
@@ -176,21 +172,17 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	@Test
 	public void testEnvoiPeriodiciteUniqueRienAEnvoyer() throws Exception {
 		final int anneeReference = 2010;
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setSansListeRecapitulative(false);
+		doInNewTransaction(status -> {
+			DebiteurPrestationImposable dpi = addDebiteur();
+			dpi.setSansListeRecapitulative(false);
 
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+			tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
+			addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeReference);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, date(anneeReference, 10, 1), date(anneeReference, 10, 31), md);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeReference);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, date(anneeReference, 10, 1), date(anneeReference, 10, 31), md);
+			return dpi.getNumero();
 		});
 
 		final List<Pair<Long, DateRange>> imprimees = new ArrayList<>();

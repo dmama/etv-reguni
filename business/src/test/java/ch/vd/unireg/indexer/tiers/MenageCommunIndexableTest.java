@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -59,40 +58,35 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique nhab1 = new PersonnePhysique(false);
+			nhab1.setNom("Maillard");
+			nhab1.setPrenomUsuel("Philippe");
+			nhab1.setNumeroAssureSocial(noAVS1);
+			nhab1.setDateNaissance(dateN1);
+			nhab1.setSexe(Sexe.MASCULIN);
+			nhab1 = (PersonnePhysique) dao.save(nhab1);
+			ids.idHab1 = nhab1.getNumero();
 
-				PersonnePhysique nhab1 = new PersonnePhysique(false);
-				nhab1.setNom("Maillard");
-				nhab1.setPrenomUsuel("Philippe");
-				nhab1.setNumeroAssureSocial(noAVS1);
-				nhab1.setDateNaissance(dateN1);
-				nhab1.setSexe(Sexe.MASCULIN);
-				nhab1 = (PersonnePhysique) dao.save(nhab1);
-				ids.idHab1 = nhab1.getNumero();
+			PersonnePhysique nhab2 = new PersonnePhysique(false);
+			nhab2.setNom("Maillard-Gallet");
+			nhab2.setPrenomUsuel("Gladys");
+			nhab2.setNumeroAssureSocial(noAVS2);
+			nhab2.setDateNaissance(dateN2);
+			nhab2.setSexe(Sexe.FEMININ);
+			nhab2 = (PersonnePhysique) dao.save(nhab2);
+			ids.idHab2 = nhab2.getNumero();
 
-				PersonnePhysique nhab2 = new PersonnePhysique(false);
-				nhab2.setNom("Maillard-Gallet");
-				nhab2.setPrenomUsuel("Gladys");
-				nhab2.setNumeroAssureSocial(noAVS2);
-				nhab2.setDateNaissance(dateN2);
-				nhab2.setSexe(Sexe.FEMININ);
-				nhab2 = (PersonnePhysique) dao.save(nhab2);
-				ids.idHab2 = nhab2.getNumero();
+			MenageCommun mc = new MenageCommun();
+			mc.setNumero(12345678L);
+			mc = (MenageCommun) dao.save(mc);
+			ids.idMc = mc.getNumero();
 
-				MenageCommun mc = new MenageCommun();
-				mc.setNumero(12345678L);
-				mc = (MenageCommun) dao.save(mc);
-				ids.idMc = mc.getNumero();
-
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), null);
-				rapport.setAnnule(true);
-				rapport = tiersService.addTiersToCouple(mc, nhab2, RegDate.get(2001, 2, 23), null);
-				rapport.setAnnule(true);
-
-				return null;
-			}
+			RapportEntreTiers rapport = tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), null);
+			rapport.setAnnule(true);
+			rapport = tiersService.addTiersToCouple(mc, nhab2, RegDate.get(2001, 2, 23), null);
+			rapport.setAnnule(true);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -122,39 +116,34 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique nhab1 = new PersonnePhysique(false);
+			nhab1.setNom("Maillard");
+			nhab1.setPrenomUsuel("Philippe");
+			nhab1.setNumeroAssureSocial(noAVS1);
+			nhab1.setDateNaissance(dateN1);
+			nhab1.setSexe(Sexe.MASCULIN);
+			nhab1 = (PersonnePhysique) dao.save(nhab1);
+			ids.idHab1 = nhab1.getNumero();
 
-				PersonnePhysique nhab1 = new PersonnePhysique(false);
-				nhab1.setNom("Maillard");
-				nhab1.setPrenomUsuel("Philippe");
-				nhab1.setNumeroAssureSocial(noAVS1);
-				nhab1.setDateNaissance(dateN1);
-				nhab1.setSexe(Sexe.MASCULIN);
-				nhab1 = (PersonnePhysique) dao.save(nhab1);
-				ids.idHab1 = nhab1.getNumero();
+			PersonnePhysique nhab3 = new PersonnePhysique(false);
+			nhab3.setNom("Casanova");
+			nhab3.setPrenomUsuel("Giacomo");
+			nhab3.setNumeroAssureSocial(noAVS3);
+			nhab3.setDateNaissance(dateN3);
+			nhab3.setSexe(Sexe.MASCULIN);
+			nhab3 = (PersonnePhysique) dao.save(nhab3);
+			ids.idHab3 = nhab3.getNumero();
 
-				PersonnePhysique nhab3 = new PersonnePhysique(false);
-				nhab3.setNom("Casanova");
-				nhab3.setPrenomUsuel("Giacomo");
-				nhab3.setNumeroAssureSocial(noAVS3);
-				nhab3.setDateNaissance(dateN3);
-				nhab3.setSexe(Sexe.MASCULIN);
-				nhab3 = (PersonnePhysique) dao.save(nhab3);
-				ids.idHab3 = nhab3.getNumero();
+			MenageCommun mc = new MenageCommun();
+			mc.setNumero(12345678L);
+			mc = (MenageCommun) dao.save(mc);
+			ids.idMc = mc.getNumero();
 
-				MenageCommun mc = new MenageCommun();
-				mc.setNumero(12345678L);
-				mc = (MenageCommun) dao.save(mc);
-				ids.idMc = mc.getNumero();
-
-				tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), null);
-				RapportEntreTiers rapportAnnule = tiersService.addTiersToCouple(mc, nhab3, RegDate.get(2000, 1, 1), null);
-				rapportAnnule.setAnnule(true);
-
-				return null;
-			}
+			tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), null);
+			RapportEntreTiers rapportAnnule = tiersService.addTiersToCouple(mc, nhab3, RegDate.get(2000, 1, 1), null);
+			rapportAnnule.setAnnule(true);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -187,56 +176,56 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique nhab1 = new PersonnePhysique(false);
+			nhab1.setNom("Maillard");
+			nhab1.setPrenomUsuel("Philippe");
+			nhab1.setNumeroAssureSocial(noAVS1);
+			nhab1.setDateNaissance(dateN1);
+			nhab1.setSexe(Sexe.MASCULIN);
+			nhab1 = (PersonnePhysique) dao.save(nhab1);
+			ids.idHab1 = nhab1.getNumero();
 
-				PersonnePhysique nhab1 = new PersonnePhysique(false);
-				nhab1.setNom("Maillard");
-				nhab1.setPrenomUsuel("Philippe");
-				nhab1.setNumeroAssureSocial(noAVS1);
-				nhab1.setDateNaissance(dateN1);
-				nhab1.setSexe(Sexe.MASCULIN);
-				nhab1 = (PersonnePhysique) dao.save(nhab1);
-				ids.idHab1 = nhab1.getNumero();
+			PersonnePhysique nhab2 = new PersonnePhysique(false);
+			nhab2.setNom("Maillard-Gallet");
+			nhab2.setPrenomUsuel("Gladys");
+			nhab2.setNumeroAssureSocial(noAVS2);
+			nhab2.setDateNaissance(dateN2);
+			nhab2.setSexe(Sexe.FEMININ);
+			nhab2 = (PersonnePhysique) dao.save(nhab2);
+			ids.idHab2 = nhab2.getNumero();
 
-				PersonnePhysique nhab2 = new PersonnePhysique(false);
-				nhab2.setNom("Maillard-Gallet");
-				nhab2.setPrenomUsuel("Gladys");
-				nhab2.setNumeroAssureSocial(noAVS2);
-				nhab2.setDateNaissance(dateN2);
-				nhab2.setSexe(Sexe.FEMININ);
-				nhab2 = (PersonnePhysique) dao.save(nhab2);
-				ids.idHab2 = nhab2.getNumero();
+			PersonnePhysique nhab3 = new PersonnePhysique(false);
+			nhab3.setNom("Casanova");
+			nhab3.setPrenomUsuel("Giacomo");
+			nhab3.setNumeroAssureSocial(noAVS3);
+			nhab3.setDateNaissance(dateN3);
+			nhab3.setSexe(Sexe.MASCULIN);
+			nhab3 = (PersonnePhysique) dao.save(nhab3);
+			ids.idHab3 = nhab3.getNumero();
 
-				PersonnePhysique nhab3 = new PersonnePhysique(false);
-				nhab3.setNom("Casanova");
-				nhab3.setPrenomUsuel("Giacomo");
-				nhab3.setNumeroAssureSocial(noAVS3);
-				nhab3.setDateNaissance(dateN3);
-				nhab3.setSexe(Sexe.MASCULIN);
-				nhab3 = (PersonnePhysique) dao.save(nhab3);
-				ids.idHab3 = nhab3.getNumero();
+			MenageCommun mc = new MenageCommun();
+			mc.setNumero(12345678L);
+			mc = (MenageCommun) dao.save(mc);
+			ids.idMc = mc.getNumero();
 
-				MenageCommun mc = new MenageCommun();
-				mc.setNumero(12345678L);
-				mc = (MenageCommun) dao.save(mc);
-				ids.idMc = mc.getNumero();
+			final RapportEntreTiers rapport1 = tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), null);
+			final RapportEntreTiers rapport2 = tiersService.addTiersToCouple(mc, nhab2, RegDate.get(2001, 2, 23), null);
+			final RapportEntreTiers rapport3 = tiersService.addTiersToCouple(mc, nhab3, RegDate.get(2000, 1, 1), null);
 
-				final RapportEntreTiers rapport1 = tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), null);
-				final RapportEntreTiers rapport2 = tiersService.addTiersToCouple(mc, nhab2, RegDate.get(2001, 2, 23), null);
-				final RapportEntreTiers rapport3 = tiersService.addTiersToCouple(mc, nhab3, RegDate.get(2000, 1, 1), null);
-
-				// annulation des rapports dans un ordre précis : seuls les deux plus récents seront pris
-				// en compte dans l'indexation
+			// annulation des rapports dans un ordre précis : seuls les deux plus récents seront pris
+			// en compte dans l'indexation
+			try {
 				rapport3.setAnnule(true);
 				Thread.sleep(1000);
 				rapport2.setAnnule(true);
 				Thread.sleep(1000);
 				rapport1.setAnnule(true);
-
-				return null;
 			}
+			catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -270,59 +259,54 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique nhab1 = new PersonnePhysique(false);
+			nhab1.setNom("Maillard");
+			nhab1.setPrenomUsuel("Philippe");
+			nhab1.setNumeroAssureSocial(noAVS1);
+			nhab1.setDateNaissance(dateN1);
+			nhab1.setSexe(Sexe.MASCULIN);
+			nhab1 = (PersonnePhysique) dao.save(nhab1);
+			ids.idHab1 = nhab1.getNumero();
 
-				PersonnePhysique nhab1 = new PersonnePhysique(false);
-				nhab1.setNom("Maillard");
-				nhab1.setPrenomUsuel("Philippe");
-				nhab1.setNumeroAssureSocial(noAVS1);
-				nhab1.setDateNaissance(dateN1);
-				nhab1.setSexe(Sexe.MASCULIN);
-				nhab1 = (PersonnePhysique) dao.save(nhab1);
-				ids.idHab1 = nhab1.getNumero();
+			PersonnePhysique nhab2 = new PersonnePhysique(false);
+			nhab2.setNom("Maillard-Gallet");
+			nhab2.setPrenomUsuel("Gladys");
+			nhab2.setNumeroAssureSocial(noAVS2);
+			nhab2.setDateNaissance(dateN2);
+			nhab2.setSexe(Sexe.FEMININ);
+			nhab2 = (PersonnePhysique) dao.save(nhab2);
+			ids.idHab2 = nhab2.getNumero();
 
-				PersonnePhysique nhab2 = new PersonnePhysique(false);
-				nhab2.setNom("Maillard-Gallet");
-				nhab2.setPrenomUsuel("Gladys");
-				nhab2.setNumeroAssureSocial(noAVS2);
-				nhab2.setDateNaissance(dateN2);
-				nhab2.setSexe(Sexe.FEMININ);
-				nhab2 = (PersonnePhysique) dao.save(nhab2);
-				ids.idHab2 = nhab2.getNumero();
+			PersonnePhysique nhab3 = new PersonnePhysique(false);
+			nhab3.setNom("Casanova");
+			nhab3.setPrenomUsuel("Giacomo");
+			nhab3.setNumeroAssureSocial(noAVS3);
+			nhab3.setDateNaissance(dateN3);
+			nhab3.setSexe(Sexe.MASCULIN);
+			nhab3 = (PersonnePhysique) dao.save(nhab3);
+			ids.idHab3 = nhab3.getNumero();
 
-				PersonnePhysique nhab3 = new PersonnePhysique(false);
-				nhab3.setNom("Casanova");
-				nhab3.setPrenomUsuel("Giacomo");
-				nhab3.setNumeroAssureSocial(noAVS3);
-				nhab3.setDateNaissance(dateN3);
-				nhab3.setSexe(Sexe.MASCULIN);
-				nhab3 = (PersonnePhysique) dao.save(nhab3);
-				ids.idHab3 = nhab3.getNumero();
+			MenageCommun mc = new MenageCommun();
+			mc.setNumero(12345678L);
+			mc = (MenageCommun) dao.save(mc);
+			ids.idMc = mc.getNumero();
 
-				MenageCommun mc = new MenageCommun();
-				mc.setNumero(12345678L);
-				mc = (MenageCommun) dao.save(mc);
-				ids.idMc = mc.getNumero();
+			final RapportEntreTiers rapport1 = tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), RegDate.get(2008, 1, 31));
+			final RapportEntreTiers rapport2 = tiersService.addTiersToCouple(mc, nhab2, RegDate.get(2001, 2, 23), RegDate.get(2008, 12, 31));
+			final RapportEntreTiers rapport3 = tiersService.addTiersToCouple(mc, nhab3, RegDate.get(2000, 1, 1), RegDate.get(2008, 12, 31));
 
-				final RapportEntreTiers rapport1 = tiersService.addTiersToCouple(mc, nhab1, RegDate.get(2001, 2, 23), RegDate.get(2008, 1, 31));
-				final RapportEntreTiers rapport2 = tiersService.addTiersToCouple(mc, nhab2, RegDate.get(2001, 2, 23), RegDate.get(2008, 12, 31));
-				final RapportEntreTiers rapport3 = tiersService.addTiersToCouple(mc, nhab3, RegDate.get(2000, 1, 1), RegDate.get(2008, 12, 31));
-
-				// annulation des rapports dans un ordre précis (tous au même moment) : c'est la date de fin du rapport
-				// qui détermine l'ordre ou, à défaut, le log de création
-				// en compte dans l'indexation
-				final Date now = DateHelper.getCurrentDate();
-				rapport1.setAnnulationDate(now);
-				rapport2.setAnnulationDate(now);
-				rapport3.setAnnulationDate(now);
-				rapport1.setAnnulationUser("toto");
-				rapport2.setAnnulationUser("toto");
-				rapport3.setAnnulationUser("toto");
-
-				return null;
-			}
+			// annulation des rapports dans un ordre précis (tous au même moment) : c'est la date de fin du rapport
+			// qui détermine l'ordre ou, à défaut, le log de création
+			// en compte dans l'indexation
+			final Date now = DateHelper.getCurrentDate();
+			rapport1.setAnnulationDate(now);
+			rapport2.setAnnulationDate(now);
+			rapport3.setAnnulationDate(now);
+			rapport1.setAnnulationUser("toto");
+			rapport2.setAnnulationUser("toto");
+			rapport3.setAnnulationUser("toto");
+			return null;
 		});
 
 		globalTiersIndexer.sync();

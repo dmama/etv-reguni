@@ -30,7 +30,6 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -162,83 +161,74 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Un tiers avec avec toutes les parties renseignées
+			final PersonnePhysique eric = addHabitant(noIndividu);
+			addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
-				// Un tiers avec avec toutes les parties renseignées
-				final PersonnePhysique eric = addHabitant(noIndividu);
-				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+			final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+			addTutelle(pupille, eric, null, date(2005, 7, 1), null);
 
-				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
-				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+			final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+			situation.setDateDebut(date(1989, 5, 1));
+			situation.setNombreEnfants(0);
+			eric.addSituationFamille(situation);
 
-				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
-				situation.setDateDebut(date(1989, 5, 1));
-				situation.setNombreEnfants(0);
-				eric.addSituationFamille(situation);
+			final PeriodeFiscale periode = addPeriodeFiscale(2003);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			addEtatDeclarationEmise(di, date(2003, 1, 10));
+			addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
-				final PeriodeFiscale periode = addPeriodeFiscale(2003);
-				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				addEtatDeclarationEmise(di, date(2003, 1, 10));
-				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			ids.eric = eric.getNumero();
 
-				ids.eric = eric.getNumero();
+			// le père et l'enfant
+			final PersonnePhysique papa = addHabitant(noIndividuPapa);
+			final PersonnePhysique junior = addHabitant(noIndividuJunior);
 
-				// le père et l'enfant
-				final PersonnePhysique papa = addHabitant(noIndividuPapa);
-				final PersonnePhysique junior = addHabitant(noIndividuJunior);
+			addParente(eric, papa, dateNaissance, null);
+			addParente(junior, eric, dateNaissanceJunior, null);
 
-				addParente(eric, papa, dateNaissance, null);
-				addParente(junior, eric, dateNaissanceJunior, null);
+			// un débiteur
+			final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+			ids.debiteur = debiteur.getId();
 
-				// un débiteur
-				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-				ids.debiteur = debiteur.getId();
+			// ... avec une LR sur 2009
+			addForDebiteur(debiteur, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
+			final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
+			final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf2009);
+			addListeRecapitulative(debiteur, pf2009, date(2009, 1, 1), date(2009, 12, 31), modeleLr);
 
-				// ... avec une LR sur 2009
-				addForDebiteur(debiteur, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
-				final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
-				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf2009);
-				addListeRecapitulative(debiteur, pf2009, date(2009, 1, 1), date(2009, 12, 31), modeleLr);
-
-				// un rapport de travail entre eric et le débiteur (pour avoir un calcul de PIIS)
-				addRapportPrestationImposable(debiteur, eric, date(2009, 1, 1), date(2009, 5, 1), false);
-
-				return null;
-			}
+			// un rapport de travail entre eric et le débiteur (pour avoir un calcul de PIIS)
+			addRapportPrestationImposable(debiteur, eric, date(2009, 1, 1), date(2009, 5, 1), false);
+			return null;
 		});
 
 		// Un ménage commun
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
+			ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
+			mc.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
-				PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
-				ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
-				mc.addCoordonneesFinancieres(new CoordonneesFinancieres(null,"CH9308440717427290198", null));
+			SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
+			situation.setDateDebut(date(1989, 5, 1));
+			situation.setNombreEnfants(0);
+			mc.addSituationFamille(situation);
 
-				SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
-				situation.setDateDebut(date(1989, 5, 1));
-				situation.setNombreEnfants(0);
-				mc.addSituationFamille(situation);
+			addAdresseSuisse(mc, TypeAdresseTiers.COURRIER, date(1989, 5, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
 
-				addAdresseSuisse(mc, TypeAdresseTiers.COURRIER, date(1989, 5, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
-				addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-
-				ids.monsieur = monsieur.getNumero();
-				ids.madame = madame.getNumero();
-				ids.menage = mc.getNumero();
-				return null;
-			}
+			ids.monsieur = monsieur.getNumero();
+			ids.madame = madame.getNumero();
+			ids.menage = mc.getNumero();
+			return null;
 		});
 
 
@@ -503,30 +493,26 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertNull(adressesAvant.getLine6());
 
 		// On modifie le prénom de madame
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final ch.vd.unireg.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.unireg.tiers.MenageCommun.class, ids.menage);
+			assertNotNull(mc);
 
-				final ch.vd.unireg.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.unireg.tiers.MenageCommun.class, ids.menage);
-				assertNotNull(mc);
+			final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
 
-				final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
+			PersonnePhysique madame = null;
+			for (RapportEntreTiers r : rapports) {
+				final AppartenanceMenage am = (AppartenanceMenage) r;
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, am.getSujetId());
+				assertNotNull(pp);
 
-				PersonnePhysique madame = null;
-				for (RapportEntreTiers r : rapports) {
-					final AppartenanceMenage am = (AppartenanceMenage) r;
-					final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, am.getSujetId());
-					assertNotNull(pp);
-
-					if (pp.getPrenomUsuel().equals("Monique")) {
-						madame = pp;
-						break;
-					}
+				if (pp.getPrenomUsuel().equals("Monique")) {
+					madame = pp;
+					break;
 				}
-				assertNotNull(madame);
-				madame.setPrenomUsuel("Gudrun");
-				return null;
 			}
+			assertNotNull(madame);
+			madame.setPrenomUsuel("Gudrun");
+			return null;
 		});
 
 		// Cette modification va provoquer l'éviction de madame du cache, et par transitivité l'éviction du ménage commun. Si ce n'était pas le cas, les données (périmées) du ménage commun seraient encore dans le cache.

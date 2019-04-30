@@ -171,7 +171,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			}
 			return party;
 		}
-		catch (AccessDeniedException | ServiceException | RuntimeException e) {
+		catch (RuntimeException e) {
 			throw e;
 		}
 		catch (Exception e) {

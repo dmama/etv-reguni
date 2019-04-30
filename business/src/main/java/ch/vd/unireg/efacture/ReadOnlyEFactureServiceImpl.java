@@ -9,13 +9,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.wsclient.efacture.EFactureClient;
-import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.utils.UniregModeHelper;
+import ch.vd.unireg.wsclient.efacture.EFactureClient;
 
 public class ReadOnlyEFactureServiceImpl implements EFactureService, InitializingBean {
 
@@ -49,7 +49,7 @@ public class ReadOnlyEFactureServiceImpl implements EFactureService, Initializin
 	}
 
 	@Override
-	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -59,37 +59,37 @@ public class ReadOnlyEFactureServiceImpl implements EFactureService, Initializin
 	}
 
 	@Override
-	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+	public ResultatQuittancement quittancer(Long noCtb) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String modifierEmailContribuable(long noCtb, @Nullable String newEmail, boolean retourAttendu, String description) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EvenementEfactureException {
+	public void demanderDesinscriptionContribuable(long noCtb, String idNouvelleDemande, String description) throws EFactureException {
 		throw new UnsupportedOperationException();
 	}
 }

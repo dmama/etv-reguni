@@ -68,28 +68,28 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	}
 
 	@Override
-	public String envoieRefusDemandeInscription(String idDemande, String description, boolean retourAttendu) throws EvenementEfactureException {
+	public String envoieRefusDemandeInscription(String idDemande, String description, boolean retourAttendu) throws EFactureException {
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, description, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EFactureException {
 		final int code = typeAttenteEFacture.getCode();
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDATION_EN_COURS, code, description, idArchivage, retourAttendu);
 	}
 
 	@Override
-	public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu, String description) throws EFactureException {
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDEE, null,description, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieSuspensionContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String envoieSuspensionContribuable(long noCtb, boolean retourAttendu, String description) throws EFactureException {
 		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.SUSPENDRE, null, description, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException {
+	public String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EFactureException {
 		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, description, null, retourAttendu);
 	}
 
@@ -98,7 +98,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	}
 
 	@Override
-	public String envoieDemandeChangementEmail(long noCtb, @Nullable final String newMail, boolean retourAttendu, final String description) throws EvenementEfactureException {
+	public String envoieDemandeChangementEmail(long noCtb, @Nullable final String newMail, boolean retourAttendu, final String description) throws EFactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-mail-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
 		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdatePayerContact>() {
@@ -120,7 +120,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 	}
 
 	@Override
-	public void demandeDesinscriptionContribuable(long noCtb, final String idNouvelleDemande, final String description) throws EvenementEfactureException {
+	public void demandeDesinscriptionContribuable(long noCtb, final String idNouvelleDemande, final String description) throws EFactureException {
 		final String businessId = String.format("%d-desinscription-%s", noCtb, SDF.format(DateHelper.getCurrentDate()));
 		sendEvent(businessId, false, new MessageBodyBuilder<UnsubscribePayerWithNewRequest>() {
 			@Override
@@ -135,7 +135,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 
 	private String sendMiseAJourDemande(final String idDemande, final RegistrationRequestStatus status,
 	                                    @Nullable final Integer code, @Nullable final String description, @Nullable final String custom,
-	                                    boolean retourAttendu) throws EvenementEfactureException {
+	                                    boolean retourAttendu) throws EFactureException {
 		final String businessId = String.format("%s-%s-%s", idDemande, status.name(), SDF.format(DateHelper.getCurrentDate()));
 		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdateRegistrationRequest>() {
 			@Override
@@ -160,7 +160,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 
 	private String sendMiseAJourDestinataire(final long noCtb, final PayerUpdateAction action,
 	                                       @Nullable final Integer code, @Nullable final String description, @Nullable final String custom,
-	                                       boolean retourAttendu) throws EvenementEfactureException {
+	                                       boolean retourAttendu) throws EFactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-%s-%s", noCtb, action.name(), SDF.format(DateHelper.getCurrentDate()));
 		sendEvent(businessId, retourAttendu, new MessageBodyBuilder<UpdatePayer>() {
@@ -184,7 +184,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 		return businessId;
 	}
 
-	private <T> void sendEvent(String businessId, boolean retourAttendu, MessageBodyBuilder<T> bodyBuilder) throws EvenementEfactureException {
+	private <T> void sendEvent(String businessId, boolean retourAttendu, MessageBodyBuilder<T> bodyBuilder) throws EFactureException {
 
 		if (enabled) {
 			final String principal = AuthenticationHelper.getCurrentPrincipal();
@@ -217,7 +217,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 				esbTemplate.send(m);
 			}
 			catch (Exception e) {
-				throw new EvenementEfactureException(e);
+				throw new EFactureException(e);
 			}
 		}
 		else {

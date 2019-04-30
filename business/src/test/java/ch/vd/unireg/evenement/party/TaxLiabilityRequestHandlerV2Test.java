@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -164,12 +163,7 @@ public class TaxLiabilityRequestHandlerV2Test extends BusinessTest {
 		request.setSearchParents(true);
 
 
-		final RequestHandlerResult result = doInNewTransaction(new TxCallback<RequestHandlerResult>() {
-			@Override
-			public RequestHandlerResult execute(TransactionStatus status) throws Exception {
-				return handler.handle(request);
-			}
-		});
+		final RequestHandlerResult result = doInNewTransaction(status -> handler.handle(request));
 		assertNotNull(result);
 
 		// on s'assure que la réponse est bien négative car les deux parents ne font pas partie du même ménage

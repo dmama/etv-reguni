@@ -8,10 +8,8 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
@@ -291,37 +289,35 @@ public class CorporationStrategyTest extends BusinessTest {
 		});
 
 		// appel de la stratégie
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
-				assertNotNull(entreprise);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+			assertNotNull(entreprise);
 
-				final Corporation corp = new Corporation();
-				strategy.initBase(corp, entreprise, context);
-				strategy.initParts(corp, entreprise, EnumSet.of(InternalPartyPart.LEGAL_FORMS), context);
+			final Corporation corp = new Corporation();
+			strategy.initBase(corp, entreprise, context);
+			strategy.initParts(corp, entreprise, EnumSet.of(InternalPartyPart.LEGAL_FORMS), context);
 
-				// vérifions les formes légales
-				final List<LegalForm> legalForms = corp.getLegalForms();
-				assertNotNull(legalForms);
-				assertEquals(2, legalForms.size());
-				{
-					final LegalForm lf = legalForms.get(0);
-					assertNotNull(lf);
-					assertEquals(dateDebut, DataHelper.xmlToCore(lf.getDateFrom()));
-					assertEquals(dateDebutRegimeFiscal.getOneDayBefore(), DataHelper.xmlToCore(lf.getDateTo()));
-					assertEquals(LegalFormCategory.OTHER, lf.getLegalFormCategory());       // pas de catégorie définie -> AUTRE
-					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
-				}
-				{
-					final LegalForm lf = legalForms.get(1);
-					assertNotNull(lf);
-					assertEquals(dateDebutRegimeFiscal, DataHelper.xmlToCore(lf.getDateFrom()));
-					assertNull(lf.getDateTo());
-					assertEquals(LegalFormCategory.ASSOCIATION_FOUNDATION, lf.getLegalFormCategory());
-					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
-				}
+			// vérifions les formes légales
+			final List<LegalForm> legalForms = corp.getLegalForms();
+			assertNotNull(legalForms);
+			assertEquals(2, legalForms.size());
+			{
+				final LegalForm lf = legalForms.get(0);
+				assertNotNull(lf);
+				assertEquals(dateDebut, DataHelper.xmlToCore(lf.getDateFrom()));
+				assertEquals(dateDebutRegimeFiscal.getOneDayBefore(), DataHelper.xmlToCore(lf.getDateTo()));
+				assertEquals(LegalFormCategory.OTHER, lf.getLegalFormCategory());       // pas de catégorie définie -> AUTRE
+				assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
 			}
+			{
+				final LegalForm lf = legalForms.get(1);
+				assertNotNull(lf);
+				assertEquals(dateDebutRegimeFiscal, DataHelper.xmlToCore(lf.getDateFrom()));
+				assertNull(lf.getDateTo());
+				assertEquals(LegalFormCategory.ASSOCIATION_FOUNDATION, lf.getLegalFormCategory());
+				assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
+			}
+			return null;
 		});
 	}
 

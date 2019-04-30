@@ -13,12 +13,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
@@ -146,12 +144,10 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 		final MutationsRFProcessorResults results = new MutationsRFProcessorResults(0, true, dateImport, 1, evenementRFMutationDAO);
 
 		// on process la mutation
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, true, results);
-			}
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, true, results);
+			return null;
 		});
 
 		// postcondition : la mutation est traitée et les nouvelles servitudes sont créés

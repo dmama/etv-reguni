@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
  * Exception lancée par un {@link EsbMessageHandler} dans le cas où l'erreur est une erreur métier
  * qui ne doit pas partir en DLQ mais en queue d'erreur
  */
-public class EsbBusinessException extends Exception {
+public class EsbBusinessException extends RuntimeException {
 
 	private static final long serialVersionUID = 4877221114973071143L;
 

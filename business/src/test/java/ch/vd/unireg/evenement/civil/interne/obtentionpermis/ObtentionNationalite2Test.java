@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -30,6 +29,7 @@ import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -158,17 +158,13 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de marié seul.");
 
 		final MessageCollector collector = buildMessageCollector();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
+			ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
 
-				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
-				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
-
-				obtentionNationalite.validate(collector, collector);
-				obtentionNationalite.handle(collector);
-				return null;
-			}
+			obtentionNationalite.validate(collector, collector);
+			obtentionNationalite.handle(collector);
+			return null;
 		});
 
 		/*
@@ -319,22 +315,18 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
+		doInNewTransactionAndSession(status -> {
+			final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
+			final ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionNationalite.validate(collector, collector);
-				Assert.assertFalse(collector.hasErreurs());
-				Assert.assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionNationalite.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				obtentionNationalite.handle(collector);
-				Assert.assertFalse(collector.hasWarnings());
-
-				return null;
-			}
+			obtentionNationalite.handle(collector);
+			assertFalse(collector.hasWarnings());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -369,22 +361,18 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 			return pp.getNumero();
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31), AttributeIndividu.NATIONALITES);
-				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
+		doInNewTransactionAndSession(status -> {
+			final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31), AttributeIndividu.NATIONALITES);
+			final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
-				final MessageCollector collector = buildMessageCollector();
-				obtentionNationalite.validate(collector, collector);
-				Assert.assertFalse(collector.hasErreurs());
-				Assert.assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			obtentionNationalite.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				obtentionNationalite.handle(collector);
-				Assert.assertFalse(collector.hasWarnings());
-
-				return null;
-			}
+			obtentionNationalite.handle(collector);
+			assertFalse(collector.hasWarnings());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {

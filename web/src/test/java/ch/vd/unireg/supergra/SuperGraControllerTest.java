@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.unireg.common.WebTestSpring3;
@@ -38,15 +37,12 @@ public class SuperGraControllerTest extends WebTestSpring3 {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique olivier = addNonHabitant("Olivier", "RockFeller", date(1950, 1, 1), Sexe.MASCULIN);
-				ids.olivier = olivier.getId();
-				final MenageCommun menage = hibernateTemplate.merge(new MenageCommun());
-				ids.menage = menage.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique olivier = addNonHabitant("Olivier", "RockFeller", date(1950, 1, 1), Sexe.MASCULIN);
+			ids.olivier = olivier.getId();
+			final MenageCommun menage = hibernateTemplate.merge(new MenageCommun());
+			ids.menage = menage.getId();
+			return null;
 		});
 
 		{
@@ -162,27 +158,24 @@ public class SuperGraControllerTest extends WebTestSpring3 {
 		}
 
 		// On s'assure que le rapport d'appartenance ménage existe bien en base de données
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique olivier = hibernateTemplate.get(PersonnePhysique.class, ids.olivier);
-				assertNotNull(olivier);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique olivier = hibernateTemplate.get(PersonnePhysique.class, ids.olivier);
+			assertNotNull(olivier);
 
-				final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
-				assertNotNull(menage);
+			final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
+			assertNotNull(menage);
 
-				final Set<RapportEntreTiers> rapportSujet = olivier.getRapportsSujet();
-				assertNotNull(rapportSujet);
-				assertEquals(1, rapportSujet.size());
+			final Set<RapportEntreTiers> rapportSujet = olivier.getRapportsSujet();
+			assertNotNull(rapportSujet);
+			assertEquals(1, rapportSujet.size());
 
-				final RapportEntreTiers rapport = rapportSujet.iterator().next();
-				assertNotNull(rapport);
-				assertEquals(olivier.getId(), rapport.getSujetId());
-				assertEquals(menage.getId(), rapport.getObjetId());
-				assertEquals(date(2001, 1, 1), rapport.getDateDebut());
-				assertNull(rapport.getDateFin());
-				return null;
-			}
+			final RapportEntreTiers rapport = rapportSujet.iterator().next();
+			assertNotNull(rapport);
+			assertEquals(olivier.getId(), rapport.getSujetId());
+			assertEquals(menage.getId(), rapport.getObjetId());
+			assertEquals(date(2001, 1, 1), rapport.getDateDebut());
+			assertNull(rapport.getDateFin());
+			return null;
 		});
 	}
 }

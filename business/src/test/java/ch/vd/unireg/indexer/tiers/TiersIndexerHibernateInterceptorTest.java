@@ -6,16 +6,14 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -88,7 +86,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		return ffp;
 	}
 
-	private PersonnePhysique createAndSaveNonHabitant() throws Exception {
+	private PersonnePhysique createAndSaveNonHabitant() {
 
 		final PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("Bla");
@@ -101,7 +99,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		return (PersonnePhysique) tiersDAO.save(nh);
 	}
 
-	private PersonnePhysique createAndSaveHabitant(long noInd) throws Exception {
+	private PersonnePhysique createAndSaveHabitant(long noInd) {
 		final PersonnePhysique h = new PersonnePhysique(true);
 		h.setNumeroIndividu(noInd);
 		return (PersonnePhysique)tiersDAO.save(h);
@@ -111,22 +109,18 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnCreate() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh = createAndSaveNonHabitant();
-				assertNotNull(nh);
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = createAndSaveNonHabitant();
+			assertNotNull(nh);
 
-				// Ne doit pas trouver le tiers
-				{
-					TiersCriteria criteria = new TiersCriteria();
-					criteria.setNomRaison("bla");
-					List<TiersIndexedData> list = searcher.search(criteria);
-					assertEquals(0, list.size());
-				}
-
-				return nh.getNumero();
+			// Ne doit pas trouver le tiers
+			{
+				TiersCriteria criteria = new TiersCriteria();
+				criteria.setNomRaison("bla");
+				List<TiersIndexedData> list = searcher.search(criteria);
+				assertEquals(0, list.size());
 			}
+			return nh.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -151,12 +145,9 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnUpdate() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh = createAndSaveNonHabitant();
-				return nh.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = createAndSaveNonHabitant();
+			return nh.getId();
 		});
 
 		globalTiersIndexer.sync();
@@ -169,31 +160,27 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			assertEquals(1, list.size());
 		}
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(id);
+			nh.setDateNaissance(dateNaissance2);
 
-				PersonnePhysique nh = (PersonnePhysique)tiersDAO.get(id);
-				nh.setDateNaissance(dateNaissance2);
-
-				// On peut trouver le tiers sur son ancienne date
-				{
-					TiersCriteria criteria = new TiersCriteria();
-					criteria.setDateNaissanceInscriptionRC(dateNaissance1);
-					List<TiersIndexedData> list = searcher.search(criteria);
-					assertEquals(1, list.size());
-					assertEquals(id, list.get(0).getNumero());
-				}
-
-				// Mais pas sur sa nouvelle
-				{
-					TiersCriteria criteria = new TiersCriteria();
-					criteria.setDateNaissanceInscriptionRC(dateNaissance2);
-					List<?> list = searcher.search(criteria);
-					assertEquals(0, list.size());
-				}
-				return null;
+			// On peut trouver le tiers sur son ancienne date
+			{
+				TiersCriteria criteria = new TiersCriteria();
+				criteria.setDateNaissanceInscriptionRC(dateNaissance1);
+				List<TiersIndexedData> list = searcher.search(criteria);
+				assertEquals(1, list.size());
+				assertEquals(id, list.get(0).getNumero());
 			}
+
+			// Mais pas sur sa nouvelle
+			{
+				TiersCriteria criteria = new TiersCriteria();
+				criteria.setDateNaissanceInscriptionRC(dateNaissance2);
+				List<?> list = searcher.search(criteria);
+				assertEquals(0, list.size());
+			}
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -237,18 +224,15 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			Long hid;
 		}
 		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh = createAndSaveNonHabitant(); // NH OK
-				numeros.nhid = nh.getId();
-				PersonnePhysique h = createAndSaveHabitant(1235643453L); // NO_IND inexistant
-				numeros.hid = h.getId();
+		doInNewTransaction(status -> {
+			PersonnePhysique nh = createAndSaveNonHabitant(); // NH OK
+			numeros.nhid = nh.getId();
+			PersonnePhysique h = createAndSaveHabitant(1235643453L); // NO_IND inexistant
+			numeros.hid = h.getId();
 
-				// Ce commit() devrait faire peter une exception pour 1 des 2 tiers indexé
-				LOGGER.warn("L'exception ci-dessous générée par l'indexation est normale!");
-				return null;
-			}
+			// Ce commit() devrait faire peter une exception pour 1 des 2 tiers indexé
+			LOGGER.warn("L'exception ci-dessous générée par l'indexation est normale!");
+			return null;
 		});
 		LOGGER.warn("L'exception ci-dessus générée par l'indexation est normale!");
 
@@ -291,22 +275,19 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		LOGGER.info("==== testIndexationOnModifyFor START ====");
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 1 ====");
-		final long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh = createAndSaveNonHabitant();
-				assertNotNull(nh);
-				long id = nh.getNumero();
+		final long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = createAndSaveNonHabitant();
+			assertNotNull(nh);
+			long no = nh.getNumero();
 
-				// Ne doit pas trouver le tiers
-				{
-					TiersCriteria criteria = new TiersCriteria();
-					criteria.setNomRaison("bla");
-					List<TiersIndexedData> list = searcher.search(criteria);
-					assertEquals(0, list.size());
-				}
-				return id;
+			// Ne doit pas trouver le tiers
+			{
+				TiersCriteria criteria = new TiersCriteria();
+				criteria.setNomRaison("bla");
+				List<TiersIndexedData> list = searcher.search(criteria);
+				assertEquals(0, list.size());
 			}
+			return no;
 		});
 
 		globalTiersIndexer.sync();
@@ -334,16 +315,13 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 2 ====");
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// On modifie son for
-				PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(id);
-				ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(null);
-				assertNotNull(ffp);
-				ffp.setNumeroOfsAutoriteFiscale(5477);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// On modifie son for
+			PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
+			ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(null);
+			assertNotNull(ffp);
+			ffp.setNumeroOfsAutoriteFiscale(5477);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -372,23 +350,20 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		LOGGER.info("==== testIndexationOnModifyFor MODIF 3 ====");
 		// On ajoute un for
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nhab = (PersonnePhysique)tiersDAO.get(id);
-				ForFiscalPrincipal ffp = nhab.getForFiscalPrincipalAt(null);
-				assertNotNull(ffp);
-				RegDate date = RegDate.get(2008, 6, 6);
-				ffp.setDateFin(date);
-				ffp.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		doInNewTransaction(status -> {
+			PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
+			ForFiscalPrincipal ffp = nhab.getForFiscalPrincipalAt(null);
+			assertNotNull(ffp);
+			RegDate date = RegDate.get(2008, 6, 6);
+			ffp.setDateFin(date);
+			ffp.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-				// Villars
-				ffp = createForPrincipal(5652, RegDate.get(2008, 6, 7));
-				ffp.setDateDebut(date.addDays(1));
-				ffp.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-				nhab.addForFiscal(ffp);
-				return null;
-			}
+			// Villars
+			ffp = createForPrincipal(5652, RegDate.get(2008, 6, 7));
+			ffp.setDateDebut(date.addDays(1));
+			ffp.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+			nhab.addForFiscal(ffp);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -430,30 +405,27 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationOnModificationEtatEntreprise() throws Exception {
 
-		final long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				final RegDate dateDebut = date(2009, 1, 1);
-				addRaisonSociale(entreprise, dateDebut, null, "Bla");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.FONDATION);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // tous les 31.12 depuis 2009
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+		final long id = doInNewTransaction(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			final RegDate dateDebut = date(2009, 1, 1);
+			addRaisonSociale(entreprise, dateDebut, null, "Bla");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.FONDATION);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // tous les 31.12 depuis 2009
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// Ne doit pas trouver le tiers (l'indexation ne se fait qu'au commit de la transaction)
-				{
-					final TiersCriteria criteria = new TiersCriteria();
-					criteria.setNomRaison("bla");
-					final List<TiersIndexedData> list = searcher.search(criteria);
-					assertEquals(0, list.size());
-				}
-
-				return entreprise.getNumero();
+			// Ne doit pas trouver le tiers (l'indexation ne se fait qu'au commit de la transaction)
+			{
+				final TiersCriteria criteria = new TiersCriteria();
+				criteria.setNomRaison("bla");
+				final List<TiersIndexedData> list = searcher.search(criteria);
+				assertEquals(0, list.size());
 			}
+			;
+			return entreprise.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -478,17 +450,15 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 
 		// Annulation de l'état INSCRITE_RC
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				final EtatEntreprise etatActuel = entreprise.getEtatActuel();
-				assertNotNull(etatActuel);
-				assertEquals(TypeEtatEntreprise.INSCRITE_RC, etatActuel.getType());
-				assertFalse(etatActuel.isAnnule());
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+			final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+			assertNotNull(etatActuel);
+			assertEquals(TypeEtatEntreprise.INSCRITE_RC, etatActuel.getType());
+			assertFalse(etatActuel.isAnnule());
 
-				etatActuel.setAnnule(true);
-			}
+			etatActuel.setAnnule(true);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -520,31 +490,25 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	public void testDisabledOnTheFlyIndexation() throws Exception {
 
 		// On crée un tiers
-		final long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nh = createAndSaveNonHabitant();
-				assertNotNull(nh);
-				return nh.getNumero();
-			}
+		final long id = doInNewTransaction(status -> {
+			PersonnePhysique nh = createAndSaveNonHabitant();
+			assertNotNull(nh);
+			return nh.getNumero();
 		});
 
 		globalTiersIndexer.sync();
 
 		// On doit trouver le tiers et il ne doit pas être dirty
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				TiersCriteria criteria = new TiersCriteria();
-				criteria.setNomRaison("Bla");
-				final List<TiersIndexedData> list = searcher.search(criteria);
-				assertEquals(1, list.size());
-				assertEquals("Blo Bla", list.get(0).getNom1());
+		doInNewTransaction(status -> {
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Bla");
+			final List<TiersIndexedData> list = searcher.search(criteria);
+			assertEquals(1, list.size());
+			assertEquals("Blo Bla", list.get(0).getNom1());
 
-				final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
-				assertFalse(hab.isDirty());
-				return null;
-			}
+			final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
+			assertFalse(hab.isDirty());
+			return null;
 		});
 
 		// On désactive l'indexation on the fly
@@ -552,13 +516,10 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		try {
 
 			// On change le prénom du tiers
-			doInNewTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
-					nhab.setPrenomUsuel("Marcel");
-					return null;
-				}
+			doInNewTransaction(status -> {
+				PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
+				nhab.setPrenomUsuel("Marcel");
+				return null;
 			});
 
 			globalTiersIndexer.sync();
@@ -593,32 +554,24 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		// Le tiers doit être dirty et on ne doit pas trouver dans l'indexeur
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(id);
+			assertTrue(nh.isDirty());
 
-				final PersonnePhysique nh = (PersonnePhysique) tiersDAO.get(id);
-				assertTrue(nh.isDirty());
-
-				TiersCriteria criteria = new TiersCriteria();
-				criteria.setNomRaison("Bla");
-				final List<TiersIndexedData> list = searcher.search(criteria);
-				assertEquals(0, list.size());
-
-				return null;
-			}
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Bla");
+			final List<TiersIndexedData> list = searcher.search(criteria);
+			assertEquals(0, list.size());
+			return null;
 		});
 
 		setWantIndexationTiers(true);
 		
 		// On change le prénom du tiers
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
-				nhab.setPrenomUsuel("Marcel");
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique nhab = (PersonnePhysique) tiersDAO.get(id);
+			nhab.setPrenomUsuel("Marcel");
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -654,20 +607,16 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		
 		// crée un tiers qui ne valide pas
 		try {
-			doInNewTransactionAndSession(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Arnold", "Fellow", date(1960, 1, 1), Sexe.MASCULIN);
+				ids.pp = pp.getNumero();
 
-					final PersonnePhysique pp = addNonHabitant("Arnold", "Fellow", date(1960, 1, 1), Sexe.MASCULIN);
-					ids.pp = pp.getNumero();
+				hibernateTemplate.flush(); // pour être sûr que le tiers est bien inséré en base (mais attention, la transaction est toujours ouverte)
 
-					hibernateTemplate.flush(); // pour être sûr que le tiers est bien inséré en base (mais attention, la transaction est toujours ouverte)
-
-					// on ajoute deux fors principaux actifs en même temps, de manière à provoquer une erreur de validation à la sauvegarde finale
-					addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Aubonne);
-					addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Aubonne);
-					return null;
-				}
+				// on ajoute deux fors principaux actifs en même temps, de manière à provoquer une erreur de validation à la sauvegarde finale
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Aubonne);
+				addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Aubonne);
+				return null;
 			});
 			fail("Le tiers qui ne valide pas aurait dû lever une exception");
 		}

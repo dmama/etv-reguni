@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
@@ -20,12 +19,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
-import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
-import ch.vd.unireg.xml.event.lr.quittance.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.lr.quittance.v1.Origine;
-import ch.vd.unireg.xml.event.lr.quittance.v1.Quittance;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.Declaration;
@@ -34,12 +27,18 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
+import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
+import ch.vd.unireg.xml.event.lr.quittance.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.lr.quittance.v1.Origine;
+import ch.vd.unireg.xml.event.lr.quittance.v1.Quittance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -76,69 +75,63 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(1, evts.size());
-				final EvenementExterne evt = evts.get(0);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementExterne.TRAITE, evt.getEtat());
-				final String xml = evt.getMessage();
-				assertTrue(xml, xml.startsWith("<?xml version=\"1.0\""));
-				assertTrue(xml, xml.endsWith("evtQuittanceListe>"));
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(1, evts.size());
+			final EvenementExterne evt = evts.get(0);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementExterne.TRAITE, evt.getEtat());
+			final String xml = evt.getMessage();
+			assertTrue(xml, xml.startsWith("<?xml version=\"1.0\""));
+			assertTrue(xml, xml.endsWith("evtQuittanceListe>"));
 
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final Set<Declaration> lrs = dpi.getDeclarations();
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final Set<Declaration> lrs = dpi.getDeclarations();
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
-				assertNotNull(lr);
+			final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
+			assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
-				assertNotNull(etats);
-				assertEquals(2, etats.size());      // l'état "EMIS" et l'état "RETOURNE"
+			final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
+			assertNotNull(etats);
+			assertEquals(2, etats.size());      // l'état "EMIS" et l'état "RETOURNE"
 
-				final EtatDeclaration etatEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS);
-				assertNotNull(etatEmission);
-				assertTrue(etats.contains(etatEmission));
-				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
-				assertEquals(dateFin, etatEmission.getDateObtention());
-				assertFalse(etatEmission.isAnnule());
+			final EtatDeclaration etatEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS);
+			assertNotNull(etatEmission);
+			assertTrue(etats.contains(etatEmission));
+			assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
+			assertEquals(dateFin, etatEmission.getDateObtention());
+			assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
-				assertNotNull(etatRetour);
-				assertTrue(etats.contains(etatRetour));
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatRetour.getEtat());
-				assertEquals(dateQuittancement, etatRetour.getDateObtention());
-				assertFalse(etatRetour.isAnnule());
-
-				return null;
-			}
+			final EtatDeclaration etatRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
+			assertNotNull(etatRetour);
+			assertTrue(etats.contains(etatRetour));
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatRetour.getEtat());
+			assertEquals(dateQuittancement, etatRetour.getDateObtention());
+			assertFalse(etatRetour.isAnnule());
+			return null;
 		});
 	}
 
@@ -150,38 +143,31 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(0, evts.size());
-				
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(0, evts.size());
+			return null;
 		});
 	}
 
@@ -193,60 +179,54 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
-				addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-
-				return dpi.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.ERREUR, evts.get(0).getEtat());
-				final String erreurAttendue = String.format("La déclaration impôt source sélectionnée (tiers=%d, période=%s) ne contient pas de retour à annuler.",
-				                                            dpiId, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(dateDebut, dateFin)));
-				assertEquals(erreurAttendue, evts.get(0).getErrorMessage());
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(1, evts.size());
+			assertNotNull(evts.get(0));
+			assertEquals(EtatEvenementExterne.ERREUR, evts.get(0).getEtat());
+			final String erreurAttendue = String.format("La déclaration impôt source sélectionnée (tiers=%d, période=%s) ne contient pas de retour à annuler.",
+			                                            dpiId, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(dateDebut, dateFin)));
+			assertEquals(erreurAttendue, evts.get(0).getErrorMessage());
 
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final Set<Declaration> lrs = dpi.getDeclarations();
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final Set<Declaration> lrs = dpi.getDeclarations();
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
-				assertNotNull(lr);
+			final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
+			assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
-				assertNotNull(etats);
-				assertEquals(1, etats.size());      // l'état "EMISE"
+			final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());      // l'état "EMISE"
 
-				final EtatDeclaration etatEmission = etats.iterator().next();
-				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
-				assertEquals(dateFin, etatEmission.getDateObtention());
-				assertFalse(etatEmission.isAnnule());
-
-				return null;
-			}
+			final EtatDeclaration etatEmission = etats.iterator().next();
+			assertNotNull(etatEmission);
+			assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
+			assertEquals(dateFin, etatEmission.getDateObtention());
+			assertFalse(etatEmission.isAnnule());
+			return null;
 		});
 	}
 
@@ -258,47 +238,42 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-				lr.addEtat(new EtatDeclarationEmise(dateFin.addDays(-10)));
+			final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			lr.addEtat(new EtatDeclarationEmise(dateFin.addDays(-10)));
 
-				final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement, "TEST");
-				etatRetourne.setAnnule(true);
-				lr.addEtat(etatRetourne);
-
-				return dpi.getNumero();
-			}
+			final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(dateQuittancement, "TEST");
+			etatRetourne.setAnnule(true);
+			lr.addEtat(etatRetourne);
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.ERREUR, evts.get(0).getEtat());
-				final String erreurAttendue = String.format("La déclaration impôt source sélectionnée (tiers=%s, période=%s) ne contient pas de retour à annuler.",
-				                                            dpiId, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(dateDebut, dateFin)));
-				assertEquals(erreurAttendue, evts.get(0).getErrorMessage());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(1, evts.size());
+			assertNotNull(evts.get(0));
+			assertEquals(EtatEvenementExterne.ERREUR, evts.get(0).getEtat());
+			final String erreurAttendue = String.format("La déclaration impôt source sélectionnée (tiers=%s, période=%s) ne contient pas de retour à annuler.",
+			                                            dpiId, DateRangeHelper.toDisplayString(new DateRangeHelper.Range(dateDebut, dateFin)));
+			assertEquals(erreurAttendue, evts.get(0).getErrorMessage());
+			return null;
 		});
 	}
 
@@ -309,65 +284,59 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
-
-				return dpi.getNumero();
-			}
+			final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(1, evts.size());
+			assertNotNull(evts.get(0));
+			assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
 
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final Set<Declaration> lrs = dpi.getDeclarations();
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final Set<Declaration> lrs = dpi.getDeclarations();
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
-				assertNotNull(lr);
+			final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
+			assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
-				assertNotNull(etats);
-				assertEquals(2, etats.size());      // états "EMIS" et "RETOURNE" (ce dernier annulé)
+			final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
+			assertNotNull(etats);
+			assertEquals(2, etats.size());      // états "EMIS" et "RETOURNE" (ce dernier annulé)
 
-				final EtatDeclaration etatEmission = etats.get(0);
-				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
-				assertEquals(dateFin,  etatEmission.getDateObtention());
-				assertFalse(etatEmission.isAnnule());
+			final EtatDeclaration etatEmission = etats.get(0);
+			assertNotNull(etatEmission);
+			assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
+			assertEquals(dateFin, etatEmission.getDateObtention());
+			assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatRetour = etats.get(1);
-				assertNotNull(etatRetour);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatRetour.getEtat());
-				assertEquals(dateQuittancement, etatRetour.getDateObtention());
-				assertTrue(etatRetour.isAnnule());
-
-				return null;
-			}
+			final EtatDeclaration etatRetour = etats.get(1);
+			assertNotNull(etatRetour);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatRetour.getEtat());
+			assertEquals(dateQuittancement, etatRetour.getDateObtention());
+			assertTrue(etatRetour.isAnnule());
+			return null;
 		});
 	}
 
@@ -378,75 +347,70 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
-
-				return dpi.getNumero();
-			}
+			final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(1, evts.size());
+			assertNotNull(evts.get(0));
+			assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
 
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final Set<Declaration> lrs = dpi.getDeclarations();
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final Set<Declaration> lrs = dpi.getDeclarations();
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
-				assertNotNull(lr);
+			final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
+			assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
-				assertNotNull(etats);
-				assertEquals(3, etats.size());      // l'état "EMIS", puis les deux états "RETOURNE", dont l'un est annulé
+			final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
+			assertNotNull(etats);
+			assertEquals(3, etats.size());      // l'état "EMIS", puis les deux états "RETOURNE", dont l'un est annulé
 
-				final EtatDeclaration etatEmission = etats.get(0);
-				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
-				assertEquals(dateFin,  etatEmission.getDateObtention());
-				assertFalse(etatEmission.isAnnule());
+			final EtatDeclaration etatEmission = etats.get(0);
+			assertNotNull(etatEmission);
+			assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
+			assertEquals(dateFin, etatEmission.getDateObtention());
+			assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatAnnule = etats.get(1);
-				assertNotNull(etatAnnule);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatAnnule.getEtat());
-				assertEquals(dateQuittancement, etatAnnule.getDateObtention());
-				assertTrue(etatAnnule.isAnnule());
+			final EtatDeclaration etatAnnule = etats.get(1);
+			assertNotNull(etatAnnule);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatAnnule.getEtat());
+			assertEquals(dateQuittancement, etatAnnule.getDateObtention());
+			assertTrue(etatAnnule.isAnnule());
 
-				final EtatDeclaration etatValide = etats.get(2);
-				assertNotNull(etatValide);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatValide.getEtat());
-				assertEquals(dateQuittancement, etatValide.getDateObtention());
-				assertFalse(etatValide.isAnnule());
+			final EtatDeclaration etatValide = etats.get(2);
+			assertNotNull(etatValide);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatValide.getEtat());
+			assertEquals(dateQuittancement, etatValide.getDateObtention());
+			assertFalse(etatValide.isAnnule());
 
-				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
-				assertNotNull(dernierEtat);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
-				assertFalse(dernierEtat.isAnnule());
-				return null;
-			}
+			final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
+			assertNotNull(dernierEtat);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
+			assertFalse(dernierEtat.isAnnule());
+			return null;
 		});
 	}
 
@@ -457,106 +421,106 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final RegDate dateFin = PeriodiciteDecompte.TRIMESTRIEL.getFinPeriode(dateDebut);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
-				dpi.setNom1("DebiteurTest");
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+		final long dpiId = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+			dpi.setNom1("DebiteurTest");
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(2008);
+			final PeriodeFiscale pf = addPeriodeFiscale(2008);
 
-				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
-				lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
-
-				return dpi.getNumero();
-			}
+			final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+			lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
+			lr.addEtat(new EtatDeclarationRetournee(dateQuittancement, "TEST"));
+			return dpi.getNumero();
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+		doInNewTransaction(status -> {
+			final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+			try {
 				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
-				return null;
 			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
-				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
+		doInNewTransaction(status -> {
+			final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+			assertEquals(1, evts.size());
+			assertNotNull(evts.get(0));
+			assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
 
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final Set<Declaration> lrs = dpi.getDeclarations();
-				assertNotNull(lrs);
-				assertEquals(1, lrs.size());
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final Set<Declaration> lrs = dpi.getDeclarations();
+			assertNotNull(lrs);
+			assertEquals(1, lrs.size());
 
-				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
-				assertNotNull(lr);
+			final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
+			assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
-				assertNotNull(etats);
-				assertEquals(3, etats.size());      // "EMIS", et deux "RETOURNE", dont un est annulé
+			final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
+			assertNotNull(etats);
+			assertEquals(3, etats.size());      // "EMIS", et deux "RETOURNE", dont un est annulé
 
-				final EtatDeclaration etatEmission = etats.get(0);
-				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
-				assertEquals(dateFin,  etatEmission.getDateObtention());
-				assertFalse(etatEmission.isAnnule());
+			final EtatDeclaration etatEmission = etats.get(0);
+			assertNotNull(etatEmission);
+			assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
+			assertEquals(dateFin, etatEmission.getDateObtention());
+			assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatAnnule = etats.get(1);
-				assertNotNull(etatAnnule);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatAnnule.getEtat());
-				assertEquals(dateQuittancement, etatAnnule.getDateObtention());
-				assertTrue(etatAnnule.isAnnule());
+			final EtatDeclaration etatAnnule = etats.get(1);
+			assertNotNull(etatAnnule);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatAnnule.getEtat());
+			assertEquals(dateQuittancement, etatAnnule.getDateObtention());
+			assertTrue(etatAnnule.isAnnule());
 
-				final EtatDeclaration etatValide = etats.get(2);
-				assertNotNull(etatValide);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatValide.getEtat());
-				assertEquals(dateQuittancement, etatValide.getDateObtention());
-				assertFalse(etatValide.isAnnule());
+			final EtatDeclaration etatValide = etats.get(2);
+			assertNotNull(etatValide);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatValide.getEtat());
+			assertEquals(dateQuittancement, etatValide.getDateObtention());
+			assertFalse(etatValide.isAnnule());
 
-				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
-				assertNotNull(dernierEtat);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
-				assertFalse(dernierEtat.isAnnule());
-				return null;
-			}
+			final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
+			assertNotNull(dernierEtat);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
+			assertFalse(dernierEtat.isAnnule());
+			return null;
 		});
 	}
 
-	private EsbMessage createOldMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
+	private EsbMessage createOldMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
 		return createEsbMessage(createOldEvenementQuittancement(Quittance.QUITTANCEMENT, noCtb, Liste.LR, debutPeriode, finPeriode, dateEvenement));
 	}
 	
-	private EsbMessage createOldMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
+	private EsbMessage createOldMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
 		return createEsbMessage(createOldEvenementQuittancement(Quittance.ANNULATION, noCtb, Liste.LR, debutPeriode, finPeriode, dateEvenement));
 	}
 
-	private EsbMessage createOldMessageLC(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
+	private EsbMessage createOldMessageLC(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
 		return createEsbMessage(createOldEvenementQuittancement(Quittance.QUITTANCEMENT, noCtb, Liste.LC, debutPeriode, finPeriode, dateEvenement));
 	}
 
-	private EsbMessage createEsbMessage(EvtQuittanceListe event) throws Exception {
-		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		Marshaller marshaller = context.createMarshaller();
+	private EsbMessage createEsbMessage(EvtQuittanceListe event) {
+		final EsbMessage m;
+		try {
+			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+			Marshaller marshaller = context.createMarshaller();
 
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.newDocument();
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.newDocument();
 
-		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1", "evtQuittanceListe");
-		marshaller.marshal(new JAXBElement<>(qname, EvtQuittanceListe.class, event), doc);
+			final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1", "evtQuittanceListe");
+			marshaller.marshal(new JAXBElement<>(qname, EvtQuittanceListe.class, event), doc);
 
-		final EsbMessage m = EsbMessageFactory.createMessage();
-		m.setBody(doc);
-
+			m = EsbMessageFactory.createMessage();
+			m.setBody(doc);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		return m;
 	}
 

@@ -79,7 +79,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	}
 
 	@Override
-	public void handle(Demande demande) throws Exception {
+	public void handle(Demande demande) throws EFactureException {
 		if (demande.getAction() == Demande.Action.DESINSCRIPTION) {
 			LOGGER.info(String.format("Reçu demande de désinscription e-Facture (%s) du contribuable %s au %s", demande.getIdDemande(),
 			                          FormatNumeroHelper.numeroCTBToDisplay(demande.getCtbId()), RegDateHelper.dateToDisplayString(demande.getDateDemande())));
@@ -162,7 +162,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		}
 	}
 
-	private TypeRefusDemande check(Demande demande, Tiers tiers) throws EvenementEfactureException {
+	private TypeRefusDemande check(Demande demande, Tiers tiers) throws EFactureException {
 
 		// [SIFISC-12805] la valeur dans le champ noAvs peut être autre chose qu'un NAVS13... mais si le champ est vide, rien ne va plus...
 		final String noSecuOuAvs = AvsHelper.removeSpaceAndDash(demande.getNoAvs());
@@ -218,7 +218,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			}
 		}
 		catch (AdresseException e) {
-			throw new EvenementEfactureException("Impossible de déterminer l'adresse du contribuable " + demande.getCtbId(), e);
+			throw new EFactureException("Impossible de déterminer l'adresse du contribuable " + demande.getCtbId(), e);
 		}
 
 		// tout va bien, on a un candidat !

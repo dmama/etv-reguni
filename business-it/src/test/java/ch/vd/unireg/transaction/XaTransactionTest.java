@@ -143,17 +143,12 @@ public class XaTransactionTest extends BusinessItTest {
 	 * @return le businessId du message envoyé
 	 */
 	private String sendTextMessage(String queueName, String texte, String replyTo) {
-		try {
-			final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
-			EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
-			return m.getBusinessId();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
+		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
+		return m.getBusinessId();
 	}
 
-	private void clearQueue() throws Exception {
+	private void clearQueue() {
 		doInNewTransaction(status -> {
 			try {
 				EvenementHelper.clearQueue(esbTemplate, queueName);
@@ -166,7 +161,7 @@ public class XaTransactionTest extends BusinessItTest {
 	}
 
 	@SuppressWarnings("CodeBlock2Expr")
-	private void clearData() throws Exception {
+	private void clearData() {
 		doInNewTransaction(status -> {
 			return hibernateTemplate.execute(session -> {
 				return session.createQuery("delete from AutreCommunaute").executeUpdate();
@@ -182,15 +177,20 @@ public class XaTransactionTest extends BusinessItTest {
 		return data.getId();
 	}
 
-	private EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
-		final EsbMessage m = EsbMessageFactory.createMessage();
-		m.setBusinessUser("XaTransactionTest");
-		m.setBusinessId(String.valueOf(m.hashCode()));
-		m.setContext("test");
-		m.setServiceDestination(queueName);
-		m.setBody(texte);
-		m.setServiceReplyTo(replyTo);
-		return m;
+	private EsbMessage buildTextMessage(String queueName, String texte, String replyTo) {
+		try {
+			final EsbMessage m = EsbMessageFactory.createMessage();
+			m.setBusinessUser("XaTransactionTest");
+			m.setBusinessId(String.valueOf(m.hashCode()));
+			m.setContext("test");
+			m.setServiceDestination(queueName);
+			m.setBody(texte);
+			m.setServiceReplyTo(replyTo);
+			return m;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@NotNull

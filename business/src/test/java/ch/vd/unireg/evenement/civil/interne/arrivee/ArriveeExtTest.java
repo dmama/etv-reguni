@@ -6,10 +6,8 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -365,45 +363,43 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			return null;
 		});
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				/*
-				 * Ok : événement d'arrivée à date courante
-				 */
-				final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
-				                                                        anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * Ok : événement d'arrivée à date courante
+			 */
+			final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+			                                                        anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arrivee.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
+			arrivee.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
 
-				/*
-				 * Ok : événement d'arrivée rétro-actif sans information d'ancienne adresse
-				 */
-				final ArriveePrincipale arriveeRetroActiveDeNullePart = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(),
-				                                                                              null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
+			/*
+			 * Ok : événement d'arrivée rétro-actif sans information d'ancienne adresse
+			 */
+			final ArriveePrincipale arriveeRetroActiveDeNullePart = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(),
+			                                                                              null, MockCommune.Cossonay, null, nouvellesAdresses.principale, context);
 
-				arriveeRetroActiveDeNullePart.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				arriveeRetroActiveDeNullePart.handle(collector);
-				assertFalse(collector.hasErreurs());
-				assertEquals(1, collector.getWarnings().size());
-				collector.clear();
+			arriveeRetroActiveDeNullePart.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			arriveeRetroActiveDeNullePart.handle(collector);
+			assertFalse(collector.hasErreurs());
+			assertEquals(1, collector.getWarnings().size());
+			collector.clear();
 
-				/*
-				 * Erreur: évenement d'arrivée rétro-actif situé avant la date de début de validité de l'ancienne adresse
-				 */
-				final ArriveePrincipale arriveeRetroActive = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(1945, 1, 1), MockCommune.Cossonay.getNoOFS(),
-				                                                                   MockCommune.Lausanne, MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			/*
+			 * Erreur: évenement d'arrivée rétro-actif situé avant la date de début de validité de l'ancienne adresse
+			 */
+			final ArriveePrincipale arriveeRetroActive = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(1945, 1, 1), MockCommune.Cossonay.getNoOFS(),
+			                                                                   MockCommune.Lausanne, MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arriveeRetroActive.validate(collector, collector);
-				assertTrue(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			arriveeRetroActive.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 	}
 
@@ -443,20 +439,18 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final MessageCollector collector = buildMessageCollector();
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				/*
-				 * Erreur: nouvelle adresse hors-canton
-				 */
-				final ArriveePrincipale arriveeHorsCanton = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Neuchatel.getNoOFS(),
-				                                                                  MockCommune.Lausanne, MockCommune.Neuchatel, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * Erreur: nouvelle adresse hors-canton
+			 */
+			final ArriveePrincipale arriveeHorsCanton = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Neuchatel.getNoOFS(),
+			                                                                  MockCommune.Lausanne, MockCommune.Neuchatel, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arriveeHorsCanton.validate(collector, collector);
-				assertTrue(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			arriveeHorsCanton.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 	}
 
@@ -525,44 +519,40 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Erreur: nouvelle adresse sur la commune composée du Chenit
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividuLAbbaye, dateArrivee);
-				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividuLAbbaye, dateArrivee);
+			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-				// erreur: devrait être MockCommune.Fraction.LAbbaye ou ...
-				final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(),
-				                                                        MockCommune.Lausanne, MockCommune.Fraction.LeSentier, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			// erreur: devrait être MockCommune.Fraction.LAbbaye ou ...
+			final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(),
+			                                                        MockCommune.Lausanne, MockCommune.Fraction.LeSentier, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arrivee.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertEquals(1, collector.getWarnings().size());
-				assertEquals("arrivée dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal", collector.getWarnings().get(0).getMessage());
-				collector.clear();
-			}
+			arrivee.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertEquals(1, collector.getWarnings().size());
+			assertEquals("arrivée dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal", collector.getWarnings().get(0).getMessage());
+			collector.clear();
+			return null;
 		});
 
 		/*
 		 * Ok: nouvelle adresse sur la commune du Lieu (qui anciennement était une commune avec fractions mais qui ne l'est plus)
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
-				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
+			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-				// erreur: devrait être MockCommune.Fraction.LeLieu
-				final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(),
-				                                                        MockCommune.Fraction.LeSentier, MockCommune.LeLieu, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			// erreur: devrait être MockCommune.Fraction.LeLieu
+			final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(),
+			                                                        MockCommune.Fraction.LeSentier, MockCommune.LeLieu, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arrivee.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			arrivee.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 	}
 
@@ -612,41 +602,37 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Erreur: nouvelle adresse sur la commune du Chenit
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividuLeSentier, dateArrivee);
-				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividuLeSentier, dateArrivee);
+			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne,
-				                                              MockCommune.LeChenit, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne,
+			                                              MockCommune.LeChenit, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arrivee.validate(collector, collector);
-				assertTrue(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			arrivee.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 
 		/*
 		 * Erreur: nouvelle adresse sur la commune du Lieu
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
-				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
+			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.LAbbaye, MockCommune.LeLieu,
-				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.LAbbaye, MockCommune.LeLieu,
+			                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arrivee.validate(collector, collector);
-				assertTrue(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			arrivee.validate(collector, collector);
+			assertTrue(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 	}
 
@@ -657,38 +643,36 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
 		final RegDate veille = dateArrivee.getOneDayBefore();
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				/*
-				 * Ok: arrivée en adresse secondaire
-				 */
-				final Adresse ancienne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, null, MockLocalite.Neuchatel, toutDebut, veille);
-				final Adresse nouvelle = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * Ok: arrivée en adresse secondaire
+			 */
+			final Adresse ancienne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, null, MockLocalite.Neuchatel, toutDebut, veille);
+			final Adresse nouvelle = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 
-				final ArriveeSecondaire arrivee = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validateArriveeAdresseSecondaire(collector);
-				assertTrue(collector.getErreurs().isEmpty());
-				collector.clear();
+			final ArriveeSecondaire arrivee = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validateArriveeAdresseSecondaire(collector);
+			assertTrue(collector.getErreurs().isEmpty());
+			collector.clear();
 
-				/*
-				 * Erreur: arrivée avant le début de validité de l'adresse principale
-				 */
-				final ArriveeSecondaire arriveeRetroActive = new ArriveeSecondaire(null, null, RegDate.get(1902, 10, 11), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
-				arriveeRetroActive.validateArriveeAdresseSecondaire(collector);
-				assertFalse(collector.getErreurs().isEmpty());
-				collector.clear();
+			/*
+			 * Erreur: arrivée avant le début de validité de l'adresse principale
+			 */
+			final ArriveeSecondaire arriveeRetroActive = new ArriveeSecondaire(null, null, RegDate.get(1902, 10, 11), MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
+			arriveeRetroActive.validateArriveeAdresseSecondaire(collector);
+			assertFalse(collector.getErreurs().isEmpty());
+			collector.clear();
 
-				/*
-				 * Erreur: arrivée en adresse secondaire hors canton
-				 */
-				final Adresse nouvelleHorsCanton = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
-				final ArriveeSecondaire arriveeHorsCanton = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, MockCommune.Neuchatel, ancienne, nouvelleHorsCanton, context);
-				arriveeHorsCanton.validateArriveeAdresseSecondaire(collector);
-				assertFalse(collector.getErreurs().isEmpty());
-				collector.clear();
-			}
+			/*
+			 * Erreur: arrivée en adresse secondaire hors canton
+			 */
+			final Adresse nouvelleHorsCanton = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
+			final ArriveeSecondaire arriveeHorsCanton = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, MockCommune.Neuchatel, ancienne, nouvelleHorsCanton, context);
+			arriveeHorsCanton.validateArriveeAdresseSecondaire(collector);
+			assertFalse(collector.getErreurs().isEmpty());
+			collector.clear();
+			return null;
 		});
 	}
 
@@ -739,18 +723,16 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok : événement d'arrivée standard
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
-						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransactionAndSession(status -> {
+			final Arrivee arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+					                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				arrivee.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-				collector.clear();
-			}
+			arrivee.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
+			collector.clear();
+			return null;
 		});
 	}
 
@@ -791,25 +773,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
-				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+			                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Vérification que l'individu n'existe pas en base avant son arrivée
-				 */
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
+			/*
+			 * Vérification que l'individu n'existe pas en base avant son arrivée
+			 */
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -892,13 +872,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * L'événement d'arrivée
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
-				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
-				arrivee.handle(buildMessageCollector());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+			                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -974,25 +952,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
-				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+			                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Vérification que l'individu n'existe pas en base avant son arrivée
-				 */
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
+			/*
+			 * Vérification que l'individu n'existe pas en base avant son arrivée
+			 */
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1061,26 +1037,24 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				final Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
-						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransactionAndSession(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			final Arrivee arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+					                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Vérification que l'individu n'existe pas en base avant son arrivée
-				 */
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
+			/*
+			 * Vérification que l'individu n'existe pas en base avant son arrivée
+			 */
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1152,26 +1126,22 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Création de l'habitant et de sa situation avant l'arrivée
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noIndividu);
-				addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = addHabitant(noIndividu);
+			addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+			assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
+			return null;
 		});
 
 		/*
 		 * L'événement d'arrivée
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
-						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
-				arrivee.handle(buildMessageCollector());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Arrivee arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+					                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1268,27 +1238,24 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
-				                                        MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransaction(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
+			                                        MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Vérification que les individus n'existent pas en base avant leurs arrivées
-				 */
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal));
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint));
+			/*
+			 * Vérification que les individus n'existent pas en base avant leurs arrivées
+			 */
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal));
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint));
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-				return null;
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1406,40 +1373,34 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * Création des habitants et de leurs situations avant l'arrivée
-				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal),
-				                                                                            addHabitant(noIndividuConjoint), dateMariage, null);
+		doInNewTransaction(status -> {
+			/*
+			 * Création des habitants et de leurs situations avant l'arrivée
+			 */
+			final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal),
+			                                                                            addHabitant(noIndividuConjoint), dateMariage, null);
 
-				MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				assertNotNull(menage);
-				return null;
-			}
+			MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			assertNotNull(menage);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				Arrivee arrivee =
-						new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
-						                      MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransaction(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			Arrivee arrivee =
+					new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+					                      MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-				return null;
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1554,39 +1515,33 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * Création de l'habitant et de sa situation avant l'arrivée
-				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal),
-				                                                                            addHabitant(noIndividuConjoint), dateMariage, null);
+		doInNewTransaction(status -> {
+			/*
+			 * Création de l'habitant et de sa situation avant l'arrivée
+			 */
+			final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal),
+			                                                                            addHabitant(noIndividuConjoint), dateMariage, null);
 
-				MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				assertNotNull(menage);
-				return null;
-			}
+			MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+			assertNotNull(menage);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
-				                                        MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransaction(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			Arrivee arrivee = new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+			                                        MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-				return null;
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1693,13 +1648,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * L'événement d'arrivée
 		 */
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
-				                                              MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
-				arrivee.handle(buildMessageCollector());
-			}
+		doInNewTransactionAndSession(status -> {
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+			                                              MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1778,42 +1731,36 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * Création des habitants et de leurs situations avant l'arrivée
-				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal), addHabitant(noIndividuConjoint), dateMariage, null);
-				MenageCommun menage = ensemble.getMenage();
+		doInNewTransaction(status -> {
+			/*
+			 * Création des habitants et de leurs situations avant l'arrivée
+			 */
+			final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal), addHabitant(noIndividuConjoint), dateMariage, null);
+			MenageCommun menage = ensemble.getMenage();
 
-				addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				final AdresseSuisse courrier = addAdresseSuisse(menage, TypeAdresseTiers.COURRIER, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
-				courrier.setPermanente(true);
-				addAdresseSuisse(menage, TypeAdresseTiers.DOMICILE, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
-				assertNotNull(menage);
-				return null;
-			}
+			addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			final AdresseSuisse courrier = addAdresseSuisse(menage, TypeAdresseTiers.COURRIER, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
+			courrier.setPermanente(true);
+			addAdresseSuisse(menage, TypeAdresseTiers.DOMICILE, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
+			assertNotNull(menage);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				Arrivee arrivee =
-						new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
-						                      MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransaction(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			Arrivee arrivee =
+					new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne,
+					                      MockCommune.Cossonay, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-				return null;
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -1911,47 +1858,38 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
-		final long numeroCTB = doInNewTransaction(new TxCallback<Long>() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				/*
-				 * Création du non-habitant
-				 */
-				final RegDate dateNaissanceBea = RegDate.get(1987, 5, 1);
+		final long numeroCTB = doInNewTransaction(status -> {
+			/*
+			 * Création du non-habitant
+			 */
+			final RegDate dateNaissanceBea = RegDate.get(1987, 5, 1);
 
-				PersonnePhysique nonHabitant = addNonHabitant("Béatrice", "Duval", dateNaissanceBea, Sexe.FEMININ);
-				addForPrincipal(nonHabitant, dateArrivee.addYears(-1), MotifFor.INDETERMINE, MockCommune.Bern);
-				addForSecondaire(nonHabitant, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				return nonHabitant.getNumero();
-			}
-
+			PersonnePhysique nonHabitant = addNonHabitant("Béatrice", "Duval", dateNaissanceBea, Sexe.FEMININ);
+			addForPrincipal(nonHabitant, dateArrivee.addYears(-1), MotifFor.INDETERMINE, MockCommune.Bern);
+			addForSecondaire(nonHabitant, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			return nonHabitant.getNumero();
 		});
 
 		globalTiersIndexer.sync();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel, MockCommune.Lausanne,
-						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransaction(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			Arrivee arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel, MockCommune.Lausanne,
+					                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Vérification que l'individu n'existe pas en base avant son arrivée
-				 */
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu));
+			/*
+			 * Vérification que l'individu n'existe pas en base avant son arrivée
+			 */
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu));
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-
-				return null;
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2058,28 +1996,24 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		}
 
-		final Couple coupleContribuables = doInNewTransaction(new TxCallback<Couple>() {
-			@Override
-			public Couple execute(TransactionStatus status) throws Exception {
-				/*
-				 * Création des non-habitants
-				 */
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.save(addNonHabitant("Pierre", "Dupont", dateNaissancePierre, Sexe.MASCULIN));
+		final Couple coupleContribuables = doInNewTransaction(status -> {
+			/*
+			 * Création des non-habitants
+			 */
+			final PersonnePhysique principal = (PersonnePhysique) tiersDAO.save(addNonHabitant("Pierre", "Dupont", dateNaissancePierre, Sexe.MASCULIN));
 
-				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.save(addNonHabitant("Julie", "Goux", dateNaissanceJulie, Sexe.FEMININ));
+			final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.save(addNonHabitant("Julie", "Goux", dateNaissanceJulie, Sexe.FEMININ));
 
-				/*
-				 * Création des habitants et de leurs situations avant l'arrivée
-				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(principal, conjoint, dateMariage, null);
+			/*
+			 * Création des habitants et de leurs situations avant l'arrivée
+			 */
+			final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(principal, conjoint, dateMariage, null);
 
-				MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Vevey);
+			MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Vevey);
 
-				assertNotNull(menage);
-				return new Couple(principal.getNumero(), conjoint.getNumero());
-			}
-
+			assertNotNull(menage);
+			return new Couple(principal.getNumero(), conjoint.getNumero());
 		});
 
 		assertNotNull(coupleContribuables);
@@ -2088,29 +2022,25 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		globalTiersIndexer.sync();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				/*
-				 * L'événement d'arrivée
-				 */
-				Arrivee arrivee =
-						new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
-						                      MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
+		doInNewTransaction(status -> {
+			/*
+			 * L'événement d'arrivée
+			 */
+			Arrivee arrivee =
+					new ArriveePrincipale(individuPrincipal, individuConjoint, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel,
+					                      MockCommune.Lausanne, anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
-				/*
-				 * Vérification que les individus n'existent pas en base avant leur arrivée
-				 */
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal));
-				assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint));
+			/*
+			 * Vérification que les individus n'existent pas en base avant leur arrivée
+			 */
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal));
+			assertNull(tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint));
 
-				/*
-				 * Arrivée
-				 */
-				arrivee.handle(buildMessageCollector());
-
-				return null;
-			}
+			/*
+			 * Arrivée
+			 */
+			arrivee.handle(buildMessageCollector());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2195,14 +2125,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.MIXTE_137_1);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = addHabitant(noTiers, noInd);
+			addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.MIXTE_137_1);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2210,23 +2137,21 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2010, 3, 24);
 
 		// Crée un événement d'arrivée de Bussigny à Lausanne au 24 mars 2010
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final MockAdresse nouvelleAdresse = new MockAdresse();
-				nouvelleAdresse.setDateDebutValidite(dateArrivee);
-				final Individu individu = serviceCivil.getIndividu(noInd, null);
+		doInNewTransactionAndSession(status -> {
+			final MockAdresse nouvelleAdresse = new MockAdresse();
+			nouvelleAdresse.setDateDebutValidite(dateArrivee);
+			final Individu individu = serviceCivil.getIndividu(noInd, null);
 
-				final Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
-						                      nouvelleAdresse, context);
+			final Arrivee arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+					                      nouvelleAdresse, context);
 
-				// Traite l'événement d'arrivée
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
-				arrivee.handle(collector);
-				assertEmpty(collector.getErreurs());
-			}
+			// Traite l'événement d'arrivée
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2268,14 +2193,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSessionWithoutValidation(new TxCallback<Object>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-				addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.MIXTE_137_1);
-				return null;
-			}
+		doInNewTransactionAndSessionWithoutValidation(status -> {
+			PersonnePhysique habitant = addHabitant(noTiers, noInd);
+			addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+			addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.MIXTE_137_1);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2284,23 +2206,21 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final Individu individu = serviceCivil.getIndividu(noInd, null);
-					MockAdresse nouvelleAdresse = new MockAdresse();
-					nouvelleAdresse.setDateDebutValidite(dateArrivee);
+			doInNewTransactionAndSession(status -> {
+				final Individu individu = serviceCivil.getIndividu(noInd, null);
+				MockAdresse nouvelleAdresse = new MockAdresse();
+				nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-					final Arrivee arrivee =
-							new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
-							                      nouvelleAdresse, context);
+				final Arrivee arrivee =
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+						                      nouvelleAdresse, context);
 
-					// Traite l'événement d'arrivée
-					final MessageCollector collector = buildMessageCollector();
-					arrivee.validate(collector, collector);
+				// Traite l'événement d'arrivée
+				final MessageCollector collector = buildMessageCollector();
+				arrivee.validate(collector, collector);
 
-					arrivee.handle(collector);
-				}
+				arrivee.handle(collector);
+				return null;
 			});
 			fail();
 		}
@@ -2330,34 +2250,29 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final RegDate dateAchat = date(2009, 4, 10);
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+			addForSecondaire(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final MockAdresse nouvelleAdresse = new MockAdresse();
-				nouvelleAdresse.setDateDebutValidite(dateArrivee);
-				final Individu individu = serviceCivil.getIndividu(noInd, null);
+		doInNewTransactionAndSession(status -> {
+			final MockAdresse nouvelleAdresse = new MockAdresse();
+			nouvelleAdresse.setDateDebutValidite(dateArrivee);
+			final Individu individu = serviceCivil.getIndividu(noInd, null);
 
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne,
-				                                              null, nouvelleAdresse, context);
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne,
+			                                              null, nouvelleAdresse, context);
 
-				// Traite l'événement d'arrivée
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
-				arrivee.handle(collector);
-				assertEmpty(collector.getErreurs());
-			}
+			// Traite l'événement d'arrivée
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2449,54 +2364,45 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		// création des fors
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			// tiers habitants (en fait, monsieur ne l'est plus)
+			final PersonnePhysique pierre = addNonHabitant("Pierre", "Dupont", RegDate.get(1953, 11, 2), Sexe.MASCULIN);
+			pierre.setNumeroIndividu(noIndividuPierre);
 
-				// tiers habitants (en fait, monsieur ne l'est plus)
-				final PersonnePhysique pierre = addNonHabitant("Pierre", "Dupont", RegDate.get(1953, 11, 2), Sexe.MASCULIN);
-				pierre.setNumeroIndividu(noIndividuPierre);
+			final PersonnePhysique julie = addHabitant(noIndividuJulie);
+			final EnsembleTiersCouple menage = addEnsembleTiersCouple(pierre, julie, dateMariage, dateSeparationFiscale);
+			addForPrincipal(menage.getMenage(), dateArriveInitiale, MotifFor.ARRIVEE_HS, dateSeparationFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				final PersonnePhysique julie = addHabitant(noIndividuJulie);
-				final EnsembleTiersCouple menage = addEnsembleTiersCouple(pierre, julie, dateMariage, dateSeparationFiscale);
-				addForPrincipal(menage.getMenage(), dateArriveInitiale, MotifFor.ARRIVEE_HS, dateSeparationFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+			addForPrincipal(pierre, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+			addForPrincipal(pierre, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Geneve);
 
-				addForPrincipal(pierre, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
-				addForPrincipal(pierre, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Geneve);
+			addForPrincipal(julie, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+			addForPrincipal(julie, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Neuchatel);
 
-				addForPrincipal(julie, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
-				addForPrincipal(julie, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Neuchatel);
-
-				ids.noCtbJulie = julie.getNumero();
-				ids.noCtbPierre = pierre.getNumero();
-				ids.noCtbMenage = menage.getMenage().getNumero();
-				return null;
-			}
+			ids.noCtbJulie = julie.getNumero();
+			ids.noCtbPierre = pierre.getNumero();
+			ids.noCtbMenage = menage.getMenage().getNumero();
+			return null;
 		});
 
 		globalTiersIndexer.sync();
 
 		// retour de Julie
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
+			final Individu individu = serviceCivil.getIndividu(noIndividuJulie, null);
+			final MockAdresse nouvelleAdresse = new MockAdresse();
+			nouvelleAdresse.setDateDebutValidite(dateRetour);
 
-				// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
-				final Individu individu = serviceCivil.getIndividu(noIndividuJulie, null);
-				final MockAdresse nouvelleAdresse = new MockAdresse();
-				nouvelleAdresse.setDateDebutValidite(dateRetour);
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateRetour, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+			                                              nouvelleAdresse, context);
 
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateRetour, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
-				                                              nouvelleAdresse, context);
-
-				// Traite l'événement d'arrivée
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
-				arrivee.handle(collector);
-				assertEmpty(collector.getErreurs());
-
-				return null;
-			}
+			// Traite l'événement d'arrivée
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2532,36 +2438,31 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		doInNewTransactionAndSessionWithoutValidation(
-				new TxCallback<Object>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-					@Override
-					public Object execute(TransactionStatus status) throws Exception {
-						PersonnePhysique habitant = addHabitant(noTiers, noInd);
-						addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-						addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie, ModeImposition.MIXTE_137_1);
-						return null;
-					}
+				status -> {
+					PersonnePhysique habitant = addHabitant(noTiers, noInd);
+					addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+					addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie, ModeImposition.MIXTE_137_1);
+					return null;
 				});
 
 		final RegDate dateArrivee = date(2010, 3, 24);
 
 		// Crée un événement d'arrivée de HS à Lausanne au 24 mars 2010
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final Individu individu = serviceCivil.getIndividu(noInd, null);
-					final MockAdresse nouvelleAdresse = new MockAdresse();
-					nouvelleAdresse.setDateDebutValidite(dateArrivee);
+			doInNewTransactionAndSession(status -> {
+				final Individu individu = serviceCivil.getIndividu(noInd, null);
+				final MockAdresse nouvelleAdresse = new MockAdresse();
+				nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-					final Arrivee arrivee =
-							new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
-							                      nouvelleAdresse, context);
+				final Arrivee arrivee =
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
+						                      nouvelleAdresse, context);
 
-					// Traite l'événement d'arrivée
-					final MessageCollector collector = buildMessageCollector();
-					arrivee.validate(collector, collector);
-					arrivee.handle(collector);
-				}
+				// Traite l'événement d'arrivée
+				final MessageCollector collector = buildMessageCollector();
+				arrivee.validate(collector, collector);
+				arrivee.handle(collector);
+				return null;
 			});
 			fail();
 		}
@@ -2591,13 +2492,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = addHabitant(noTiers, noInd);
+			addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2605,23 +2503,21 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2009, 12, 20);
 
 		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noInd, null);
-				final MockAdresse nouvelleAdresse = new MockAdresse();
-				nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noInd, null);
+			final MockAdresse nouvelleAdresse = new MockAdresse();
+			nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-				final Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny, null,
-						                      nouvelleAdresse, context);
+			final Arrivee arrivee =
+					new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny, null,
+					                      nouvelleAdresse, context);
 
-				// Traite l'événement d'arrivée
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
-				arrivee.handle(collector);
-				assertEmpty(collector.getErreurs());
-			}
+			// Traite l'événement d'arrivée
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2658,13 +2554,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = addHabitant(noTiers, noInd);
+			addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -2672,22 +2565,20 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final RegDate dateArrivee = date(2009, 12, 21);
 
 		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noInd, null);
-				final MockAdresse nouvelleAdresse = new MockAdresse();
-				nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noInd, null);
+			final MockAdresse nouvelleAdresse = new MockAdresse();
+			nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFS(), null,
-				                                              MockCommune.Bussigny, null, nouvelleAdresse, context);
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFS(), null,
+			                                              MockCommune.Bussigny, null, nouvelleAdresse, context);
 
-				// Traite l'événement d'arrivée
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
-				arrivee.handle(collector);
-				assertEmpty(collector.getErreurs());
-			}
+			// Traite l'événement d'arrivée
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2724,34 +2615,29 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Zurich);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique habitant = addHabitant(noTiers, noInd);
+			addForPrincipal(habitant, date(1970, 1, 1), MotifFor.MAJORITE, MockCommune.Zurich);
+			return null;
 		});
 
 		final RegDate dateArrivee = date(2009, 12, 20);
 
 		// Crée un événement d'arrivée de HS à Bussigny le 20 décembre 2008
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Individu individu = serviceCivil.getIndividu(noInd, null);
-				final MockAdresse nouvelleAdresse = new MockAdresse();
-				nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		doInNewTransactionAndSession(status -> {
+			final Individu individu = serviceCivil.getIndividu(noInd, null);
+			final MockAdresse nouvelleAdresse = new MockAdresse();
+			nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny,
-				                                              null, nouvelleAdresse, context);
+			final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny,
+			                                              null, nouvelleAdresse, context);
 
-				// Traite l'événement d'arrivée
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
-				arrivee.handle(collector);
-				assertEmpty(collector.getErreurs());
-			}
+			// Traite l'événement d'arrivée
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
+			arrivee.handle(collector);
+			assertEmpty(collector.getErreurs());
+			return null;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -2815,24 +2701,23 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// Traite l'événement d'arrivée
 		//
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Arrivee arrivee = new ArriveePrincipale(civil.roger, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, null, null, null, null, (Adresse) null, null, context);
+		doInNewTransactionAndSession(status -> {
+			final Arrivee arrivee = new ArriveePrincipale(civil.roger, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, null, null, null, null, (Adresse) null, null, context);
 
-				final MessageCollector collector = buildMessageCollector();
-				arrivee.validate(collector, collector);
+			final MessageCollector collector = buildMessageCollector();
+			arrivee.validate(collector, collector);
 
-				try {
-					arrivee.handle(collector);
-					Assert.fail("L'événement d'arrivée aurait dû lever une erreur parce que le non-habitant trouvé n'est pas complet");
-				}
-				catch (EvenementCivilException e) {
-					final String message = "Un non-habitant (n°" + ids.roger + ") qui possède le même prénom/nom que l'individu a été trouvé, " +
-							"mais la date de naissance n'est pas renseignée. Veuillez vérifier manuellement.";
-					assertEquals(message, e.getMessage());
-				}
+			try {
+				arrivee.handle(collector);
+				Assert.fail("L'événement d'arrivée aurait dû lever une erreur parce que le non-habitant trouvé n'est pas complet");
 			}
+			catch (EvenementCivilException e) {
+				final String message = "Un non-habitant (n°" + ids.roger + ") qui possède le même prénom/nom que l'individu a été trouvé, " +
+						"mais la date de naissance n'est pas renseignée. Veuillez vérifier manuellement.";
+				assertEquals(message, e.getMessage());
+			}
+			;
+			return null;
 		});
 	}
 

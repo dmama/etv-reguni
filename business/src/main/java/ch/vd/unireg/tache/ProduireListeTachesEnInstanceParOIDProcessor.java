@@ -49,7 +49,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public ListeTachesEnInstanceParOID run(final RegDate dateTraitement, StatusManager s) throws Exception {
+	public ListeTachesEnInstanceParOID run(final RegDate dateTraitement, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -107,7 +107,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		return rapportFinal;
 	}
 
-	private void traiterTaches(List<Object[]> tachesTrouvees, ListeTachesEnInstanceParOID rapport, RegDate dateTraitement) throws Exception {
+	private void traiterTaches(List<Object[]> tachesTrouvees, ListeTachesEnInstanceParOID rapport, RegDate dateTraitement) {
 		for (Object[] objects : tachesTrouvees) {
 			final int numeroOID = ((Number) objects[0]).intValue();
 			final TypeTache typeTache = translateTypeTache((String) objects[1]);

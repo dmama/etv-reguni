@@ -11,11 +11,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.NomPrenom;
@@ -113,31 +111,28 @@ public class RoleServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				ids.paul = newCtbVaudoisOrdinaire(MockCommune.Lausanne).getNumero();
-				ids.incognito = newCtbVaudoisOrdinaireDepuis2007(MockCommune.Lausanne).getNumero();
-				ids.raoul = newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune.Lausanne).getNumero();
-				ids.didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne).getNumero();
-				ids.laurent = newCtbVaudoisOrdinairePartiHorsCantonEn2008(MockCommune.Lausanne).getNumero();
-				ids.arnold = newCtbVaudoisSourcierMixte(MockCommune.Lausanne).getNumero();
-				ids.victor = newCtbVaudoisSourcier(MockCommune.Lausanne).getNumero();
-				ids.albertine = newCtbVaudoisSourcierGris(MockCommune.Lausanne).getNumero();
-				ids.geo = newCtbHorsCantonEtImmeuble(MockCommune.Lausanne).getNumero();
-				ids.donald = newCtbHorsCantonEtDeuxImmeubles(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
-				ids.johnny = newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune.Lausanne).getNumero();
-				ids.tyler = newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune.Lausanne).getNumero();
-				ids.pascal = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
-				ids.marc = newCtbDiplomateSuisse(MockCommune.Lausanne).getNumero();
-				ids.louis = newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
-				ids.albert = newCtbVaudoisOrdinairePartiHorsSuisseEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
-				ids.georges = newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
-				ids.marie = newCtbVaudoisPartiHorsCantonTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
-				ids.jean = newCtbVaudoisPartiHorsSuisseTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
-				ids.tom = newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			ids.paul = newCtbVaudoisOrdinaire(MockCommune.Lausanne).getNumero();
+			ids.incognito = newCtbVaudoisOrdinaireDepuis2007(MockCommune.Lausanne).getNumero();
+			ids.raoul = newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune.Lausanne).getNumero();
+			ids.didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne).getNumero();
+			ids.laurent = newCtbVaudoisOrdinairePartiHorsCantonEn2008(MockCommune.Lausanne).getNumero();
+			ids.arnold = newCtbVaudoisSourcierMixte(MockCommune.Lausanne).getNumero();
+			ids.victor = newCtbVaudoisSourcier(MockCommune.Lausanne).getNumero();
+			ids.albertine = newCtbVaudoisSourcierGris(MockCommune.Lausanne).getNumero();
+			ids.geo = newCtbHorsCantonEtImmeuble(MockCommune.Lausanne).getNumero();
+			ids.donald = newCtbHorsCantonEtDeuxImmeubles(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
+			ids.johnny = newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune.Lausanne).getNumero();
+			ids.tyler = newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune.Lausanne).getNumero();
+			ids.pascal = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
+			ids.marc = newCtbDiplomateSuisse(MockCommune.Lausanne).getNumero();
+			ids.louis = newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
+			ids.albert = newCtbVaudoisOrdinairePartiHorsSuisseEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
+			ids.georges = newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
+			ids.marie = newCtbVaudoisPartiHorsCantonTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
+			ids.jean = newCtbVaudoisPartiHorsSuisseTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
+			ids.tom = newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
+			return null;
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2007, 1, null, null);
@@ -237,12 +232,9 @@ public class RoleServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				ids.benjamin = newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune.Lausanne).getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			ids.benjamin = newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune.Lausanne).getNumero();
+			return null;
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2007, 1, null, null);
@@ -297,12 +289,9 @@ public class RoleServiceTest extends BusinessTest {
 	@Test
 	public void testRunHorsSuisseRevenuDansAutreCommuneLaMemeAnnee() throws Exception {
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Contribuable ctb = newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune.Lausanne, MockCommune.Bussigny);
-				return ctb.getNumero();
-			}
+		final long idCtb = doInNewTransaction(status -> {
+			final Contribuable ctb = newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune.Lausanne, MockCommune.Bussigny);
+			return ctb.getNumero();
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2007, 1, null, null);
@@ -335,12 +324,9 @@ public class RoleServiceTest extends BusinessTest {
 			}
 		});
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Contribuable ctb = newCtbVaudoisSourcierPartiHorsSuisseEtRevenuDansLaMemeAnnee(noIndividu, MockCommune.Lausanne, MockCommune.Bussigny);
-				return ctb.getNumero();
-			}
+		final long idCtb = doInNewTransaction(status -> {
+			final Contribuable ctb = newCtbVaudoisSourcierPartiHorsSuisseEtRevenuDansLaMemeAnnee(noIndividu, MockCommune.Lausanne, MockCommune.Bussigny);
+			return ctb.getNumero();
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2007, 1, null, null);
@@ -373,16 +359,13 @@ public class RoleServiceTest extends BusinessTest {
 			}
 		});
 
-		final long idMarie = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
-				addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(m, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.SOURCE);
-				return m.getNumero();
-			}
+		final long idMarie = doInNewTransaction(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
+			addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(m, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.SOURCE);
+			return m.getNumero();
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2007, 1, null, null);
@@ -414,16 +397,13 @@ public class RoleServiceTest extends BusinessTest {
 			}
 		});
 
-		final long idMarie = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique m = addHabitant(noIndividu);
-				addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-				addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
-				addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, date(2008, 5, 15), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForPrincipal(m, date(2008, 5, 16), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.SOURCE);
-				return m.getNumero();
-			}
+		final long idMarie = doInNewTransaction(status -> {
+			final PersonnePhysique m = addHabitant(noIndividu);
+			addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
+			addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, date(2008, 5, 15), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.SOURCE);
+			addForPrincipal(m, date(2008, 5, 16), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.SOURCE);
+			return m.getNumero();
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2007, 1, null, null);
@@ -488,12 +468,9 @@ public class RoleServiceTest extends BusinessTest {
 	@Test
 	public void testRunCommunesCtbHorsCantonAvecPlusieursForsSecondaires() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Contribuable ctb = getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777();
-				return ctb.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final Contribuable ctb = getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777();
+			return ctb.getNumero();
 		});
 
 		final RolePPCommunesResults results = roleService.produireRolePPCommunes(2008, 1, null, null);
@@ -529,17 +506,14 @@ public class RoleServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				ids.paul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();
-				ids.raoul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Renens, MockCommune.Lausanne).getNumero();
-				ids.didier = newCtbOrdinaireAvecDemenagement(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();
-				ids.arnold = newCtbOrdinaireAvecDemenagement(MockCommune.Renens, MockCommune.Lausanne).getNumero();
-				ids.victor = newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune.Lausanne, MockCommune.Croy, MockCommune.Renens).getNumero();
-				ids.balthazar = newCtbOrdinaireAvecDemenagementAnterieur(MockCommune.Renens, MockCommune.Lausanne).getNumero();
-				return null;
-			}
+		doInNewTransaction(status -> {
+			ids.paul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();
+			ids.raoul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Renens, MockCommune.Lausanne).getNumero();
+			ids.didier = newCtbOrdinaireAvecDemenagement(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();
+			ids.arnold = newCtbOrdinaireAvecDemenagement(MockCommune.Renens, MockCommune.Lausanne).getNumero();
+			ids.victor = newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune.Lausanne, MockCommune.Croy, MockCommune.Renens).getNumero();
+			ids.balthazar = newCtbOrdinaireAvecDemenagementAnterieur(MockCommune.Renens, MockCommune.Lausanne).getNumero();
+			return null;
 		});
 
 		final RolePPOfficesResults results = roleService.produireRolePPOffices(2007, 1, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), null);
@@ -935,15 +909,12 @@ public class RoleServiceTest extends BusinessTest {
 	 * @return un contribuable invalide
 	 */
 	private Long newCtbVaudoisOrdinaireEtImmeubleInvalide() throws Exception {
-		return doInNewTransactionAndSessionWithoutValidation(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp = addNonHabitant("Rodolf", "Piedbor", date(1953,12,18), Sexe.MASCULIN);
-				addForPrincipal(pp, date(1971,12,18), MotifFor.MAJORITE, MockCommune.Lausanne);
-				// le for secondaire n'est pas couvert par le for principal
-				addForSecondaire(pp, date(1920,1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		return doInNewTransactionAndSessionWithoutValidation(status -> {
+			PersonnePhysique pp = addNonHabitant("Rodolf", "Piedbor", date(1953, 12, 18), Sexe.MASCULIN);
+			addForPrincipal(pp, date(1971, 12, 18), MotifFor.MAJORITE, MockCommune.Lausanne);
+			// le for secondaire n'est pas couvert par le for principal
+			addForSecondaire(pp, date(1920, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 	}
 
@@ -1799,20 +1770,18 @@ public class RoleServiceTest extends BusinessTest {
 		});
 
 		// vérification de la date de fin d'assujettissement
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				assertNotNull(entreprise);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			assertNotNull(entreprise);
 
-				final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
-				assertNotNull(assujettissements);
-				assertEquals(1, assujettissements.size());
+			final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
 
-				final Assujettissement assujettissement = assujettissements.get(0);
-				assertNotNull(assujettissement);
-				assertEquals(date(anneeRole, 12, 31), assujettissement.getDateFin());
-			}
+			final Assujettissement assujettissement = assujettissements.get(0);
+			assertNotNull(assujettissement);
+			assertEquals(date(anneeRole, 12, 31), assujettissement.getDateFin());
+			return null;
 		});
 
 		// rôle vaudois
@@ -1863,20 +1832,18 @@ public class RoleServiceTest extends BusinessTest {
 		});
 
 		// vérification de la date de fin d'assujettissement
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus transactionStatus) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				assertNotNull(entreprise);
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+			assertNotNull(entreprise);
 
-				final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
-				assertNotNull(assujettissements);
-				assertEquals(1, assujettissements.size());
+			final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
 
-				final Assujettissement assujettissement = assujettissements.get(0);
-				assertNotNull(assujettissement);
-				assertEquals(date(anneeRole, 11, 30), assujettissement.getDateFin());
-			}
+			final Assujettissement assujettissement = assujettissements.get(0);
+			assertNotNull(assujettissement);
+			assertEquals(date(anneeRole, 11, 30), assujettissement.getDateFin());
+			return null;
 		});
 
 		// rôle vaudois

@@ -1,6 +1,7 @@
 package ch.vd.unireg.evenement.civil.interne.changement.nom;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
@@ -77,32 +77,26 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE);
 
 		// le tiers ne doit pas être dirty (précondition)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE);
-				assertFalse(t.isDirty());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE);
+			assertFalse(t.isDirty());
+			return null;
 		});
 
 		// changement du nom dans le registre civil
 		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU);
 		individu.setNom("Dupuid");
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// déclenchement de l'événement
-				final ChangementNom chgtNom = new ChangementNom(individu, null, get(), 4848, context);
+		doInNewTransaction(status -> {
+			// déclenchement de l'événement
+			final ChangementNom chgtNom = new ChangementNom(individu, null, get(), 4848, context);
 
-				final MessageCollector collector = buildMessageCollector();
-				chgtNom.validate(collector, collector);// ne fait rien
-				chgtNom.handle(collector);
+			final MessageCollector collector = buildMessageCollector();
+			chgtNom.validate(collector, collector);// ne fait rien
+			chgtNom.handle(collector);
 
-				Assert.assertTrue("Une erreur est survenue lors du traitement du changement de nom", collector.getErreurs().isEmpty());
-				return null;
-			}
+			assertTrue("Une erreur est survenue lors du traitement du changement de nom", collector.getErreurs().isEmpty());
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -119,13 +113,10 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// le tiers ne doit pas être dirty (postcondition)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE);
-				assertFalse(t.isDirty());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE);
+			assertFalse(t.isDirty());
+			return null;
 		});
 	}
 
@@ -151,44 +142,38 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 
 		// on est obligé de mettre-à-jour la base dans le dos d'hibernate et de le faire après avoir indexé la base (voir commentaire sur
 		// appel de loadDatabase()).
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				try (Connection con = dataSource.getConnection();
-				     Statement st = con.createStatement()) {
-					st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
-				}
-				return null;
+		doInNewTransaction(status -> {
+			try (Connection con = dataSource.getConnection();
+			     Statement st = con.createStatement()) {
+				st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
 			}
+			catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
 		});
 
 		// le tiers doit être dirty (précondition)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE_DIRTY);
-				assertTrue(t.isDirty());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE_DIRTY);
+			assertTrue(t.isDirty());
+			return null;
 		});
 
 		// changement du nom dans le registre civil
 		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU_DIRTY);
 		individu.setNom("Woux"); // Julie Woux
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// déclenchement de l'événement
-				final ChangementNom chgtNom = new ChangementNom(individu, null, get(), 4848, context);
+		doInNewTransaction(status -> {
+			// déclenchement de l'événement
+			final ChangementNom chgtNom = new ChangementNom(individu, null, get(), 4848, context);
 
-				final MessageCollector collector = buildMessageCollector();
-				chgtNom.validate(collector, collector);// ne fait rien
-				chgtNom.handle(collector);
+			final MessageCollector collector = buildMessageCollector();
+			chgtNom.validate(collector, collector);// ne fait rien
+			chgtNom.handle(collector);
 
-				Assert.assertTrue("Une erreur est survenue lors du traitement du changement de nom", collector.getErreurs().isEmpty());
-				return null;
-			}
+			assertTrue("Une erreur est survenue lors du traitement du changement de nom", collector.getErreurs().isEmpty());
+			return null;
 		});
 
 		globalTiersIndexer.sync();
@@ -205,13 +190,10 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// le tiers ne doit plus être dirty (postcondition)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE_DIRTY);
-				assertFalse(t.isDirty());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Tiers t = tiersDAO.get(NUMERO_CONTRIBUABLE_DIRTY);
+			assertFalse(t.isDirty());
+			return null;
 		});
 	}
 }

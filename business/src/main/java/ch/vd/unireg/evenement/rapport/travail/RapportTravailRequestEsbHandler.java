@@ -25,13 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -116,15 +113,9 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 			template.setReadOnly(false);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			try {
-				result = template.execute(new TxCallback<MiseAJourRapportTravailResponse>() {
-					@Override
-					public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
-						return rapportTravailRequestHandler.handle(miseAjourRapportTravail);
-					}
-				});
+				result = template.execute(status -> rapportTravailRequestHandler.handle(miseAjourRapportTravail));
 			}
-			catch (TxCallbackException txe) {
-				ServiceException e = (ServiceException) txe.getCause();
+			catch (ServiceException e) {
 				LOGGER.error(e.getMessage(), e);
 				result = new MiseAJourRapportTravailResponse();
 				result.setExceptionInfo(e.getInfo());

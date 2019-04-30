@@ -388,7 +388,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	@Override
 	public EditiqueResultat envoieImpressionLocaleDI(Long ctbId, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
-	                                                 TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
+	                                                 TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) {
 		final Tiers tiers = tiersDAO.get(ctbId);
 		if (tiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
@@ -398,7 +398,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	public void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
+	public void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour) {
 		final Tiers tiers = tiersDAO.get(ctbId);
 		if (tiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));

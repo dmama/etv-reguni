@@ -13,7 +13,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -1063,21 +1062,18 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée deux ctbs, dont un est un débiteur inactif
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ramon = addNonHabitant("Ramon", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
-				ramon.setDebiteurInactif(true);
-				addForPrincipal(ramon, date(1980,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
-				addForSecondaire(ramon, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-				ids.ramon = ramon.getId();
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ramon = addNonHabitant("Ramon", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
+			ramon.setDebiteurInactif(true);
+			addForPrincipal(ramon, date(1980, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
+			addForSecondaire(ramon, date(1980, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			ids.ramon = ramon.getId();
 
-				final PersonnePhysique julien = addNonHabitant("Julien", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
-				addForPrincipal(julien, date(1980,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
-				addForSecondaire(julien, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
-				ids.julien = julien.getId();
-				return null;
-			}
+			final PersonnePhysique julien = addNonHabitant("Julien", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
+			addForPrincipal(julien, date(1980, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
+			addForSecondaire(julien, date(1980, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+			ids.julien = julien.getId();
+			return null;
 		});
 
 		globalTiersIndexer.sync();

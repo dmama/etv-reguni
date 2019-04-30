@@ -13,11 +13,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.XmlUtils;
@@ -144,12 +142,10 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final Quittance quittance = buildQuittance("Mon identifiant bien senti", ids.idContribuable, TypeDocumentEditique.LETTRE_BIENVENUE, "Une clé d'archivage");
 
 		try {
-			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					handler.onQuittance(quittance, Collections.emptyMap());
-					Assert.fail("Le quittancement aurait dû être refusé avec une exception...");
-				}
+			doInNewTransactionAndSession(status -> {
+				handler.onQuittance(quittance, Collections.emptyMap());
+				Assert.fail("Le quittancement aurait dû être refusé avec une exception...");
+				return null;
 			});
 		}
 		catch (EsbBusinessException e) {
@@ -216,11 +212,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération de la quittance
 		final Quittance quittance = buildQuittance("Mon identifiant bien senti", ids.idContribuable, TypeDocumentEditique.LETTRE_BIENVENUE, "Une clé d'archivage");
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.LETTRE_BIENVENUE_RC_VD, String.valueOf(ids.idDocument)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.LETTRE_BIENVENUE_RC_VD, String.valueOf(ids.idDocument)));
+			return null;
 		});
 
 		// vérification du résultat en base
@@ -286,11 +280,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération de la quittance
 		final Quittance quittance = buildQuittance("Mon identifiant bien senti qui fait mal", ids.idContribuable, TypeDocumentEditique.RAPPEL, "Une clé d'archivage");
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.RAPPEL_LETTRE_BIENVENUE, String.valueOf(ids.idDocument)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.RAPPEL_LETTRE_BIENVENUE, String.valueOf(ids.idDocument)));
+			return null;
 		});
 
 		// vérification du résultat en base
@@ -363,11 +355,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération de la quittance
 		final Quittance quittance = buildQuittance("IdentificationSommation", idContribuable, TypeDocumentEditique.SOMMATION_DI_PM, "Une clé d'archivage");
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.SOMMATION_DI_ENTREPRISE, String.valueOf(idEtatSomme)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.SOMMATION_DI_ENTREPRISE, String.valueOf(idEtatSomme)));
+			return null;
 		});
 
 		// vérification du résultat en base
@@ -437,11 +427,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération de la quittance
 		final Quittance quittance = buildQuittance("IdentificationDélai", idContribuable, TypeDocumentEditique.ACCORD_DELAI_PM, "Une clé d'archivage");
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.ACCORD_DELAI_PM, String.valueOf(idDelai)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.ACCORD_DELAI_PM, String.valueOf(idDelai)));
+			return null;
 		});
 
 		// vérification du résultat en base
@@ -512,11 +500,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération du Refus
 		final Quittance quittance = buildQuittance("IdentificationRefusDélai", idContribuable, TypeDocumentEditique.REFUS_DELAI_PM, "Une clé d'archivage");
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.REFUS_DELAI_PM, String.valueOf(idDelai)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.REFUS_DELAI_PM, String.valueOf(idDelai)));
+			return null;
 		});
 
 		// vérification du résultat en base
@@ -582,11 +568,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération du Refus
 		final Quittance quittance = buildQuittance("IdentificationRefusDélai", idContribuable, TypeDocumentEditique.REFUS_DELAI_PP, "Une clé d'archivage");
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.REFUS_DELAI, String.valueOf(idDelai)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.REFUS_DELAI, String.valueOf(idDelai)));
+			return null;
 		});
 
 		// vérification du résultat en base
@@ -626,11 +610,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 		// génération de la quittance
 		final Quittance quittance = buildQuittance("IdentificationDocEFact", idContribuable, TypeDocumentEditique.ACCORD_DELAI_PM, cleArchivage);
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.E_FACTURE_SIGNATURE, DocumentEFactureHelper.encodeIdentifiant(idContribuable, cleArchivage)));
-			}
+		doInNewTransactionAndSession(status -> {
+			handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.E_FACTURE_SIGNATURE, DocumentEFactureHelper.encodeIdentifiant(idContribuable, cleArchivage)));
+			return null;
 		});
 
 		// vérification du résultat en base

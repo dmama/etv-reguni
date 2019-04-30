@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -168,7 +167,6 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			catch (EvenementCivilException e) {
 				Assert.assertEquals("Le tiers existe déjà avec l'individu " + NOUVEAU_NE + " alors que c'est une naissance", e.getMessage());
 			}
-			;
 			return null;
 		});
 	}
@@ -200,18 +198,15 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		}
 
 		// On crée le père et la mère
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
-			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = addHabitant(indPere);
-				final PersonnePhysique mere = addHabitant(indMere);
-				final PersonnePhysique enfant = addHabitant(indEnfant);
-				final Ids ids = new Ids();
-				ids.pere = pere.getId();
-				ids.mere = mere.getId();
-				ids.enfant = enfant.getId();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pere = addHabitant(indPere);
+			final PersonnePhysique mere = addHabitant(indMere);
+			final PersonnePhysique enfant = addHabitant(indEnfant);
+			final Ids ids1 = new Ids();
+			ids1.pere = pere.getId();
+			ids1.mere = mere.getId();
+			ids1.enfant = enfant.getId();
+			return ids1;
 		});
 
 		final Individu bebe = serviceCivil.getIndividu(indEnfant, dateNaissanceEnfant);
@@ -292,69 +287,60 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		final Ids ids = new Ids();
 
 		// On crée le père et la mère
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = addHabitant(indPere);
-				ids.pere = pere.getId();
-				final PersonnePhysique mere = addHabitant(indMere);
-				ids.mere = mere.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pere = addHabitant(indPere);
+			ids.pere = pere.getId();
+			final PersonnePhysique mere = addHabitant(indMere);
+			ids.mere = mere.getId();
+			return null;
 		});
 
 		// On envoie l'événement de naissance
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
-				final Naissance naissance = createValidNaissance(fils, true);
+		doInNewTransactionAndSession(status -> {
+			final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
+			final Naissance naissance = createValidNaissance(fils, true);
 
-				final MessageCollector collector = buildMessageCollector();
-				naissance.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final MessageCollector collector = buildMessageCollector();
+			naissance.validate(collector, collector);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				final HandleStatus code = naissance.handle(collector);
-				assertEquals(HandleStatus.TRAITE, code);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
+			final HandleStatus code = naissance.handle(collector);
+			assertEquals(HandleStatus.TRAITE, code);
+			assertFalse(collector.hasErreurs());
+			assertFalse(collector.hasWarnings());
 
-				ids.fils = tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
-				return null;
-			}
+			ids.fils = tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
+			return null;
 		});
 
 
 		// On vérifie que il y a eu :
 		// - un événement de changement de situation de famille
 		// - un événement de naissane
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-				assertNotNull(events);
-				assertEquals(2, events.size());
+		doInNewTransactionAndSession(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertNotNull(events);
+			assertEquals(2, events.size());
 
-				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+			final List<EvenementFiscal> tries = new ArrayList<>(events);
+			Collections.sort(tries, new Comparator<EvenementFiscal>() {
+				@Override
+				public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+					return Long.compare(o1.getId(), o2.getId());
+				}
+			});
 
-				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
-				assertNotNull(event0);
+			final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
+			assertNotNull(event0);
 
-				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
-				assertNotNull(event1);
-				assertEquals(ids.mere, event1.getTiers().getNumero());
-				assertEquals(ids.fils, event1.getEnfant().getNumero());
-				assertEquals(date(2010, 2, 8), event1.getDateValeur());
-				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE, event1.getType());
-				return null;
-			}
+			final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
+			assertNotNull(event1);
+			assertEquals(ids.mere, event1.getTiers().getNumero());
+			assertEquals(ids.fils, event1.getEnfant().getNumero());
+			assertEquals(date(2010, 2, 8), event1.getDateValeur());
+			assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE, event1.getType());
+			return null;
 		});
 	}
 
@@ -414,37 +400,30 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			}
 
 			// On crée le père et la mère (sans synchro pour les parentés... c'est l'événement civil de naissance qui doit faire le boulot)
-			final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TxCallback<Ids>() {
-				@Override
-				public Ids execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique pere = addHabitant(indPere);
-					final PersonnePhysique mere = addHabitant(indMere);
-					final Ids ids = new Ids();
-					ids.pere = pere.getId();
-					ids.mere = mere.getId();
-					return ids;
-				}
+			final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, status -> {
+				final PersonnePhysique pere = addHabitant(indPere);
+				final PersonnePhysique mere = addHabitant(indMere);
+				final Ids ids1 = new Ids();
+				ids1.pere = pere.getId();
+				ids1.mere = mere.getId();
+				return ids1;
 			});
 
 			// On envoie l'événement de naissance
-			final Long idFils = doInNewTransactionAndSession(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
-					final Naissance naissance = createValidNaissance(fils, true);
+			final Long idFils = doInNewTransactionAndSession(status -> {
+				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
+				final Naissance naissance = createValidNaissance(fils, true);
 
-					final MessageCollector collector = buildMessageCollector();
-					naissance.validate(collector, collector);
-					assertFalse(collector.hasErreurs());
-					assertFalse(collector.hasWarnings());
+				final MessageCollector collector = buildMessageCollector();
+				naissance.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
 
-					final HandleStatus code = naissance.handle(collector);
-					assertEquals(HandleStatus.TRAITE, code);
-					assertFalse(collector.hasErreurs());
-					assertFalse(collector.hasWarnings());
-
-					return tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
-				}
+				final HandleStatus code = naissance.handle(collector);
+				assertEquals(HandleStatus.TRAITE, code);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+				return tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
 			});
 
 			// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant

@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -164,17 +163,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		                                          transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService,
 		                                          assujettissementService, ticketService, regimeFiscalService, demandeDelaisMandataireDAO, audit);
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				idCedi = cedi.getId();
-				CollectiviteAdministrative oidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				idOidLausanne = oidLausanne.getId();
-				CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
-				idAci = aci.getId();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			idCedi = cedi.getId();
+			CollectiviteAdministrative oidLausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			idOidLausanne = oidLausanne.getId();
+			CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+			idAci = aci.getId();
+			return null;
 		});
 	}
 
@@ -215,27 +211,23 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
+		doInNewTransaction(status -> {
+			ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
-				// Un contribuable quelconque
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			// Un contribuable quelconque
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				// Un autre contribuable quelconque
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-
-				return null;
-			}
+			// Un autre contribuable quelconque
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			return null;
 		});
 
 		{
@@ -309,12 +301,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDIsAEmettreHorsPeriode() throws Exception {
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				addPeriodeFiscale(2007);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			addPeriodeFiscale(2007);
+			return null;
 		});
 
 		try {
@@ -347,31 +336,26 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode = addPeriodeFiscale(2007);
+			ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
-				PeriodeFiscale periode = addPeriodeFiscale(2007);
-				ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
+			// Un contribuable habitant dans le canton
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				// Un contribuable habitant dans le canton
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-
-				// Un contribuable possédant un immeuble dans le canton
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Neuchatel);
-				addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-
-				return null;
-			}
+			// Un contribuable possédant un immeuble dans le canton
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Neuchatel);
+			addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			return null;
 		});
 
 		{
@@ -417,105 +401,88 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 		// Création d'un contribuable ordinaire et de sa DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
 
-				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
+			PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
-				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationVaudTax2006);
-
-				return null;
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationVaudTax2006);
+			return null;
 		});
 		// Retour de la declaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final RegDate dateEvenement = date(2007, 5, 12);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, dateEvenement, "TEST", false);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final RegDate dateEvenement = date(2007, 5, 12);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, dateEvenement, "TEST", false);
+			return null;
 		});
 
 		// Verification de la declaration retournee
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
 
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
 
-				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
-				assertEquals(date(2007, 5, 12), di.getDateRetour());
+			final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
+			assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
-				assertEquals(date(2007, 5, 12), etatRetourne.getDateObtention());
-				assertEquals("TEST", etatRetourne.getSource());
-				return null;
-			}
+			final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
+			assertEquals(date(2007, 5, 12), etatRetourne.getDateObtention());
+			assertEquals("TEST", etatRetourne.getSource());
+			return null;
 		});
 
 		// Modification de la date de retour de la declaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final RegDate dateEvenement = date(2007, 8, 8);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, dateEvenement, "TEST2", false);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final RegDate dateEvenement = date(2007, 8, 8);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, dateEvenement, "TEST2", false);
+			return null;
 		});
 
 		// On verifie que la date de retour a été modifiée
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
 
-				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
-				assertEquals(date(2007, 8, 8), di.getDateRetour());
+			final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
+			assertEquals(date(2007, 8, 8), di.getDateRetour());
 
-				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
-				assertEquals(date(2007, 8, 8), etatRetourne.getDateObtention());
-				assertEquals("TEST2", etatRetourne.getSource());
-				return null;
-			}
+			final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
+			assertEquals(date(2007, 8, 8), etatRetourne.getDateObtention());
+			assertEquals("TEST2", etatRetourne.getSource());
+			return null;
 		});
 
 	}
@@ -544,205 +511,191 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			final ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
+			final ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax2006);
+			final ModeleDocument declarationDep2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_270, declarationDep2006);
+			ModeleDocument declarationHC2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, declarationHC2006);
 
-				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				final ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
-				final ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax2006);
-				final ModeleDocument declarationDep2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_270, declarationDep2006);
-				ModeleDocument declarationHC2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, declarationHC2006);
+			final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			final ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
+			final ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax2007);
+			final ModeleDocument declarationDep2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_270, declarationDep2007);
+			final ModeleDocument declarationHC2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, declarationHC2007);
 
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				final ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
-				final ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax2007);
-				final ModeleDocument declarationDep2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_270, declarationDep2007);
-				final ModeleDocument declarationHC2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, declarationHC2007);
+			// Un tiers imposé à la dépense
+			PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.paulId = paul.getNumero();
+			addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.DEPENSE);
 
-				// Un tiers imposé à la dépense
-				PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.paulId = paul.getNumero();
-				addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.DEPENSE);
+			// Un tiers tout ce quil y a de plus ordinaire
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
 
-				// Un tiers tout ce quil y a de plus ordinaire
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
+			// Un tiers ordinaire, mais sans déclaration d'impôt précédente
+			PersonnePhysique olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.olrikId = olrik.getNumero();
+			addForPrincipal(olrik, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				// Un tiers ordinaire, mais sans déclaration d'impôt précédente
-				PersonnePhysique olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.olrikId = olrik.getNumero();
-				addForPrincipal(olrik, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			// Un tiers ordinaire mais avec VaudTax
+			PersonnePhysique guillaume = addNonHabitant("Guillaume", "Portes", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.guillaumeId = guillaume.getNumero();
+			addForPrincipal(guillaume, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(guillaume, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2006);
 
-				// Un tiers ordinaire mais avec VaudTax
-				PersonnePhysique guillaume = addNonHabitant("Guillaume", "Portes", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.guillaumeId = guillaume.getNumero();
-				addForPrincipal(guillaume, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(guillaume, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2006);
+			// contribuable hors canton ayant une activité indépendante dans le canton
+			PersonnePhysique jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.jeanId = jean.getNumero();
+			addForPrincipal(jean, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Neuchatel);
+			addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
+			addDeclarationImpot(jean, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
 
-				// contribuable hors canton ayant une activité indépendante dans le canton
-				PersonnePhysique jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.jeanId = jean.getNumero();
-				addForPrincipal(jean, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Neuchatel);
-				addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
-				addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-				addDeclarationImpot(jean, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
+			// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for et une déclaration VaudTax pour 2006
+			PersonnePhysique jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.jacquesId = jacques.getNumero();
+			addForPrincipal(jacques, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Neuchatel);
+			addForSecondaire(jacques, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForAutreImpot(jacques, date(1968, 11, 3), null, MockCommune.Lausanne, GenreImpot.DONATION);
+			addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
+			addDeclarationImpot(jacques, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.HORS_CANTON, declarationVaudTax2006);
 
-				// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for et une déclaration VaudTax pour 2006
-				PersonnePhysique jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.jacquesId = jacques.getNumero();
-				addForPrincipal(jacques, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Neuchatel);
-				addForSecondaire(jacques, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
-				addForAutreImpot(jacques, date(1968, 11, 3), null, MockCommune.Lausanne, GenreImpot.DONATION);
-				addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-				addDeclarationImpot(jacques, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.HORS_CANTON, declarationVaudTax2006);
+			// contribuable hors Suisse ayant une activité indépendante dans le canton
+			PersonnePhysique mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.mittId = mitt.getNumero();
+			addForPrincipal(mitt, date(1968, 11, 3), null, MockPays.France);
+			addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
 
-				// contribuable hors Suisse ayant une activité indépendante dans le canton
-				PersonnePhysique mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.mittId = mitt.getNumero();
-				addForPrincipal(mitt, date(1968, 11, 3), null, MockPays.France);
-				addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
-				addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
+			// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
+			PersonnePhysique georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.georgesId = georges.getNumero();
+			addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Zurich);
+			addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			addAdresseSuisse(georges, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
 
-				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
-				PersonnePhysique georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.georgesId = georges.getNumero();
-				addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Zurich);
-				addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseSuisse(georges, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
+			// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis toujours
+			PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.jackyId = jacky.getNumero();
+			addForPrincipal(jacky, date(1968, 11, 3), null, MockPays.France);
+			addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
 
-				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis toujours
-				PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.jackyId = jacky.getNumero();
-				addForPrincipal(jacky, date(1968, 11, 3), null, MockPays.France);
-				addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
+			// [UNIREG-1349] contribuable propriétaire d'un immeubles depuis 2007 et domiciliée hors Suisse depuis toujours
+			PersonnePhysique lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.lionelId = lionel.getNumero();
+			addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.France);
+			addForSecondaire(lionel, date(2007, 4, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			addAdresseEtrangere(lionel, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
 
-				// [UNIREG-1349] contribuable propriétaire d'un immeubles depuis 2007 et domiciliée hors Suisse depuis toujours
-				PersonnePhysique lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.lionelId = lionel.getNumero();
-				addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.France);
-				addForSecondaire(lionel, date(2007, 4, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseEtrangere(lionel, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
+			// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis mi-2007
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Plisenski", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.brunoId = bruno.getNumero();
+			addForPrincipal(bruno, date(1968, 11, 3), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Fraction.LeBrassus);
+			addForPrincipal(bruno, date(2007, 7, 1), null, MockPays.France);
+			addForSecondaire(bruno, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			addAdresseEtrangere(bruno, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
+			addDeclarationImpot(bruno, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
 
-				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis mi-2007
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Plisenski", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.brunoId = bruno.getNumero();
-				addForPrincipal(bruno, date(1968, 11, 3), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Fraction.LeBrassus);
-				addForPrincipal(bruno, date(2007, 7, 1), null, MockPays.France);
-				addForSecondaire(bruno, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseEtrangere(bruno, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
-				addDeclarationImpot(bruno, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
+			// Un diplomate suisse en mission hors suisse
+			PersonnePhysique marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.marcId = marc.getNumero();
+			addForPrincipal(marc, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
 
-				// Un diplomate suisse en mission hors suisse
-				PersonnePhysique marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.marcId = marc.getNumero();
-				addForPrincipal(marc, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
-
-				// Un diplomate étranger en mission en Suisse et possédant un immeuble dans le Canton
-				PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.ramonId = ramon.getNumero();
-				addForPrincipal(ramon, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
-				return null;
-			}
+			// Un diplomate étranger en mission en Suisse et possédant un immeuble dans le Canton
+			PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.ramonId = ramon.getNumero();
+			addForPrincipal(ramon, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
+			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+			return null;
 		});
 
 		/*
 		 * Determination des DIs et création des tâches
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(10, service.determineDIsPPAEmettre(2007, date(2008, 1, 15), 1, null)); // toutes sauf marc, jacky et lionel
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(10, service.determineDIsPPAEmettre(2007, date(2008, 1, 15), 1, null)); // toutes sauf marc, jacky et lionel;
+			return null;
 		});
 
 		// Etat avant envoi
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paulId); // depense
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId); // ordinaire
-				final PersonnePhysique olrik = hibernateTemplate.get(PersonnePhysique.class, ids.olrikId); // ordinaire
-				final PersonnePhysique guillaume = hibernateTemplate.get(PersonnePhysique.class, ids.guillaumeId); // vaudtax
-				final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, ids.jeanId); // hors-canton complète
-				final PersonnePhysique jacques = hibernateTemplate.get(PersonnePhysique.class, ids.jacquesId); // hors-canton vaudtax
-				final PersonnePhysique mitt = hibernateTemplate.get(PersonnePhysique.class, ids.mittId); // ordinaire
-				final PersonnePhysique georges = hibernateTemplate.get(PersonnePhysique.class, ids.georgesId); // hors canton
-				final PersonnePhysique jacky = hibernateTemplate.get(PersonnePhysique.class, ids.jackyId); // hors suisse
-				final PersonnePhysique lionel = hibernateTemplate.get(PersonnePhysique.class, ids.lionelId); // hors suisse
-				final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, ids.brunoId); // hors suisse
-				final PersonnePhysique marc = hibernateTemplate.get(PersonnePhysique.class, ids.marcId); // diplomate suisse
-				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId); // diplomate étranger
+		doInNewTransaction(status -> {
+			final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paulId); // depense
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId); // ordinaire
+			final PersonnePhysique olrik = hibernateTemplate.get(PersonnePhysique.class, ids.olrikId); // ordinaire
+			final PersonnePhysique guillaume = hibernateTemplate.get(PersonnePhysique.class, ids.guillaumeId); // vaudtax
+			final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, ids.jeanId); // hors-canton complète
+			final PersonnePhysique jacques = hibernateTemplate.get(PersonnePhysique.class, ids.jacquesId); // hors-canton vaudtax
+			final PersonnePhysique mitt = hibernateTemplate.get(PersonnePhysique.class, ids.mittId); // ordinaire
+			final PersonnePhysique georges = hibernateTemplate.get(PersonnePhysique.class, ids.georgesId); // hors canton
+			final PersonnePhysique jacky = hibernateTemplate.get(PersonnePhysique.class, ids.jackyId); // hors suisse
+			final PersonnePhysique lionel = hibernateTemplate.get(PersonnePhysique.class, ids.lionelId); // hors suisse
+			final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, ids.brunoId); // hors suisse
+			final PersonnePhysique marc = hibernateTemplate.get(PersonnePhysique.class, ids.marcId); // diplomate suisse
+			final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId); // diplomate étranger
 
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE,
-				               TypeAdresseRetour.OID, getTachesEnvoiDeclarationImpot(paul, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(olrik, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(guillaume, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(jean, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(jacques, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(mitt, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
-				               TypeAdresseRetour.OID, getTachesEnvoiDeclarationImpot(georges, 2007));
-				assertEmpty(getTachesEnvoiDeclarationImpot(jacky, 2007));
-				assertEmpty(getTachesEnvoiDeclarationImpot(lionel, 2007)); // [UNIREG-1742] ctb HS avec immeuble => DI optionnelle
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(bruno, 2007)); // [UNIREG-1742] rattrapage de la DI normalement envoyée au moment du départ HS
-				assertEmpty(getTachesEnvoiDeclarationImpot(marc, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-				               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE,
+			               TypeAdresseRetour.OID, getTachesEnvoiDeclarationImpot(paul, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(olrik, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(guillaume, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(jean, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(jacques, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(mitt, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
+			               TypeAdresseRetour.OID, getTachesEnvoiDeclarationImpot(georges, 2007));
+			assertEmpty(getTachesEnvoiDeclarationImpot(jacky, 2007));
+			assertEmpty(getTachesEnvoiDeclarationImpot(lionel, 2007)); // [UNIREG-1742] ctb HS avec immeuble => DI optionnelle
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(bruno, 2007)); // [UNIREG-1742] rattrapage de la DI normalement envoyée au moment du départ HS
+			assertEmpty(getTachesEnvoiDeclarationImpot(marc, 2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			               TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon, 2007));
 
-				assertEmpty(paul.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(olrik.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(guillaume.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(jean.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(jacques.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(mitt.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(georges.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(jacky.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(bruno.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(marc.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-
-				return null;
-			}
+			assertEmpty(paul.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(olrik.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(guillaume.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(jean.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(jacques.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(mitt.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(georges.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(jacky.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(bruno.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(marc.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 
 		/*
 		 * Envoi des DIs : vaudois ordinaires DIs complètes
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // erik
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // erik;
+			return null;
 		});
 		{
 			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire complète
@@ -753,12 +706,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : vaudois ordinaire DIs VaudTax
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(2, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // guillaume, olrik + ramon
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(2, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // guillaume, olrik + ramon;
+			return null;
 		});
 		{
 			final Contribuable guillaume = hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
@@ -776,12 +726,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : vaudois à la dépense
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), false, 1, null)); // paul
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), false, 1, null)); // paul;
+			return null;
 		});
 		{
 			final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
@@ -792,12 +739,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors canton immeuble
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, 1, null));   // george
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, 1, null));   // george;
+			return null;
 		});
 		{
 			final Contribuable georges = hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
@@ -808,12 +752,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors canton activité indépendante DIs complètes
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // jean
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // jean;
+			return null;
 		});
 		{
 			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId); // ordinaire
@@ -824,12 +765,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors canton activité indépendante DIs VaudTax
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_ACTIND_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // jacques
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_ACTIND_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // jacques;
+			return null;
 		});
 		{
 			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId); // ordinaire
@@ -840,12 +778,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors Suisse DIs complètes
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // bruno
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // bruno;
+			return null;
 		});
 		{
 			final Contribuable jacky = hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse
@@ -862,12 +797,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : hors Suisse DIs vaudtax
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(2, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // mitt + ramon
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(2, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // mitt + ramon;
+			return null;
 		});
 		{
 			final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
@@ -883,12 +815,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		/*
 		 * Envoi des DIs : diplomates suisses
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(0, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.DIPLOMATE_SUISSE, null, null, 100, date(2008, 1, 20), false, 1, null)); // marc
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(0, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.DIPLOMATE_SUISSE, null, null, 100, date(2008, 1, 20), false, 1, null)); // marc;
+			return null;
 		});
 		{
 			final Contribuable marc = hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
@@ -953,55 +882,45 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
+			// Un contribuable quelconque
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
 
-				// Un contribuable quelconque
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
-
-				// Un autre contribuable quelconque
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
-				return null;
-			}
+			// Un autre contribuable quelconque
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				// limite à 1 le nombre de DI envoyée
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 1, date(2008, 1, 20), false, 1, null));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// limite à 1 le nombre de DI envoyée
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 1, date(2008, 1, 20), false, 1, null));
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				return null;
-			}
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 	}
 
@@ -1015,54 +934,44 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
+			// Un contribuable quelconque
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
 
-				// Un contribuable quelconque
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
-
-				// Un autre contribuable quelconque
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
-				return null;
-			}
+			// Un autre contribuable quelconque
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
+			return null;
 		});
 
 		// envoi des di en masse en ciblant sur un numéro seulement
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, ids.ericId, ids.ericId, 100, date(2008, 1, 20), false, 1, null));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, ids.ericId, ids.ericId, 100, date(2008, 1, 20), false, 1, null));
+			return null;
 		});
 
 		// vérification que seul eric a une DI 2007, pas john
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertFalse(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			assertFalse(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 	}
 
@@ -1078,66 +987,53 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
+			// Un contribuable quelconque
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
 
-				// Un contribuable quelconque
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
-
-				// Un autre contribuable quelconque
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
-				return null;
-			}
+			// Un autre contribuable quelconque
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 
 		// Lance et interrompt l'envoi en masse après 2 (message de démarrage + message d'envoi du premier lot = de la DI d'eric)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				InterruptingStatusManager s = new InterruptingStatusManager(2);
-				service.setTailleLot(1);
-				assertResults(taille, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, s));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			InterruptingStatusManager s = new InterruptingStatusManager(2);
+			service.setTailleLot(1);
+			assertResults(taille, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, s));
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertFalse(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			assertFalse(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 	}
 
@@ -1154,69 +1050,55 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, addPeriodeFiscale(2007)));
 
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, addPeriodeFiscale(2007)));
+			// Un contribuable hors-canton possédant deux immeubles dans le canton
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), null, MockCommune.Neuchatel);
+			addForSecondaire(eric, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(eric, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON,
+			                  TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, eric, null, null, colAdm);
 
-				// Un contribuable hors-canton possédant deux immeubles dans le canton
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), null, MockCommune.Neuchatel);
-				addForSecondaire(eric, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(eric, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON,
-				                  TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, eric, null, null, colAdm);
-
-				// Un autre contribuable hors-canton possédant deux immeubles dans le canton
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), null, MockCommune.Neuchatel);
-				// addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				// TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
-				// addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens,
-				// TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON,
-				                  TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, john, null, null, colAdm);
-				return null;
-			}
+			// Un autre contribuable hors-canton possédant deux immeubles dans le canton
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), null, MockCommune.Neuchatel);
+			// addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			// TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
+			// addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens,
+			// TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_CANTON,
+			                  TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, john, null, null, colAdm);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				// Lance et provoque le crash de l'envoi en masse sur la DI de john
-				assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, 1, null));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Lance et provoque le crash de l'envoi en masse sur la DI de john
+			assertResults(1, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, 1, null));
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				assertFalse(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			assertFalse(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			return null;
 		});
 	}
 
@@ -1233,39 +1115,34 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
-				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
+			PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.jeanId = jean.getNumero();
+			addForPrincipal(jean, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, jean, null, null, colAdm);
 
-				PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.jeanId = jean.getNumero();
-				addForPrincipal(jean, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, jean, null, null, colAdm);
+			PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.jacquesId = jacques.getNumero();
+			addForPrincipal(jacques, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, jacques, null, null, colAdm);
 
-				PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.jacquesId = jacques.getNumero();
-				addForPrincipal(jacques, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, jacques, null, null, colAdm);
-
-				PersonnePhysique pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
-				ids.pierreId = pierre.getNumero();
-				addForPrincipal(pierre, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pierre, null, null, colAdm);
-
-				return null;
-			}
+			PersonnePhysique pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+			ids.pierreId = pierre.getNumero();
+			addForPrincipal(pierre, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pierre, null, null, colAdm);
+			return null;
 		});
 
 		final StatusManager status = new StatusManager() {
@@ -1291,36 +1168,33 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, RegDate.get(), false, 1, status);
 		service.setTailleLot(100);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId);
-				final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId);
-				final Contribuable pierre = hibernateTemplate.get(Contribuable.class, ids.pierreId);
-				assertFalse(jean.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
-				assertEmpty(jacques.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertFalse(pierre.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
+		doInNewTransaction(s -> {
+			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId);
+			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId);
+			final Contribuable pierre = hibernateTemplate.get(Contribuable.class, ids.pierreId);
+			assertFalse(jean.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
+			assertEmpty(jacques.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertFalse(pierre.getDeclarationsDansPeriode(Declaration.class, 2007, false).isEmpty());
 
-				// test les tâches
-				assertEquals(1, tacheDAO.find(ids.jeanId).size());
-				assertEquals(TypeEtatTache.TRAITE, tacheDAO.find(ids.jeanId).get(0).getEtat());
-				assertEquals(1, tacheDAO.find(ids.jacquesId).size());
-				assertEquals(TypeEtatTache.EN_INSTANCE, tacheDAO.find(ids.jacquesId).get(0).getEtat());
-				assertEquals(1, tacheDAO.find(ids.pierreId).size());
-				assertEquals(TypeEtatTache.TRAITE, tacheDAO.find(ids.pierreId).get(0).getEtat());
+			// test les tâches
+			assertEquals(1, tacheDAO.find(ids.jeanId).size());
+			assertEquals(TypeEtatTache.TRAITE, tacheDAO.find(ids.jeanId).get(0).getEtat());
+			assertEquals(1, tacheDAO.find(ids.jacquesId).size());
+			assertEquals(TypeEtatTache.EN_INSTANCE, tacheDAO.find(ids.jacquesId).get(0).getEtat());
+			assertEquals(1, tacheDAO.find(ids.pierreId).size());
+			assertEquals(TypeEtatTache.TRAITE, tacheDAO.find(ids.pierreId).get(0).getEtat());
 
-				// test les evt fiscaux
-				TiersService tiersService = getBean(TiersService.class, "tiersService");
-				EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+			// test les evt fiscaux
+			TiersService tiersService = getBean(TiersService.class, "tiersService");
+			EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
-				Collection<EvenementFiscal> lesEvenementsdeJean = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.jeanId));
-				assertFalse(lesEvenementsdeJean.isEmpty());
-				Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.jacquesId));
-				assertEmpty("Evénements fiscaux engendrés", lesEvenementsdeJacques);
-				Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.pierreId));
-				assertFalse(lesEvenementsdePierre.isEmpty());
-				return null;
-			}
+			Collection<EvenementFiscal> lesEvenementsdeJean = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.jeanId));
+			assertFalse(lesEvenementsdeJean.isEmpty());
+			Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.jacquesId));
+			assertEmpty("Evénements fiscaux engendrés", lesEvenementsdeJacques);
+			Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.pierreId));
+			assertFalse(lesEvenementsdePierre.isEmpty());
+			return null;
 		});
 	}
 
@@ -1337,135 +1211,122 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			PeriodeFiscale periode = addPeriodeFiscale(2007);
+			ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
-				PeriodeFiscale periode = addPeriodeFiscale(2007);
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
+			// Un contribuable normal
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
 
-				// Un contribuable normal
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, eric, null, null, colAdm);
+			// Un contribuable indigent
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
 
-				// Un contribuable indigent
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, john, null, null, colAdm);
+			// [UNIREG-1852] Un contribuable indigent décédé dans l'année
+			PersonnePhysique ours = addNonHabitant("Ours", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.oursId = ours.getNumero();
+			addForPrincipal(ours, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 5, 23),
+			                                                   TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, ours, null, null, colAdm);
+			t.setAdresseRetour(TypeAdresseRetour.ACI);
 
-				// [UNIREG-1852] Un contribuable indigent décédé dans l'année
-				PersonnePhysique ours = addNonHabitant("Ours", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.oursId = ours.getNumero();
-				addForPrincipal(ours, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
-				TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 5, 23),
-				                                                   TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, ours, null, null, colAdm);
-				t.setAdresseRetour(TypeAdresseRetour.ACI);
+			// Un contribuable normal avec une DI pré-existente sur toute l'année
+			PersonnePhysique ramon = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ramonId = ramon.getNumero();
+			addForPrincipal(ramon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, ramon, null, null, colAdm);
+			addDeclarationImpot(ramon, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
-				// Un contribuable normal avec une DI pré-existente sur toute l'année
-				PersonnePhysique ramon = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ramonId = ramon.getNumero();
-				addForPrincipal(ramon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, ramon, null, null, colAdm);
-				addDeclarationImpot(ramon, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-
-				// Un contribuable normal avec une DI pré-existente sur une portion de l'année (= cas erroné)
-				PersonnePhysique totor = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.totorId = totor.getNumero();
-				addForPrincipal(totor, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, totor, null, null, colAdm);
-				addDeclarationImpot(totor, periode, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				return null;
-			}
+			// Un contribuable normal avec une DI pré-existente sur une portion de l'année (= cas erroné)
+			PersonnePhysique totor = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.totorId = totor.getNumero();
+			addForPrincipal(totor, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, totor, null, null, colAdm);
+			addDeclarationImpot(totor, periode, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
-				final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
-				final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
-				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
-				final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
-				assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertEmpty(ours.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, totor.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
-				                                                                                                                                                  2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(john,
-				                                                                                                                                                  2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon,
-				                                                                                                                                                  2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(totor,
-				                                                                                                                                                  2007));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
+			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
+			final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
+			final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
+			final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
+			assertEmpty(eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(ours.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, totor.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
+			                                                                                                                                                  2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(john,
+			                                                                                                                                                  2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon,
+			                                                                                                                                                  2007));
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(totor,
+			                                                                                                                                                  2007));
+			return null;
 		});
 
 		// Lance l'envoi en masse : eric (traité) +ours (indigent décédé donc quand même traité) + john (indigent) + ramon (ignoré), totor (en erreur)
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				EnvoiDIsPPResults r = service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null);
-				assertResults(2, 1, 1, 1, r);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			EnvoiDIsPPResults r = service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null);
+			assertResults(2, 1, 1, 1, r);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
-				final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
-				final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
-				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
-				final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idAci, date(2008, 3, 25), ours.getDeclarationsDansPeriode(Declaration.class, 2007, false)); // [UNIREG-1852], [UNIREG-1861]
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-				           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, totor.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
-				                                                                                                                                                  2007));
-				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(john,
-				                                                                                                                                                  2007));
-				// ramon: la DI pré-existante corresponds parfaitement avec la tâche
-				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon,
-				                                                                                                                                                  2007));
-				// totor: la DI pré-existante est en conflit avec la tâche => erreur
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
-				               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(totor,
-				                                                                                                                                                  2007));
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
+			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
+			final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
+			final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
+			final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertDIPP(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idAci, date(2008, 3, 25), ours.getDeclarationsDansPeriode(Declaration.class, 2007, false)); // [UNIREG-1852], [UNIREG-1861]
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, null, totor.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
+			                                                                                                                                                  2007));
+			assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(john,
+			                                                                                                                                                  2007));
+			// ramon: la DI pré-existante corresponds parfaitement avec la tâche
+			assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon,
+			                                                                                                                                                  2007));
+			// totor: la DI pré-existante est en conflit avec la tâche => erreur
+			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(totor,
+			                                                                                                                                                  2007));
+			return null;
 		});
 	}
 
@@ -1483,61 +1344,57 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
-				ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
-				ModeleDocument declarationVaudTax2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2008));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2008);
-				ModeleDocument declarationVaudTax2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2009));
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_310, declarationVaudTax2009);
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
+			ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2007));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
+			ModeleDocument declarationVaudTax2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2008));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2008);
+			ModeleDocument declarationVaudTax2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, addPeriodeFiscale(2009));
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_310, declarationVaudTax2009);
 
-				// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé fin 2006 au Danemark.
-				PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.jackyId = jacky.getNumero();
-				addForPrincipal(jacky, date(1968, 11, 3), MotifFor.MAJORITE, date(2006, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(jacky, date(2007, 1, 1), null, MockPays.Danemark);
-				addForSecondaire(jacky, date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-				addDeclarationImpot(jacky, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationVaudTax2006);
+			// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé fin 2006 au Danemark.
+			PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.jackyId = jacky.getNumero();
+			addForPrincipal(jacky, date(1968, 11, 3), MotifFor.MAJORITE, date(2006, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(jacky, date(2007, 1, 1), null, MockPays.Danemark);
+			addForSecondaire(jacky, date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			addDeclarationImpot(jacky, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationVaudTax2006);
 
-				// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé mi 2007 au Danemark.
-				PersonnePhysique thierry = addNonHabitant("Thierry", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.thierryId = thierry.getNumero();
-				addForPrincipal(thierry, date(1968, 11, 3), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(thierry, date(2007, 7, 1), null, MockPays.Danemark);
-				addForSecondaire(thierry, date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-				addDeclarationImpot(thierry, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.HORS_SUISSE,
-				                    declarationVaudTax2006);
+			// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé mi 2007 au Danemark.
+			PersonnePhysique thierry = addNonHabitant("Thierry", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.thierryId = thierry.getNumero();
+			addForPrincipal(thierry, date(1968, 11, 3), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+			addForPrincipal(thierry, date(2007, 7, 1), null, MockPays.Danemark);
+			addForSecondaire(thierry, date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			addDeclarationImpot(thierry, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.HORS_SUISSE,
+			                    declarationVaudTax2006);
 
-				// Contribuable propriétaire d'un immeuble depuis mi-2007 à Lausanne et hors-Suisse depuis toujours
-				PersonnePhysique lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
-				ids.lionelId = lionel.getNumero();
-				addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.Danemark);
-				addForSecondaire(lionel, date(2007, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-
-				return null;
-			}
+			// Contribuable propriétaire d'un immeuble depuis mi-2007 à Lausanne et hors-Suisse depuis toujours
+			PersonnePhysique lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
+			ids.lionelId = lionel.getNumero();
+			addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.Danemark);
+			addForSecondaire(lionel, date(2007, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			return null;
 		});
 
 		{
@@ -1572,38 +1429,34 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		final Ids ids = new Ids();
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				addPeriodeFiscale(2007);
-				ModeleDocument declarationVaudTax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax);
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			addPeriodeFiscale(2007);
+			ModeleDocument declarationVaudTax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax);
 
-				// Un tiers indigent depuis toujours
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			// Un tiers indigent depuis toujours
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
 
-				// Un tiers indigent depuis 2007
-				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.johnId = john.getNumero();
-				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
-				                MockCommune.Lausanne);
-				addForPrincipal(john, date(2007, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.INDIGENT);
-				addDeclarationImpot(john, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationVaudTax);
+			// Un tiers indigent depuis 2007
+			PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.johnId = john.getNumero();
+			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
+			                MockCommune.Lausanne);
+			addForPrincipal(john, date(2007, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			addDeclarationImpot(john, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationVaudTax);
 
-				// Un tiers indigent décédé en 2007
-				PersonnePhysique paul = addNonHabitant("Paul", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.paulId = paul.getNumero();
-				addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
-
-				return null;
-			}
+			// Un tiers indigent décédé en 2007
+			PersonnePhysique paul = addNonHabitant("Paul", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.paulId = paul.getNumero();
+			addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
+			return null;
 		});
 
 		{
@@ -1671,19 +1524,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// on créée un contribuable assujetti durant l'année 2012 avec une déclaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
-				ids.pp = pp.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
+			ids.pp = pp.getId();
 
-				final PeriodeFiscale p2012 = addPeriodeFiscale(annee);
-				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2012);
-				final DeclarationImpotOrdinaire di2012 = addDeclarationImpot(pp, p2012, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-				ids.di = di2012.getId();
-				return null;
-			}
+			final PeriodeFiscale p2012 = addPeriodeFiscale(annee);
+			final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2012);
+			final DeclarationImpotOrdinaire di2012 = addDeclarationImpot(pp, p2012, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+			ids.di = di2012.getId();
+			return null;
 		});
 
 		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
@@ -1715,34 +1565,28 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// on annule la déclaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
 
-				service.annulationDI(pp, di, null, RegDate.get());
-				return null;
-			}
+			service.annulationDI(pp, di, null, RegDate.get());
+			return null;
 		});
 
 		// on vérifie que la déclaration est bien annulée et que les événements fiscaux ont bien été envoyés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
-				assertTrue(di.isAnnule());
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+			assertTrue(di.isAnnule());
 
-				assertEmpty(fiscEventEnvoiDI);
-				assertEquals(1, fiscEventAnnulationDI.size());
-				assertEquals(ids.di, fiscEventAnnulationDI.iterator().next());
+			assertEmpty(fiscEventEnvoiDI);
+			assertEquals(1, fiscEventAnnulationDI.size());
+			assertEquals(ids.di, fiscEventAnnulationDI.iterator().next());
 
-				assertEmpty(diEventEmission);
-				assertEquals(1, diEventAnnulation.size());
-				assertEquals(Integer.valueOf(annee), diEventAnnulation.iterator().next());
-				return null;
-			}
+			assertEmpty(diEventEmission);
+			assertEquals(1, diEventAnnulation.size());
+			assertEquals(Integer.valueOf(annee), diEventAnnulation.iterator().next());
+			return null;
 		});
 	}
 
@@ -1757,44 +1601,38 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		// on créée un contribuable non-assujetti avec une déclaration
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
-			@Override
-			public Ids execute(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 12), MotifFor.DEPART_HC, MockCommune.Aubonne);      // il n'est pas assujetti !!!
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 12), MotifFor.DEPART_HC, MockCommune.Aubonne);      // il n'est pas assujetti !!!
 
-				final PeriodeFiscale p2010 = addPeriodeFiscale(annee);
-				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2010);
-				final DeclarationImpotOrdinaire di2010 = addDeclarationImpot(pp, p2010, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
-				di2010.addEtat(new EtatDeclarationRetournee(date(annee + 1, 1, 4), null));      // état retourné ajouté pour être certain que la tâche d'annulation ne va pas être traitée automatiquement
+			final PeriodeFiscale p2010 = addPeriodeFiscale(annee);
+			final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2010);
+			final DeclarationImpotOrdinaire di2010 = addDeclarationImpot(pp, p2010, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			di2010.addEtat(new EtatDeclarationRetournee(date(annee + 1, 1, 4), null));      // état retourné ajouté pour être certain que la tâche d'annulation ne va pas être traitée automatiquement
 
-				final CollectiviteAdministrative ca = (CollectiviteAdministrative) tiersDAO.get(di2010.getRetourCollectiviteAdministrativeId());
-				final Tache tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di2010, pp, ca);
+			final CollectiviteAdministrative ca = (CollectiviteAdministrative) tiersDAO.get(di2010.getRetourCollectiviteAdministrativeId());
+			final Tache tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di2010, pp, ca);
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getId();
-				ids.di = di2010.getId();
-				ids.tache = tache.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getId();
+			ids1.di = di2010.getId();
+			ids1.tache = tache.getId();
+			return ids1;
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-				criterion.setContribuable((Contribuable) tiersDAO.get(ids.pp));
-				final List<Tache> taches = tacheDAO.find(criterion);
-				assertNotNull(taches);
-				assertEquals(1, taches.size());
+		doInNewTransactionAndSession(status -> {
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+			criterion.setContribuable((Contribuable) tiersDAO.get(ids.pp));
+			final List<Tache> taches = tacheDAO.find(criterion);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
 
-				final Tache tache = taches.get(0);
-				assertNotNull(tache);
-				assertEquals(ids.tache, tache.getId());
-				assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-				return null;
-			}
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(ids.tache, tache.getId());
+			assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+			return null;
 		});
 
 		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
@@ -1826,39 +1664,33 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// on annule la déclaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
 
-				service.annulationDI(pp, di, ids.tache, RegDate.get());
-				return null;
-			}
+			service.annulationDI(pp, di, ids.tache, RegDate.get());
+			return null;
 		});
 
 		// on vérifie que la déclaration est bien annulée et que la tâche est bien traitée
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
-				assertTrue(di.isAnnule());
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+			assertTrue(di.isAnnule());
 
-				final Tache tache = hibernateTemplate.get(TacheAnnulationDeclarationImpot.class, ids.tache);
-				assertNotNull(tache);
-				assertFalse(tache.isAnnule());
-				assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
+			final Tache tache = hibernateTemplate.get(TacheAnnulationDeclarationImpot.class, ids.tache);
+			assertNotNull(tache);
+			assertFalse(tache.isAnnule());
+			assertEquals(TypeEtatTache.TRAITE, tache.getEtat());
 
-				assertEmpty(fiscEventEnvoiDI);
-				assertEquals(1, fiscEventAnnulationDI.size());
-				assertEquals(ids.di, fiscEventAnnulationDI.iterator().next());
+			assertEmpty(fiscEventEnvoiDI);
+			assertEquals(1, fiscEventAnnulationDI.size());
+			assertEquals(ids.di, fiscEventAnnulationDI.iterator().next());
 
-				assertEmpty(diEventEmission);
-				assertEquals(1, diEventAnnulation.size());
-				assertEquals(Integer.valueOf(annee), diEventAnnulation.iterator().next());
-				return null;
-			}
+			assertEmpty(diEventEmission);
+			assertEquals(1, diEventAnnulation.size());
+			assertEquals(Integer.valueOf(annee), diEventAnnulation.iterator().next());
+			return null;
 		});
 	}
 
@@ -1877,20 +1709,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// on créée un contribuable assujetti durant l'année 2012 avec une déclaration annulée
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
-				ids.pp = pp.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
+			ids.pp = pp.getId();
 
-				final PeriodeFiscale p2012 = addPeriodeFiscale(annee);
-				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2012);
-				final DeclarationImpotOrdinaire di2012 = addDeclarationImpot(pp, p2012, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
-				di2012.setAnnule(true);
-				ids.di = di2012.getId();
-				return null;
-			}
+			final PeriodeFiscale p2012 = addPeriodeFiscale(annee);
+			final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2012);
+			final DeclarationImpotOrdinaire di2012 = addDeclarationImpot(pp, p2012, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+			di2012.setAnnule(true);
+			ids.di = di2012.getId();
+			return null;
 		});
 
 		final Set<Long> fiscEventEmissionDI = new HashSet<>();
@@ -1922,34 +1751,28 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// on désannule la déclaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
 
-				service.desannulationDI(pp, di, RegDate.get());
-				return null;
-			}
+			service.desannulationDI(pp, di, RegDate.get());
+			return null;
 		});
 
 		// on vérifie que la déclaration est bien désannulée et que les événements fiscaux ont bien été envoyés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
-				assertFalse(di.isAnnule());
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+			assertFalse(di.isAnnule());
 
-				assertEquals(1, fiscEventEmissionDI.size());
-				assertEquals(ids.di, fiscEventEmissionDI.iterator().next());
-				assertEmpty(fiscEventAnnulationDI);
+			assertEquals(1, fiscEventEmissionDI.size());
+			assertEquals(ids.di, fiscEventEmissionDI.iterator().next());
+			assertEmpty(fiscEventAnnulationDI);
 
-				assertEquals(1, diEventEmission.size());
-				assertEquals(Integer.valueOf(annee), diEventEmission.iterator().next());
-				assertEmpty(diEventAnnulation);
-				return null;
-			}
+			assertEquals(1, diEventEmission.size());
+			assertEquals(Integer.valueOf(annee), diEventEmission.iterator().next());
+			assertEmpty(diEventAnnulation);
+			return null;
 		});
 	}
 
@@ -1968,21 +1791,18 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// on créée un contribuable assujetti durant l'année 2012 avec une déclaration annulée
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
-				ids.pp = pp.getId();
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
+			ids.pp = pp.getId();
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				di.setAnnule(true);
-				di.setCodeControle(null);
-				ids.di = di.getId();
-				return null;
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			di.setAnnule(true);
+			di.setCodeControle(null);
+			ids.di = di.getId();
+			return null;
 		});
 
 		final Set<Long> fiscEventEmissionDI = new HashSet<>();
@@ -2014,33 +1834,27 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		// on désannule la déclaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.di);
 
-				service.desannulationDI(pp, di, RegDate.get());
-				return null;
-			}
+			service.desannulationDI(pp, di, RegDate.get());
+			return null;
 		});
 
 		// on vérifie que la déclaration est bien désannulée et que les événements fiscaux ont bien été envoyés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
-				assertFalse(di.isAnnule());
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+			assertFalse(di.isAnnule());
 
-				assertEquals(1, fiscEventEmissionDI.size());
-				assertEquals(ids.di, fiscEventEmissionDI.iterator().next());
-				assertEmpty(fiscEventAnnulationDI);
+			assertEquals(1, fiscEventEmissionDI.size());
+			assertEquals(ids.di, fiscEventEmissionDI.iterator().next());
+			assertEmpty(fiscEventAnnulationDI);
 
-				assertEmpty(diEventEmission);
-				assertEmpty(diEventAnnulation);
-				return null;
-			}
+			assertEmpty(diEventEmission);
+			assertEmpty(diEventAnnulation);
+			return null;
 		});
 	}
 
@@ -2057,127 +1871,110 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Création d'un contribuable ordinaire et de sa DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
 
-				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2006);
+			PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+			ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
 
-				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationVaudTax2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationVaudTax2007);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationVaudTax2006);
-
-				return null;
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationVaudTax2006);
+			return null;
 		});
 
 		// 1er quittance de la declaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0", true);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0", true);
+			return null;
 		});
 
 		// On s'assure que l'état retourné est bien enregistré
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
+		doInNewTransaction(status -> {
+			Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
 
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				assertEquals(date(2007, 5, 12), di.getDateRetour());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
-				assertNotNull(etats);
-				assertEquals(1, etats.size());
+			final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
 
-				final Iterator<EtatDeclaration> iterator = etats.iterator();
+			final Iterator<EtatDeclaration> iterator = etats.iterator();
 
-				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
-				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
-				assertEquals("TEST0", etat0.getSource());
-				assertFalse(etat0.isAnnule());
+			final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
+			assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+			assertEquals("TEST0", etat0.getSource());
+			assertFalse(etat0.isAnnule());
 
-				// l'état retourné est le dernier, comme il se doit
-				assertSame(etat0, di.getDernierEtatDeclaration());
-				assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
-				return null;
-			}
+			// l'état retourné est le dernier, comme il se doit
+			assertSame(etat0, di.getDernierEtatDeclaration());
+			assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
+			return null;
 		});
 
 		// 2ème quittance de la declaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1", true);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1", true);
+			return null;
 		});
 
 		// On s'assure que le nouvel état retourné est aussi enregistré
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
+		doInNewTransaction(status -> {
+			Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
 
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				assertEquals(date(2007, 10, 28), di.getDateRetour());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			assertEquals(date(2007, 10, 28), di.getDateRetour());
 
-				final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
-				assertNotNull(etats);
-				assertEquals(2, etats.size());
+			final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
+			assertNotNull(etats);
+			assertEquals(2, etats.size());
 
-				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
-				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
-				assertEquals("TEST0", etat0.getSource());
-				assertFalse(etat0.isAnnule());
+			final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
+			assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+			assertEquals("TEST0", etat0.getSource());
+			assertFalse(etat0.isAnnule());
 
-				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
-				assertEquals(date(2007, 10, 28), etat1.getDateObtention());
-				assertEquals("TEST1", etat1.getSource());
-				assertFalse(etat1.isAnnule());
+			final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
+			assertEquals(date(2007, 10, 28), etat1.getDateObtention());
+			assertEquals("TEST1", etat1.getSource());
+			assertFalse(etat1.isAnnule());
 
-				// le nouvel état retourné doit être le dernier
-				assertSame(etat1, di.getDernierEtatDeclaration());
-				assertSame(etat1, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
-				return null;
-			}
+			// le nouvel état retourné doit être le dernier
+			assertSame(etat1, di.getDernierEtatDeclaration());
+			assertSame(etat1, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
+			return null;
 		});
 	}
 
@@ -2194,140 +1991,120 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		service.setSourcesMonoQuittancement(new HashSet<>(Collections.singletonList(SOURCE)));
 
 		// Création d'un contribuable ordinaire et de sa DI
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+			ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 
-				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
-
-				// Un tiers tout ce quil y a de plus ordinaire
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				ids.ericId = eric.getNumero();
-				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                    declarationComplete2006);
-
-				return null;
-			}
+			// Un tiers tout ce quil y a de plus ordinaire
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			ids.ericId = eric.getNumero();
+			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    declarationComplete2006);
+			return null;
 		});
 
 		// 1er quittance de la declaration
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, date(2007, 5, 12), SOURCE, true);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, date(2007, 5, 12), SOURCE, true);
+			return null;
 		});
 
 		// On s'assure que l'état retourné est bien enregistré
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
+		doInNewTransaction(status -> {
+			Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
 
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				assertEquals(date(2007, 5, 12), di.getDateRetour());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
-				assertNotNull(etats);
-				assertEquals(1, etats.size());
+			final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
 
-				final Iterator<EtatDeclaration> iterator = etats.iterator();
+			final Iterator<EtatDeclaration> iterator = etats.iterator();
 
-				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
-				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
-				assertEquals(SOURCE, etat0.getSource());
-				assertFalse(etat0.isAnnule());
+			final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
+			assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+			assertEquals(SOURCE, etat0.getSource());
+			assertFalse(etat0.isAnnule());
 
-				// l'état retourné est le dernier, comme il se doit
-				assertSame(etat0, di.getDernierEtatDeclaration());
-				assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
-				return null;
-			}
+			// l'état retourné est le dernier, comme il se doit
+			assertSame(etat0, di.getDernierEtatDeclaration());
+			assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
+			return null;
 		});
 
 		// 2ème quittance de la declaration, source différence
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, date(2007, 10, 25), "TEST", true);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, date(2007, 10, 25), "TEST", true);
+			return null;
 		});
 
 		// 2ème quittance de la declaration, source initiale qui ne supporte pas le multi-quittancement
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				service.quittancementDI(eric, di, date(2007, 10, 28), SOURCE, true);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			service.quittancementDI(eric, di, date(2007, 10, 28), SOURCE, true);
+			return null;
 		});
 
 		// on s'assure maintenant que premier quittancement de la source est bien annulé au profit du second, mais que les quittancements de sources annexes n'ont pas été touchés
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
-				assertEquals(1, dis.size());
+		doInNewTransaction(status -> {
+			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final List<DeclarationImpotOrdinaire> dis = eric.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, 2006, false);
+			assertEquals(1, dis.size());
 
-				final DeclarationImpotOrdinaire di = dis.get(0);
-				assertNotNull(di);
-				assertEquals(date(2007, 10, 28), di.getDateRetour());
+			final DeclarationImpotOrdinaire di = dis.get(0);
+			assertNotNull(di);
+			assertEquals(date(2007, 10, 28), di.getDateRetour());
 
-				final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
-				assertNotNull(etats);
-				assertEquals(3, etats.size());
+			final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
+			assertNotNull(etats);
+			assertEquals(3, etats.size());
 
-				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
-				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
-				assertEquals(SOURCE, etat0.getSource());
-				assertTrue(etat0.isAnnule());
+			final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
+			assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+			assertEquals(SOURCE, etat0.getSource());
+			assertTrue(etat0.isAnnule());
 
-				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
-				assertEquals(date(2007, 10, 25), etat1.getDateObtention());
-				assertEquals("TEST", etat1.getSource());
-				assertFalse(etat1.isAnnule());
+			final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
+			assertEquals(date(2007, 10, 25), etat1.getDateObtention());
+			assertEquals("TEST", etat1.getSource());
+			assertFalse(etat1.isAnnule());
 
-				final EtatDeclarationRetournee etat2 = (EtatDeclarationRetournee) etats.get(2);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat2.getEtat());
-				assertEquals(date(2007, 10, 28), etat2.getDateObtention());
-				assertEquals(SOURCE, etat2.getSource());
-				assertFalse(etat2.isAnnule());
+			final EtatDeclarationRetournee etat2 = (EtatDeclarationRetournee) etats.get(2);
+			assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat2.getEtat());
+			assertEquals(date(2007, 10, 28), etat2.getDateObtention());
+			assertEquals(SOURCE, etat2.getSource());
+			assertFalse(etat2.isAnnule());
 
-				// le nouvel état retourné doit être le dernier
-				assertSame(etat2, di.getDernierEtatDeclaration());
-				assertSame(etat2, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
-				return null;
-			}
+			// le nouvel état retourné doit être le dernier
+			assertSame(etat2, di.getDernierEtatDeclaration());
+			assertSame(etat2, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
+			return null;
 		});
 	}
 

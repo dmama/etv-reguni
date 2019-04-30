@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -54,12 +53,9 @@ public class SecurityProviderCacheTest extends SecurityTest {
 
 		// Etat inital : une personne physique et opérateur sans aucune restriction
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique marcel = addNonHabitant("Marcel", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
-				return marcel.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique marcel = addNonHabitant("Marcel", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
+			return marcel.getNumero();
 		});
 
 		final Niveau accesInitial = cache.getDroitAcces(TEST_OP_NAME, id);
@@ -67,13 +63,10 @@ public class SecurityProviderCacheTest extends SecurityTest {
 
 		// Ajout de la restriction
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique marcel = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
-				addDroitAcces(TEST_OP_NAME, marcel, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, date(1950, 1, 1), null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique marcel = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+			addDroitAcces(TEST_OP_NAME, marcel, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, date(1950, 1, 1), null);
+			return null;
 		});
 
 		// Etat final : l'opérateur est restreint de toute consultation sur la personne physique
@@ -107,20 +100,17 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
-				ids.a = a.getNumero();
-				final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
-				ids.b = b.getNumero();
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
-				ids.mc = ensemble.getMenage().getNumero();
+		doInNewTransaction(status -> {
+			final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
+			ids.a = a.getNumero();
+			final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
+			ids.b = b.getNumero();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
+			ids.mc = ensemble.getMenage().getNumero();
 
-				addDroitAcces("X", a, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
-				addDroitAcces("Z", b, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
-				return null;
-			}
+			addDroitAcces("X", a, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
+			addDroitAcces("Z", b, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
+			return null;
 		});
 
 		assertEquals(Niveau.ECRITURE, cache.getDroitAcces("X", ids.a));
@@ -134,13 +124,10 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		// Ajout d'une autorisation en lecture de l'opérateur X sur la personne physique B => l'opérateur X doit pouvoir accéder en lecture
 		// sur le couple aussi. Aucun changement pour l'opérateur Z.
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique a = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.b);
-				addDroitAcces("X", a, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(1990, 1, 1), null);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique a = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.b);
+			addDroitAcces("X", a, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(1990, 1, 1), null);
+			return null;
 		});
 
 		assertEquals(Niveau.ECRITURE, cache.getDroitAcces("X", ids.a));
@@ -162,18 +149,14 @@ public class SecurityProviderCacheTest extends SecurityTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
-				ids.a = a.getNumero();
-				final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
-				ids.b = b.getNumero();
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
-				ids.mc = ensemble.getMenage().getNumero();
-
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique a = addNonHabitant("A", "Bidon", date(1970, 4, 19), Sexe.MASCULIN);
+			ids.a = a.getNumero();
+			final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
+			ids.b = b.getNumero();
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
+			ids.mc = ensemble.getMenage().getNumero();
+			return null;
 		});
 
 		final List<Niveau> acces = cache.getDroitsAcces("broubrou", Arrays.asList(ids.a, ids.b, null));

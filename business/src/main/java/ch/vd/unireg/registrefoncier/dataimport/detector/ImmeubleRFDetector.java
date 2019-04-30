@@ -16,11 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.grundstueck.Grundstueck;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.common.AuthenticationInterface;
@@ -194,28 +192,25 @@ public class ImmeubleRFDetector {
 
 		// on détecte les radiations d'immeubles
 		final TransactionTemplate t1 = new TransactionTemplate(transactionManager);
-		t1.execute(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		t1.execute(status -> {
+			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+			// on détecte les immeubles actifs dans la base qui ne sont pas présents dans l'import
+			final Set<String> persisted = immeubleRFDAO.findImmeublesActifs();
+			persisted.removeAll(immeubles);
 
-				// on détecte les immeubles actifs dans la base qui ne sont pas présents dans l'import
-				final Set<String> persisted = immeubleRFDAO.findImmeublesActifs();
-				persisted.removeAll(immeubles);
-
-				// ... et on crée des mutations de SUPPRESSION dessus
-				persisted.forEach(idRf -> {
-					final EvenementRFMutation mutation = new EvenementRFMutation();
-					mutation.setParentImport(parentImport);
-					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(TypeEntiteRF.IMMEUBLE);
-					mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
-					mutation.setIdRF(idRf);
-					mutation.setXmlContent(null);
-					evenementRFMutationDAO.save(mutation);
-				});
-			}
+			// ... et on crée des mutations de SUPPRESSION dessus
+			persisted.forEach(idRf -> {
+				final EvenementRFMutation mutation = new EvenementRFMutation();
+				mutation.setParentImport(parentImport);
+				mutation.setEtat(EtatEvenementRF.A_TRAITER);
+				mutation.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
+				mutation.setIdRF(idRf);
+				mutation.setXmlContent(null);
+				evenementRFMutationDAO.save(mutation);
+			});
+			return null;
 		});
 		immeubles.clear();
 
@@ -225,42 +220,39 @@ public class ImmeubleRFDetector {
 
 		// on détecte les mutations sur les communes (ajout, fusion, annexion par milice armée, ...)
 		final TransactionTemplate t2 = new TransactionTemplate(transactionManager);
-		t2.execute(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
+		t2.execute(status -> {
+			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+			communes.forEach((noRf, nom) -> {
 
-				communes.forEach((noRf, nom) -> {
+				final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noRf));
 
-					final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noRf));
+				final TypeMutationRF typeMutation;
+				if (communeRF == null) {
+					typeMutation = TypeMutationRF.CREATION;
+				}
+				else if (!Objects.equals(communeRF.getNomRf(), nom)) {
+					typeMutation = TypeMutationRF.MODIFICATION;
+				}
+				else {
+					// rien à faire
+					return;
+				}
 
-					final TypeMutationRF typeMutation;
-					if (communeRF == null) {
-						typeMutation = TypeMutationRF.CREATION;
-					}
-					else if (!Objects.equals(communeRF.getNomRf(), nom)) {
-						typeMutation = TypeMutationRF.MODIFICATION;
-					}
-					else {
-						// rien à faire
-						return;
-					}
+				// on ajoute l'événement à traiter
+				final String communeAsXml = xmlHelperRF.toXMLString(new GrundstueckNummerElement(noRf, nom));
 
-					// on ajoute l'événement à traiter
-					final String communeAsXml = xmlHelperRF.toXMLString(new GrundstueckNummerElement(noRf, nom));
+				final EvenementRFMutation mutation = new EvenementRFMutation();
+				mutation.setParentImport(parentImport);
+				mutation.setEtat(EtatEvenementRF.A_TRAITER);
+				mutation.setTypeEntite(TypeEntiteRF.COMMUNE);
+				mutation.setTypeMutation(typeMutation);
+				mutation.setIdRF(String.valueOf(noRf));
+				mutation.setXmlContent(communeAsXml);
 
-					final EvenementRFMutation mutation = new EvenementRFMutation();
-					mutation.setParentImport(parentImport);
-					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(TypeEntiteRF.COMMUNE);
-					mutation.setTypeMutation(typeMutation);
-					mutation.setIdRF(String.valueOf(noRf));
-					mutation.setXmlContent(communeAsXml);
-
-					evenementRFMutationDAO.save(mutation);
-				});
-			}
+				evenementRFMutationDAO.save(mutation);
+			});
+			return null;
 		});
 	}
 }

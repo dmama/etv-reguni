@@ -11,13 +11,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.validation.ValidationException;
 import ch.vd.shared.validation.ValidationMessage;
 import ch.vd.unireg.common.Annulable;
@@ -183,14 +181,11 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				for (int pf = 2003 ; pf <= RegDate.get().year() ; ++ pf) {
-					addPeriodeFiscale(pf);
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			for (int pf = 2003; pf <= RegDate.get().year(); ++pf) {
+				addPeriodeFiscale(pf);
 			}
+			return null;
 		});
 
 		setWantSynchroTache(true);
@@ -359,50 +354,43 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereDecesDepuisOuvertureForPrincipal() throws Exception {
 
 		// Etat 2008
-		final Long idMenage = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				loadDatabase(DB_UNIT_DATA_FILE);
+		final Long idMenage = doInNewTransaction(status -> {
+			loadDatabase(DB_UNIT_DATA_FILE);
 
-				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
-				PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
+			PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
+			PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
 
-				// Etat avant veuvage
-				EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2000, 6, 12), null);
-				MenageCommun menage = ensemble.getMenage();
-				assertNotNull(menage);
+			// Etat avant veuvage
+			EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2000, 6, 12), null);
+			MenageCommun menage = ensemble.getMenage();
+			assertNotNull(menage);
 
-				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
-				PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
-				ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2006);
-				ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2007);
-				addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-				addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
-
-				return menage.getNumero();
-			}
+			PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+			PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+			ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2006);
+			ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2007);
+			addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+			addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+			return menage.getNumero();
 		});
 
 		// Evénement de décès
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
-				// Etat après veuvage
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.VEUVAGE_DECES, null, null, 5652,
-				                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				hab1.addForFiscal(forFiscalPrincipal);
+		doInNewTransaction(status -> {
+			PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
+			// Etat après veuvage
+			final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.VEUVAGE_DECES, null, null, 5652,
+			                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			hab1.addForFiscal(forFiscalPrincipal);
 
-				MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
-				Set<RapportEntreTiers> rapport = menage.getRapportsObjet();
-				for (RapportEntreTiers aRapport : rapport) {
-					aRapport.setDateFin(RegDate.get(2006, 6, 11));
-				}
-
-				// Génération de la tâche
-				tacheService.genereTacheDepuisOuvertureForPrincipal(hab1, forFiscalPrincipal, null);
-				return null;
+			MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
+			Set<RapportEntreTiers> rapport = menage.getRapportsObjet();
+			for (RapportEntreTiers aRapport : rapport) {
+				aRapport.setDateFin(RegDate.get(2006, 6, 11));
 			}
+
+			// Génération de la tâche
+			tacheService.genereTacheDepuisOuvertureForPrincipal(hab1, forFiscalPrincipal, null);
+			return null;
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
@@ -424,26 +412,21 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereTacheApresDeces() throws Exception {
 
 		// Etat 2010
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+			final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+			final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
+			final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			final PeriodeFiscale periode2009 = pfDAO.getPeriodeFiscaleByYear(2009);
+			final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
 
-				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
-				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
-				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				final PeriodeFiscale periode2009 = pfDAO.getPeriodeFiscaleByYear(2009);
-				final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
+			PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
 
-				PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
-
-				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
-				addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
-				addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
-
-				return pp.getNumero();
-			}
+			addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+			addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+			addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+			return pp.getNumero();
 		});
 
 		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
@@ -451,13 +434,10 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneeCourante = RegDate.get().year();
 
 		// Evénement de décès
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
-				tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
+			tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
+			return null;
 		});
 
 		final List<Tache> taches = tacheDAO.getAll();
@@ -500,32 +480,22 @@ public class TacheServiceTest extends BusinessTest {
 		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
 		final RegDate dateDeces = date(2008, 12, 5);
 
-		final CollectiviteAdministrative aciSuccessions = doInNewTransaction(new TxCallback<CollectiviteAdministrative>() {
-			@Override
-			public CollectiviteAdministrative execute(TransactionStatus status) {
-				return tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
-			}
-		});
+		final CollectiviteAdministrative aciSuccessions = doInNewTransaction(status -> tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite));
 
 		// Etat 2010
-		doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+			final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+			final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
-				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
-				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			final PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
+			addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-				final PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
-				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
-
-				// Evénement de décès
-				tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
-
-				return pp.getNumero();
-			}
+			// Evénement de décès
+			tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
+			return pp.getNumero();
 		});
 
 		final List<Tache> taches = tacheDAO.getAll();
@@ -546,61 +516,53 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereDivorceDepuisOuvertureForPrincipal() throws Exception {
 
 		// Etat 2008
-		final Long idMenage = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				loadDatabase(DB_UNIT_DATA_FILE);
+		final Long idMenage = doInNewTransaction(status -> {
+			loadDatabase(DB_UNIT_DATA_FILE);
 
-				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
-				PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
+			PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
+			PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
 
-				EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
-				MenageCommun menage = ensemble.getMenage();
-				assertNotNull(menage);
+			EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
+			MenageCommun menage = ensemble.getMenage();
+			assertNotNull(menage);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
-				                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				menage.addForFiscal(forFiscalPrincipal);
+			final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
+			                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			menage.addForFiscal(forFiscalPrincipal);
 
-				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
-				PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
-				ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2006);
-				ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2007);
-				addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-				addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
-
-				return menage.getNumero();
-			}
+			PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+			PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+			ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2006);
+			ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2007);
+			addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+			addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+			return menage.getNumero();
 		});
 
 		// Divorce au 10 octobre 2007
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
+			PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
+			MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
 
-				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
-				PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
-				MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
+			ForFiscalPrincipal forFiscalPrincipal = menage.getDernierForFiscalPrincipal();
+			forFiscalPrincipal.setDateFin(RegDate.get(2007, 10, 10));
+			forFiscalPrincipal.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 
-				ForFiscalPrincipal forFiscalPrincipal = menage.getDernierForFiscalPrincipal();
-				forFiscalPrincipal.setDateFin(RegDate.get(2007, 10, 10));
-				forFiscalPrincipal.setMotifFermeture(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			hab1.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
+			hab2.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 
-				hab1.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
-				hab2.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
+			ForFiscalPrincipal ffp1 = new ForFiscalPrincipalPP(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
+			                                                   TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			hab1.addForFiscal(ffp1);
 
-				ForFiscalPrincipal ffp1 = new ForFiscalPrincipalPP(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
-				                                                   TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				hab1.addForFiscal(ffp1);
+			ForFiscalPrincipal ffp2 = new ForFiscalPrincipalPP(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
+			                                                   TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			hab2.addForFiscal(ffp2);
 
-				ForFiscalPrincipal ffp2 = new ForFiscalPrincipalPP(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
-				                                                   TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				hab2.addForFiscal(ffp2);
-
-				tacheService.genereTacheDepuisOuvertureForPrincipal(hab1, ffp1, null);
-				tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, ffp2, null);
-				return null;
-			}
+			tacheService.genereTacheDepuisOuvertureForPrincipal(hab1, ffp1, null);
+			tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, ffp2, null);
+			return null;
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
@@ -705,103 +667,95 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			PeriodeFiscale pf2003 = pfDAO.getPeriodeFiscaleByYear(2003);
+			PeriodeFiscale pf2004 = pfDAO.getPeriodeFiscaleByYear(2004);
+			PeriodeFiscale pf2005 = pfDAO.getPeriodeFiscaleByYear(2005);
+			PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+			PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+			PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
+			PeriodeFiscale pf2009 = pfDAO.getPeriodeFiscaleByYear(2009);
+			ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2003);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2003);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2003);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2003);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2003);
+			ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2004);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2004);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2004);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2004);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2004);
+			ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2005);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2005);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2005);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2005);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2005);
+			ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2006);
+			ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2007);
+			ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2008);
+			ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2009);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_310, modele2009);
 
-				PeriodeFiscale pf2003 = pfDAO.getPeriodeFiscaleByYear(2003);
-				PeriodeFiscale pf2004 = pfDAO.getPeriodeFiscaleByYear(2004);
-				PeriodeFiscale pf2005 = pfDAO.getPeriodeFiscaleByYear(2005);
-				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
-				PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
-				PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
-				PeriodeFiscale pf2009 = pfDAO.getPeriodeFiscaleByYear(2009);
-				ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2003);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2003);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2003);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2003);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2003);
-				ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2004);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2004);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2004);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2004);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2004);
-				ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2005);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2005);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2005);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2005);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2005);
-				ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2006);
-				ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2007);
-				ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2008);
-				ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2009);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_310, modele2009);
+			// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
+			PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
-				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addDeclarationImpot(raoul, pf2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
+			addDeclarationImpot(raoul, pf2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
+			addDeclarationImpot(raoul, pf2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
+			addDeclarationImpot(raoul, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+			addDeclarationImpot(raoul, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-				addDeclarationImpot(raoul, pf2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
-				addDeclarationImpot(raoul, pf2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
-				addDeclarationImpot(raoul, pf2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
-				addDeclarationImpot(raoul, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-				addDeclarationImpot(raoul, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+			// Un autre contribuable vaudois depuis 1998 avec des DIs jusqu'en 2009
+			PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Lavanchy", date(1962, 10, 4), Sexe.MASCULIN);
+			ids.jeanDanielId = jeanDaniel.getNumero();
+			addForPrincipal(jeanDaniel, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				// Un autre contribuable vaudois depuis 1998 avec des DIs jusqu'en 2009
-				PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Lavanchy", date(1962, 10, 4), Sexe.MASCULIN);
-				ids.jeanDanielId = jeanDaniel.getNumero();
-				addForPrincipal(jeanDaniel, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-
-				addDeclarationImpot(jeanDaniel, pf2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2003);
-				addDeclarationImpot(jeanDaniel, pf2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2004);
-				addDeclarationImpot(jeanDaniel, pf2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2005);
-				addDeclarationImpot(jeanDaniel, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2006);
-				addDeclarationImpot(jeanDaniel, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2007);
-				addDeclarationImpot(jeanDaniel, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2008);
-				addDeclarationImpot(jeanDaniel, pf2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2009);
-
-				return null;
-			}
+			addDeclarationImpot(jeanDaniel, pf2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2003);
+			addDeclarationImpot(jeanDaniel, pf2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2004);
+			addDeclarationImpot(jeanDaniel, pf2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2005);
+			addDeclarationImpot(jeanDaniel, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2006);
+			addDeclarationImpot(jeanDaniel, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2007);
+			addDeclarationImpot(jeanDaniel, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2008);
+			addDeclarationImpot(jeanDaniel, pf2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                    modele2009);
+			return null;
 		});
 
 		// Raoul part fin juin 2005, mais on ne reçoit son départ qu'aujourd'hui.
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
-				ForFiscalPrincipal forPrincipal = raoul.getForFiscalPrincipalAt(date(2005, 6, 30));
-				forPrincipal.setDateFin(date(2005, 6, 30));
-				forPrincipal.setMotifFermeture(MotifFor.DEPART_HS);
-				tacheService.genereTacheDepuisFermetureForPrincipal(raoul, forPrincipal);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
+			ForFiscalPrincipal forPrincipal = raoul.getForFiscalPrincipalAt(date(2005, 6, 30));
+			forPrincipal.setDateFin(date(2005, 6, 30));
+			forPrincipal.setMotifFermeture(MotifFor.DEPART_HS);
+			tacheService.genereTacheDepuisFermetureForPrincipal(raoul, forPrincipal);
+			return null;
 		});
 
 		{
@@ -913,68 +867,53 @@ public class TacheServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Création de la situation initiale : contribuable vaudois ordinaire dans le canton depuis 2008 avec une DI pour 2008
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
+			final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
-				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
-				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			final PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(2008, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
 
-				final PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
-
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(raoul, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
-				addEtatDeclarationEmise(di, date(2009, 1, 15));
-				addEtatDeclarationRetournee(di, date(2009, 2, 21));
-
-				return null;
-			}
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(raoul, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+			addEtatDeclarationEmise(di, date(2009, 1, 15));
+			addEtatDeclarationRetournee(di, date(2009, 2, 21));
+			return null;
 		});
 
 		// Saisie d'un départ hors-canton au mileu 2008 (départ entrée tardivement, donc)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique raoul = (PersonnePhysique) tiersService.getTiers(ids.raoulId);
+			assertNotNull(raoul);
 
-				final PersonnePhysique raoul = (PersonnePhysique) tiersService.getTiers(ids.raoulId);
-				assertNotNull(raoul);
-
-				tiersService.closeForFiscalPrincipal(raoul, date(2008, 5, 23), MotifFor.DEPART_HC);
-				tiersService.openForFiscalPrincipal(raoul, date(2008, 5, 24), MotifRattachement.DOMICILE, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.DEPART_HC);
-
-				return null;
-			}
+			tiersService.closeForFiscalPrincipal(raoul, date(2008, 5, 23), MotifFor.DEPART_HC);
+			tiersService.openForFiscalPrincipal(raoul, date(2008, 5, 24), MotifRattachement.DOMICILE, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.DEPART_HC);
+			return null;
 		});
 
 		// Vérifie qu'il y a bien une tâche d'annulation de la DI 2008 et qu'elle est bien assignée à l'OID d'Orbe
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
+			assertNotNull(raoul);
+			//Pas d'office d'impot car départ HC avant le 31.12 de la période;
+			assertNull(raoul.getOfficeImpotId());
 
-				final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
-				assertNotNull(raoul);
-				//Pas d'office d'impot car départ HC avant le 31.12 de la période;
-				assertNull(raoul.getOfficeImpotId());
+			final CollectiviteAdministrative oidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
+			assertNotNull(oidOrbe);
 
-				final CollectiviteAdministrative oidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
-				assertNotNull(oidOrbe);
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(raoul);
+			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(raoul);
-				criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+			final List<Tache> list = tacheDAO.find(criterion);
+			assertEquals(1, list.size());
 
-				final List<Tache> list = tacheDAO.find(criterion);
-				assertEquals(1, list.size());
+			final Tache tache = list.get(0);
+			assertInstanceOf(TacheAnnulationDeclarationImpot.class, tache);
 
-				final Tache tache = list.get(0);
-				assertInstanceOf(TacheAnnulationDeclarationImpot.class, tache);
-
-				final TacheAnnulationDeclarationImpot annulDI = (TacheAnnulationDeclarationImpot) tache;
-				assertSame(oidOrbe, annulDI.getCollectiviteAdministrativeAssignee());
-
-				return null;
-			}
+			final TacheAnnulationDeclarationImpot annulDI = (TacheAnnulationDeclarationImpot) tache;
+			assertSame(oidOrbe, annulDI.getCollectiviteAdministrativeAssignee());
+			return null;
 		});
 	}
 
@@ -984,17 +923,14 @@ public class TacheServiceTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
+		doInNewTransaction(status -> {
+			PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2007, 6, 12), MotifFor.INDETERMINE, RegDate.get(2007, 12, 31), MotifFor.DEPART_HC,
-				                                                                       5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2007, 6, 12), MotifFor.INDETERMINE, RegDate.get(2007, 12, 31), MotifFor.DEPART_HC,
+			                                                                       5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 
-				tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
-				return null;
-			}
+			tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
+			return null;
 		});
 
 
@@ -1095,16 +1031,12 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-
-				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
-				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
+			PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			return null;
 		});
 
 		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
@@ -1135,18 +1067,14 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Contribuable vaudois parti en France dès 1999
+			PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			ids.raoulId = raoul.getNumero();
 
-				// Contribuable vaudois parti en France dès 1999
-				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
-				ids.raoulId = raoul.getNumero();
-
-				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, date(1999, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(raoul, date(1999, 7, 1), MotifFor.DEMENAGEMENT_VD, MockPays.France);
-				return null;
-			}
+			addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, date(1999, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(raoul, date(1999, 7, 1), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+			return null;
 		});
 
 		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
@@ -1170,48 +1098,40 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final PeriodeFiscale periode2003 = pfDAO.getPeriodeFiscaleByYear(2003);
+			final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
+			final PeriodeFiscale periode2004 = pfDAO.getPeriodeFiscaleByYear(2004);
+			final ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2004);
 
-				final PeriodeFiscale periode2003 = pfDAO.getPeriodeFiscaleByYear(2003);
-				final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
-				final PeriodeFiscale periode2004 = pfDAO.getPeriodeFiscaleByYear(2004);
-				final ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2004);
+			// Contribuable français
+			PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			addForPrincipal(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockPays.France);
+			ids.raoulId = raoul.getNumero();
 
-				// Contribuable français
-				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
-				addForPrincipal(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockPays.France);
-				ids.raoulId = raoul.getNumero();
+			addDeclarationImpot(raoul, periode2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
+			addDeclarationImpot(raoul, periode2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
 
-				addDeclarationImpot(raoul, periode2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
-				addDeclarationImpot(raoul, periode2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
-
-				// début d'exploitation au 1er mai 1990
-				addForSecondaire(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
-						MotifRattachement.ACTIVITE_INDEPENDANTE);
-				return null;
-			}
+			// début d'exploitation au 1er mai 1990
+			addForSecondaire(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
+			                 MotifRattachement.ACTIVITE_INDEPENDANTE);
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
+			assertNotNull(raoul);
 
-				final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
-				assertNotNull(raoul);
+			final List<ForFiscalSecondaire> forsSecondaires = raoul.getForsParType(false).secondaires;
+			assertNotNull(forsSecondaires);
+			assertEquals(1, forsSecondaires.size());
 
-				final List<ForFiscalSecondaire> forsSecondaires = raoul.getForsParType(false).secondaires;
-				assertNotNull(forsSecondaires);
-				assertEquals(1, forsSecondaires.size());
+			final ForFiscalSecondaire forSecondaire = forsSecondaires.get(0);
+			assertNotNull(forSecondaire);
 
-				final ForFiscalSecondaire forSecondaire = forsSecondaires.get(0);
-				assertNotNull(forSecondaire);
-
-				// fin d'exploitation au 1er février 2005
-				tiersService.closeForFiscalSecondaire(raoul, forSecondaire, date(2005, 2, 1), MotifFor.FIN_EXPLOITATION);
-				return null;
-			}
+			// fin d'exploitation au 1er février 2005
+			tiersService.closeForFiscalSecondaire(raoul, forSecondaire, date(2005, 2, 1), MotifFor.FIN_EXPLOITATION);
+			return null;
 		});
 
 		// fin d'activité indépendante ctb HS -> émission de la tâche d'émission de DI du 1er janvier à la date de fermeture + une tâche de contrôle de dossier
@@ -1283,46 +1203,37 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			// Crée les personnes célibataires
+			PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
+			addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ids.monsieurId = monsieur.getNumero();
 
-				// Crée les personnes célibataires
-				PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
-				addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ids.monsieurId = monsieur.getNumero();
+			PersonnePhysique madame = addHabitant(idIndividuMadame);
+			addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ids.madameId = madame.getNumero();
 
-				PersonnePhysique madame = addHabitant(idIndividuMadame);
-				addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ids.madameId = madame.getNumero();
-
-				// Ajoute les déclarations qui vont bien
-				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
-					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					addDeclarationImpot(monsieur, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-					addDeclarationImpot(madame, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				}
-
-				return null;
+			// Ajoute les déclarations qui vont bien
+			for (int i = 2003; i <= 2008; ++i) {
+				PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
+				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				addDeclarationImpot(monsieur, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addDeclarationImpot(madame, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			}
+			;
+			return null;
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			PersonnePhysique monsieur = (PersonnePhysique) tiersService.getTiers(ids.monsieurId);
+			assertNotNull(monsieur);
+			PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(ids.madameId);
+			assertNotNull(madame);
 
-				PersonnePhysique monsieur = (PersonnePhysique) tiersService.getTiers(ids.monsieurId);
-				assertNotNull(monsieur);
-				PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(ids.madameId);
-				assertNotNull(madame);
-
-				// mariage au 11 novembre 2007
-				MenageCommun menage = metierService.marie(dateMariage, monsieur, madame, "", EtatCivil.MARIE, null);
-				ids.menageId = menage.getNumero();
-
-				return null;
-			}
+			// mariage au 11 novembre 2007
+			MenageCommun menage = metierService.marie(dateMariage, monsieur, madame, "", EtatCivil.MARIE, null);
+			ids.menageId = menage.getNumero();
+			return null;
 		});
 
 		// Vérifie que des tâches d'annulation des DIs 2007 et 2008 sont générées sur chacunes des personnes physiques.
@@ -1419,38 +1330,33 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
+			addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.monsieurId = monsieur.getNumero();
 
-				// Crée le ménage
-				PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
-				addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
-						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.monsieurId = monsieur.getNumero();
+			PersonnePhysique madame = addHabitant(idIndividuMadame);
+			addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.madameId = madame.getNumero();
 
-				PersonnePhysique madame = addHabitant(idIndividuMadame);
-				addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
-						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.madameId = madame.getNumero();
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.menageId = menage.getNumero();
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.menageId = menage.getNumero();
-
-				// Ajoute les déclarations qui vont bien
-				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
-					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				}
-
-				// Divorce au 11 novembre 2007
-				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, null);
-
-				return null;
+			// Ajoute les déclarations qui vont bien
+			for (int i = 2003; i <= 2008; ++i) {
+				PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
+				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			}
+
+			// Divorce au 11 novembre 2007
+			metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, null);
+			return null;
 		});
 
 		// Ménage-commun
@@ -1585,41 +1491,36 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
+			addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.monsieurId = monsieur.getNumero();
 
-				// Crée le ménage
-				PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
-				addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
-						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.monsieurId = monsieur.getNumero();
+			PersonnePhysique madame = addHabitant(idIndividuMadame);
+			addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.madameId = madame.getNumero();
 
-				PersonnePhysique madame = addHabitant(idIndividuMadame);
-				addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
-						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.madameId = madame.getNumero();
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.menageId = menage.getNumero();
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.menageId = menage.getNumero();
+			addForSecondaire(menage, dateMariage, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
+			                 MotifRattachement.IMMEUBLE_PRIVE);
 
-				addForSecondaire(menage, dateMariage, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
-						MotifRattachement.IMMEUBLE_PRIVE);
-
-				// Ajoute les déclarations qui vont bien
-				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
-					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				}
-
-				// Divorce au 11 novembre 2007
-				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, null);
-
-				return null;
+			// Ajoute les déclarations qui vont bien
+			for (int i = 2003; i <= 2008; ++i) {
+				PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
+				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			}
+
+			// Divorce au 11 novembre 2007
+			metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, null);
+			return null;
 		});
 
 		// Ménage-commun
@@ -1758,38 +1659,33 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			// Crée le ménage
+			PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
+			addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.monsieurId = monsieur.getNumero();
 
-				// Crée le ménage
-				PersonnePhysique monsieur = addHabitant(idIndividuMonsieur);
-				addForPrincipal(monsieur, date(1981, 1, 1), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
-						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.monsieurId = monsieur.getNumero();
+			PersonnePhysique madame = addHabitant(idIndividuMadame);
+			addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+			                MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.madameId = madame.getNumero();
 
-				PersonnePhysique madame = addHabitant(idIndividuMadame);
-				addForPrincipal(madame, date(1986, 3, 27), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
-						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.madameId = madame.getNumero();
+			EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			MenageCommun menage = ensemble.getMenage();
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.menageId = menage.getNumero();
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
-				MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.menageId = menage.getNumero();
-
-				// Ajoute les déclarations qui vont bien
-				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
-					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				}
-
-				// Décès de monsieur au 11 novembre 2007
-				metierService.deces(monsieur, dateDeces, "", null);
-
-				return null;
+			// Ajoute les déclarations qui vont bien
+			for (int i = 2003; i <= 2008; ++i) {
+				PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
+				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			}
+
+			// Décès de monsieur au 11 novembre 2007
+			metierService.deces(monsieur, dateDeces, "", null);
+			return null;
 		});
 
 		// Ménage
@@ -1890,30 +1786,26 @@ public class TacheServiceTest extends BusinessTest {
 		/*
 		 * Un contribuable domicilié au Danemark et qui possède un immeuble depuis 2000 à Cossonay
 		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			ids.oidCedi = cedi.getId();
 
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				ids.oidCedi = cedi.getId();
+			final PersonnePhysique simon = addHabitant(100000);
+			ids.simonId = simon.getNumero();
+			addForPrincipal(simon, date(1981, 1, 1), MotifFor.MAJORITE, MockPays.Danemark);
+			addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PersonnePhysique simon = addHabitant(100000);
-				ids.simonId = simon.getNumero();
-				addForPrincipal(simon, date(1981, 1, 1), MotifFor.MAJORITE, MockPays.Danemark);
-				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
-
-				for (int i = 2003; i < RegDate.get().year(); ++i) {
-					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
-					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					addDeclarationImpot(simon, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.HORS_SUISSE, modele);
-				}
-
-				// Arrivée de hors-Suisse traitée tardivement
-				tiersService.closeForFiscalPrincipal(simon, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS);
-				tiersService.openForFiscalPrincipal(simon, dateArrivee, MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(),
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS);
-				return null;
+			for (int i = 2003; i < RegDate.get().year(); ++i) {
+				PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
+				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				addDeclarationImpot(simon, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.HORS_SUISSE, modele);
 			}
+
+			// Arrivée de hors-Suisse traitée tardivement
+			tiersService.closeForFiscalPrincipal(simon, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS);
+			tiersService.openForFiscalPrincipal(simon, dateArrivee, MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(),
+			                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS);
+			return null;
 		});
 
 		final Contribuable simon = (Contribuable) tiersService.getTiers(ids.simonId);
@@ -1955,29 +1847,26 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				serviceCivil.setUp(new MockServiceCivil() {
-					@Override
-					protected void init() {
+		doInNewTransaction(status -> {
+			serviceCivil.setUp(new MockServiceCivil() {
+				@Override
+				protected void init() {
 
-						MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-						addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
-								.get(1963, 1, 1), null);
-						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
-					}
-				});
-				PersonnePhysique raoul = addHabitant(100000);
-				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ids.raoulId = raoul.getNumero();
-				PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
-				addDeclarationImpot(raoul, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+					MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
+					addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
+							.get(1963, 1, 1), null);
+					addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
+				}
+			});
+			PersonnePhysique raoul = addHabitant(100000);
+			addForPrincipal(raoul, date(2008, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			ids.raoulId = raoul.getNumero();
+			PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
+			ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
+			addDeclarationImpot(raoul, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
-				tiersService.annuleForFiscal(raoul.getForFiscalPrincipalAt(date(2008, 1, 1)));
-				return null;
-			}
+			tiersService.annuleForFiscal(raoul.getForFiscalPrincipalAt(date(2008, 1, 1)));
+			return null;
 		});
 
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
@@ -1999,31 +1888,28 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				serviceCivil.setUp(new MockServiceCivil() {
-					@Override
-					protected void init() {
+		doInNewTransaction(status -> {
+			serviceCivil.setUp(new MockServiceCivil() {
+				@Override
+				protected void init() {
 
-						MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-						addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
-								.get(1963, 1, 1), null);
-						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
-					}
-				});
-				PersonnePhysique raoul = addHabitant(100000);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				for (int i = 2003; i <= 2008; i++) {
-					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
-					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-					addDeclarationImpot(raoul, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+					MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
+					addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
+							.get(1963, 1, 1), null);
+					addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 				}
-
-				tiersService.closeForFiscalPrincipal(raoul, date(2008, 11, 1), MotifFor.VEUVAGE_DECES);
-				return null;
+			});
+			PersonnePhysique raoul = addHabitant(100000);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			for (int i = 2003; i <= 2008; i++) {
+				PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
+				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				addDeclarationImpot(raoul, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 			}
+
+			tiersService.closeForFiscalPrincipal(raoul, date(2008, 11, 1), MotifFor.VEUVAGE_DECES);
+			return null;
 		});
 
 		final PersonnePhysique raoul = (PersonnePhysique) tiersService.getTiers(ids.raoulId);
@@ -2050,24 +1936,21 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				serviceCivil.setUp(new MockServiceCivil() {
-					@Override
-					protected void init() {
+		doInNewTransaction(status -> {
+			serviceCivil.setUp(new MockServiceCivil() {
+				@Override
+				protected void init() {
 
-						MockIndividu monsieur = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
-						addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
-								.get(1963, 1, 1), null);
-						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
-					}
-				});
-				PersonnePhysique raoul = addHabitant(100000);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				return null;
-			}
+					MockIndividu monsieur = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
+					addAdresse(monsieur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
+							.get(1963, 1, 1), null);
+					addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
+				}
+			});
+			PersonnePhysique raoul = addHabitant(100000);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			return null;
 		});
 
 		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
@@ -2109,17 +1992,14 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				PersonnePhysique raoul = addHabitant(100000);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+		doInNewTransaction(status -> {
+			PersonnePhysique raoul = addHabitant(100000);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				// annulation du tiers
-				tiersService.annuleTiers(raoul);
-				return null;
-			}
+			// annulation du tiers
+			tiersService.annuleTiers(raoul);
+			return null;
 		});
 
 		final List<Tache> taches = tacheDAO.find(ids.raoulId);
@@ -2155,40 +2035,36 @@ public class TacheServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransaction(status -> {
+			final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			assertNotNull(colAdm);
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				assertNotNull(colAdm);
+			PersonnePhysique raoul = addHabitant(100000);
+			ids.raoulId = raoul.getNumero();
+			addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				PersonnePhysique raoul = addHabitant(100000);
-				ids.raoulId = raoul.getNumero();
-				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			// une tâche d'annulation de DI
+			PeriodeFiscale periode = addPeriodeFiscale(2074);
+			ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+			DeclarationImpotOrdinaire declaration = addDeclarationImpot(raoul, periode, date(2074, 1, 1), date(2074, 12, 31),
+			                                                            TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			final TacheAnnulationDeclarationImpot annulDI = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), declaration,
+			                                                                raoul, colAdm);
+			ids.tacheAnnulDI = annulDI.getId();
 
-				// une tâche d'annulation de DI
-				PeriodeFiscale periode = addPeriodeFiscale(2074);
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				DeclarationImpotOrdinaire declaration = addDeclarationImpot(raoul, periode, date(2074, 1, 1), date(2074, 12, 31),
-						TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				final TacheAnnulationDeclarationImpot annulDI = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), declaration,
-						raoul, colAdm);
-				ids.tacheAnnulDI = annulDI.getId();
+			// tâche de contrôle de dossier
+			final TacheControleDossier tacheControl = addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), raoul, colAdm);
+			ids.tacheControl = tacheControl.getId();
 
-				// tâche de contrôle de dossier
-				final TacheControleDossier tacheControl = addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), raoul, colAdm);
-				ids.tacheControl = tacheControl.getId();
+			// tâche d'envoi de DI
+			final TacheEnvoiDeclarationImpot tacheEnvoi = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1),
+			                                                                date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			                                                                raoul, null, null, colAdm);
+			ids.tacheEnvoi = tacheEnvoi.getId();
 
-				// tâche d'envoi de DI
-				final TacheEnvoiDeclarationImpot tacheEnvoi = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1),
-				                                                                date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				                                                                raoul, null, null, colAdm);
-				ids.tacheEnvoi = tacheEnvoi.getId();
-
-				// annulation du tiers
-				tiersService.annuleTiers(raoul);
-				return null;
-			}
+			// annulation du tiers
+			tiersService.annuleTiers(raoul);
+			return null;
 		});
 
 		final List<Tache> taches = tacheDAO.find(ids.raoulId);
@@ -2624,13 +2500,10 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// séparation
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
-				metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+			metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, null);
+			return null;
 		});
 
 		final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
@@ -2748,13 +2621,10 @@ public class TacheServiceTest extends BusinessTest {
 		assertEmpty(tacheDAO.find(ids.menage));
 
 		// Effectue un divorce
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
-				metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
+			metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, null);
+			return null;
 		});
 
 		// Vérifie qu'ils sont bien divorcés
@@ -2796,53 +2666,43 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateOuverture = RegDate.get(2006, 7, 1);
 
 		// création des DI 2006 et 2007 avant la notification du départ en 2007
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
+		final Long id = doInNewTransaction(status -> {
+			final PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+			final PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+			final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2006);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2006);
+			final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2007);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2007);
 
-				final PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
-				final PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
-				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2006);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2006);
-				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2007);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2007);
-
-				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
-				final PersonnePhysique pp = addNonHabitant("Gérald", "Bolomey", date(1945, 2, 23), Sexe.MASCULIN);
-				addForPrincipal(pp, dateOuverture, MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
-				addDeclarationImpot(pp, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-				addDeclarationImpot(pp, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
-				return pp.getNumero();
-			}
+			// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
+			final PersonnePhysique pp = addNonHabitant("Gérald", "Bolomey", date(1945, 2, 23), Sexe.MASCULIN);
+			addForPrincipal(pp, dateOuverture, MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+			addDeclarationImpot(pp, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+			addDeclarationImpot(pp, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+			return pp.getNumero();
 		});
 
 		// départ en 2007
 		final RegDate depart = date(2007, 10, 31);
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.closeForFiscalPrincipal(ffp, depart, MotifFor.DEPART_HS);
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			tiersService.closeForFiscalPrincipal(ffp, depart, MotifFor.DEPART_HS);
+			return null;
 		});
 
 		// la DI 2007 doit avoir une durée de validité réduite suite au départ
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
-				final Declaration di = pp.getDeclarationActiveAt(date(2007, 6, 30));
-				assertEquals("La date de fin de la DI 2007 n'a pas été ramené suite au départ HS", depart, di.getDateFin());
-				return null;
-			}
+		doInNewTransaction(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
+			final Declaration di = pp.getDeclarationActiveAt(date(2007, 6, 30));
+			assertEquals("La date de fin de la DI 2007 n'a pas été ramené suite au départ HS", depart, di.getDateFin());
+			return null;
 		});
 	}
 
@@ -3485,127 +3345,103 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 1 : contribuable hors-canton avec une activité indépendente dans le canton
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Jean-Louis", "Ruedi", date(1954, 11, 23), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
-				final ForFiscalSecondaire ffs =
-						addForSecondaire(pp, date(anneeAvantAvant, 1, 7), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jean-Louis", "Ruedi", date(1954, 11, 23), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+			final ForFiscalSecondaire ffs =
+					addForSecondaire(pp, date(anneeAvantAvant, 1, 7), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
-				final PeriodeFiscale periode1 = pfDAO.getPeriodeFiscaleByYear(anneeAvantAvant);
-				final ModeleDocument modele1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode1);
-				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode1, date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeContribuable.HORS_CANTON, modele1);
-				addEtatDeclarationEmise(di1, date(anneeAvant, 1, 15));
-				addEtatDeclarationRetournee(di1, date(anneeAvant, 4, 19));
+			final PeriodeFiscale periode1 = pfDAO.getPeriodeFiscaleByYear(anneeAvantAvant);
+			final ModeleDocument modele1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode1);
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode1, date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeContribuable.HORS_CANTON, modele1);
+			addEtatDeclarationEmise(di1, date(anneeAvant, 1, 15));
+			addEtatDeclarationRetournee(di1, date(anneeAvant, 4, 19));
 
-				final PeriodeFiscale periode2 = pfDAO.getPeriodeFiscaleByYear(anneeAvant);
-				final ModeleDocument modele2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2);
-				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp, periode2, date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeContribuable.HORS_CANTON, modele2);
-				addEtatDeclarationEmise(di2, date(anneeCourante, 1, 15));
-				addEtatDeclarationRetournee(di2, date(anneeCourante, 4, 19));
+			final PeriodeFiscale periode2 = pfDAO.getPeriodeFiscaleByYear(anneeAvant);
+			final ModeleDocument modele2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2);
+			final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp, periode2, date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeContribuable.HORS_CANTON, modele2);
+			addEtatDeclarationEmise(di2, date(anneeCourante, 1, 15));
+			addEtatDeclarationRetournee(di2, date(anneeCourante, 4, 19));
 
-				ids.ctb = pp.getId();
-				ids.ffp = ffp.getId();
-				ids.ffs = ffs.getId();
-				ids.di1 = di1.getId();
-				ids.di2 = di2.getId();
-				return null;
-			}
+			ids.ctb = pp.getId();
+			ids.ffp = ffp.getId();
+			ids.ffs = ffs.getId();
+			ids.di1 = di1.getId();
+			ids.di2 = di2.getId();
+			return null;
 		});
 
 		// On vérifie qu'aucune tâche n'est générée (le contribuable est dans un état correct) :
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				assertEmpty(tacheDAO.find(ids.ctb));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			assertEmpty(tacheDAO.find(ids.ctb));
+			return null;
 		});
 
 		//
 		// Etape 2 : annulation du for secondaire
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final ForFiscal ffs = hibernateTemplate.get(ForFiscal.class, ids.ffs);
-				assertNotNull(ffs);
-				ffs.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final ForFiscal ffs = hibernateTemplate.get(ForFiscal.class, ids.ffs);
+			assertNotNull(ffs);
+			ffs.setAnnule(true);
+			return null;
 		});
 
 		// On vérifie que le contribuable n'est plus assujetti et que des tâches d'annulation des déclarations existantes sont générées
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ids.ctb);
-				assertEquals(2, taches.size());
-				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, false, (TacheAnnulationDeclarationImpot) taches.get(0));
-				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, false, (TacheAnnulationDeclarationImpot) taches.get(1));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ids.ctb);
+			assertEquals(2, taches.size());
+			assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, false, (TacheAnnulationDeclarationImpot) taches.get(0));
+			assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, false, (TacheAnnulationDeclarationImpot) taches.get(1));
+			return null;
 		});
 
 		//
 		// Etape 3 : annulation du for principal
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final ForFiscal ffp = hibernateTemplate.get(ForFiscal.class, ids.ffp);
-				assertNotNull(ffp);
-				ffp.setAnnule(true);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final ForFiscal ffp = hibernateTemplate.get(ForFiscal.class, ids.ffp);
+			assertNotNull(ffp);
+			ffp.setAnnule(true);
+			return null;
 		});
 
 		// On vérifie que rien ne change au niveau des tâches
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ids.ctb);
-				assertEquals(2, taches.size());
-				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, false, (TacheAnnulationDeclarationImpot) taches.get(0));
-				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, false, (TacheAnnulationDeclarationImpot) taches.get(1));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ids.ctb);
+			assertEquals(2, taches.size());
+			assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, false, (TacheAnnulationDeclarationImpot) taches.get(0));
+			assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, false, (TacheAnnulationDeclarationImpot) taches.get(1));
+			return null;
 		});
 
 		//
 		// Etape 4 : ajout d'un for principal vaudois ordinaire en remplacement du for hors-canton
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
-				assertNotNull(pp);
-				addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+			assertNotNull(pp);
+			addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			return null;
 		});
 
 		// On vérifie que :
 		//  - les tâches d'annulation introduites à l'étape 2 sont annulées (le contribuable est de nouveau assujetti)
 		//  - le type de contribuable des déclarations pré-existantes est mis-à-jour (car les types de documents sont compatibles)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ids.ctb);
-				assertEquals(2, taches.size());
-				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, true, (TacheAnnulationDeclarationImpot) taches.get(0));
-				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, true, (TacheAnnulationDeclarationImpot) taches.get(1));
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ids.ctb);
+			assertEquals(2, taches.size());
+			assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di1, true, (TacheAnnulationDeclarationImpot) taches.get(0));
+			assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.di2, true, (TacheAnnulationDeclarationImpot) taches.get(1));
 
-				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
-				assertEquals(2, dis.size());
-				dis.sort(new DateRangeComparator<>());
-				assertDIPP(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				           cedi.getNumero(), null, dis.get(0));
-				assertDIPP(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				           cedi.getNumero(), null, dis.get(1));
-				return null;
-			}
+			final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
+			assertEquals(2, dis.size());
+			dis.sort(new DateRangeComparator<>());
+			assertDIPP(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			           cedi.getNumero(), null, dis.get(0));
+			assertDIPP(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			           cedi.getNumero(), null, dis.get(1));
+			return null;
 		});
 	}
 
@@ -3631,124 +3467,100 @@ public class TacheServiceTest extends BusinessTest {
 		//
 		// Etape 1 : contribuable hors-canton avec une activité indépendente dans le canton
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Bashkim", "Muji", date(1983, 3, 24), Sexe.MASCULIN);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Bashkim", "Muji", date(1983, 3, 24), Sexe.MASCULIN);
 
-				addForPrincipal(pp, date(2004, 3, 1), MotifFor.INDETERMINE, date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.INDIGENT);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+			addForPrincipal(pp, date(2004, 3, 1), MotifFor.INDETERMINE, date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.INDIGENT);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
 
-				for (int annee = 2004; annee < anneeCourante; ++annee) {
-					final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(annee);
-					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
-					final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-					addEtatDeclarationEmise(di1, date(annee - 1, 1, 15));
-					addEtatDeclarationRetournee(di1, date(annee - 1, 4, 19));
-					ids.dis.add(di1.getId());
-				}
-
-				ids.ctb = pp.getId();
-				return null;
+			for (int annee = 2004; annee < anneeCourante; ++annee) {
+				final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(annee);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di1, date(annee - 1, 1, 15));
+				addEtatDeclarationRetournee(di1, date(annee - 1, 4, 19));
+				ids.dis.add(di1.getId());
 			}
+
+			ids.ctb = pp.getId();
+			return null;
 		});
 
 		// On vérifie qu'aucune tâche n'est générée (le contribuable est dans un état correct) :
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				assertEmpty(tacheDAO.find(ids.ctb));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			assertEmpty(tacheDAO.find(ids.ctb));
+			return null;
 		});
 
 		//
 		// Etape 2 : annulation du dernier for principal
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ctb);
-				final ForFiscal ffp2 = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp2);
-				tiersService.annuleForFiscal(ffp2);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ctb);
+			final ForFiscal ffp2 = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp2);
+			tiersService.annuleForFiscal(ffp2);
+			return null;
 		});
 
 		// On vérifie que le contribuable est toujours assujetti et qu'aucune nouvelle tâche n'a été créée
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				assertEmpty(tacheDAO.find(ids.ctb));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			assertEmpty(tacheDAO.find(ids.ctb));
+			return null;
 		});
 
 		//
 		// Etape 3 : annulation du for principal
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ctb);
-				final ForFiscal ffp1 = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp1);
-				tiersService.annuleForFiscal(ffp1);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ctb);
+			final ForFiscal ffp1 = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp1);
+			tiersService.annuleForFiscal(ffp1);
+			return null;
 		});
 
 		// On vérifie que le contribuable n'est plus assujetti et que des tâches d'annulation des déclarations existantes sont générées
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ids.ctb);
-				assertEquals(anneeCourante - 2004, taches.size());
-				for (int i = 0; i < anneeCourante - 2004 - 1; ++i) {
-					assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.dis.get(i), false, (TacheAnnulationDeclarationImpot) taches.get(i));
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ids.ctb);
+			assertEquals(anneeCourante - 2004, taches.size());
+			for (int i = 0; i < anneeCourante - 2004 - 1; ++i) {
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.dis.get(i), false, (TacheAnnulationDeclarationImpot) taches.get(i));
 			}
+			return null;
 		});
 
 		//
 		// Etape 4 : ajout d'un for principal vaudois ordinaire en remplacement des fors annulés
 		//
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
-				assertNotNull(pp);
-				addForPrincipal(pp, date(2004, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ctb);
+			assertNotNull(pp);
+			addForPrincipal(pp, date(2004, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
+			return null;
 		});
 
 		// On vérifie que :
 		//  - les tâches d'annulation introduites à l'étape 2 sont annulées (le contribuable est de nouveau assujetti)
 		//  - le type de contribuable des déclarations pré-existantes est mis-à-jour (car les types de documents sont compatibles)
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
-				final List<Tache> taches = tacheDAO.find(ids.ctb);
-				assertEquals(anneeCourante - 2004, taches.size());
-				for (int i = 0; i < anneeCourante - 2004 - 1; ++i) {
-					assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.dis.get(i), true, (TacheAnnulationDeclarationImpot) taches.get(i));
-				}
-
-				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
-				assertEquals(anneeCourante - 2004, dis.size());
-				dis.sort(new DateRangeComparator<>());
-				assertDIPP(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
-				           dis.get(0));
-
-				for (int annee = 2005; annee < anneeCourante - 1; ++annee) {
-					assertDIPP(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
-					           dis.get(annee - 2004));
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final List<Tache> taches = tacheDAO.find(ids.ctb);
+			assertEquals(anneeCourante - 2004, taches.size());
+			for (int i = 0; i < anneeCourante - 2004 - 1; ++i) {
+				assertTacheAnnulationDI(TypeEtatTache.EN_INSTANCE, ids.dis.get(i), true, (TacheAnnulationDeclarationImpot) taches.get(i));
 			}
+
+			final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
+			assertEquals(anneeCourante - 2004, dis.size());
+			dis.sort(new DateRangeComparator<>());
+			assertDIPP(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+			           dis.get(0));
+
+			for (int annee = 2005; annee < anneeCourante - 1; ++annee) {
+				assertDIPP(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+				           dis.get(annee - 2004));
+			}
+			return null;
 		});
 	}
 
@@ -4104,132 +3916,115 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pfPrecedente = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
-				final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
-				addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
-
-				return pp.getNumero();
-			}
+			final PeriodeFiscale pfPrecedente = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
+			final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
+			addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
+			return pp.getNumero();
 		});
 
 		// vérification des fors et qu'aucune tâche n'a encore été générée
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				assertNotNull(pp);
+			final Set<ForFiscal> fors = pp.getForsFiscaux();
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 
-				final Set<ForFiscal> fors = pp.getForsFiscaux();
-				assertNotNull(fors);
-				assertEquals(1, fors.size());
+			final ForFiscal ff = fors.iterator().next();
+			assertNotNull(ff);
+			assertEquals(dateArrivee, ff.getDateDebut());
+			assertNull(ff.getDateFin());
 
-				final ForFiscal ff = fors.iterator().next();
-				assertNotNull(ff);
-				assertEquals(dateArrivee, ff.getDateDebut());
-				assertNull(ff.getDateFin());
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
 
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-
-				final List<Tache> taches = tacheDAO.find(criterion);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-				return null;
-			}
+			final List<Tache> taches = tacheDAO.find(criterion);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// départ HS dans la période courante : une tâche de contrôle de dossier et une tâche d'envoi de DI devraient être générées
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				assertNotNull(pp);
-
-				tiersService.closeForFiscalPrincipal(pp, dateDepart, MotifFor.DEPART_HS);
-				tiersService.openForFiscalPrincipal(pp, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS);
-				return null;
-			}
+			tiersService.closeForFiscalPrincipal(pp, dateDepart, MotifFor.DEPART_HS);
+			tiersService.openForFiscalPrincipal(pp, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS);
+			return null;
 		});
 
 		// vérification des fors et des tâches créées
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				assertNotNull(pp);
+			final List<? extends ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+			assertNotNull(fors);
+			assertEquals(2, fors.size());
 
-				final List<? extends ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
-				assertNotNull(fors);
-				assertEquals(2, fors.size());
-
-				// for vaudois
-				{
-					final ForFiscalPrincipal ffp = fors.get(0);
-					assertNotNull(ffp);
-					assertEquals(dateArrivee, ffp.getDateDebut());
-					assertEquals(dateDepart, ffp.getDateFin());
-					assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				}
-
-				// for étranger
-				{
-					final ForFiscalPrincipal ffp = fors.get(1);
-					assertNotNull(ffp);
-					assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
-					assertNull(ffp.getDateFin());
-					assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
-					assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
-				}
-
-				// les tâches, maintenant...
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					assertNotNull(taches);
-					assertEquals(2, taches.size());
-				}
-
-				// une tâche de contrôle de dossier
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheControleDossier);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-
-					final TacheControleDossier tache = (TacheControleDossier) taches.get(0);
-					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
-					assertEquals("Départ hors-Suisse", tache.getCommentaire());
-				}
-
-				// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du départ
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-
-					final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
-					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(anneeCourante, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE,
-							TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
-				}
-
-				return null;
+			// for vaudois
+			{
+				final ForFiscalPrincipal ffp = fors.get(0);
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(dateDepart, ffp.getDateFin());
+				assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			}
+
+			// for étranger
+			{
+				final ForFiscalPrincipal ffp = fors.get(1);
+				assertNotNull(ffp);
+				assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			}
+
+			// les tâches, maintenant...
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(2, taches.size());
+			}
+
+			// une tâche de contrôle de dossier
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheControleDossier tache = (TacheControleDossier) taches.get(0);
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
+				assertEquals("Départ hors-Suisse", tache.getCommentaire());
+			}
+
+			// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du départ
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(anneeCourante, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE,
+				            TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
+			}
+			return null;
 		});
 	}
 
@@ -4255,104 +4050,87 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pfPrecedente = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
-				final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
-				addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
-
-				return pp.getNumero();
-			}
+			final PeriodeFiscale pfPrecedente = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
+			final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
+			addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
+			return pp.getNumero();
 		});
 
 		// vérification des fors et qu'aucune tâche n'a encore été générée
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				assertNotNull(pp);
+			final Set<ForFiscal> fors = pp.getForsFiscaux();
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 
-				final Set<ForFiscal> fors = pp.getForsFiscaux();
-				assertNotNull(fors);
-				assertEquals(1, fors.size());
+			final ForFiscal ff = fors.iterator().next();
+			assertNotNull(ff);
+			assertEquals(dateArrivee, ff.getDateDebut());
+			assertNull(ff.getDateFin());
 
-				final ForFiscal ff = fors.iterator().next();
-				assertNotNull(ff);
-				assertEquals(dateArrivee, ff.getDateDebut());
-				assertNull(ff.getDateFin());
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
 
-				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setContribuable(pp);
-
-				final List<Tache> taches = tacheDAO.find(criterion);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-				return null;
-			}
+			final List<Tache> taches = tacheDAO.find(criterion);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+			return null;
 		});
 
 		// décès dans la période courante : une tâche de transmission de dossier et une tâche d'envoi de DI devraient être générées
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				assertNotNull(pp);
-
-				metierService.deces(pp, dateDeces, null, null);
-				return null;
-			}
+			metierService.deces(pp, dateDeces, null, null);
+			return null;
 		});
 
 		// vérification des fors et des tâches créées
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+			assertNotNull(pp);
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
-				assertNotNull(pp);
+			final List<? extends ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 
-				final List<? extends ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
-				assertNotNull(fors);
-				assertEquals(1, fors.size());
+			final ForFiscalPrincipal ffp = fors.get(0);
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertEquals(dateDeces, ffp.getDateFin());
+			assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 
-				final ForFiscalPrincipal ffp = fors.get(0);
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(dateDeces, ffp.getDateFin());
-				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-
-				// les tâches, maintenant...
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-				}
-
-				// une tâche d'envoi de DI pour la période en cours jusqu'à la date du décès
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					assertNotNull(taches);
-					assertEquals(1, taches.size());
-
-					final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
-					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-								TypeAdresseRetour.CEDI, tache);
-				}
-
-				return null;
+			// les tâches, maintenant...
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
 			}
+
+			// une tâche d'envoi de DI pour la période en cours jusqu'à la date du décès
+			{
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
+				assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+				            TypeAdresseRetour.CEDI, tache);
+			}
+			return null;
 		});
 	}
 
@@ -6001,13 +5779,11 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		// annulation du décès
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				metierService.annuleDeces(pp, dateDeces);       // <-- la NPE se produisait ici quand on essayait de déterminer la commune derrière le numéro OFS du pays inconnu (-> null -> boom !)
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertNotNull(pp);
+			metierService.annuleDeces(pp, dateDeces);       // <-- la NPE se produisait ici quand on essayait de déterminer la commune derrière le numéro OFS du pays inconnu (-> null -> boom !);
+			return null;
 		});
 
 		// vérification du résultat

@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.civil.interne.changement.permis;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -46,13 +45,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, null);
-				assertErreurs(evt, Collections.singletonList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", noIndividu)));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, null);
+			assertErreurs(evt, Collections.singletonList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", noIndividu)));
+			return null;
 		});
 	}
 
@@ -79,13 +75,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -113,13 +106,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -147,13 +137,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -181,13 +168,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -216,13 +200,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -251,13 +232,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+			return null;
 		});
 	}
 
@@ -290,13 +268,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+			return null;
 		});
 	}
 
@@ -333,13 +308,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+			return null;
 		});
 	}
 
@@ -375,13 +347,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -418,13 +387,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+			return null;
 		});
 	}
 
@@ -451,13 +417,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -485,13 +448,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertSansErreurNiWarning(evt);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertSansErreurNiWarning(evt);
+			return null;
 		});
 	}
 
@@ -519,13 +479,10 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		});
 
 		// envoi de l'événement civil de correction de début de validité de permis
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
+			assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+			return null;
 		});
 	}
 }

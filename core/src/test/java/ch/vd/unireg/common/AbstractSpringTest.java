@@ -32,7 +32,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -248,24 +247,19 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		return transactionManager;
 	}
 
-	protected <T> T doInNewTransaction(TransactionCallback<T> action) throws Exception {
+	protected <T> T doInNewTransaction(TransactionCallback<T> action) {
 		return doExecuteInTransaction(Propagation.REQUIRES_NEW, action, false);
 	}
 
-	protected <T> T doInNewReadOnlyTransaction(TransactionCallback<T> action) throws Exception {
+	protected <T> T doInNewReadOnlyTransaction(TransactionCallback<T> action) {
 		return doExecuteInTransaction(Propagation.REQUIRES_NEW, action, true);
 	}
 
-	private <T> T doExecuteInTransaction(Propagation propagation, TransactionCallback<T> action, boolean readOnly) throws Exception {
+	private <T> T doExecuteInTransaction(Propagation propagation, TransactionCallback<T> action, boolean readOnly) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(propagation.value());
 		template.setReadOnly(readOnly);
-		try {
-			return template.execute(action);
-		}
-		catch (TxCallbackException e) {
-			throw (Exception)e.getCause();
-		}
+		return template.execute(action);
 	}
 
 	public abstract class TxCallback<T> implements TransactionCallback<T> {
@@ -278,7 +272,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 				return execute(status);
 			}
 			catch (Exception e) {
-				throw new TxCallbackException(e);
+				throw new RuntimeException(e);
 			}
 		}
 	}

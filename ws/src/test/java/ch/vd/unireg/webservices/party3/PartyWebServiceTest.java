@@ -11,12 +11,10 @@ import ch.ech.ech0044.v2.NamedPersonId;
 import ch.ech.ech0044.v2.PersonIdentification;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -137,31 +135,26 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple normal, assujetti vaudois ordinaire
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final RegDate dateMariage = date(1990, 1, 1);
+			final RegDate veilleMariage = dateMariage.getOneDayBefore();
 
-				final RegDate dateMariage = date(1990, 1, 1);
-				final RegDate veilleMariage = dateMariage.getOneDayBefore();
+			final PersonnePhysique paul = addNonHabitant("Paul", "Duchemin", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
+			ids.paul = paul.getNumero();
+			addForPrincipal(paul, date(1974, 3, 31), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Lausanne);
+			addAdresseSuisse(paul, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final ch.vd.unireg.tiers.PersonnePhysique paul = addNonHabitant("Paul", "Duchemin", RegDate.get(1954, 3, 31), ch.vd.unireg.type.Sexe.MASCULIN);
-				ids.paul = paul.getNumero();
-				addForPrincipal(paul, date(1974, 3, 31), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Lausanne);
-				addAdresseSuisse(paul, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			final PersonnePhysique janine = addNonHabitant("Janine", "Duchemin", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
+			ids.janine = janine.getNumero();
+			addForPrincipal(janine, date(1974, 3, 31), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockCommune.Lausanne);
+			addAdresseSuisse(janine, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueJolimont);
 
-				final ch.vd.unireg.tiers.PersonnePhysique janine = addNonHabitant("Janine", "Duchemin", RegDate.get(1954, 3, 31), ch.vd.unireg.type.Sexe.MASCULIN);
-				ids.janine = janine.getNumero();
-				addForPrincipal(janine, date(1974, 3, 31), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Lausanne);
-				addAdresseSuisse(janine, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueJolimont);
-
-				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(paul, janine, dateMariage, null);
-				ids.menage = ensemble.getMenage().getNumero();
-				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-
-				return null;
-			}
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(paul, janine, dateMariage, null);
+			ids.menage = ensemble.getMenage().getNumero();
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			return null;
 		});
 
 		// Demande de retourner les deux tiers en un seul batch
@@ -219,32 +212,27 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple dont le mari est sous tutelle
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final RegDate dateMariage = date(1976, 1, 1);
 
-				final RegDate dateMariage = date(1976, 1, 1);
+			final PersonnePhysique jeanpierre = addNonHabitant("Jean-Pierre", "Bürki", RegDate.get(1947, 1, 11), Sexe.MASCULIN);
+			ids.jeanpierre = jeanpierre.getNumero();
+			addAdresseSuisse(jeanpierre, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final ch.vd.unireg.tiers.PersonnePhysique jeanpierre = addNonHabitant("Jean-Pierre", "Bürki", RegDate.get(1947, 1, 11), ch.vd.unireg.type.Sexe.MASCULIN);
-				ids.jeanpierre = jeanpierre.getNumero();
-				addAdresseSuisse(jeanpierre, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			final PersonnePhysique marie = addNonHabitant("Marie", "Bürki", RegDate.get(1954, 1, 1), Sexe.FEMININ);
+			ids.marie = marie.getNumero();
+			addAdresseSuisse(marie, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
 
-				final ch.vd.unireg.tiers.PersonnePhysique marie = addNonHabitant("Marie", "Bürki", RegDate.get(1954, 1, 1), ch.vd.unireg.type.Sexe.FEMININ);
-				ids.marie = marie.getNumero();
-				addAdresseSuisse(marie, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeanpierre, marie, dateMariage, null);
+			ids.menage = ensemble.getMenage().getNumero();
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeanpierre, marie, dateMariage, null);
-				ids.menage = ensemble.getMenage().getNumero();
-				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			final PersonnePhysique tuteur = addNonHabitant("Jacky", "Rod", RegDate.get(1947, 1, 1), Sexe.MASCULIN);
+			ids.tuteur = tuteur.getNumero();
+			addAdresseSuisse(tuteur, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
 
-				final ch.vd.unireg.tiers.PersonnePhysique tuteur = addNonHabitant("Jacky", "Rod", RegDate.get(1947, 1, 1), ch.vd.unireg.type.Sexe.MASCULIN);
-				ids.tuteur = tuteur.getNumero();
-				addAdresseSuisse(tuteur, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
-
-				addTutelle(jeanpierre, tuteur, null, date(2007, 9, 11), null);
-
-				return null;
-			}
+			addTutelle(jeanpierre, tuteur, null, date(2007, 9, 11), null);
+			return null;
 		});
 
 		{
@@ -286,32 +274,27 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple dont le mari est sous tutelle
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+		doInNewTransaction(status -> {
+			final RegDate dateMariage = date(1976, 1, 1);
 
-				final RegDate dateMariage = date(1976, 1, 1);
+			final PersonnePhysique jeandaniel = addNonHabitant("Jean-Daniel", "Guex-Martin", RegDate.get(1947, 1, 11), Sexe.MASCULIN);
+			ids.jeandaniel = jeandaniel.getNumero();
+			addAdresseSuisse(jeandaniel, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final ch.vd.unireg.tiers.PersonnePhysique jeandaniel = addNonHabitant("Jean-Daniel", "Guex-Martin", RegDate.get(1947, 1, 11), ch.vd.unireg.type.Sexe.MASCULIN);
-				ids.jeandaniel = jeandaniel.getNumero();
-				addAdresseSuisse(jeandaniel, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
+			final PersonnePhysique myriam = addNonHabitant("Myriam", "Guex-Martin", RegDate.get(1954, 1, 1), Sexe.FEMININ);
+			ids.myriam = myriam.getNumero();
+			addAdresseSuisse(myriam, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
 
-				final ch.vd.unireg.tiers.PersonnePhysique myriam = addNonHabitant("Myriam", "Guex-Martin", RegDate.get(1954, 1, 1), ch.vd.unireg.type.Sexe.FEMININ);
-				ids.myriam = myriam.getNumero();
-				addAdresseSuisse(myriam, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeandaniel, myriam, dateMariage, null);
+			ids.menage = ensemble.getMenage().getNumero();
+			addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeandaniel, myriam, dateMariage, null);
-				ids.menage = ensemble.getMenage().getNumero();
-				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			final PersonnePhysique conseiller = addNonHabitant("Philippe", "Rossy", RegDate.get(1947, 1, 1), Sexe.MASCULIN);
+			ids.conseiller = conseiller.getNumero();
+			addAdresseSuisse(conseiller, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
 
-				final ch.vd.unireg.tiers.PersonnePhysique conseiller = addNonHabitant("Philippe", "Rossy", RegDate.get(1947, 1, 1), ch.vd.unireg.type.Sexe.MASCULIN);
-				ids.conseiller = conseiller.getNumero();
-				addAdresseSuisse(conseiller, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
-
-				addConseilLegal(jeandaniel, conseiller, date(2007, 9, 11), null);
-
-				return null;
-			}
+			addConseilLegal(jeandaniel, conseiller, date(2007, 9, 11), null);
+			return null;
 		});
 
 		{
@@ -444,25 +427,21 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
-			@Override
-			public Ids execute(TransactionStatus transactionStatus) throws Exception {
+		final Ids ids = doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1957, 10, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Croy);
+			final PeriodeFiscale pf = addPeriodeFiscale(2009);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS));
 
-				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1957, 10, 3), ch.vd.unireg.type.Sexe.MASCULIN);
-				addForPrincipal(pp, date(2009, 1, 1), ch.vd.unireg.type.MotifFor.ARRIVEE_HS, MockCommune.Croy);
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument modele = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS));
+			final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
+			di.addEtat(retour);
 
-				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
-				di.addEtat(retour);
-
-				final Ids ids = new Ids();
-				ids.ppId = pp.getNumero();
-				ids.diId = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppId = pp.getNumero();
+			ids1.diId = di.getId();
+			return ids1;
 		});
 
 		// quittancement de la DI
@@ -883,52 +862,52 @@ public class PartyWebServiceTest extends WebserviceTest {
 		});
 
 		// On quittance la DI en précisant la source
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-				demande.setAcknowledgeDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get()));
-				demande.setSource("TEST_QUITTANCEMENT");
-				demande.setKey(new OrdinaryTaxDeclarationKey());
-				demande.getKey().setTaxpayerNumber((int) ids.ppId);
-				demande.getKey().setSequenceNumber(1);
-				demande.getKey().setTaxPeriod(annee);
+		doInNewTransactionAndSession(status -> {
+			final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
+			demande.setAcknowledgeDate(DataHelper.coreToXMLv1(RegDate.get()));
+			demande.setSource("TEST_QUITTANCEMENT");
+			demande.setKey(new OrdinaryTaxDeclarationKey());
+			demande.getKey().setTaxpayerNumber((int) ids.ppId);
+			demande.getKey().setSequenceNumber(1);
+			demande.getKey().setTaxPeriod(annee);
 
-				final AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
-				params.setLogin(login);
-				params.getRequests().addAll(Collections.singletonList(demande));
+			final AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
+			params.setLogin(login);
+			params.getRequests().addAll(Collections.singletonList(demande));
 
-				final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(params);
-				assertNotNull(reponse);
-
-				final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
-				assertNotNull(retours);
-				assertEquals(1, retours.size());
-
-				final AcknowledgeTaxDeclarationResponse retour = retours.get(0);
-				assertNotNull(retour);
-				assertEquals(TaxDeclarationAcknowledgeCode.OK, retour.getCode());
-				return null;
+			final AcknowledgeTaxDeclarationsResponse reponse;
+			try {
+				reponse = service.acknowledgeTaxDeclarations(params);
 			}
+			catch (WebServiceException e) {
+				throw new RuntimeException(e);
+			}
+			assertNotNull(reponse);
+
+			final List<AcknowledgeTaxDeclarationResponse> retours = reponse.getResponses();
+			assertNotNull(retours);
+			assertEquals(1, retours.size());
+
+			final AcknowledgeTaxDeclarationResponse retour = retours.get(0);
+			assertNotNull(retour);
+			assertEquals(TaxDeclarationAcknowledgeCode.OK, retour.getCode());
+			return null;
 		});
 
 		// On vérifie que la DI a été quittancée par le CEDI (= valeur par défaut)
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
-				assertNotNull(di);
-				assertEquals(RegDate.get(), di.getDateRetour());
+		doInNewTransactionAndSession(status -> {
+			final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+			assertNotNull(di);
+			assertEquals(RegDate.get(), di.getDateRetour());
 
-				final EtatDeclaration etat = di.getDernierEtatDeclaration();
-				assertNotNull(etat);
-				assertInstanceOf(EtatDeclarationRetournee.class, etat);
+			final EtatDeclaration etat = di.getDernierEtatDeclaration();
+			assertNotNull(etat);
+			assertInstanceOf(EtatDeclarationRetournee.class, etat);
 
-				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
-				assertEquals(RegDate.get(), retour.getDateObtention());
-				assertEquals("TEST_QUITTANCEMENT", retour.getSource());
-				return null;
-			}
+			final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+			assertEquals(RegDate.get(), retour.getDateObtention());
+			assertEquals("TEST_QUITTANCEMENT", retour.getSource());
+			return null;
 		});
 	}
 
@@ -1034,16 +1013,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative orbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
-				final CollectiviteAdministrative yverdon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				ids.lausanne = lausanne.getNumero();
-				ids.orbe = orbe.getNumero();
-				ids.yverdon = yverdon.getNumero();
-			}
+		doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative orbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
+			final CollectiviteAdministrative yverdon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_YVERDON.getNoColAdm());
+			ids.lausanne = lausanne.getNumero();
+			ids.orbe = orbe.getNumero();
+			ids.yverdon = yverdon.getNumero();
+			return null;
 		});
 
 		// Lausanne
@@ -1079,16 +1056,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final CollectiviteAdministrative lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final CollectiviteAdministrative orbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
-				final CollectiviteAdministrative yverdon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_YVERDON.getNoColAdm());
-				ids.lausanne = lausanne.getNumero();
-				ids.orbe = orbe.getNumero();
-				ids.yverdon = yverdon.getNumero();
-			}
+		doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative lausanne = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+			final CollectiviteAdministrative orbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
+			final CollectiviteAdministrative yverdon = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_YVERDON.getNoColAdm());
+			ids.lausanne = lausanne.getNumero();
+			ids.orbe = orbe.getNumero();
+			ids.yverdon = yverdon.getNumero();
+			return null;
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -1129,14 +1104,11 @@ public class PartyWebServiceTest extends WebserviceTest {
 		removeTiersIndexData();
 		setWantIndexationTiers(true);
 
-		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.UNIQUE, date(2000, 1, 1));
-				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2000, 1, 1));
-				debiteur.setModeCommunication(ModeCommunication.PAPIER);
-				return debiteur.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.UNIQUE, date(2000, 1, 1));
+			final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2000, 1, 1));
+			debiteur.setModeCommunication(ModeCommunication.PAPIER);
+			return debiteur.getNumero();
 		});
 
 		globalTiersIndexer.sync();
@@ -1162,14 +1134,11 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetPartyNoAVS11() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
-				addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, "12345678113");
-				addIdentificationPersonne(pp, CategorieIdentifiant.CH_ZAR_RCE, "0453.2123/4");
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
+			addIdentificationPersonne(pp, CategorieIdentifiant.CH_AHV_AVS, "12345678113");
+			addIdentificationPersonne(pp, CategorieIdentifiant.CH_ZAR_RCE, "0453.2123/4");
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.<PartyPart>emptyList());
@@ -1214,12 +1183,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.<PartyPart>emptyList());
@@ -1253,14 +1219,11 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetPartyTaxResidences() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Morges);
-				addForSecondaire(pp, date(2011, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Morges);
+			addForSecondaire(pp, date(2011, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.singletonList(PartyPart.TAX_RESIDENCES));
@@ -1302,15 +1265,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetCanceledAddresses() throws Exception {
 
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Félix", "Annulé", date(1977, 3, 21), Sexe.MASCULIN);
-				final AdresseSuisse canceled = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2005, 1, 1), date(2007, 4, 3), MockRue.Epesses.RueDeLaMottaz);
-				canceled.setAnnule(true);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Moudon.LeBourg);
-				return pp.getNumero();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Félix", "Annulé", date(1977, 3, 21), Sexe.MASCULIN);
+			final AdresseSuisse canceled = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2005, 1, 1), date(2007, 4, 3), MockRue.Epesses.RueDeLaMottaz);
+			canceled.setAnnule(true);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Moudon.LeBourg);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.singletonList(PartyPart.ADDRESSES));
@@ -1351,12 +1311,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final long idPM = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise pm = addEntrepriseConnueAuCivil(noPM);
-				return pm.getNumero();
-			}
+		final long idPM = doInNewTransactionAndSession(status -> {
+			final Entreprise pm = addEntrepriseConnueAuCivil(noPM);
+			return pm.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, (int) idPM, Collections.singletonList(PartyPart.ADDRESSES));
@@ -1378,12 +1335,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetAddressePartyWithoutAnyAddress() throws Exception {
 
-		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
@@ -1419,13 +1373,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetAddressePartyWithOneAddress() throws Exception {
 
-		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1956,1,1), null, MockRue.Gressy.LesPechaux);
-				return pp.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1956, 1, 1), null, MockRue.Gressy.LesPechaux);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
@@ -1461,13 +1412,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetAddressePartyIncomplete() throws Exception {
 
-		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
-				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1956, 1, 1), null, null, null, MockPays.EtatsUnis);
-				return pp.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+			addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1956, 1, 1), null, null, null, MockPays.EtatsUnis);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
@@ -1486,13 +1434,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetAddressePartyComplete() throws Exception {
 
-		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
-				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1956,1,1),null, "8 Avenue foch","7007 Paris", MockPays.France);
-				return pp.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+			addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1956, 1, 1), null, "8 Avenue foch", "7007 Paris", MockPays.France);
+			return pp.getNumero();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
@@ -1793,13 +1738,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise ent = addEntrepriseConnueAuCivil(idEntrepriseCivile);
-				ent.setBlocageRemboursementAutomatique(null);
-				return ent.getId();
-			}
+		final Long id = doInNewTransactionAndSession(status -> {
+			final Entreprise ent = addEntrepriseConnueAuCivil(idEntrepriseCivile);
+			ent.setBlocageRemboursementAutomatique(null);
+			return ent.getId();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2276,21 +2218,17 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 
 		// on vérifie que le nouveau délai est en base de données
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di2011);
-				assertNotNull(di);
+		doInNewTransactionAndSession(status -> {
+			DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di2011);
+			assertNotNull(di);
 
-				final List<DelaiDeclaration> delais = di.getDelaisDeclarationSorted();
-				assertNotNull(delais);
-				assertEquals(2, delais.size());
+			final List<DelaiDeclaration> delais = di.getDelaisDeclarationSorted();
+			assertNotNull(delais);
+			assertEquals(2, delais.size());
 
-				assertEquals(date(2012, 6, 30), delais.get(0).getDelaiAccordeAu());
-				assertEquals(nouveauDelai, delais.get(1).getDelaiAccordeAu());
-
-				return null;
-			}
+			assertEquals(date(2012, 6, 30), delais.get(0).getDelaiAccordeAu());
+			assertEquals(nouveauDelai, delais.get(1).getDelaiAccordeAu());
+			return null;
 		});
 
 		// nouveau délai avant le précédent
@@ -2326,12 +2264,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			return pp.getId();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2369,12 +2304,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noInd);
-				return pp.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addHabitant(noInd);
+			return pp.getId();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
@@ -2402,14 +2334,11 @@ public class PartyWebServiceTest extends WebserviceTest {
 	public void testGetNaturalPersonneCategoryNonHabitantPermisB() throws Exception {
 
 		final RegDate dateDebutPermis = date(2009, 9, 22);
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Eva", "Gourt", date(1983, 3, 31), Sexe.FEMININ);
-				pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
-				pp.setDateDebutValiditeAutorisation(dateDebutPermis);
-				return pp.getId();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Eva", "Gourt", date(1983, 3, 31), Sexe.FEMININ);
+			pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+			pp.setDateDebutValiditeAutorisation(dateDebutPermis);
+			return pp.getId();
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();

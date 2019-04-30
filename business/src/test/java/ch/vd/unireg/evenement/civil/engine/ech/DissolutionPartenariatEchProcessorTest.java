@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -51,15 +50,12 @@ public class DissolutionPartenariatEchProcessorTest extends AbstractEvenementCiv
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique principal = addHabitant(noPrincipal);
-				final PersonnePhysique conjoint = addHabitant(noConjoint);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateEnregistrement, null);
-				addForPrincipal(ensemble.getMenage(), dateEnregistrement, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique principal = addHabitant(noPrincipal);
+			final PersonnePhysique conjoint = addHabitant(noConjoint);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateEnregistrement, null);
+			addForPrincipal(ensemble.getMenage(), dateEnregistrement, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return null;
 		});
 
 		// événement civil
@@ -134,15 +130,12 @@ public class DissolutionPartenariatEchProcessorTest extends AbstractEvenementCiv
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique principal = addHabitant(noPrincipal);
-				final PersonnePhysique conjoint = addHabitant(noConjoint);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateEnregistrement, null);
-				addForPrincipal(ensemble.getMenage(), dateEnregistrement, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique principal = addHabitant(noPrincipal);
+			final PersonnePhysique conjoint = addHabitant(noConjoint);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateEnregistrement, null);
+			addForPrincipal(ensemble.getMenage(), dateEnregistrement, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			return null;
 		});
 
 
@@ -193,16 +186,13 @@ public class DissolutionPartenariatEchProcessorTest extends AbstractEvenementCiv
 			}
 		});
 
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique principal = addHabitant(noPrincipal);
-				final PersonnePhysique conjoint = addHabitant(noConjoint);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateEnregistrement, null);
-				addForPrincipal(ensemble.getMenage(), dateEnregistrement, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addDecisionAci(principal, dateEnregistrement, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique principal = addHabitant(noPrincipal);
+			final PersonnePhysique conjoint = addHabitant(noConjoint);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, dateEnregistrement, null);
+			addForPrincipal(ensemble.getMenage(), dateEnregistrement, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+			addDecisionAci(principal, dateEnregistrement, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return null;
 		});
 
 

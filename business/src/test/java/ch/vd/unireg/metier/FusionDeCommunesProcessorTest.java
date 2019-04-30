@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -233,21 +232,15 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableSansFor() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -267,23 +260,17 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForsSurAutresCommunes() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -315,24 +302,18 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecAnciensFors() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, date(1990, 4, 22), MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
-				addForPrincipal(bruno, date(1990, 4, 23), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
-				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, date(1999, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, date(1990, 4, 22), MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
+			addForPrincipal(bruno, date(1990, 4, 23), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
+			addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, date(1999, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -371,23 +352,17 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForSecondaire() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Propriétaire", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Renens);
-				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Propriétaire", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Renens);
+			addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -424,22 +399,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForPrincipal() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Croy);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Croy);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -474,24 +443,18 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecForsExotiques() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForAutreImpot(bruno, date(1983, 4, 6), null, MockCommune.Vaulion, GenreImpot.CHIENS);
-				addForAutreElementImposable(bruno, date(1992, 4, 6), null, MockCommune.Vaulion, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.PRESTATION_PREVOYANCE);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+			addForAutreImpot(bruno, date(1983, 4, 6), null, MockCommune.Vaulion, GenreImpot.CHIENS);
+			addForAutreElementImposable(bruno, date(1992, 4, 6), null, MockCommune.Vaulion, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.PRESTATION_PREVOYANCE);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransaction(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransaction(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -534,26 +497,20 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final RegDate veilleDateFutur = dateFutur.getOneDayBefore();
 
 		// Un contribuable avec tout pleins de fors exotiques dans le futur (= cas à priori pas autorisé aujourd'hui, mais soyons prévoyant)
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, veilleDateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForPrincipal(bruno, dateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
-				addForSecondaire(bruno, dateFutur, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
-				addForAutreImpot(bruno, dateFutur, null, MockCommune.Croy, GenreImpot.CHIENS);
-				addForAutreElementImposable(bruno, dateFutur, null, MockCommune.Croy, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.PRESTATION_PREVOYANCE);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, veilleDateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+			addForPrincipal(bruno, dateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
+			addForSecondaire(bruno, dateFutur, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+			addForAutreImpot(bruno, dateFutur, null, MockCommune.Croy, GenreImpot.CHIENS);
+			addForAutreElementImposable(bruno, dateFutur, null, MockCommune.Croy, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.PRESTATION_PREVOYANCE);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransaction(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransaction(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		// Le contribuable possède plusieurs fors *dans le futurs* sur des communes concernées pas la fusion -> leurs numéro OFs devraient être mis à jour sans changement de dates
@@ -603,22 +560,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	public void testTraiteContribuableAvecForDejaSurNouvelleCommune() throws Exception {
 
 		// Le contribuable habite déjà sur la commune résultant de la fusion
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.RomainmotierEnvy);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.RomainmotierEnvy);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -645,22 +596,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteDebiteurAvecFor() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(1990, 5, 23));
-				addForDebiteur(dpi, date(1990, 5, 23), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy);
-				return dpi.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(1990, 5, 23));
+			addForDebiteur(dpi, date(1990, 5, 23), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy);
+			return dpi.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -759,14 +704,11 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	public void testTiersAvec2ForsConcernesParLaFusion() throws Exception {
 
 		// Le contribuable à son for principal et un for secondaire sur la commune à fusionner
-		final Long id = doInNewTransactionAndSessionWithoutValidation(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
-				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Cully);
-				addForSecondaire(bruno, date(1984, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransactionAndSessionWithoutValidation(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
+			addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Cully);
+			addForSecondaire(bruno, date(1984, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
+			return bruno.getNumero();
 		});
 
 		doInNewTransaction(status -> {
@@ -799,22 +741,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	@Test
 	public void testTraiteContribuableAvecDecisionAci() throws Exception {
 
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
-				addDecisionAci(bruno,date(1988,1,2),null,MockCommune.Croy.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
+			addDecisionAci(bruno, date(1988, 1, 2), null, MockCommune.Croy.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -846,22 +782,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 	public void testTraiteContribuableAvecDecisionDejaSurNouvelleCommune() throws Exception {
 
 		// Le contribuable habite déjà sur la commune résultant de la fusion
-		final Long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
-				addDecisionAci(bruno,date(1988,1,2),null,MockCommune.RomainmotierEnvy.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				return bruno.getNumero();
-			}
+		final Long id = doInNewTransaction(status -> {
+			PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
+			addDecisionAci(bruno, date(1988, 1, 2), null, MockCommune.RomainmotierEnvy.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			return bruno.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		doInNewTransactionAndSession(status -> {
@@ -938,13 +868,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			return etb.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, true, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, true, false), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		assertEquals(1, rapport.nbTiersExamines);
@@ -994,13 +921,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			return entreprise.getNumero();
 		});
 
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, false, true), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(status -> {
+			final FusionDeCommunesResults r = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+			processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, false, true), anciensNoOfs, nouveauNoOfs, dateFusion, r);
+			return r;
 		});
 
 		assertEquals(1, rapport.nbTiersExamines);
