@@ -1,6 +1,5 @@
 package ch.vd.unireg.tiers.jobs;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +7,6 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +18,6 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.common.BatchTransactionTemplate;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
@@ -109,24 +105,19 @@ public class CorrectionForsHCJob extends JobDefinition {
 	@SuppressWarnings("unchecked")
 	private Set<ForFiscalPrincipal> getFors(final List<Long> ids) {
 		
-		final List<ForFiscalPrincipal> list = hibernateTemplate.execute(new HibernateCallback<List<ForFiscalPrincipal>>() {
+		final List<ForFiscalPrincipal> list = hibernateTemplate.execute(session -> {
+			final Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
+			criteria.add(Restrictions.in("id", ids));
+			criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-			@Override
-			public List<ForFiscalPrincipal> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
-				criteria.add(Restrictions.in("id", ids));
-				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-
-				final FlushMode mode = session.getFlushMode();
-				try {
-					session.setFlushMode(FlushMode.MANUAL);
-					return criteria.list();
-				}
-				finally {
-					session.setFlushMode(mode);
-				}
+			final FlushMode mode = session.getFlushMode();
+			try {
+				session.setFlushMode(FlushMode.MANUAL);
+				return criteria.list();
 			}
-
+			finally {
+				session.setFlushMode(mode);
+			}
 		});
 		
 		return new HashSet<>(list);

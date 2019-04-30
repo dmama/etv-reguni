@@ -8,9 +8,7 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,7 +35,6 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor.ExistenceResults.TacheStatus;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -185,7 +182,6 @@ public class DeterminationDIsPPAEmettreProcessor {
 	 * @throws DeclarationException      en cas d'erreur dans le traitement d'un contribuable.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement d'un contribuable
 	 */
-	@SuppressWarnings("unchecked")
 	private void traiterBatch(final List<Long> batch, int anneePeriode, DeterminationDIsPPResults r) throws DeclarationException, AssujettissementException {
 
 		// Récupère la période fiscale
@@ -195,15 +191,13 @@ public class DeterminationDIsPPAEmettreProcessor {
 		}
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-        final List<ContribuableImpositionPersonnesPhysiques> list = hibernateTemplate.execute(new HibernateCallback<List<ContribuableImpositionPersonnesPhysiques>>() {
-	        @Override
-	        public List<ContribuableImpositionPersonnesPhysiques> doInHibernate(Session session) throws HibernateException {
-		        final Criteria crit = session.createCriteria(ContribuableImpositionPersonnesPhysiques.class);
-		        crit.add(Restrictions.in("numero", batch));
-		        crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
-		        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		        return crit.list();
-	        }
+        final List<ContribuableImpositionPersonnesPhysiques> list = hibernateTemplate.execute(session -> {
+	        final Criteria crit = session.createCriteria(ContribuableImpositionPersonnesPhysiques.class);
+	        crit.add(Restrictions.in("numero", batch));
+	        crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
+	        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+	        //noinspection unchecked
+	        return (List<ContribuableImpositionPersonnesPhysiques>) crit.list();
         });
 
 		// Traite tous les contribuables
@@ -708,7 +702,6 @@ public class DeterminationDIsPPAEmettreProcessor {
 	 * @param annee la période fiscale considérée
 	 * @return itérateur sur les ids des contribuables
 	 */
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<Long> createListeIdsContribuables(final int annee) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
@@ -717,36 +710,31 @@ public class DeterminationDIsPPAEmettreProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
+		//noinspection UnnecessaryLocalVariable
 		final List<Long> ids = template.execute(status -> {
 
-			final List<Long> idsFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryIdsCtbWithFors);
-					queryObject.setParameter("debutAnnee", debutAnnee);
-					queryObject.setParameter("finAnnee", finAnnee);
-					return queryObject.list();
-				}
+			final List<Long> idsFors = hibernateTemplate.executeWithNewSession(session -> {
+				final Query queryObject = session.createQuery(queryIdsCtbWithFors);
+				queryObject.setParameter("debutAnnee", debutAnnee);
+				queryObject.setParameter("finAnnee", finAnnee);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 
-			final List<Long> idsTasks = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
-					queryObject.setParameter("debutAnnee", debutAnnee);
-					queryObject.setParameter("finAnnee", finAnnee);
-					return queryObject.list();
-				}
+			final List<Long> idsTasks = hibernateTemplate.executeWithNewSession(session -> {
+				final Query queryObject = session.createQuery(queryIdsCtbWithTasks);
+				queryObject.setParameter("debutAnnee", debutAnnee);
+				queryObject.setParameter("finAnnee", finAnnee);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 
-			final List<Long> idsDIs = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
-					queryObject.setParameter("debutAnnee", debutAnnee);
-					queryObject.setParameter("finAnnee", finAnnee);
-					return queryObject.list();
-				}
+			final List<Long> idsDIs = hibernateTemplate.executeWithNewSession(session -> {
+				final Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
+				queryObject.setParameter("debutAnnee", debutAnnee);
+				queryObject.setParameter("finAnnee", finAnnee);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 
 			final Set<Long> set = new HashSet<>(idsFors.size() + idsTasks.size() + idsDIs.size());

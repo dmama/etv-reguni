@@ -1,12 +1,9 @@
 package ch.vd.unireg.declaration.snc;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +28,6 @@ import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.parametrage.ParametrePeriodeFiscaleSNC;
 import ch.vd.unireg.tiers.Entreprise;
@@ -224,16 +220,13 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return template.execute(status -> {
 			final String hql = "SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiQuestionnaireSNC AS tache WHERE tache.annulationDate IS NULL AND tache.dateFin BETWEEN :debut AND :fin AND tache.etat = :etat ORDER BY tache.contribuable.id ASC";
-			return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-					final Query query = session.createQuery(hql);
-					query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
-					query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-					query.setParameter("etat", TypeEtatTache.EN_INSTANCE);
-					//noinspection unchecked
-					return query.list();
-				}
+			return hibernateTemplate.executeWithNewSession(session -> {
+				final Query query = session.createQuery(hql);
+				query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
+				query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
+				query.setParameter("etat", TypeEtatTache.EN_INSTANCE);
+				//noinspection unchecked
+				return (List<Long>) query.list();
 			});
 		});
 	}

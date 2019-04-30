@@ -1,18 +1,14 @@
 package ch.vd.unireg.mouvement;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
@@ -32,14 +28,11 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSave() {
 
-		final Long mvtId = hibernateTemplate.execute(new HibernateCallback<Long>() {
-			@Override
-			public Long doInHibernate(Session session) throws HibernateException, SQLException {
-				final CollectiviteAdministrative oid = addCollectiviteAdministrative(7);
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-				final MouvementDossier mvt = addMouvementDossierClassementGeneral(pp, oid, EtatMouvementDossier.A_TRAITER);
-				return mvt.getId();
-			}
+		final Long mvtId = hibernateTemplate.execute(session -> {
+			final CollectiviteAdministrative oid = addCollectiviteAdministrative(7);
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1960, 3, 12), Sexe.FEMININ);
+			final MouvementDossier mvt = addMouvementDossierClassementGeneral(pp, oid, EtatMouvementDossier.A_TRAITER);
+			return mvt.getId();
 		});
 		Assert.assertNotNull(mvtId);
 

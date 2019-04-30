@@ -2,9 +2,7 @@ package ch.vd.unireg.situationfamille;
 
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,7 +16,6 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
@@ -158,14 +155,11 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException {
-				final Query query = session.createQuery(QUERY_STRING);
-				query.setParameter("date", dateValidite);
-				//noinspection unchecked
-				return query.list();
-			}
+		final List<Long> ids = template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query = session.createQuery(QUERY_STRING);
+			query.setParameter("date", dateValidite);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 
 		return ids;

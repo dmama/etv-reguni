@@ -1,11 +1,8 @@
 package ch.vd.unireg.foncier;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -15,14 +12,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalServiceImpl;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
@@ -145,21 +141,18 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 	List<Long> fetchIdsFormulaires(RegDate dateTraitement) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final String hql = "select distinct dd.id from DemandeDegrevementICI as dd" +
-						" where dd.annulationDate is null" +
-						" and exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where dd.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat = 'EMIS')" +
-						" and not exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where dd.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat in ('RAPPELE', 'RETOURNE'))" +
-						" and exists (select delai.documentFiscal.id from DelaiDocumentFiscal as delai where dd.id = delai.documentFiscal.id and delai.annulationDate is null and delai.delaiAccordeAu is not null and delai.etat = 'ACCORDE'" +
-						"              group by delai.documentFiscal.id having max(delai.delaiAccordeAu) < :dateTraitement)" +
-						" order by dd.id asc";
-				final Query query = session.createQuery(hql);
-				query.setParameter("dateTraitement", dateTraitement);
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
+			final String hql = "select distinct dd.id from DemandeDegrevementICI as dd" +
+					" where dd.annulationDate is null" +
+					" and exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where dd.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat = 'EMIS')" +
+					" and not exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where dd.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat in ('RAPPELE', 'RETOURNE'))" +
+					" and exists (select delai.documentFiscal.id from DelaiDocumentFiscal as delai where dd.id = delai.documentFiscal.id and delai.annulationDate is null and delai.delaiAccordeAu is not null and delai.etat = 'ACCORDE'" +
+					"              group by delai.documentFiscal.id having max(delai.delaiAccordeAu) < :dateTraitement)" +
+					" order by dd.id asc";
+			final Query query = session.createQuery(hql);
+			query.setParameter("dateTraitement", dateTraitement);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 	}
 }

@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -33,7 +31,6 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.ListeRecapitulativeDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
@@ -192,40 +189,37 @@ public class DeterminerLRsEchuesProcessor {
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
 		final String sql = b.toString();
 
-		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>>() {
-			@Override
-			public List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> doInHibernate(Session session) throws HibernateException {
+		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(status -> hibernateTemplate.execute(session -> {
 
-				final Query query = session.createSQLQuery(sql);
-				if (periodeFiscale != null) {
-					query.setParameter("pf", periodeFiscale);
-				}
+			final Query query = session.createSQLQuery(sql);
+			if (periodeFiscale != null) {
+				query.setParameter("pf", periodeFiscale);
+			}
 
-				@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
-				if (rows != null && !rows.isEmpty()) {
-					final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<>(rows.size());
-					for (Object[] row : rows) {
-						final int indexSommation = ((Number) row[4]).intValue();
-						final RegDate sommation = RegDate.fromIndex(indexSommation, false);
-						final RegDate echeanceReelle = getSeuilEcheanceSommation(sommation);
-						if (dateTraitement.isAfter(echeanceReelle)) {
-							final long idDebiteur = ((Number) row[1]).longValue();
-							final DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos.computeIfAbsent(idDebiteur, k -> new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur));
+			@SuppressWarnings({"unchecked"}) final List<Object[]> rows = query.list();
+			if (rows != null && !rows.isEmpty()) {
+				final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos1 = new HashMap<>(rows.size());
+				for (Object[] row : rows) {
+					final int indexSommation = ((Number) row[4]).intValue();
+					final RegDate sommation = RegDate.fromIndex(indexSommation, false);
+					final RegDate echeanceReelle = getSeuilEcheanceSommation(sommation);
+					if (dateTraitement.isAfter(echeanceReelle)) {
+						final long idDebiteur = ((Number) row[1]).longValue();
+						final DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos1.computeIfAbsent(idDebiteur, k -> new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur));
 
-							final long id = ((Number) row[0]).longValue();
-							final int indexDebut = ((Number) row[2]).intValue();
-							final Number indexFin = ((Number) row[3]);
+						final long id = ((Number) row[0]).longValue();
+						final int indexDebut = ((Number) row[2]).intValue();
+						final Number indexFin = ((Number) row[3]);
 
-							final RegDate debut = RegDate.fromIndex(indexDebut, false);
-							final RegDate fin = indexFin != null ? RegDate.fromIndex(indexFin.intValue(), false) : null;
-							infoDebiteur.addLrEchue(id, debut, fin, sommation);
-						}
+						final RegDate debut = RegDate.fromIndex(indexDebut, false);
+						final RegDate fin = indexFin != null ? RegDate.fromIndex(indexFin.intValue(), false) : null;
+						infoDebiteur.addLrEchue(id, debut, fin, sommation);
 					}
-					return new ArrayList<>(infos.values());
 				}
-				else {
-					return Collections.emptyList();
-				}
+				return new ArrayList<>(infos1.values());
+			}
+			else {
+				return Collections.emptyList();
 			}
 		}));
 

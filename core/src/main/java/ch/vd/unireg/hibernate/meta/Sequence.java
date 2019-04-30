@@ -1,11 +1,8 @@
 package ch.vd.unireg.hibernate.meta;
 
-import java.sql.SQLException;
 import java.util.Properties;
 
-import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
@@ -13,7 +10,6 @@ import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.type.StandardBasicTypes;
 
 import ch.vd.unireg.common.HibernateEntity;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 
 public class Sequence {
@@ -32,12 +28,9 @@ public class Sequence {
 	public Object nextValue(final Dialect dialect, HibernateTemplate hibernateTemplate, final HibernateEntity entity) {
 		if (sequenceName != null) {
 			final String sql = dialect.getSequenceNextValString(sequenceName);
-			return hibernateTemplate.execute(new HibernateCallback<Object>() {
-				@Override
-				public Object doInHibernate(Session session) throws HibernateException, SQLException {
-					final SQLQuery query = session.createSQLQuery(sql);
-					return query.uniqueResult();
-				}
+			return hibernateTemplate.execute(session -> {
+				final SQLQuery query = session.createSQLQuery(sql);
+				return query.uniqueResult();
 			});
 		}
 		else {
@@ -47,12 +40,7 @@ public class Sequence {
 			try {
 				final IdentifierGenerator generator = generatorClass.newInstance();
 				((Configurable) generator).configure(StandardBasicTypes.LONG, new Properties(), dialect);
-				return hibernateTemplate.execute(new HibernateCallback<Object>() {
-					@Override
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
-						return generator.generate((SessionImplementor) session, entity);
-					}
-				});
+				return hibernateTemplate.execute(session -> generator.generate((SessionImplementor) session, entity));
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);

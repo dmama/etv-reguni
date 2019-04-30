@@ -4,9 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -28,7 +26,6 @@ import ch.vd.unireg.common.TicketTimeoutException;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationGenerationOperation;
 import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.TiersService;
@@ -180,16 +177,13 @@ public class EnvoiLRsEnMasseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> i = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException {
-				final String queryDPI =
-						"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
-								"WHERE dpi.annulationDate IS NULL AND dpi.sansListeRecapitulative = false";
-				final Query queryObject = session.createQuery(queryDPI);
-				//noinspection unchecked
-				return queryObject.list();
-			}
+		final List<Long> i = template.execute(status -> hibernateTemplate.execute(session -> {
+			final String queryDPI =
+					"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
+							"WHERE dpi.annulationDate IS NULL AND dpi.sansListeRecapitulative = false";
+			final Query queryObject = session.createQuery(queryDPI);
+			//noinspection unchecked
+			return (List<Long>) queryObject.list();
 		}));
 
 		return i;

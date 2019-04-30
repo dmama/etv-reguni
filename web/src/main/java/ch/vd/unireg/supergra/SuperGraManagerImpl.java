@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
@@ -918,79 +917,74 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		});
 	}
 
+	private void addRapportAppartenanceMenage(long menageId, Long ppId, RegDate dateDebut, RegDate dateFin, Session session, String user) {
+		final String sql =
+				"INSERT INTO RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, TIERS_SUJET_ID, TIERS_OBJET_ID)" +
+						"VALUES ('AppartenanceMenage', " + dialect.getSelectSequenceNextValString("hibernate_sequence") + ", CURRENT_DATE, :muser, CURRENT_DATE, :muser, :dateDebut, :dateFin, :idPrincipal, :id)";
+		final SQLQuery query5 = session.createSQLQuery(sql);
+		query5.setParameter("muser", user);
+		query5.setParameter("id", menageId);
+		query5.setParameter("idPrincipal", ppId);
+		query5.setParameter("dateDebut", dateDebut.index());
+		query5.setParameter("dateFin", (dateFin == null ? null : dateFin.index()), StandardBasicTypes.INTEGER);
+		query5.executeUpdate();
+	}
+
 	@Override
 	public void transformPp2Mc(final long ppId, final RegDate dateDebut, @Nullable final RegDate dateFin, final long idPrincipal, @Nullable final Long idSecondaire) {
 
-		execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException {
+		execute(session -> {
+			final String user = AuthenticationHelper.getCurrentPrincipal();
 
-				final String user = AuthenticationHelper.getCurrentPrincipal();
+			// Transformation de la personne physique en ménage commun
+			final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
+					                                               "PP_HABITANT=NULL, " +
+					                                               "NUMERO_INDIVIDU=NULL, " +
+					                                               "ANCIEN_NUMERO_SOURCIER = null," +
+					                                               "NH_NUMERO_ASSURE_SOCIAL = null," +
+					                                               "NH_NOM_NAISSANCE = null," +
+					                                               "NH_NOM = null," +
+					                                               "NH_PRENOM = null," +
+					                                               "NH_DATE_NAISSANCE = null," +
+					                                               "NH_SEXE = null," +
+					                                               "NH_NO_OFS_NATIONALITE = null," +
+					                                               "NH_LIBELLE_ORIGINE = null," +
+					                                               "NH_CANTON_ORIGINE = null," +
+					                                               "NH_CAT_ETRANGER = null," +
+					                                               "NH_DATE_DEBUT_VALID_AUTORIS = null," +
+					                                               "DATE_DECES = null," +
+					                                               "MAJORITE_TRAITEE = null, " +
+					                                               "INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='PersonnePhysique'");
+			query0.setParameter("id", ppId);
+			query0.setParameter("muser", user);
+			query0.executeUpdate();
 
-				// Transformation de la personne physique en ménage commun
-				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
-						                                               "PP_HABITANT=NULL, " +
-						                                               "NUMERO_INDIVIDU=NULL, " +
-						                                               "ANCIEN_NUMERO_SOURCIER = null," +
-						                                               "NH_NUMERO_ASSURE_SOCIAL = null," +
-						                                               "NH_NOM_NAISSANCE = null," +
-						                                               "NH_NOM = null," +
-						                                               "NH_PRENOM = null," +
-						                                               "NH_DATE_NAISSANCE = null," +
-						                                               "NH_SEXE = null," +
-						                                               "NH_NO_OFS_NATIONALITE = null," +
-						                                               "NH_LIBELLE_ORIGINE = null," +
-						                                               "NH_CANTON_ORIGINE = null," +
-						                                               "NH_CAT_ETRANGER = null," +
-						                                               "NH_DATE_DEBUT_VALID_AUTORIS = null," +
-						                                               "DATE_DECES = null," +
-						                                               "MAJORITE_TRAITEE = null, " +
-						                                               "INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='PersonnePhysique'");
-				query0.setParameter("id", ppId);
-				query0.setParameter("muser", user);
-				query0.executeUpdate();
+			final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id OR TIERS_PRINCIPAL_ID=:id");
+			query1.setParameter("id", ppId);
+			query1.executeUpdate();
 
-				final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id OR TIERS_PRINCIPAL_ID=:id");
-				query1.setParameter("id", ppId);
-				query1.executeUpdate();
+			final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
+			query2.setParameter("id", ppId);
+			query2.executeUpdate();
 
-				final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
-				query2.setParameter("id", ppId);
-				query2.executeUpdate();
+			final SQLQuery query3 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:id OR TIERS_OBJET_ID=:id) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'");
+			query3.setParameter("id", ppId);
+			query3.executeUpdate();
 
-				final SQLQuery query3 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:id OR TIERS_OBJET_ID=:id) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'");
-				query3.setParameter("id", ppId);
-				query3.executeUpdate();
+			final SQLQuery query4 = session.createSQLQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
+			query4.setParameter("id", ppId);
+			query4.executeUpdate();
 
-				final SQLQuery query4 = session.createSQLQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
-				query4.setParameter("id", ppId);
-				query4.executeUpdate();
+			final SQLQuery query5 = session.createSQLQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
+			query5.setParameter("id", ppId);
+			query5.executeUpdate();
 
-				final SQLQuery query5 = session.createSQLQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
-				query5.setParameter("id", ppId);
-				query5.executeUpdate();
-
-				// Création des rapports entre tiers de type 'appartenance ménage'
-				addRapportAppartenanceMenage(ppId, idPrincipal, dateDebut, dateFin, session, user);
-				if (idSecondaire != null) {
-					addRapportAppartenanceMenage(ppId, idSecondaire, dateDebut, dateFin, session, user);
-				}
-
-				return null;
+			// Création des rapports entre tiers de type 'appartenance ménage'
+			addRapportAppartenanceMenage(ppId, idPrincipal, dateDebut, dateFin, session, user);
+			if (idSecondaire != null) {
+				addRapportAppartenanceMenage(ppId, idSecondaire, dateDebut, dateFin, session, user);
 			}
-
-			private void addRapportAppartenanceMenage(long menageId, Long ppId, RegDate dateDebut, RegDate dateFin, Session session, String user) {
-				final String sql =
-						"INSERT INTO RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, TIERS_SUJET_ID, TIERS_OBJET_ID)" +
-								"VALUES ('AppartenanceMenage', " + dialect.getSelectSequenceNextValString("hibernate_sequence") + ", CURRENT_DATE, :muser, CURRENT_DATE, :muser, :dateDebut, :dateFin, :idPrincipal, :id)";
-				final SQLQuery query5 = session.createSQLQuery(sql);
-				query5.setParameter("muser", user);
-				query5.setParameter("id", menageId);
-				query5.setParameter("idPrincipal", ppId);
-				query5.setParameter("dateDebut", dateDebut.index());
-				query5.setParameter("dateFin", (dateFin == null ? null : dateFin.index()), StandardBasicTypes.INTEGER);
-				query5.executeUpdate();
-			}
+			return null;
 		});
 
 		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)

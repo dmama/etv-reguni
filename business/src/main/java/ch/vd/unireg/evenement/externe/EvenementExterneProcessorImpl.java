@@ -4,9 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +22,6 @@ import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.TiersService;
 
@@ -88,16 +85,13 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private void traiterBatch(final List<Long> batch, TraiterEvenementExterneResult r) throws EvenementExterneException {
 
 		//Chargement des evenement externes
-		final List<EvenementExterne> list = hibernateTemplate.execute(new HibernateCallback<List<EvenementExterne>>() {
-			@Override
-			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
-				final Criteria crit = session.createCriteria(EvenementExterne.class);
-				crit.add(Restrictions.in("id", batch));
-				crit.addOrder(Order.asc("id"));
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				//noinspection unchecked
-				return crit.list();
-			}
+		final List<EvenementExterne> list = hibernateTemplate.execute(session -> {
+			final Criteria crit = session.createCriteria(EvenementExterne.class);
+			crit.add(Restrictions.in("id", batch));
+			crit.addOrder(Order.asc("id"));
+			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			//noinspection unchecked
+			return (List<EvenementExterne>) crit.list();
 		});
 
 		for (EvenementExterne evenementExterne : list) {
@@ -119,14 +113,11 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(status -> {
-			final List<Long> idsEvenement = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryMessage);
-					queryObject.setParameterList("etats", EnumSet.of(EtatEvenementExterne.ERREUR, EtatEvenementExterne.NON_TRAITE));
-					//noinspection unchecked
-					return queryObject.list();
-				}
+			final List<Long> idsEvenement = hibernateTemplate.executeWithNewSession(session -> {
+				final Query queryObject = session.createQuery(queryMessage);
+				queryObject.setParameterList("etats", EnumSet.of(EtatEvenementExterne.ERREUR, EtatEvenementExterne.NON_TRAITE));
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 			return idsEvenement;
 		});

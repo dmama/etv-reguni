@@ -3,10 +3,7 @@ package ch.vd.unireg.common;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -41,7 +38,6 @@ import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.DonneesLoiLogement;
 import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.foncier.ExonerationIFONC;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationIndexer;
 import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSearcher;
 import ch.vd.unireg.indexer.messageidentification.MessageIdentificationIndexerHibernateInterceptor;
@@ -364,12 +360,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
-        return doInNewTransaction(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
-	        @Override
-	        public T doInHibernate(Session session) throws HibernateException, SQLException {
-		        return action.doInTransaction(status);
-	        }
-        }));
+        return doInNewTransaction(status -> hibernateTemplate.executeWithNewSession(session -> action.doInTransaction(status)));
     }
 
 	protected RapprochementRF addRapprochementRF(@NotNull PersonnePhysique ctb, @NotNull PersonnePhysiqueRF tiersRF, RegDate dateDebut, RegDate dateFin, TypeRapprochementRF type) {

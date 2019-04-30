@@ -14,7 +14,6 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.evenement.EvenementHelper;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.tiers.AutreCommunaute;
 
 import static org.junit.Assert.assertEquals;
@@ -169,7 +168,7 @@ public class XaTransactionTest extends BusinessItTest {
 	@SuppressWarnings("CodeBlock2Expr")
 	private void clearData() throws Exception {
 		doInNewTransaction(status -> {
-			return hibernateTemplate.execute((HibernateCallback<Object>) session -> {
+			return hibernateTemplate.execute(session -> {
 				return session.createQuery("delete from AutreCommunaute").executeUpdate();
 			});
 		});

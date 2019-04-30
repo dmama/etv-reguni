@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -31,7 +29,6 @@ import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -604,15 +601,12 @@ public class FusionDeCommunesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException {
-				final Query queryObject = session.createQuery(hqlQuery);
-				queryObject.setParameter("dateFusion", dateFusion);
-				queryObject.setParameterList("nosOfs", anciensNoOfs);
-				//noinspection unchecked
-				return queryObject.list();
-			}
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query queryObject = session.createQuery(hqlQuery);
+			queryObject.setParameter("dateFusion", dateFusion);
+			queryObject.setParameterList("nosOfs", anciensNoOfs);
+			//noinspection unchecked
+			return (List<Long>) queryObject.list();
 		}));
 	}
 

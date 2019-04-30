@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -19,7 +17,6 @@ import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.ListesResults;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -131,40 +128,37 @@ public class AcomptesProcessorTest extends BusinessTest {
 			               sourcierMixte1.getNumero(), sourcierMixte2.getNumero());
 		});
 
-		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException {
-				final Iterator<Long> idIterator = processor.createIteratorOnIDsOfCtbs(session, 2010);
-				assertNotNull(idIterator);
+		hibernateTemplate.executeWithNewSession(session -> {
+			final Iterator<Long> idIterator = processor.createIteratorOnIDsOfCtbs(session, 2010);
+			assertNotNull(idIterator);
 
-				// les sourciers purs et les diplomates étrangers ne font pas partie de la base acompte
+			// les sourciers purs et les diplomates étrangers ne font pas partie de la base acompte
 
-				//For principal vaudois, mode d'imposition ordinaire
-				assertNextCtb(idIterator, ids.idOrdinaire);
-				//For principal vaudois, mode d'imposition à la dépense
-				assertNextCtb(idIterator, ids.idDepense);
-				//For principal hors canton, for secondaire immeuble
-				assertNextCtb(idIterator, ids.idHcImmeuble);
-				//For principal hors suisse, for secondaire 'Activité indépendante'
-				assertNextCtb(idIterator, ids.idHsActiviteIndependante);
-				//Contribuable parti en 2009, donc assujetti à l'IFD 2009
-				assertNextCtb(idIterator, ids.idOrdinaireParti2009);
-				//Sourcier mixte 1
-				assertNextCtb(idIterator, ids.idSourcierMixte1);
+			//For principal vaudois, mode d'imposition ordinaire
+			assertNextCtb(idIterator, ids.idOrdinaire);
+			//For principal vaudois, mode d'imposition à la dépense
+			assertNextCtb(idIterator, ids.idDepense);
+			//For principal hors canton, for secondaire immeuble
+			assertNextCtb(idIterator, ids.idHcImmeuble);
+			//For principal hors suisse, for secondaire 'Activité indépendante'
+			assertNextCtb(idIterator, ids.idHsActiviteIndependante);
+			//Contribuable parti en 2009, donc assujetti à l'IFD 2009
+			assertNextCtb(idIterator, ids.idOrdinaireParti2009);
+			//Sourcier mixte 1
+			assertNextCtb(idIterator, ids.idSourcierMixte1);
 
-				// un peu de log pour comprendre qui il y a en plus...
-				if (idIterator.hasNext()) {
-					final StringBuilder b = new StringBuilder();
-					while (idIterator.hasNext()) {
-						if (b.length() > 0) {
-							b.append(", ");
-						}
-						b.append(idIterator.next());
+			// un peu de log pour comprendre qui il y a en plus...
+			if (idIterator.hasNext()) {
+				final StringBuilder b = new StringBuilder();
+				while (idIterator.hasNext()) {
+					if (b.length() > 0) {
+						b.append(", ");
 					}
-					fail("Encore des contribuables trouvés ? (" + b.toString() + ')');
+					b.append(idIterator.next());
 				}
-				return null;
+				fail("Encore des contribuables trouvés ? (" + b.toString() + ')');
 			}
+			return null;
 		});
 	}
 

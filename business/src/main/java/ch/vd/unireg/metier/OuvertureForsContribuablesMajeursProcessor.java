@@ -4,9 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,6 @@ import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -562,15 +559,12 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException {
-				final Query queryObject = session.createQuery(queryHabitantWithoutFor);
-				queryObject.setParameter("pivot", datePivot);
-				queryObject.setParameter("date", date);
-				//noinspection unchecked
-				return queryObject.list();
-			}
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query queryObject = session.createQuery(queryHabitantWithoutFor);
+			queryObject.setParameter("pivot", datePivot);
+			queryObject.setParameter("date", date);
+			//noinspection unchecked
+			return (List<Long>) queryObject.list();
 		}));
 	}
 }

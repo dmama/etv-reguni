@@ -1,15 +1,12 @@
 package ch.vd.unireg.declaration.ordinaire.pm;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +35,6 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -141,16 +137,13 @@ public class DeterminationDIsPMAEmettreProcessor {
 		}
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-		final List<Entreprise> list = hibernateTemplate.execute(new HibernateCallback<List<Entreprise>>() {
-			@Override
-			public List<Entreprise> doInHibernate(Session session) throws HibernateException {
-				final Criteria crit = session.createCriteria(Entreprise.class);
-				crit.add(Restrictions.in("numero", batch));
-				crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				//noinspection unchecked
-				return crit.list();
-			}
+		final List<Entreprise> list = hibernateTemplate.execute(session -> {
+			final Criteria crit = session.createCriteria(Entreprise.class);
+			crit.add(Restrictions.in("numero", batch));
+			crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
+			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			//noinspection unchecked
+			return (List<Entreprise>) crit.list();
 		});
 
 		// Traitement de tous les contribuables
@@ -665,15 +658,12 @@ public class DeterminationDIsPMAEmettreProcessor {
 	protected List<Long> createListeIdsContribuables() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final String hql =
-						"select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ff.genreImpot = 'BENEFICE_CAPITAL' order by ff.tiers.id";
-				final Query query = session.createQuery(hql);
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final String hql =
+					"select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ff.genreImpot = 'BENEFICE_CAPITAL' order by ff.tiers.id";
+			final Query query = session.createQuery(hql);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 	}
 

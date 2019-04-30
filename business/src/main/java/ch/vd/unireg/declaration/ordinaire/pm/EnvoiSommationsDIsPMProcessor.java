@@ -5,9 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +30,6 @@ import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.declaration.IdentifiantDeclaration;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -232,30 +229,26 @@ public class EnvoiSommationsDIsPMProcessor {
 		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.SUSPENDU;
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<IdentifiantDeclaration> retrieveListIdDIs(final RegDate dateLimite) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		return template.execute(status -> {
-			final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-				@Override
-				public List<Object[]> doInHibernate(Session session) throws HibernateException {
-
-					final StringBuilder b = new StringBuilder();
-					b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinairePM AS di");
-					b.append(" WHERE di.annulationDate IS NULL");
-					b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-					b.append(
-							" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee))");
-					b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
-					b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
-					final String sql = b.toString();
-					final Query query = session.createQuery(sql);
-					query.setParameter("dateLimite", dateLimite);
-					return query.list();
-				}
+			final List<Object[]> declarationsASommer = hibernateTemplate.execute(session -> {
+				final StringBuilder b = new StringBuilder();
+				b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinairePM AS di");
+				b.append(" WHERE di.annulationDate IS NULL");
+				b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+				b.append(
+						" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee))");
+				b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
+				b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+				final String sql = b.toString();
+				final Query query = session.createQuery(sql);
+				query.setParameter("dateLimite", dateLimite);
+				//noinspection unchecked
+				return (List<Object[]>) query.list();
 			});
 			final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>(declarationsASommer.size());
 			for (Object[] objects : declarationsASommer) {

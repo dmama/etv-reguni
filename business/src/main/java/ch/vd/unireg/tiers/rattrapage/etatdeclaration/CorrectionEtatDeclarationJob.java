@@ -1,6 +1,5 @@
 package ch.vd.unireg.tiers.rattrapage.etatdeclaration;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,9 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -27,7 +24,6 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.document.CorrectionEtatDeclarationRapport;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -156,29 +152,24 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 		return rapportFinal;
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private void traiterBatch(final List<Long> batch, CorrectionEtatDeclarationResults rapport) {
 
 		// on évite de charger les déclarations, parce que cela fait charger les tiers associées et c'est coûteux
-		final Map<Long, List<EtatDeclaration>> map = hibernateTemplate.execute(new HibernateCallback<Map<Long, List<EtatDeclaration>>>() {
-			@Override
-			public Map<Long, List<EtatDeclaration>> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery("select e.declaration.id, e from EtatDeclaration e where e.declaration.id in (:ids)");
-				query.setParameterList("ids", batch);
-				final List lines = query.list();
+		final Map<Long, List<EtatDeclaration>> map = hibernateTemplate.execute(session -> {
+			final Query query = session.createQuery("select e.declaration.id, e from EtatDeclaration e where e.declaration.id in (:ids)");
+			query.setParameterList("ids", batch);
+			final List lines = query.list();
 
-				final Map<Long, List<EtatDeclaration>> map = new HashMap<>();
-				for (Object line : lines) {
-					final Object[] values = (Object[]) line;
-					final Long diId = (Long) values[0];
-					final EtatDeclaration etat = (EtatDeclaration) values[1];
+			final Map<Long, List<EtatDeclaration>> m = new HashMap<>();
+			for (Object line : lines) {
+				final Object[] values = (Object[]) line;
+				final Long diId = (Long) values[0];
+				final EtatDeclaration etat = (EtatDeclaration) values[1];
 
-					final List<EtatDeclaration> etats = map.computeIfAbsent(diId, k -> new ArrayList<>());
-					etats.add(etat);
-				}
-
-				return map;
+				final List<EtatDeclaration> etats = m.computeIfAbsent(diId, k -> new ArrayList<>());
+				etats.add(etat);
 			}
+			return m;
 		});
 
 		for (List<EtatDeclaration> etats : map.values()) {
@@ -223,12 +214,9 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 				rapport.addDoublonSupprime(e);
 				iterator.remove();
 
-				hibernateTemplate.execute(new HibernateCallback<Object>() {
-					@Override
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
-						session.delete(e);
-						return null;
-					}
+				hibernateTemplate.execute(session -> {
+					session.delete(e);
+					return null;
 				});
 				foundDoublon = true;
 			}

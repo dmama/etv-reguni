@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.party;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,9 +10,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -33,7 +30,6 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.evenement.RequestHandlerResult;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -416,16 +412,13 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 	}
 
 	private List<Long> fetchPmIds() {
-		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final String hql = "select distinct ff.tiers.id from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.tiers.class='Entreprise' order by ff.tiers.id";
-				final Query query = session.createQuery(hql);
-				query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);
-				//noinspection unchecked
-				return query.list();
-			}
+		return hibernateTemplate.executeWithNewSession(session -> {
+			final String hql = "select distinct ff.tiers.id from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.tiers.class='Entreprise' order by ff.tiers.id";
+			final Query query = session.createQuery(hql);
+			query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		});
 	}
 

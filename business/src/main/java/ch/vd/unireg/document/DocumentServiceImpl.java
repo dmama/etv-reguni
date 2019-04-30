@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -23,7 +20,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
@@ -158,12 +154,9 @@ public class DocumentServiceImpl implements DocumentService {
 			LOGGER.debug("Effacement du document " + filepath);
 		}
 
-		hibernateTemplate.execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				session.delete(doc);
-				return null;
-			}
+		hibernateTemplate.execute(session -> {
+			session.delete(doc);
+			return null;
 		});
 
 		File file = ResourceUtils.getFile(filepath);

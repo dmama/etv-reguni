@@ -3,15 +3,12 @@ package ch.vd.unireg.indexer.tiers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.MultipleSwitch;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.validation.ValidationInterceptor;
 
@@ -168,13 +165,10 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		template.setReadOnly(true);
 
 		return template.execute(status -> {
-			final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryAllTiers);
-					//noinspection unchecked
-					return queryObject.list();
-				}
+			final List<Long> ids = hibernateTemplate.execute(session -> {
+				final Query queryObject = session.createQuery(queryAllTiers);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 			return ids;
 		});
@@ -212,13 +206,10 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		template.setReadOnly(true);
 
 		return template.execute(status -> {
-			final List<Long> ids = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryTiersWithNullOID);
-					//noinspection unchecked
-					return queryObject.list();
-				}
+			final List<Long> ids = hibernateTemplate.execute(session -> {
+				final Query queryObject = session.createQuery(queryTiersWithNullOID);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 			return ids;
 		});

@@ -1,6 +1,5 @@
 package ch.vd.unireg.webservices.v6;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +57,6 @@ import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
 import ch.vd.unireg.efacture.EFactureService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.indexer.EmptySearchCriteriaException;
@@ -803,15 +799,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 					@Override
 					public Parties execute(TransactionStatus status) throws Exception {
 						// on ne veut vraiment pas modifier la base
-						return context.hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Parties>() {
-							@Override
-							public Parties doInHibernate(Session session) throws HibernateException, SQLException {
-								try {
-									return doExtract();
-								}
-								catch (ServiceException e) {
-									throw new TxCallbackException(e);
-								}
+						return context.hibernateTemplate.execute(FlushMode.MANUAL, session -> {
+							try {
+								return doExtract();
+							}
+							catch (ServiceException e) {
+								throw new TxCallbackException(e);
 							}
 						});
 					}

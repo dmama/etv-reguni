@@ -1,6 +1,5 @@
 package ch.vd.unireg.declaration.ordinaire.pm;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,9 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -47,7 +44,6 @@ import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DatesDelaiInitialDI;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -470,17 +466,14 @@ public class EnvoiDeclarationsPMProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(HQL_CTB);
-				query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
-				query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-				query.setParameterList("typesDoc", categorieEnvoi.getTypesDocument());
-				query.setParameterList("typesCtb", categorieEnvoi.getTypesContribuables());
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query = session.createQuery(HQL_CTB);
+			query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
+			query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
+			query.setParameterList("typesDoc", categorieEnvoi.getTypesDocument());
+			query.setParameterList("typesCtb", categorieEnvoi.getTypesContribuables());
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 	}
 
@@ -491,18 +484,15 @@ public class EnvoiDeclarationsPMProcessor {
 			"SELECT tache FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) AND tache.contribuable.id in (:ids) AND tache.typeContribuable in (:typesCtb) ORDER BY tache.contribuable.id ASC, tache.id ASC";
 
 	private Iterator<TacheEnvoiDeclarationImpotPM> getTaches(final CategorieEnvoiDIPM categorieEnvoi, final int periodeFiscale, final Collection<Long> idsContribuables) {
-		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpotPM>>() {
-			@Override
-			public Iterator<TacheEnvoiDeclarationImpotPM> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(HQL_TACHE);
-				query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
-				query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-				query.setParameterList("typesDoc", categorieEnvoi.getTypesDocument());
-				query.setParameterList("typesCtb", categorieEnvoi.getTypesContribuables());
-				query.setParameterList("ids", idsContribuables);
-				//noinspection unchecked
-				return query.iterate();
-			}
+		return hibernateTemplate.execute(session -> {
+			final Query query = session.createQuery(HQL_TACHE);
+			query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
+			query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
+			query.setParameterList("typesDoc", categorieEnvoi.getTypesDocument());
+			query.setParameterList("typesCtb", categorieEnvoi.getTypesContribuables());
+			query.setParameterList("ids", idsContribuables);
+			//noinspection unchecked
+			return (Iterator<TacheEnvoiDeclarationImpotPM>) query.iterate();
 		});
 	}
 }

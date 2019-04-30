@@ -25,7 +25,6 @@ import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -291,12 +290,12 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 				final List<Long> ids = it.next();
 
 				// TODO (msi) déplacer ce HQL dans un DAO
-				final List<Object[]> ancienNosAvs = hibernateTemplate.execute((HibernateCallback<List<Object[]>>) session -> {
+				final List<Object[]> ancienNosAvs = hibernateTemplate.execute(session -> {
 					final Query query = session.createQuery(
 							"select ip.personnePhysique.id, ip.identifiant from IdentificationPersonne ip where ip.categorieIdentifiant = 'CH_AHV_AVS' and ip.personnePhysique.id in (:ids)");
 					query.setParameterList("ids", ids);
 					//noinspection unchecked
-					return query.list();
+					return (List<Object[]>) query.list();
 				});
 
 				for (Object[] line : ancienNosAvs) {

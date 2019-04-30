@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -109,15 +106,12 @@ public class ListeNoteProcessor {
 	private void traiterBatch(final List<Long> batch, final int annee, ListeNoteResults r) throws Exception {
 
 		// On charge tous les contribuables en vrac
-		final List<Contribuable> list = hibernateTemplate.execute(new HibernateCallback<List<Contribuable>>() {
-			@Override
-			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
-				final Criteria crit = session.createCriteria(Contribuable.class);
-				crit.add(Restrictions.in("id", batch));
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				//noinspection unchecked
-				return crit.list();
-			}
+		final List<Contribuable> list = hibernateTemplate.execute(session -> {
+			final Criteria crit = session.createCriteria(Contribuable.class);
+			crit.add(Restrictions.in("id", batch));
+			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			//noinspection unchecked
+			return (List<Contribuable>) crit.list();
 		});
 
 		for (Contribuable contribuable : list) {
@@ -200,15 +194,12 @@ public class ListeNoteProcessor {
 		template.setReadOnly(true);
 
 		final Map<Long, List<ForFiscalSecondaire>> mapInfo = template.execute(status -> {
-			final List<Object[]> listeFors = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Object[]>>() {
-				@Override
-				public List<Object[]> doInHibernate(Session session) throws HibernateException {
-					Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
-					queryObject.setParameter("debutAnnee", debutAnnee);
-					queryObject.setParameter("finAnnee", finAnnee);
-					//noinspection unchecked
-					return queryObject.list();
-				}
+			final List<Object[]> listeFors = hibernateTemplate.executeWithNewSession(session -> {
+				Query queryObject = session.createQuery(queryIdsCtbForsSecondaire);
+				queryObject.setParameter("debutAnnee", debutAnnee);
+				queryObject.setParameter("finAnnee", finAnnee);
+				//noinspection unchecked
+				return (List<Object[]>) queryObject.list();
 			});
 
 

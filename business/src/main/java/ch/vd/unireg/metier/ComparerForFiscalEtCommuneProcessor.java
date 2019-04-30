@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +22,6 @@ import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -101,15 +98,12 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private void traiterBatch(final List<Long> batch, ComparerForFiscalEtCommuneResults r) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
-		final List<Contribuable> list = hibernateTemplate.execute(new HibernateCallback<List<Contribuable>>() {
-			@Override
-			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
-				final Criteria crit = session.createCriteria(Contribuable.class);
-				crit.add(Restrictions.in("id", batch));
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				//noinspection unchecked
-				return crit.list();
-			}
+		final List<Contribuable> list = hibernateTemplate.execute(session -> {
+			final Criteria crit = session.createCriteria(Contribuable.class);
+			crit.add(Restrictions.in("id", batch));
+			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			//noinspection unchecked
+			return (List<Contribuable>) crit.list();
 		});
 
 		for (Contribuable contribuable : list) {
@@ -152,13 +146,10 @@ public class ComparerForFiscalEtCommuneProcessor {
 		template.setReadOnly(true);
 
 		final List<Long> ids = template.execute(status -> {
-			final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					Query queryObject = session.createQuery(queryMessage);
-					//noinspection unchecked
-					return queryObject.list();
-				}
+			final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(session -> {
+				Query queryObject = session.createQuery(queryMessage);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 			Collections.sort(idsMessage);
 			return idsMessage;

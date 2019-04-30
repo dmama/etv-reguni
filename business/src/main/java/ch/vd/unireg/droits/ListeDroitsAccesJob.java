@@ -1,12 +1,9 @@
 package ch.vd.unireg.droits;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -26,7 +23,6 @@ import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ListeDroitsAccesRapport;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -107,14 +103,11 @@ public class ListeDroitsAccesJob extends JobDefinition {
 
 			@Override
 			public boolean doInTransaction(final List<Number> batch, ListeDroitsAccesResults rapport) throws Exception {
-				final List<DroitAcces> list = hibernateTemplate.execute(new HibernateCallback<List<DroitAcces>>() {
-					@Override
-					public List<DroitAcces> doInHibernate(Session session) throws HibernateException, SQLException {
-						final Query query = session.createQuery("from DroitAcces da where da.id in (:ids) order by da.tiers.id asc");
-						query.setParameterList("ids", batch);
-						//noinspection unchecked
-						return query.list();
-					}
+				final List<DroitAcces> list = hibernateTemplate.execute(session -> {
+					final Query query = session.createQuery("from DroitAcces da where da.id in (:ids) order by da.tiers.id asc");
+					query.setParameterList("ids", batch);
+					//noinspection unchecked
+					return (List<DroitAcces>) query.list();
 				});
 				for (DroitAcces da : list) {
 					if (!da.isValidAt(dateValeur)) {

@@ -1,13 +1,10 @@
 package ch.vd.unireg.tache;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
@@ -16,7 +13,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeTache;
@@ -70,13 +66,10 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 				+ " GROUP BY CA.NUMERO_CA, TA.TACHE_TYPE"
 				+ " ORDER BY CA.NUMERO_CA, TA.TACHE_TYPE";
 
-		@SuppressWarnings("unchecked")
-		final List<Object[]> tachesTrouvees = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-			@Override
-			public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createSQLQuery(sql);
-				return query.list();
-			}
+		final List<Object[]> tachesTrouvees = hibernateTemplate.execute(session -> {
+			final Query query = session.createSQLQuery(sql);
+			//noinspection unchecked
+			return (List<Object[]>) query.list();
 		});
 
 		traiterTaches(tachesTrouvees, rapportFinal, dateTraitement);

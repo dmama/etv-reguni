@@ -1,19 +1,15 @@
 package ch.vd.unireg.supergra;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AppartenanceMenage;
@@ -104,24 +100,21 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 				assertEquals(idPrincipal, principal.getNumero());
 
 				// [SIFISC-7972] on vérifie que les données spécifiques aux PP ont bien été annulées dans la base
-				hibernateTemplate.execute(new HibernateCallback<Object>() {
-					@Override
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
-						final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
-								                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
-								                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
-						query.setParameter(0, id);
-						final List list = query.list();
-						assertNotNull(list);
-						assertEquals(1, list.size());
+				hibernateTemplate.execute(session -> {
+					final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
+							                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
+							                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
+					query.setParameter(0, id);
+					final List list = query.list();
+					assertNotNull(list);
+					assertEquals(1, list.size());
 
-						final Object line[] = (Object[]) list.get(0);
-						for (int index = 0 ; index < line.length ; ++ index) {
-							final Object o = line[index];
-							assertNull("Index " + index, o);
-						}
-						return null;
+					final Object line[] = (Object[]) list.get(0);
+					for (int index = 0; index < line.length; ++index) {
+						final Object o = line[index];
+						assertNull("Index " + index, o);
 					}
+					return null;
 				});
 			}
 		});

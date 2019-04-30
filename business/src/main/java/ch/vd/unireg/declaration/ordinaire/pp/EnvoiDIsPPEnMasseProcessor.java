@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,6 @@ import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -289,26 +286,23 @@ public class EnvoiDIsPPEnMasseProcessor {
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
-		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpotPP>>() {
-			@Override
-			public Iterator<TacheEnvoiDeclarationImpotPP> doInHibernate(Session session) throws HibernateException {
-				FlushMode mode = session.getFlushMode();
-				try {
-					// On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de tâches déjà modifiées
-					// concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
-					session.setFlushMode(FlushMode.MANUAL);
-					final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
-					queryObject.setParameter("typeContribuable", typeContribuable);
-					queryObject.setParameter("typeDocument", typeDocument);
-					queryObject.setParameterList("ids", ids);
-					queryObject.setParameter("debutPeriode", debutAnnee);
-					queryObject.setParameter("finPeriode", finAnnee);
-					//noinspection unchecked
-					return queryObject.iterate();
-				}
-				finally {
-					session.setFlushMode(mode);
-				}
+		return hibernateTemplate.execute(session -> {
+			FlushMode mode = session.getFlushMode();
+			try {
+				// On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de tâches déjà modifiées
+				// concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
+				session.setFlushMode(FlushMode.MANUAL);
+				final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
+				queryObject.setParameter("typeContribuable", typeContribuable);
+				queryObject.setParameter("typeDocument", typeDocument);
+				queryObject.setParameterList("ids", ids);
+				queryObject.setParameter("debutPeriode", debutAnnee);
+				queryObject.setParameter("finPeriode", finAnnee);
+				//noinspection unchecked
+				return (Iterator<TacheEnvoiDeclarationImpotPP>) queryObject.iterate();
+			}
+			finally {
+				session.setFlushMode(mode);
 			}
 		});
 	}
@@ -318,7 +312,6 @@ public class EnvoiDIsPPEnMasseProcessor {
 	 *
 	 * @return itérateur sur les ids des contribuables
 	 */
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<Long> createListOnContribuableIds(final int annee, final TypeContribuable typeContribuable,
 	                                              final TypeDocument typeDocument, final Long noCtbMin, final Long noCtbMax) {
 
@@ -328,44 +321,42 @@ public class EnvoiDIsPPEnMasseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> i = template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException {
-
-				final StringBuilder builder = new StringBuilder();
-				builder.append("SELECT DISTINCT tache.contribuable.id");
-				builder.append(" FROM TacheEnvoiDeclarationImpotPP AS tache");
-				builder.append(" WHERE");
-				builder.append(" tache.etat = 'EN_INSTANCE'");
-				builder.append(" AND tache.annulationDate IS NULL");
-				builder.append(" AND tache.typeContribuable = :typeContribuable");
-				builder.append(" AND tache.typeDocument = :typeDocument");
-				builder.append(" AND tache.dateDebut >= :debutPeriode");
-				builder.append(" AND tache.dateFin <= :finPeriode");
-				if (noCtbMin != null && noCtbMax != null) {
-					builder.append(" AND tache.contribuable.id BETWEEN :noCtbMin AND :noCtbMax");
-				}
-				else if (noCtbMin != null) {
-					builder.append(" AND tache.contribuable.id >= :noCtbMin");
-				}
-				else if (noCtbMax != null) {
-					builder.append(" AND tache.contribuable.id <= :noCtbMax");
-				}
-				builder.append(" ORDER BY tache.contribuable.id ASC");
-
-				final Query queryObject = session.createQuery(builder.toString());
-				queryObject.setParameter("typeContribuable", typeContribuable);
-				queryObject.setParameter("typeDocument", typeDocument);
-				queryObject.setParameter("debutPeriode", debutAnnee);
-				queryObject.setParameter("finPeriode", finAnnee);
-				if (noCtbMin != null) {
-					queryObject.setParameter("noCtbMin", noCtbMin);
-				}
-				if (noCtbMax != null) {
-					queryObject.setParameter("noCtbMax", noCtbMax);
-				}
-				return queryObject.list();
+		//noinspection UnnecessaryLocalVariable
+		final List<Long> i = template.execute(status -> hibernateTemplate.execute(session -> {
+			final StringBuilder builder = new StringBuilder();
+			builder.append("SELECT DISTINCT tache.contribuable.id");
+			builder.append(" FROM TacheEnvoiDeclarationImpotPP AS tache");
+			builder.append(" WHERE");
+			builder.append(" tache.etat = 'EN_INSTANCE'");
+			builder.append(" AND tache.annulationDate IS NULL");
+			builder.append(" AND tache.typeContribuable = :typeContribuable");
+			builder.append(" AND tache.typeDocument = :typeDocument");
+			builder.append(" AND tache.dateDebut >= :debutPeriode");
+			builder.append(" AND tache.dateFin <= :finPeriode");
+			if (noCtbMin != null && noCtbMax != null) {
+				builder.append(" AND tache.contribuable.id BETWEEN :noCtbMin AND :noCtbMax");
 			}
+			else if (noCtbMin != null) {
+				builder.append(" AND tache.contribuable.id >= :noCtbMin");
+			}
+			else if (noCtbMax != null) {
+				builder.append(" AND tache.contribuable.id <= :noCtbMax");
+			}
+			builder.append(" ORDER BY tache.contribuable.id ASC");
+
+			final Query queryObject = session.createQuery(builder.toString());
+			queryObject.setParameter("typeContribuable", typeContribuable);
+			queryObject.setParameter("typeDocument", typeDocument);
+			queryObject.setParameter("debutPeriode", debutAnnee);
+			queryObject.setParameter("finPeriode", finAnnee);
+			if (noCtbMin != null) {
+				queryObject.setParameter("noCtbMin", noCtbMin);
+			}
+			if (noCtbMax != null) {
+				queryObject.setParameter("noCtbMax", noCtbMax);
+			}
+			//noinspection unchecked
+			return (List<Long>) queryObject.list();
 		}));
 
 		return i;
@@ -828,39 +819,36 @@ public class EnvoiDIsPPEnMasseProcessor {
 					+ "    di.dateDebut ASC                                                                   ";
 
 			// On récupère toutes les DIs correspondant au critères du cache
-			final List<DeclarationImpotOrdinairePP> list = hibernateTemplate.execute(new HibernateCallback<List<DeclarationImpotOrdinairePP>>() {
-				@Override
-				public List<DeclarationImpotOrdinairePP> doInHibernate(Session session) throws HibernateException {
-					final FlushMode mode = session.getFlushMode();
-					try {
-						/*
-						 * On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de déclarations
-						 * déjà créées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
-						 */
-						session.setFlushMode(FlushMode.MANUAL);
+			final List<DeclarationImpotOrdinairePP> list = hibernateTemplate.execute(session -> {
+				final FlushMode mode = session.getFlushMode();
+				try {
+					/*
+					 * On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de déclarations
+					 * déjà créées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
+					 */
+					session.setFlushMode(FlushMode.MANUAL);
 
-						// on récupère le numéro de la période
-						final Query queryPeriode = session.createQuery("SELECT p.id FROM PeriodeFiscale AS p WHERE p.annee = :annee");
-						queryPeriode.setParameter("annee", baseRange.getDateDebut().year());
-						final Long periodeId = (Long) queryPeriode.uniqueResult();
+					// on récupère le numéro de la période
+					final Query queryPeriode = session.createQuery("SELECT p.id FROM PeriodeFiscale AS p WHERE p.annee = :annee");
+					queryPeriode.setParameter("annee", baseRange.getDateDebut().year());
+					final Long periodeId = (Long) queryPeriode.uniqueResult();
 
-						// on précharge en session les tiers
-						final Query queryCtbs = session.createQuery("FROM Tiers AS t WHERE t.id in (:ids)");
-						queryCtbs.setParameterList("ids", ids);
-						final List<?> ctbs = queryCtbs.list();
-						if (ctbs.isEmpty()) {
-							throw new IllegalArgumentException();
-						}
-
-						// et finalement on charge les déclarations
-						final Query queryDecls = session.createQuery(declQuery);
-						queryDecls.setParameterList("ids", ids);
-						queryDecls.setParameter("periodeId", periodeId);
-						return queryDecls.list();
+					// on précharge en session les tiers
+					final Query queryCtbs = session.createQuery("FROM Tiers AS t WHERE t.id in (:ids)");
+					queryCtbs.setParameterList("ids", ids);
+					final List<?> ctbs = queryCtbs.list();
+					if (ctbs.isEmpty()) {
+						throw new IllegalArgumentException();
 					}
-					finally {
-						session.setFlushMode(mode);
-					}
+
+					// et finalement on charge les déclarations
+					final Query queryDecls = session.createQuery(declQuery);
+					queryDecls.setParameterList("ids", ids);
+					queryDecls.setParameter("periodeId", periodeId);
+					return queryDecls.list();
+				}
+				finally {
+					session.setFlushMode(mode);
 				}
 			});
 

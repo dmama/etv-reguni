@@ -1,13 +1,10 @@
 package ch.vd.unireg.metier.piis;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -18,7 +15,6 @@ import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.DumpPeriodesImpositionImpotSourceRapport;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
@@ -106,13 +102,10 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 	}
 
 	private List<Long> getIdsPersonnesPhysiques() {
-		return hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<List<Long>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery("select pp.numero from PersonnePhysique pp order by pp.numero");
-				return query.list();
-			}
+		return hibernateTemplate.execute(FlushMode.MANUAL, session -> {
+			final Query query = session.createQuery("select pp.numero from PersonnePhysique pp order by pp.numero");
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		});
 	}
 

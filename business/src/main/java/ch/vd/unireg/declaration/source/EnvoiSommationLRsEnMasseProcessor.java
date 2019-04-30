@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,7 +19,6 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.IdentifiantDeclaration;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
@@ -154,37 +151,33 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 		template.setReadOnly(true);
 
 		final List<IdentifiantDeclaration> ids = template.execute(status -> {
-			final List<Object[]> aSommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-				@Override
-				public List<Object[]> doInHibernate(Session session) throws HibernateException {
-
-					final StringBuilder b = new StringBuilder();
-					b.append("SELECT lr.id, lr.tiers.id FROM DeclarationImpotSource AS lr");
-					b.append(" WHERE lr.annulationDate IS NULL");
-					if (dateFinPeriode != null) {
-						b.append(" AND lr.dateFin <= :dateFin");
-					}
-					if (categorie != null) {
-						b.append(" AND lr.tiers.categorieImpotSource = :categorie");
-					}
-					b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-					b.append(
-							" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue))");
-					b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE lr.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
-					b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
-					final String sql = b.toString();
-
-					final Query query = session.createQuery(sql);
-					if (dateFinPeriode != null) {
-						query.setParameter("dateFin", dateFinPeriode);
-					}
-					if (categorie != null) {
-						query.setParameter("categorie", categorie);
-					}
-					query.setParameter("dateLimite", dateLimite);
-					//noinspection unchecked
-					return query.list();
+			final List<Object[]> aSommer = hibernateTemplate.execute(session -> {
+				final StringBuilder b = new StringBuilder();
+				b.append("SELECT lr.id, lr.tiers.id FROM DeclarationImpotSource AS lr");
+				b.append(" WHERE lr.annulationDate IS NULL");
+				if (dateFinPeriode != null) {
+					b.append(" AND lr.dateFin <= :dateFin");
 				}
+				if (categorie != null) {
+					b.append(" AND lr.tiers.categorieImpotSource = :categorie");
+				}
+				b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+				b.append(
+						" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue))");
+				b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE lr.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
+				b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+				final String sql = b.toString();
+
+				final Query query = session.createQuery(sql);
+				if (dateFinPeriode != null) {
+					query.setParameter("dateFin", dateFinPeriode);
+				}
+				if (categorie != null) {
+					query.setParameter("categorie", categorie);
+				}
+				query.setParameter("dateLimite", dateLimite);
+				//noinspection unchecked
+				return (List<Object[]>) query.list();
 			});
 
 			final List<IdentifiantDeclaration> list;

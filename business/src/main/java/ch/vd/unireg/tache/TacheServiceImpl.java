@@ -1,6 +1,5 @@
 package ch.vd.unireg.tache;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,8 +16,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -47,7 +44,6 @@ import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
@@ -253,29 +249,26 @@ public class TacheServiceImpl implements TacheService {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				ctbIds.stream()
-						.map(tiersService::getTiers)
-						.filter(Objects::nonNull)
-						.forEach(tiers -> {
-							if (tiers.isDesactive(null)) {
-								// Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
-								// alors on annule toutes ses tâches non traitées (autre que annulation de DI).
-								annuleTachesNonTraitees(tiers.getNumero(), TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpotPP, TypeTache.TacheTransmissionDossier);
+		template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
+			ctbIds.stream()
+					.map(tiersService::getTiers)
+					.filter(Objects::nonNull)
+					.forEach(tiers -> {
+						if (tiers.isDesactive(null)) {
+							// Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
+							// alors on annule toutes ses tâches non traitées (autre que annulation de DI).
+							annuleTachesNonTraitees(tiers.getNumero(), TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpotPP, TypeTache.TacheTransmissionDossier);
+						}
+						else {
+							// [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
+							// qui n'ont plus de for de gestion actifs
+							ForGestion forGestionActif = tiersService.getForGestionActif(tiers, null);
+							if (forGestionActif == null) {
+								annuleTachesNonTraitees(tiers.getNumero(), TypeTache.TacheNouveauDossier);
 							}
-							else {
-								// [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
-								// qui n'ont plus de for de gestion actifs
-								ForGestion forGestionActif = tiersService.getForGestionActif(tiers, null);
-								if (forGestionActif == null) {
-									annuleTachesNonTraitees(tiers.getNumero(), TypeTache.TacheNouveauDossier);
-								}
-							}
-						});
-				return null;
-			}
+						}
+					});
+			return null;
 		}));
 	}
 
@@ -540,23 +533,19 @@ public class TacheServiceImpl implements TacheService {
 		final TacheSyncResults results = new TacheSyncResults(false);
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final Map<Long, List<SynchronizeAction>> entityActions = template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<Long, List<SynchronizeAction>>>() {
-			@Override
-			public Map<Long, List<SynchronizeAction>> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Map<Long, List<SynchronizeAction>> entityActions = template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
+			// détermine toutes les actions à effectuer sur les contribuables
+			final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActions(ctbIds);
+			final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<>(actions.size());
+			final Map<Long, List<SynchronizeAction>> resultingActions = new HashMap<>(actions.size());
+			splitActions(actions, tacheActions, resultingActions);
 
-				// détermine toutes les actions à effectuer sur les contribuables
-				final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActions(ctbIds);
-				final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<>(actions.size());
-				final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>(actions.size());
-				splitActions(actions, tacheActions, entityActions);
-
-				// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
-				// elles ne peuvent pas provoquer d'erreurs de validation.
-				if (!tacheActions.isEmpty()) {
-					results.addAll(executeTacheActions(tacheActions));
-				}
-				return entityActions;
+			// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
+			// elles ne peuvent pas provoquer d'erreurs de validation.
+			if (!tacheActions.isEmpty()) {
+				results.addAll(executeTacheActions(tacheActions));
 			}
+			return resultingActions;
 		}));
 
 		// finalement, on exécute toutes les actions sur les entités dans une ou plusieurs transactions additionnelles (SIFISC-3141)

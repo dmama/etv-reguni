@@ -4,7 +4,6 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,10 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -98,7 +95,6 @@ import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseErreur;
 import ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorInternal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.ide.ServiceIDEService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.indexer.IndexerException;
@@ -1230,75 +1226,67 @@ public class TiersServiceImpl implements TiersService {
         // effacement des liens d'identification (qui ne concernent qu'une personne physique, pas un ménage commun)
         // [UNIREG-2893] effacement des droits d'accès (qui ne concernent que les personnes physiques)
 	    // [SIFISC-13187] effacement des situations de famille dont la future ex-personne physique est le contribuable principal
-        hibernateTemplate.execute(new HibernateCallback<Object>() {
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                {
-                    final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:tiersId";
-                    final SQLQuery query = session.createSQLQuery(deleteQuery);
-                    query.setLong("tiersId", numeroTiers);
-                    query.executeUpdate();
-                }
-                {
-                    final String deleteQuery = "DELETE FROM DROIT_ACCES WHERE TIERS_ID=:tiersId";
-                    final SQLQuery query = session.createSQLQuery(deleteQuery);
-                    query.setLong("tiersId", numeroTiers);
-                    query.executeUpdate();
-                }
-                {
-                    final String deleteQuery = "DELETE FROM SITUATION_FAMILLE WHERE TIERS_PRINCIPAL_ID=:tiersId";
-                    final SQLQuery query = session.createSQLQuery(deleteQuery);
-                    query.setLong("tiersId", numeroTiers);
-                    query.executeUpdate();
-                }
-	            {
-		            final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:tiersId AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'";
-		            final SQLQuery query = session.createSQLQuery(deleteQuery);
-		            query.setLong("tiersId", numeroTiers);
-		            query.executeUpdate();
-	            }
-	            {
-		            final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:tiersId OR TIERS_OBJET_ID=:tiersId) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'";
-		            final SQLQuery query = session.createSQLQuery(deleteQuery);
-		            query.setLong("tiersId", numeroTiers);
-		            query.executeUpdate();
-	            }
-
-                return null;
-            }
+        hibernateTemplate.execute(session -> {
+	        {
+		        final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:tiersId";
+		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        query.setLong("tiersId", numeroTiers);
+		        query.executeUpdate();
+	        }
+	        {
+		        final String deleteQuery = "DELETE FROM DROIT_ACCES WHERE TIERS_ID=:tiersId";
+		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        query.setLong("tiersId", numeroTiers);
+		        query.executeUpdate();
+	        }
+	        {
+		        final String deleteQuery = "DELETE FROM SITUATION_FAMILLE WHERE TIERS_PRINCIPAL_ID=:tiersId";
+		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        query.setLong("tiersId", numeroTiers);
+		        query.executeUpdate();
+	        }
+	        {
+		        final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:tiersId AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'";
+		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        query.setLong("tiersId", numeroTiers);
+		        query.executeUpdate();
+	        }
+	        {
+		        final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:tiersId OR TIERS_OBJET_ID=:tiersId) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'";
+		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        query.setLong("tiersId", numeroTiers);
+		        query.executeUpdate();
+	        }
+	        return null;
         });
 
         // changement du type de tiers
-        hibernateTemplate.execute(new HibernateCallback<Object>() {
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        hibernateTemplate.execute(session -> {
+	        final SQLQuery query = session.createSQLQuery("UPDATE TIERS SET " + typeAnnotation.name() + "=:newType, LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
+			                                                      "PP_HABITANT=NULL, " +
+			                                                      "NUMERO_INDIVIDU=NULL, " +
+			                                                      "ANCIEN_NUMERO_SOURCIER = null," +
+			                                                      "NH_NUMERO_ASSURE_SOCIAL = null," +
+			                                                      "NH_NOM_NAISSANCE = null," +
+			                                                      "NH_NOM = null," +
+			                                                      "NH_PRENOM = null," +
+			                                                      "NH_DATE_NAISSANCE = null," +
+			                                                      "NH_SEXE = null," +
+			                                                      "NH_NO_OFS_NATIONALITE = null," +
+			                                                      "NH_LIBELLE_ORIGINE = null," +
+			                                                      "NH_CANTON_ORIGINE = null," +
+			                                                      "NH_CAT_ETRANGER = null," +
+			                                                      "NH_DATE_DEBUT_VALID_AUTORIS = null," +
+			                                                      "DATE_DECES = null," +
+			                                                      "MAJORITE_TRAITEE = null " +
+			                                                      "WHERE NUMERO=:id AND TIERS_TYPE=:oldType");
 
-	            final SQLQuery query = session.createSQLQuery("UPDATE TIERS SET " + typeAnnotation.name() + "=:newType, LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
-			                                   "PP_HABITANT=NULL, " +
-			                                   "NUMERO_INDIVIDU=NULL, " +
-			                                   "ANCIEN_NUMERO_SOURCIER = null," +
-			                                   "NH_NUMERO_ASSURE_SOCIAL = null," +
-			                                   "NH_NOM_NAISSANCE = null," +
-			                                   "NH_NOM = null," +
-			                                   "NH_PRENOM = null," +
-			                                   "NH_DATE_NAISSANCE = null," +
-			                                   "NH_SEXE = null," +
-			                                   "NH_NO_OFS_NATIONALITE = null," +
-			                                   "NH_LIBELLE_ORIGINE = null," +
-			                                   "NH_CANTON_ORIGINE = null," +
-			                                   "NH_CAT_ETRANGER = null," +
-			                                   "NH_DATE_DEBUT_VALID_AUTORIS = null," +
-			                                   "DATE_DECES = null," +
-			                                   "MAJORITE_TRAITEE = null " +
-			                                   "WHERE NUMERO=:id AND TIERS_TYPE=:oldType");
-
-	            query.setParameter("newType", discrimatorAnnotationMenage.value());
-	            query.setParameter("muser", AuthenticationHelper.getCurrentPrincipal());
-	            query.setParameter("id", numeroTiers);
-	            query.setParameter("oldType", discrimatorAnnotationPersonnePhysique.value());
-                query.executeUpdate();
-                return null;
-            }
+	        query.setParameter("newType", discrimatorAnnotationMenage.value());
+	        query.setParameter("muser", AuthenticationHelper.getCurrentPrincipal());
+	        query.setParameter("id", numeroTiers);
+	        query.setParameter("oldType", discrimatorAnnotationPersonnePhysique.value());
+	        query.executeUpdate();
+	        return null;
         });
 
         final DiscriminatorColumn columnTypeSituationFamille = AnnotationUtils.findAnnotation(SituationFamilleMenageCommun.class, DiscriminatorColumn.class);
@@ -1314,21 +1302,15 @@ public class TiersServiceImpl implements TiersService {
             }
 
             // changement du type de la situation famille en SituationFamilleMenageCommun
-            hibernateTemplate.execute(new HibernateCallback<Object>() {
+            hibernateTemplate.execute(session -> {
+	            final String updateSFQuery = String.format("update SITUATION_FAMILLE set LOG_MDATE=CURRENT_DATE, LOG_MUSER=:user, %1$s=:newClass where ID=:id", columnTypeSituationFamille.name());
 
-                @Override
-                public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-                    final String updateSFQuery = String.format("update SITUATION_FAMILLE set LOG_MDATE=CURRENT_DATE, LOG_MUSER=:user, %1$s=:newClass where ID=:id", columnTypeSituationFamille.name());
-
-                    final SQLQuery query = session.createSQLQuery(updateSFQuery);
-	                query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
-	                query.setParameter("newClass", valueTypeSituationFamille.value());
-	                query.setParameter("id", idSF);
-                    query.executeUpdate();
-                    return null;
-                }
-
+	            final SQLQuery query = session.createSQLQuery(updateSFQuery);
+	            query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
+	            query.setParameter("newClass", valueTypeSituationFamille.value());
+	            query.setParameter("id", idSF);
+	            query.executeUpdate();
+	            return null;
             });
         }
     }
@@ -2702,14 +2684,11 @@ public class TiersServiceImpl implements TiersService {
 
 	private void setParenteDirtyFlag(final long ppId, final boolean flag) {
 		final String sql = "UPDATE TIERS SET PP_PARENTE_DIRTY=:flag WHERE NUMERO=:id";
-		final int nbChanged = hibernateTemplate.execute(new HibernateCallback<Integer>() {
-			@Override
-			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createSQLQuery(sql);
-				query.setBoolean("flag", flag);
-				query.setLong("id", ppId);
-				return query.executeUpdate();
-			}
+		final int nbChanged = hibernateTemplate.execute(session -> {
+			final Query query = session.createSQLQuery(sql);
+			query.setBoolean("flag", flag);
+			query.setLong("id", ppId);
+			return query.executeUpdate();
 		});
 		if (LOGGER.isDebugEnabled() && nbChanged > 0) {
 			LOGGER.debug(String.format("Flag 'parenté dirty' passé à %s sur la personne physique %d", flag, ppId));

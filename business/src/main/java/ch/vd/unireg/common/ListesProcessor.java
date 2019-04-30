@@ -1,18 +1,15 @@
 package ch.vd.unireg.common;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.Interruptible;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
@@ -83,27 +80,22 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 			thread.start();
 		}
 
-		final int nbEltsTrouves = hibernateTemplate.executeWithNewSession(new HibernateCallback<Integer>() {
-			@Override
-			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
+		final int nbEltsTrouves = hibernateTemplate.executeWithNewSession(session -> {
+			final Iterator<Long> idIterator = customizer.getIdIterator(session);
+			final int tailleLot = 200;
 
-				final Iterator<Long> idIterator = customizer.getIdIterator(session);
-				final int tailleLot = 200;
-
-				// on bourre dans la queue des lots de "tailleLot" identifiants
-				int size = 0;
-				while (idIterator.hasNext() && !status.isInterrupted()) {
-					final List<Long> list = new ArrayList<>(tailleLot);
-					while (idIterator.hasNext() && !status.isInterrupted() && list.size() < tailleLot) {
-						list.add(idIterator.next());
-					}
-					queue.add(list);
-					size += list.size();
-					status.setMessage(String.format("Décompte du nombre de %s : %d", getDenominationContribuablesComptes(), size));
+			// on bourre dans la queue des lots de "tailleLot" identifiants
+			int size = 0;
+			while (idIterator.hasNext() && !status.isInterrupted()) {
+				final List<Long> list = new ArrayList<>(tailleLot);
+				while (idIterator.hasNext() && !status.isInterrupted() && list.size() < tailleLot) {
+					list.add(idIterator.next());
 				}
-
-				return size;
+				queue.add(list);
+				size += list.size();
+				status.setMessage(String.format("Décompte du nombre de %s : %d", getDenominationContribuablesComptes(), size));
 			}
+			return size;
 		});
 
 		// on dit à tout le monde que la queue est remplie (donc la prochaine

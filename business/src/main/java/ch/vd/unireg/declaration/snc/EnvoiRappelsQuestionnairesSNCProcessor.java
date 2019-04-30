@@ -5,9 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.IdentifiantDeclaration;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.Entreprise;
@@ -159,30 +156,27 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 		template.setReadOnly(true);
 
 		return template.execute(status -> {
-			final List<Object[]> rows = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-				@Override
-				public List<Object[]> doInHibernate(Session session) throws HibernateException {
-					final StringBuilder b = new StringBuilder();
-					b.append("SELECT qsnc.id, qsnc.tiers.id FROM QuestionnaireSNC AS qsnc");
-					b.append(" WHERE qsnc.annulationDate IS NULL");
-					if (periodeFiscale != null) {
-						b.append(" AND qsnc.periode.annee = :pf");
-					}
-					b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-					b.append(
-							" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
-					b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE qsnc.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
-					b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
-					b.append(" ORDER BY qsnc.tiers.id ASC, qsnc.dateDebut ASC");
-					final String sql = b.toString();
-					final Query query = session.createQuery(sql);
-					query.setParameter("dateLimite", dateTraitement);
-					if (periodeFiscale != null) {
-						query.setParameter("pf", periodeFiscale);
-					}
-					//noinspection unchecked
-					return query.list();
+			final List<Object[]> rows = hibernateTemplate.execute(session -> {
+				final StringBuilder b = new StringBuilder();
+				b.append("SELECT qsnc.id, qsnc.tiers.id FROM QuestionnaireSNC AS qsnc");
+				b.append(" WHERE qsnc.annulationDate IS NULL");
+				if (periodeFiscale != null) {
+					b.append(" AND qsnc.periode.annee = :pf");
 				}
+				b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+				b.append(
+						" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
+				b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE qsnc.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
+				b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+				b.append(" ORDER BY qsnc.tiers.id ASC, qsnc.dateDebut ASC");
+				final String sql = b.toString();
+				final Query query = session.createQuery(sql);
+				query.setParameter("dateLimite", dateTraitement);
+				if (periodeFiscale != null) {
+					query.setParameter("pf", periodeFiscale);
+				}
+				//noinspection unchecked
+				return (List<Object[]>) query.list();
 			});
 			final List<IdentifiantDeclaration> identifiants = new ArrayList<>(rows.size());
 			for (Object[] objects : rows) {

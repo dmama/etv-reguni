@@ -1,6 +1,5 @@
 package ch.vd.unireg.tache;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,9 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +26,6 @@ import ch.vd.unireg.common.DefaultThreadNameGenerator;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.type.TypeEtatTache;
 
@@ -209,13 +205,10 @@ public class RecalculTachesProcessor {
 		                        ctbClassPart);
 		}
 
-		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				return query.list();
-			}
+		return hibernateTemplate.executeWithNewSession(session -> {
+			final Query query = session.createQuery(hql);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		});
 	}
 }

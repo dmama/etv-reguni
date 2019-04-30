@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -101,15 +98,12 @@ public class ResolutionAdresseProcessor {
 	private void traiterBatch(final List<Long> batch, ResolutionAdresseResults r) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-		final List<AdresseSuisse> list = hibernateTemplate.execute(new HibernateCallback<List<AdresseSuisse>>() {
-			@Override
-			public List<AdresseSuisse> doInHibernate(Session session) throws HibernateException {
-				final Criteria crit = session.createCriteria(AdresseSuisse.class);
-				crit.add(Restrictions.in("id", batch));
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				//noinspection unchecked
-				return crit.list();
-			}
+		final List<AdresseSuisse> list = hibernateTemplate.execute(session -> {
+			final Criteria crit = session.createCriteria(AdresseSuisse.class);
+			crit.add(Restrictions.in("id", batch));
+			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			//noinspection unchecked
+			return (List<AdresseSuisse>) crit.list();
 		});
 		for (AdresseSuisse adresseSuisse : list) {
 			r.nbAdresseTotal++;
@@ -156,7 +150,6 @@ public class ResolutionAdresseProcessor {
 	}
 
 
-	@SuppressWarnings({"unchecked"})
 	private List<Long> recupererAdresseATraiter() {
 
 		final String queryMessage =//----------------------------------
@@ -168,13 +161,12 @@ public class ResolutionAdresseProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
+		//noinspection UnnecessaryLocalVariable
 		final List<Long> ids = template.execute(status -> {
-			final List<Long> idsAdresse = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException {
-					final Query queryObject = session.createQuery(queryMessage);
-					return (List<Long>) queryObject.list();
-				}
+			final List<Long> idsAdresse = hibernateTemplate.execute(session -> {
+				final Query queryObject = session.createQuery(queryMessage);
+				//noinspection unchecked
+				return (List<Long>) queryObject.list();
 			});
 			Collections.sort(idsAdresse);
 			return idsAdresse;

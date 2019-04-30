@@ -1,6 +1,5 @@
 package ch.vd.unireg.stats.evenements;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,9 +10,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -23,7 +20,6 @@ import ch.vd.unireg.evenement.entreprise.interne.EvenementEntrepriseInterne;
 import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.reqdes.ErreurTraitement;
 import ch.vd.unireg.reqdes.EtatTraitement;
@@ -604,51 +600,45 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	@SuppressWarnings({"unchecked"})
 	private <T> List<T> executeSelect(final String sql, @Nullable final Map<String, Object> sqlParameters, final SelectCallback<T> callback) {
-		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<T>>() {
-			@Override
-			public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createSQLQuery(sql);
-				setParameters(query, sqlParameters);
-				final List<Object[]> results = query.list();
-				if (results != null && !results.isEmpty()) {
-					final List<T> liste = new ArrayList<>(results.size());
-					for (Object[] row : results) {
-						final T element = callback.onRow(row);
-						if (element != null) {
-							liste.add(element);
-						}
+		return hibernateTemplate.executeWithNewSession(session -> {
+			final Query query = session.createSQLQuery(sql);
+			setParameters(query, sqlParameters);
+			final List<Object[]> results = query.list();
+			if (results != null && !results.isEmpty()) {
+				final List<T> liste = new ArrayList<>(results.size());
+				for (Object[] row : results) {
+					final T element = callback.onRow(row);
+					if (element != null) {
+						liste.add(element);
 					}
-					return liste.isEmpty() ? null : liste;
 				}
-				else {
-					return null;
-				}
+				return liste.isEmpty() ? null : liste;
+			}
+			else {
+				return null;
 			}
 		});
 	}
 
 	@SuppressWarnings({"unchecked"})
 	private <T extends Enum<T>> Map<T, Integer> getNombreParModalite(final Class<T> enumClass, final String sql, @Nullable final Map<String, Object> sqlParameters) {
-		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<T, Integer>>() {
-			@Override
-			public Map<T, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createSQLQuery(sql);
-				setParameters(query, sqlParameters);
-				final List<Object[]> result = query.list();
-				if (result != null && !result.isEmpty()) {
-					final Map<T, Integer> map = new HashMap<>(result.size());
-					for (Object[] row : result) {
-						final T modalite = Enum.valueOf(enumClass, (String) row[0]);
-						final Number nombre = (Number) row[1];
-						if (nombre != null) {
-							map.put(modalite, nombre.intValue());
-						}
+		return hibernateTemplate.executeWithNewSession(session -> {
+			final Query query = session.createSQLQuery(sql);
+			setParameters(query, sqlParameters);
+			final List<Object[]> result = query.list();
+			if (result != null && !result.isEmpty()) {
+				final Map<T, Integer> map = new HashMap<>(result.size());
+				for (Object[] row : result) {
+					final T modalite = Enum.valueOf(enumClass, (String) row[0]);
+					final Number nombre = (Number) row[1];
+					if (nombre != null) {
+						map.put(modalite, nombre.intValue());
 					}
-					return map;
 				}
-				else {
-					return null;
-				}
+				return map;
+			}
+			else {
+				return null;
 			}
 		});
 	}
@@ -658,25 +648,21 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		V buildValue(Object[] row);
 	}
 
-	@SuppressWarnings({"unchecked"})
 	private <K, V> Map<K, V> buildMapFromSql(final String sql, @Nullable final Map<String, Object> sqlParameters, final MapSelectCallback<K, V> callback) {
-		return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<K, V>>() {
-			@Override
-			public Map<K, V> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createSQLQuery(sql);
-				setParameters(query, sqlParameters);
-				final List<Object[]> results = query.list();
-				if (results != null && !results.isEmpty()) {
-					final Map<K, V> map = new HashMap<>(results.size());
-					for (Object[] row : results) {
-						final K key = callback.buildKey(row);
-						final V value = callback.buildValue(row);
-						map.put(key, value);
-					}
-					return map;
+		return hibernateTemplate.executeWithNewSession(session -> {
+			final Query query = session.createSQLQuery(sql);
+			setParameters(query, sqlParameters);
+			final List<Object[]> results = query.list();
+			if (results != null && !results.isEmpty()) {
+				final Map<K, V> map = new HashMap<>(results.size());
+				for (Object[] row : results) {
+					final K key = callback.buildKey(row);
+					final V value = callback.buildValue(row);
+					map.put(key, value);
 				}
-				return null;
+				return map;
 			}
+			return null;
 		});
 	}
 

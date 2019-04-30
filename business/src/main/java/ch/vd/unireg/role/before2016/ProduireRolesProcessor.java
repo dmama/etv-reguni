@@ -1,6 +1,5 @@
 package ch.vd.unireg.role.before2016;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,9 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +38,6 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -1276,19 +1272,15 @@ public class ProduireRolesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final RegDate debutPeriode = RegDate.get(annee, 1, 1);
+			final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
-				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
-				final RegDate finPeriode = RegDate.get(annee, 12, 31);
-
-				final Query query = session.createQuery(hql);
-				query.setParameter("debutPeriode", debutPeriode);
-				query.setParameter("finPeriode", finPeriode);
-				//noinspection unchecked
-				return query.list();
-			}
+			final Query query = session.createQuery(hql);
+			query.setParameter("debutPeriode", debutPeriode);
+			query.setParameter("finPeriode", finPeriode);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 	}
 
@@ -1309,13 +1301,10 @@ public class ProduireRolesProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query = session.createQuery(hql);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 	}
 
@@ -1342,20 +1331,16 @@ public class ProduireRolesProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+			return template.execute(status -> hibernateTemplate.execute(session -> {
+				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
+				final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
-					final RegDate debutPeriode = RegDate.get(annee, 1, 1);
-					final RegDate finPeriode = RegDate.get(annee, 12, 31);
-
-					final Query query = session.createQuery(hql);
-					query.setParameter("debutPeriode", debutPeriode);
-					query.setParameter("finPeriode", finPeriode);
-					query.setParameterList("noOfsCommune", noOfsCommunes);
-					//noinspection unchecked
-					return query.list();
-				}
+				final Query query = session.createQuery(hql);
+				query.setParameter("debutPeriode", debutPeriode);
+				query.setParameter("finPeriode", finPeriode);
+				query.setParameterList("noOfsCommune", noOfsCommunes);
+				//noinspection unchecked
+				return (List<Long>) query.list();
 			}));
 		}
 	}
@@ -1382,14 +1367,11 @@ public class ProduireRolesProcessor {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			return template.execute(status -> hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-				@Override
-				public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-					final Query query = session.createQuery(hql);
-					query.setParameterList("noOfsCommune", noOfsCommunes);
-					//noinspection unchecked
-					return query.list();
-				}
+			return template.execute(status -> hibernateTemplate.execute(session -> {
+				final Query query = session.createQuery(hql);
+				query.setParameterList("noOfsCommune", noOfsCommunes);
+				//noinspection unchecked
+				return (List<Long>) query.list();
 			}));
 		}
 	}

@@ -1,14 +1,11 @@
 package ch.vd.unireg.documentfiscal;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +24,6 @@ import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -191,18 +187,15 @@ public class EnvoiLettresBienvenueProcessor {
 	private List<Long> fetchIds(final RegDate dateOrigine) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(status -> hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final String hql =
-						"select distinct ff.tiers.numero from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.dateDebut>=:seuil and ff.tiers.class='Entreprise' order by ff.tiers.numero";
-				final Query query = session.createQuery(hql);
-				query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);
-				query.setParameter("seuil", dateOrigine);
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
+			final String hql =
+					"select distinct ff.tiers.numero from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.dateDebut>=:seuil and ff.tiers.class='Entreprise' order by ff.tiers.numero";
+			final Query query = session.createQuery(hql);
+			query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);
+			query.setParameter("seuil", dateOrigine);
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		}));
 	}
 }

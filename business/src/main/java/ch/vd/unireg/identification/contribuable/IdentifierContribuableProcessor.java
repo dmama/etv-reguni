@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.TiersService;
 
@@ -109,15 +106,12 @@ public class IdentifierContribuableProcessor {
 	private void traiterBatch(final List<Long> batch, IdentifierContribuableResults rapport) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-		final List<IdentificationContribuable> list = hibernateTemplate.execute(new HibernateCallback<List<IdentificationContribuable>>() {
-			@Override
-			public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(IdentificationContribuable.class);
-				crit.add(Restrictions.in("id", batch));
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				//noinspection unchecked
-				return crit.list();
-			}
+		final List<IdentificationContribuable> list = hibernateTemplate.execute(session -> {
+			Criteria crit = session.createCriteria(IdentificationContribuable.class);
+			crit.add(Restrictions.in("id", batch));
+			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			//noinspection unchecked
+			return (List<IdentificationContribuable>) crit.list();
 		});
 		for (IdentificationContribuable identificationContribuable : list) {
 			++rapport.nbMessagesTotal;
@@ -143,19 +137,16 @@ public class IdentifierContribuableProcessor {
 			template.setReadOnly(true);
 
 			final List<Long> ids = template.execute(status -> {
-				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryMessage);
-						final Set<IdentificationContribuable.Etat> etats = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
-						                                                              IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
-						                                                              IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
-						                                                              IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
-						                                                              IdentificationContribuable.Etat.EXCEPTION);
-						queryObject.setParameterList("etats", etats);
-						//noinspection unchecked
-						return queryObject.list();
-					}
+				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(session -> {
+					final Query queryObject = session.createQuery(queryMessage);
+					final Set<IdentificationContribuable.Etat> etats = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
+					                                                              IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
+					                                                              IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
+					                                                              IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
+					                                                              IdentificationContribuable.Etat.EXCEPTION);
+					queryObject.setParameterList("etats", etats);
+					//noinspection unchecked
+					return (List<Long>) queryObject.list();
 				});
 				Collections.sort(idsMessage);
 				return idsMessage;

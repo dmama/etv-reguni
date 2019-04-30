@@ -1,6 +1,5 @@
 package ch.vd.unireg.common;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -11,8 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,7 +18,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.tiers.Contribuable;
@@ -120,31 +116,26 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 	    try {
 
 			// comme ça on est certain de recréer une session à chaque fois
-			hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-				@Override
-				public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			hibernateTemplate.executeWithNewSession(session -> {
+				// read-only transaction
+				session.setFlushMode(FlushMode.MANUAL);
+				transactionTemplate.setReadOnly(true);
+				transactionTemplate.execute(status -> {
+					final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
 
-					// read-only transaction
-					session.setFlushMode(FlushMode.MANUAL);
-					transactionTemplate.setReadOnly(true);
-					transactionTemplate.execute(status -> {
-						final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
+					// prefetch des données civiles
+					prefetchDonneesCiviles(ids, null);
 
-						// prefetch des données civiles
-						prefetchDonneesCiviles(ids, null);
-
-						for (Tiers t : tiers) {
-							traiteTiers(t);
-							niveauExtraction.increment();
-							if (interruptible.isInterrupted()) {
-								break;
-							}
+					for (Tiers t : tiers) {
+						traiteTiers(t);
+						niveauExtraction.increment();
+						if (interruptible.isInterrupted()) {
+							break;
 						}
-						return null;
-					});
-
+					}
 					return null;
-				}
+				});
+				return null;
 			});
 
 	    }
@@ -184,26 +175,21 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 		for (final Long id : ids) {
 
 			// comme ça on est certain de recréer une session à chaque fois
-			hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-				@Override
-				public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-					// read-only transaction
-					transactionTemplate.setReadOnly(true);
-					transactionTemplate.execute(status -> {
-						try {
-							final Tiers tiers = tiersDAO.get(id);
-							traiteTiers(tiers);
-						}
-						catch (Exception e) {
-							LOGGER.error("Exception levée sur le tiers " + id, e);
-							results.addErrorException(id, e);
-						}
-						return null;
-					});
-
+			hibernateTemplate.executeWithNewSession(session -> {
+				// read-only transaction
+				transactionTemplate.setReadOnly(true);
+				transactionTemplate.execute(status -> {
+					try {
+						final Tiers tiers = tiersDAO.get(id);
+						traiteTiers(tiers);
+					}
+					catch (Exception e) {
+						LOGGER.error("Exception levée sur le tiers " + id, e);
+						results.addErrorException(id, e);
+					}
 					return null;
-				}
+				});
+				return null;
 			});
 
 			if (interruptible.isInterrupted()) {

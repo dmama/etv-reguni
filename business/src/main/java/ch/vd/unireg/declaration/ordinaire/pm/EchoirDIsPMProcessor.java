@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -26,7 +24,6 @@ import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.IdentifiantDeclaration;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.TiersService;
@@ -183,31 +180,28 @@ public class EchoirDIsPMProcessor {
 
 		return template.execute(status -> {
 			final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
-			return hibernateTemplate.execute(new HibernateCallback<List<IdentifiantDeclaration>>() {
-				@Override
-				public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {
+			return hibernateTemplate.execute(session -> {
 
-					final Query query = session.createSQLQuery(sql);
-					//noinspection unchecked
-					final List<Object[]> rows = query.list();
-					if (rows != null && !rows.isEmpty()) {
-						for (Object[] row : rows) {
-							final int indexDateSommation = ((Number) row[1]).intValue();
-							final RegDate dateSommation = RegDate.fromIndex(indexDateSommation, false);
-							final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
-							if (dateTraitement.isAfter(echeanceReelle)) {
-								final long diId = ((Number) row[0]).longValue();
-								final long numeroTiers = ((Number) row[2]).longValue();
-								final Integer numeroOID = row[3] == null ? null : ((Number) row[3]).intValue();
-								final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(diId, numeroTiers, numeroOID);
-								identifiantDi.add(identifiantDeclaration);
-							}
+				final Query query = session.createSQLQuery(sql);
+				//noinspection unchecked
+				final List<Object[]> rows = query.list();
+				if (rows != null && !rows.isEmpty()) {
+					for (Object[] row : rows) {
+						final int indexDateSommation = ((Number) row[1]).intValue();
+						final RegDate dateSommation = RegDate.fromIndex(indexDateSommation, false);
+						final RegDate echeanceReelle = getSeuilEcheanceSommation(dateSommation);
+						if (dateTraitement.isAfter(echeanceReelle)) {
+							final long diId = ((Number) row[0]).longValue();
+							final long numeroTiers = ((Number) row[2]).longValue();
+							final Integer numeroOID = row[3] == null ? null : ((Number) row[3]).intValue();
+							final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(diId, numeroTiers, numeroOID);
+							identifiantDi.add(identifiantDeclaration);
 						}
-						return identifiantDi;
 					}
-					else {
-						return Collections.emptyList();
-					}
+					return identifiantDi;
+				}
+				else {
+					return Collections.emptyList();
 				}
 			});
 		});

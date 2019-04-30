@@ -1,11 +1,8 @@
 package ch.vd.unireg.declaration.ordinaire.pp;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +19,6 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Tiers;
@@ -118,17 +114,14 @@ public class ImportCodesSegmentProcessor {
 	}
 
 	private void setNewCodeSegment(final DeclarationImpotOrdinairePP di, final int codeSegment) {
-		hibernateTemplate.execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final SQLQuery query = session.createSQLQuery("UPDATE DOCUMENT_FISCAL SET CODE_SEGMENT=:codeSegment, LOG_MDATE=:mdate, LOG_MUSER=:muser WHERE ID=:id");
-				query.setInteger("codeSegment", codeSegment);
-				query.setTimestamp("mdate", DateHelper.getCurrentDate());
-				query.setString("muser", AuthenticationHelper.getCurrentPrincipal());
-				query.setLong("id", di.getId());
-				query.executeUpdate();
-				return null;
-			}
+		hibernateTemplate.execute(session -> {
+			final SQLQuery query = session.createSQLQuery("UPDATE DOCUMENT_FISCAL SET CODE_SEGMENT=:codeSegment, LOG_MDATE=:mdate, LOG_MUSER=:muser WHERE ID=:id");
+			query.setInteger("codeSegment", codeSegment);
+			query.setTimestamp("mdate", DateHelper.getCurrentDate());
+			query.setString("muser", AuthenticationHelper.getCurrentPrincipal());
+			query.setLong("id", di.getId());
+			query.executeUpdate();
+			return null;
 		});
 	}
 }
