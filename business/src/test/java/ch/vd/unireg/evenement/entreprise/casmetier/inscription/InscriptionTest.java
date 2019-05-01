@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.engine.AbstractEvenementEntrepriseCivileProcessorTest;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
@@ -24,6 +25,7 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
@@ -202,5 +204,73 @@ public class InscriptionTest extends AbstractEvenementEntrepriseCivileProcessorT
 			Assert.assertEquals(0, evtsFiscaux.size());
 			return null;
 		});
+	}
+
+	// SIFISC-30718- Date d'inscription au RC enregistrée dans les états fiscaux erronée.
+	@Test(timeout = 10000L)
+	public void testInscriptionDateInscriptionDansEtatEntreprise() throws Exception {
+
+		// Mise en place service mock
+		final long noEntrepriseCivile = 101828956L;
+		final long noEtablissement = noEntrepriseCivile + 1000000;
+		final RegDate dateInscriptionCH = date(2019, 1, 17);
+		final RegDate dateOuverture = date(2019, 1, 18);
+
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
+			@Override
+			protected void init() {
+
+				final MockEntrepriseCivile entreprise =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Fondation Marguerite Fertig", dateInscriptionCH, null, FormeLegale.N_0110_FONDATION,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
+						                                       StatusRegistreIDE.DEFINITIF,
+						                                       TypeEntrepriseRegistreIDE.FONDATION, "CHE999999996", null, null);
+				final MockDonneesRC rc = (MockDonneesRC) entreprise.getEtablissements().get(0).getDonneesRC();
+				rc.changeInscription(date(2019, 1, 22), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                          null, null,
+				                                                          dateInscriptionCH, null));
+				addEntreprise(entreprise);
+			}
+		});
+
+		// Création de l'entreprise
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noEtablissement);
+			addActiviteEconomique(entreprise, etablissement, date(2019, 1, 17), null, true);
+			tiersService.changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, date(1927, 1, 26), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addRegimeFiscalVD(entreprise, dateOuverture, null, MockTypeRegimeFiscal.SBI);
+			addRegimeFiscalCH(entreprise, dateOuverture, null, MockTypeRegimeFiscal.SBI);
+			addForPrincipal(entreprise, dateOuverture, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+			return entreprise;
+		});
+
+		// Création de l'événement
+		final long noEvenement = 12344300L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(transactionStatus -> {
+			final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, date(2019, 1, 22), A_TRAITER);
+			event.setFormeJuridique(FormeJuridiqueEntreprise.FONDATION);
+			event.setCorrectionDansLePasse(Boolean.FALSE);
+			return hibernateTemplate.merge(event).getId();
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noEntrepriseCivile);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(status -> {
+			                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
+			                             Assert.assertNotNull(evt);
+			                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
+			                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
+			                             Assert.assertEquals(2, entreprise.getEtats().size());
+			                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
+			                             Assert.assertEquals(dateInscriptionCH, entreprise.getEtatActuel().getDateObtention());
+			                             return null;
+		                             }
+		);
 	}
 }

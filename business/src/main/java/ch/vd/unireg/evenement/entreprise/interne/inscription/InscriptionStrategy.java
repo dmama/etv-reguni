@@ -63,7 +63,7 @@ public class InscriptionStrategy extends AbstractEntrepriseStrategy {
 
 				if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {
 					context.audit.info(event.getId(), String.format("Inscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entrepriseCivile.getNumeroEntreprise()));
-					return new Inscription(event, entrepriseCivile, entreprise, context, options);
+					return new Inscription(event, entrepriseCivile, entreprise, context, options, dateInscriptionRCApres);
 				}
 			}
 		}

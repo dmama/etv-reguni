@@ -30,6 +30,7 @@ public class Inscription extends EvenementEntrepriseInterneDeTraitement {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inscription.class);
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
+	private RegDate dateInscription;
 
 	private EtablissementCivil etablissementPrincipalAvant = null;
 	private final EtablissementCivil etablissementPrincipalApres;
@@ -47,10 +48,11 @@ public class Inscription extends EvenementEntrepriseInterneDeTraitement {
 
 	public Inscription(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
 	                   EvenementEntrepriseContext context,
-	                   EvenementEntrepriseOptions options) throws EvenementEntrepriseException {
+	                   EvenementEntrepriseOptions options, RegDate dateInscription) throws EvenementEntrepriseException {
 		super(evenement, entrepriseCivile, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
+		this.dateInscription = dateInscription;
 		dateAvant = dateApres.getOneDayBefore();
 
 		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivile.getEtablissementPrincipal(dateAvant);
@@ -97,7 +99,7 @@ public class Inscription extends EvenementEntrepriseInterneDeTraitement {
 		tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
 
 		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscal.");
-		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
+		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateInscription, suivis);
 	}
 
 	@Override

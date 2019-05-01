@@ -489,7 +489,7 @@ public abstract class EvenementEntrepriseInterne {
 
 	protected void changeEtatEntreprise(Entreprise entreprise, TypeEtatEntreprise etat, RegDate dateDebut, EvenementEntrepriseSuiviCollector suivis) {
 		context.getTiersService().changeEtatEntreprise(etat, entreprise, dateDebut, TypeGenerationEtatEntreprise.AUTOMATIQUE);
-		suivis.addSuivi(String.format("Réglage de l'état: %s.", etat.getLibelle()));
+		suivis.addSuivi(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", etat.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),getNoEntrepriseCivile()));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
