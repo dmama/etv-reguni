@@ -688,9 +688,9 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 			assertEquals("Mutation : Radiation APM",
 			             evt.getErreurs().get(1).getMessage());
-			assertEquals("Réglage de l'état: Radiée du RC.",
+			assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.RADIEE_RC.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise1.getNumero()), noEntrepriseCivile),
 			             evt.getErreurs().get(2).getMessage());
-			assertEquals("Réglage de l'état: Fondée.",
+			assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.FONDEE.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise1.getNumero()), noEntrepriseCivile),
 			             evt.getErreurs().get(3).getMessage());
 			assertEquals("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC.",
 			             evt.getErreurs().get(4).getMessage());
@@ -775,7 +775,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 			assertEquals("Mutation : Radiation APM",
 			             evt.getErreurs().get(1).getMessage());
-			assertEquals("Réglage de l'état: Radiée du RC.",
+			assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.RADIEE_RC.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise1.getNumero()), noEntrepriseCivile),
 			             evt.getErreurs().get(2).getMessage());
 			assertEquals("Vérification requise pour l'association / fondation radiée du RC.",
 			             evt.getErreurs().get(3).getMessage());
@@ -861,9 +861,9 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 			assertEquals("Mutation : Radiation APM",
 			             evt.getErreurs().get(1).getMessage());
-			assertEquals("Réglage de l'état: Radiée du RC.",
+			assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.RADIEE_RC.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise1.getNumero()), noEntrepriseCivile),
 			             evt.getErreurs().get(2).getMessage());
-			assertEquals("Réglage de l'état: En faillite.",
+			assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.EN_FAILLITE.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise1.getNumero()), noEntrepriseCivile),
 			             evt.getErreurs().get(3).getMessage());
 			assertEquals("On considère que l'association / fondation reste en activité puisqu'elle est toujours assujettie, bien qu'elle soit en faillite.",
 			             evt.getErreurs().get(4).getMessage());
@@ -951,7 +951,8 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 			assertEquals(4, erreurs.size());
 			assertEquals("Entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseId) + " (By Hina Boutique SNC) identifiée sur la base du numéro civil 102059155 (numéro cantonal).", erreurs.get(0).getMessage());
 			assertEquals("Mutation : Radiation", erreurs.get(1).getMessage());
-			assertEquals("Réglage de l'état: Radiée du RC.", erreurs.get(2).getMessage());
+			assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.RADIEE_RC.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(entreprise1.getNumero()), noEntrepriseCivile),
+			             erreurs.get(2).getMessage());
 			assertEquals("Vérification requise pour la radiation de l'entreprise encore dotée d'un for principal.", erreurs.get(3).getMessage());
 			return null;
 		});
