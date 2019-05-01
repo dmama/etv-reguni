@@ -21,23 +21,13 @@
 			/WEB-INF/unireg-ws-*.xml
 		</param-value>
 	</context-param>
-	
+
+	<!-- Log4j2 (voir https://logging.apache.org/log4j/2.x/manual/webapp.html) -->
 	<context-param>
-		<param-name>log4jConfigLocation</param-name>
+		<param-name>log4jConfiguration</param-name>
 		<param-value>${unireg-ws.log4j.location}</param-value>
 	</context-param>
 
-	<context-param>
-		<param-name>log4jRefreshInterval</param-name>
-		<param-value>30000</param-value>
-	</context-param>
-
-	<context-param>
-		<!-- On ne peut pas exposer le webapp root si le war est pas exapndé -->
-		<param-name>log4jExposeWebAppRoot</param-name>
-		<param-value>false</param-value>
-	</context-param>
-	
 	<!--  Les servlets de notre application -->
 	<servlet>
 		<servlet-name>CXFServlet</servlet-name>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<!--		<Console name="Console" target="SYSTEM_OUT">-->
+		<!--			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />-->
+		<!--			<PatternLayout pattern="[ws] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />-->
+		<!--		</Console>-->
+		<RollingFile name="Logfile" fileName="unireg-ws.log" filePattern="unireg-ws.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[ws] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+		<RollingFile name="WsAccess" fileName="ws-access.log" filePattern="ws-access.log.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[%c{2}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+		<RollingFile name="JmsAccess" fileName="ws-jms-access.log" filePattern="ws-jms-access.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[%c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+		<RollingFile name="ServiceTracing" fileName="srv-access-ws.log" filePattern="srv-access-ws.log.%d{yyyy-MM-dd}.gz" append="true">
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="[%-18.18c{1}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
+			<TimeBasedTriggeringPolicy />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="ch.vd.unireg" level="DEBUG" />
+		<Logger name="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" level="INFO" />
+
+		<!-- pour ne pas logger en debug les logs du TransactionTemplate de Spring -->
+		<Logger name="ch.vd.unireg.transaction" level="INFO" />
+
+		<Logger name="ch.vd.unireg.servlet.remoting" level="INFO" />
+		<Logger name="net.sf.ehcache" level="ERROR" />
+		<Logger name="org.apache" level="WARN" />
+		<Logger name="org.hibernate" level="WARN" />
+		<!-- <Logger name="org.hibernate.SQL" level="INFO" /> -->
+		<Logger name="org.springframework" level="INFO" />
+
+		<!-- Suppress warnings from Commons Validator -->
+		<Logger name="org.apache.commons.validator.ValidatorResources" level="ERROR" />
+
+		<Logger name="securite.read" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="party3.read" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="party3.write" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ws.v5.read" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ws.v5.write" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ws.v6.read" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ws.v6.write" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ws.v7.read" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ws.v7.write" level="INFO" additivity="false">
+			<AppenderRef ref="WsAccess" />
+		</Logger>
+
+		<Logger name="ServiceTracing" level="INFO" additivity="false">
+			<AppenderRef ref="ServiceTracing" />
+		</Logger>
+
+		<Logger name="ch.vd.unireg.transaction.TracingTransactionManager" level="WARN" additivity="false">
+			<AppenderRef ref="ServiceTracing" />
+		</Logger>
+
+		<Logger name="unireg.jms" level="INFO" additivity="false">
+			<AppenderRef ref="JmsAccess" />
+		</Logger>
+
+		<Root level="WARN">
+			<!-- <AppenderRef ref="Console" /> -->
+			<AppenderRef ref="Logfile" />
+		</Root>
+	</Loggers>
+</Configuration>

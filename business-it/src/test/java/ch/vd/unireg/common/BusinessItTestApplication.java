@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.zip.ZipInputStream;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -29,7 +28,6 @@ import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 
 /**
@@ -48,36 +46,6 @@ public abstract class BusinessItTestApplication {
 	private DatabaseService databaseService;
 
 	private GlobalTiersIndexer indexer;
-
-	public BusinessItTestApplication() {
-
-		// Le run pour de vrai
-		boolean fileNotFound = true;
-		{
-			File file = new File("log4j.xml");
-			if (file.exists()) {
-				DOMConfigurator.configure("log4j.xml");
-				fileNotFound = false;
-			}
-		}
-		// Dans Eclipse
-		if (fileNotFound) {
-			File file = new File("src/test/resources/ut/log4j.xml");
-			if (file.exists()) {
-				DOMConfigurator.configure("src/test/resources/ut/log4j.xml");
-			}
-			else {
-				// Dans IDEA
-				file = new File("business-it/src/test/resources/ut/log4j.xml");
-				if (file.exists()) {
-					DOMConfigurator.configure("business-it/src/test/resources/ut/log4j.xml");
-				}
-				else {
-					fail("Pas de fichier Log4j");
-				}
-			}
-		}
-	}
 
 	protected void run() throws Exception {
 

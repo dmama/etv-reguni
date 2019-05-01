@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,7 +28,14 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 /**
  * Petit utilitaire qui extrait les fichiers csv inclus dans un rapport PDF généré par UNIREG
@@ -166,12 +172,20 @@ public class RapportCsvExtractorApp {
 	 * Initialise Log4j de manière à ce qu'il soit le plus discret possible.
 	 */
 	private static void initLog4j() {
-		Properties properties = new Properties();
-		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
-		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%r %p [%t] %c - %m%n");
-		PropertyConfigurator.configure(properties);
+		final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+		final AppenderComponentBuilder console = builder.newAppender("stdout", "Console");
+		builder.add(console);
+
+		final LayoutComponentBuilder standard = builder.newLayout("PatternLayout");
+		standard.addAttribute("pattern", "%r %p [%t] %c - %m%n");
+		console.add(standard);
+
+		final RootLoggerComponentBuilder rootLogger = builder.newRootLogger(Level.ERROR);
+		rootLogger.add(builder.newAppenderRef("stdout"));
+
+		builder.add(rootLogger);
+
+		Configurator.initialize(builder.build());
 	}
 
 	@SuppressWarnings("static-access")

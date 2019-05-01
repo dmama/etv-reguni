@@ -1,7 +1,6 @@
 package ch.vd.unireg.etatcivilcomp;
 
 import javax.xml.ws.BindingProvider;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -18,15 +17,14 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.PartyWebServiceFactory;
 import ch.vd.unireg.perfs.PerfsAccessFile;
 import ch.vd.unireg.perfs.PerfsAccessFileIterator;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.PartyWebServiceFactory;
 
 import static ch.vd.unireg.etatcivilcomp.EtatCivilCompThread.CompareQuery;
 import static ch.vd.unireg.etatcivilcomp.EtatCivilCompThread.Query;
@@ -58,15 +56,6 @@ public class EtatCivilCompClient {
 		final CommandLine line = parseCommandLine(args);
 		if (line == null) {
 			return;
-		}
-
-		if (new File("log4j.xml").exists()) {
-			// run depuis ant
-			DOMConfigurator.configure("log4j.xml");
-		}
-		else {
-			// run depuis éclipse
-			DOMConfigurator.configure("src/main/resources/log4j.xml");
 		}
 
 		final String serviceUrl = (String) line.getArgList().get(0);

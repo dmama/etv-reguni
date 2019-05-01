@@ -1,7 +1,6 @@
 package ch.vd.unireg.ehcache;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,14 +13,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.unireg.utils.WebServiceV5Helper;
 import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.xml.party.v3.Party;
-import ch.vd.unireg.utils.WebServiceV5Helper;
 
 public class StresserCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StresserCache.class);
@@ -51,15 +49,6 @@ public class StresserCache {
 	private static final String nomFichier2 = "tiers2.csv";
 
 	public static void main(String[] args) throws IOException {
-
-		if (new File("log4j.xml").exists()) {
-			// run depuis ant
-			DOMConfigurator.configure("log4j.xml");
-		}
-		else {
-			// run depuis éclipse
-			DOMConfigurator.configure("tools/src/main/resources/log4j.xml");
-		}
 
 		LOGGER.info("Création du cache");
 		cacheUtils = new CacheUtils();

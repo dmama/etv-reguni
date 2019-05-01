@@ -10,6 +10,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
 import ch.vd.unireg.scheduler.JobParamEnum;
 import ch.vd.unireg.scheduler.JobParamFile;
 import ch.vd.unireg.scheduler.JobParamInteger;
@@ -27,6 +28,7 @@ public class ItBatchClientJob extends JobDefinition {
 	public static final String PARAM_SHUTDOWN_DURATION = "shutdown_duration";
 	public static final String PARAM_SALUTATIONS = "salutations"; // paramètre bidon pour tester les enums
 	public static final String PARAM_ATTACHEMENT = "attachement"; // paramètre bidon pour tester les fichiers
+	public static final String PARAM_EXCEPTION= "exception";
 
 	public enum Salutations {
 		HELLO,
@@ -91,24 +93,36 @@ public class ItBatchClientJob extends JobDefinition {
 			param.setType(new JobParamFile());
 			addParameterDefinition(param, null);
 		}
+		// Exception
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Lève une exception");
+			param.setName(PARAM_EXCEPTION);
+			param.setMandatory(false);
+			param.setType(new JobParamBoolean());
+			addParameterDefinition(param, false);
+		}
 	}
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		// DATE_DEBUT
 		final RegDate dateDebut = getRegDateValue(params, PARAM_DATE_DEBUT);
-		// COUNT
-
 		final Integer count = getOptionalIntegerValue(params, PARAM_COUNT);
 		final byte[] attachement = getFileContent(params, PARAM_ATTACHEMENT);
+		final Integer duration = getOptionalIntegerValue(params, PARAM_DURATION);
+		final Integer shutdown = getOptionalIntegerValue(params, PARAM_SHUTDOWN_DURATION);
+		final boolean throwException = getBooleanValue(params, PARAM_EXCEPTION, false);
+		final StatusManager status = getStatusManager();
+
+		LOGGER.info("Date début               : " + dateDebut);
+		LOGGER.info("Count                    : " + count);
 		if (attachement != null) {
 			LOGGER.info("Contenu du fichier joint: \n" + new String(attachement) + '\n');
 		}
-
-		final Integer duration = getOptionalIntegerValue(params, PARAM_DURATION);
-		final Integer shutdown = getOptionalIntegerValue(params, PARAM_SHUTDOWN_DURATION);
-		final StatusManager status = getStatusManager();
+		LOGGER.info("Durée                    : " + duration);
+		LOGGER.info("Durée après interruption : " + shutdown);
+		LOGGER.info("Lève une exception       : " + throwException);
 
 		if (duration != null) {
 			final long inc = duration * 10;
@@ -126,8 +140,10 @@ public class ItBatchClientJob extends JobDefinition {
 		}
 		status.setMessage("done");
 
-		LOGGER.info("Date début : " + dateDebut);
-		LOGGER.info("Count      : " + count);
+
+		if (throwException) {
+			throw new IllegalArgumentException("Exception de test");
+		}
 	}
 
 	@Override

@@ -44,39 +44,39 @@
 			<outputDirectory>unireg-web-${project.version}/config/validation</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
-		<!-- Fichier unireg-log4j.xml -->
+		<!-- Fichier unireg-log4j2.xml -->
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
-				<include>unireg-log4j.xml</include>
+				<include>unireg-log4j2.xml</include>
 			</includes>
 			<outputDirectory>unireg-web-${project.version}/config/integration</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
-				<include>unireg-log4j.xml</include>
+				<include>unireg-log4j2.xml</include>
 			</includes>
 			<outputDirectory>unireg-web-${project.version}/config/integration-po</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
-				<include>unireg-log4j.xml</include>
+				<include>unireg-log4j2.xml</include>
 			</includes>
 			<outputDirectory>unireg-web-${project.version}/config/integration-te</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
-				<include>unireg-log4j.xml</include>
+				<include>unireg-log4j2.xml</include>
 			</includes>
 			<outputDirectory>unireg-web-${project.version}/config/sipm</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
-				<include>unireg-log4j.xml</include>
+				<include>unireg-log4j2.xml</include>
 			</includes>
 			<outputDirectory>unireg-web-${project.version}/config/validation</outputDirectory>
 		</fileSet>

@@ -11,9 +11,10 @@ import javax.transaction.xa.XAException;
 
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jencks.GeronimoPlatformTransactionManager;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
@@ -29,7 +30,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 	 * <li>tous sont loggués en {@link org.apache.log4j.Level#WARN} si le temps est plus grand que {@link #WARNING_THRESHOLD}
 	 * </ul> 
 	 */
-	public static final Logger LOGGER = Logger.getLogger(TransactionManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
 
 	/**
 	 * Temps de réponse (en ns) au delà duquel on passe de toute façon en niveau {@link org.apache.log4j.Level#WARN}
@@ -55,8 +56,8 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 		final long end = System.nanoTime();
 		final long duration = end - start;
 		final Level effectiveLevel = (duration >= threshold ? aboveThresholdLevel : loggingLevel);
-		if (LOGGER.isEnabledFor(effectiveLevel)) {
-			LOGGER.log(effectiveLevel, String.format("(%d ms) %s", duration / 1000000L, name));
+		if (effectiveLevel.isLogEnabled(LOGGER)) {
+			effectiveLevel.log(LOGGER, String.format("(%d ms) %s", duration / 1000000L, name));
 		}
 	}
 
@@ -113,5 +114,67 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 		finally {
 			end(start, "resume", Level.TRACE, WARNING_THRESHOLD, Level.WARN);
 		}
+	}
+
+	private enum Level {
+		TRACE {
+			@Override
+			public boolean isLogEnabled(@NotNull Logger logger) {
+				return logger.isTraceEnabled();
+			}
+
+			@Override
+			public void log(@NotNull Logger logger, @NotNull String message) {
+				logger.trace(message);
+			}
+		},
+		DEBUG {
+			@Override
+			public boolean isLogEnabled(@NotNull Logger logger) {
+				return logger.isDebugEnabled();
+			}
+
+			@Override
+			public void log(@NotNull Logger logger, @NotNull String message) {
+				logger.debug(message);
+			}
+		},
+		INFO {
+			@Override
+			public boolean isLogEnabled(@NotNull Logger logger) {
+				return logger.isInfoEnabled();
+			}
+
+			@Override
+			public void log(@NotNull Logger logger, @NotNull String message) {
+				logger.info(message);
+			}
+		},
+		WARN {
+			@Override
+			public boolean isLogEnabled(@NotNull Logger logger) {
+				return logger.isWarnEnabled();
+			}
+
+			@Override
+			public void log(@NotNull Logger logger, @NotNull String message) {
+				logger.warn(message);
+			}
+		},
+		ERROR {
+			@Override
+			public boolean isLogEnabled(@NotNull Logger logger) {
+				return logger.isErrorEnabled();
+			}
+
+			@Override
+			public void log(@NotNull Logger logger, @NotNull String message) {
+				logger.error(message);
+			}
+		};
+
+		public abstract boolean isLogEnabled(@NotNull Logger logger);
+
+		public abstract void log(@NotNull Logger logger, @NotNull String message);
 	}
 }

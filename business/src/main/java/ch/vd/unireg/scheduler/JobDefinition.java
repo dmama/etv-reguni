@@ -498,7 +498,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 */
 	protected final boolean getBooleanValue(Map<String, Object> params, String key) {
 		final JobParam parameterDefinition = getParameterDefinition(key, true);
-		final Boolean value = getOptionnalBooleanValue(params, parameterDefinition, null);
+		final Boolean value = getOptionalBooleanValue(params, parameterDefinition, null);
 		if (value == null && parameterDefinition.isMandatory()) {
 			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
 		}
@@ -513,17 +513,31 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 * @param defaultValue la valeur à renvoyer si aucune valeur n'a été trouvée
 	 * @return la valeur booléenne du paramètre
 	 */
+	protected final boolean getBooleanValue(Map<String, Object> params, String key, boolean defaultValue) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		final Boolean value = getOptionalBooleanValue(params, parameterDefinition, defaultValue);
+		return value == null ? defaultValue : value;
+	}
+
+	/**
+	 * Extrait la valeur d'un paramètre de type boolean, et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @param defaultValue la valeur à renvoyer si aucune valeur n'a été trouvée
+	 * @return la valeur booléenne du paramètre
+	 */
 	@Nullable
-	protected final Boolean getOptionnalBooleanValue(Map<String, Object> params, String key, Boolean defaultValue) {
+	protected final Boolean getOptionalBooleanValue(Map<String, Object> params, String key, Boolean defaultValue) {
 		final JobParam parameterDefinition = getParameterDefinition(key, true);
 		if (parameterDefinition.isMandatory()) {
 			throw new IllegalArgumentException(String.format("Le paramètre %s n'est pas optionnel", key));
 		}
-		return getOptionnalBooleanValue(params, parameterDefinition, defaultValue);
+		return getOptionalBooleanValue(params, parameterDefinition, defaultValue);
 	}
 
 	@Nullable
-	private static Boolean getOptionnalBooleanValue(Map<String, Object> params, JobParam paramDefinition, @Nullable Boolean defaultValue) {
+	private static Boolean getOptionalBooleanValue(Map<String, Object> params, JobParam paramDefinition, @Nullable Boolean defaultValue) {
 		if (paramDefinition == null) {
 			throw new IllegalArgumentException();
 		}

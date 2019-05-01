@@ -225,13 +225,14 @@ public class BatchClientTest extends WebitTest {
 
 		final List<JobParamDescription> params = description.getParameters();
 		assertNotNull(params);
-		assertEquals(6, params.size());
+		assertEquals(7, params.size());
 		assertParam(params.get(0), "dateDebut", "regdate");
 		assertParam(params.get(1), "count", "integer");
 		assertParam(params.get(2), "duration", "integer");
 		assertParam(params.get(3), "shutdown_duration", "integer");
 		assertParam(params.get(4), "salutations", "enum");
 		assertParam(params.get(5), "attachement", "byte[]");
+		assertParam(params.get(6), "exception", "boolean");
 
 		List<String> values = new ArrayList<>(3);
 		values.add("HELLO");

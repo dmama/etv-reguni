@@ -240,6 +240,40 @@
 				<version>${shared-jmx.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<!-- bridge pour JCL (Spring) sur slf4j -->
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<!-- implémentation log4j2 pour slf4j -->
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<!-- l'api de log4j2 -->
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<!-- log4j2 lui-même -->
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-web</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>io.zipkin.brave</groupId>
 				<artifactId>brave-spring-beans</artifactId>
 				<version>${brave.version}</version>
@@ -446,6 +480,12 @@
 			<version>4.3.0.Final</version>
 		</dependency>
 		<dependency>
+			<!-- pour le support de log4j2, à supprimer lors du passage à Hibernate 5 -->
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging</artifactId>
+			<version>3.2.1.Final</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<version>1.0.0.GA</version>
@@ -478,19 +518,28 @@
 			<version>4.0</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<!-- bridge pour JCL (Spring) sur slf4j -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<!-- implémentation log4j2 pour slf4j -->
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+		</dependency>
+		<dependency>
+			<!-- l'api de log4j2 -->
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<!-- log4j2 lui-même -->
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.itextpdf</groupId>
@@ -685,15 +734,15 @@
 
 		<unireg.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/unireg.properties</unireg.properties.path>
 		<credentials.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/credentials.properties</credentials.properties.path>
-		<unireg.log4j.location>file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j.xml</unireg.log4j.location>
+		<unireg.log4j.location>file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j2.xml</unireg.log4j.location>
 
 		<unireg-ws.properties.path>${ch.vd.appDir}/${unireg-ws.appname}/config/unireg.properties</unireg-ws.properties.path>
 		<unireg-ws.credentials.path>${ch.vd.appDir}/${unireg-ws.appname}/config/credentials.properties</unireg-ws.credentials.path>
-		<unireg-ws.log4j.location>file:${ch.vd.appDir}/${unireg-ws.appname}/config/unireg-log4j.xml</unireg-ws.log4j.location>
+		<unireg-ws.log4j.location>file:${ch.vd.appDir}/${unireg-ws.appname}/config/unireg-log4j2.xml</unireg-ws.log4j.location>
 
 		<unireg-nexus.properties.path>${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg.properties</unireg-nexus.properties.path>
 		<unireg-nexus.credentials.path>${ch.vd.appDir}/${unireg-nexus.appname}/config/credentials.properties</unireg-nexus.credentials.path>
-		<unireg-nexus.log4j.location>file:${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg-log4j.xml</unireg-nexus.log4j.location>
+		<unireg-nexus.log4j.location>file:${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg-log4j2.xml</unireg-nexus.log4j.location>
 
 		<!-- Application settings -->
 		<copyright.year>2015</copyright.year>
@@ -719,19 +768,19 @@
 		<jencks.version>2.2-dsi.0</jencks.version>
 		<jackson.version>2.9.5</jackson.version>
 		<wsparty3.version>3.11-SNAPSHOT</wsparty3.version>
-		<ws.v5.version>5.5.3</ws.v5.version>
-		<ws.v6.version>6.5.3</ws.v6.version>
+		<ws.v5.version>5.5.4-SNAPSHOT</ws.v5.version>
+		<ws.v6.version>6.5.4-SNAPSHOT</ws.v6.version>
 		<ws.v7.version>7.19</ws.v7.version>
 		<unireg.jaxb2.version>6.19-SNAPSHOT</unireg.jaxb2.version>
-		<servlet.common.version>2.2</servlet.common.version>
-		<wsclient-ref-sec-version>1.3.0-SNAPSHOT</wsclient-ref-sec-version>
+		<servlet.common.version>2.3-SNAPSHOT</servlet.common.version>
+		<wsclient-ref-sec-version>1.4.0-SNAPSHOT</wsclient-ref-sec-version>
 		<shared-jmx.version>4.2.0</shared-jmx.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>
 		<javamail.version>1.4</javamail.version>
-		<log4j.version>1.2.17</log4j.version>
-		<slf4j.version>1.7.7</slf4j.version>
+		<log4j.version>2.11.2</log4j.version>
+		<slf4j.version>1.7.25</slf4j.version>
 		<oro.version>2.0.8</oro.version>
 		<cobertura.version>2.6</cobertura.version>
 		<mokito.version>2.27.0</mokito.version>

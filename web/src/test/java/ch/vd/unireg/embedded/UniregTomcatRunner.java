@@ -51,7 +51,7 @@ public class UniregTomcatRunner {
 		System.setProperty("project.description", "Unireg, Le registre unifie de l'Etat de Vaud - Web");
 
 		System.setProperty("unireg-web.appname", "unireg-web");
-		System.setProperty("unireg.log4j.location", "file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j.xml");
+		System.setProperty("unireg.log4j.location", "file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j2.xml");
 
 		final String propertiesPath = String.format("%s/%s/config/unireg.properties", appDir, System.getProperty("unireg-web.appname"));
 		System.setProperty("unireg.properties.path", propertiesPath);

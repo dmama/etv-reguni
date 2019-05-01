@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -25,7 +24,14 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -173,19 +179,22 @@ public class BatchRunnerApp {
 	 * Initialise Log4j de manière à ce qu'il soit le plus discret possible.
 	 */
 	private static void initLog4j() {
-		final Properties properties = new Properties();
-		properties.setProperty("log4j.logger.ch.vd.unireg", "WARN");
-		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
-		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "[ubr] %p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c | %m%n");
-		PropertyConfigurator.configure(properties);
 
-		// Ces deux classes semblent avoir l'oreille un peu dure...
-		java.util.logging.Logger l = java.util.logging.Logger.getLogger("org.apache.cxf.bus.spring.BusApplicationContext");
-		l.setLevel(Level.WARNING);
-		l = java.util.logging.Logger.getLogger("org.apache.cxf.service.factory.ReflectionServiceFactoryBean");
-		l.setLevel(Level.WARNING);
+		final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+		final AppenderComponentBuilder console = builder.newAppender("stdout", "Console");
+		builder.add(console);
+
+		final LayoutComponentBuilder standard = builder.newLayout("PatternLayout");
+		standard.addAttribute("pattern", "[ubr] %p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c | %m%n");
+		console.add(standard);
+
+		final RootLoggerComponentBuilder rootLogger = builder.newRootLogger(org.apache.logging.log4j.Level.ERROR);
+		rootLogger.add(builder.newAppenderRef("stdout"));
+		builder.add(rootLogger);
+		builder.add(builder.newLogger("ch.vd.unireg", Level.WARN));
+		builder.add(builder.newLogger("ch.vd.unireg", Level.WARN));
+
+		Configurator.initialize(builder.build());
 	}
 
 	private static void startBatch(String name, String[] params, BatchRunnerClient client) throws BatchRunnerClientException {
