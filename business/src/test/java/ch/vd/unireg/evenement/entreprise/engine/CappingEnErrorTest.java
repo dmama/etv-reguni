@@ -35,6 +35,7 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.rattrapage.appariement.AppariementService;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementErreur;
 
@@ -149,7 +150,7 @@ public class CappingEnErrorTest extends AbstractEvenementEntrepriseCivileProcess
 			{
 				final EvenementEntrepriseErreur erreur = evt.getErreurs().get(3);
 				assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-				assertEquals("Réglage de l'état: Inscrite au RC.", erreur.getMessage());
+				assertEquals(String.format("Réglage de l'état: %s pour l'entreprise n°%s (civil: %d).", TypeEtatEntreprise.INSCRITE_RC.getLibelle(), FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noEntrepriseCivile), erreur.getMessage());
 			}
 
 			final long idEtablissementPrincipal;
