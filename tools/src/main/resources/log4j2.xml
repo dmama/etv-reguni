@@ -3,11 +3,11 @@
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY" />
-			<PatternLayout pattern="%-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
+			<PatternLayout pattern="%-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1} | %m%n" />
 		</Console>
 		<File name="Logfile" fileName="tools.log" append="false">
 			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
-			<PatternLayout pattern="%-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+			<PatternLayout pattern="%-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1} | %m%n" />
 		</File>
 	</Appenders>
 	<Loggers>

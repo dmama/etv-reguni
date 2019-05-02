@@ -3,11 +3,11 @@
 	<Appenders>
 		<!--		<Console name="Console" target="SYSTEM_OUT">-->
 		<!--			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />-->
-		<!--			<PatternLayout pattern="[ws] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />-->
+		<!--			<PatternLayout pattern="[ws] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1} | %m%n" />-->
 		<!--		</Console>-->
 		<RollingFile name="Logfile" fileName="unireg-ws.log" filePattern="unireg-ws.log.%d{yyyy-MM-dd}.gz" append="true">
 			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
-			<PatternLayout pattern="[ws] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+			<PatternLayout pattern="[ws] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1} | %m%n" />
 			<TimeBasedTriggeringPolicy />
 		</RollingFile>
 		<RollingFile name="WsAccess" fileName="ws-access.log" filePattern="ws-access.log.log.%d{yyyy-MM-dd}.gz" append="true">
