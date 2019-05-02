@@ -36,10 +36,9 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
  */
 public class AjouterDelaiPourMandataireProcessor {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AjouterDelaiPourMandataireProcessor.class);
+
 	private static final int BATCH_SIZE = 100;
-
-
-	final Logger LOGGER = LoggerFactory.getLogger(AjouterDelaiPourMandataireProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

@@ -48,7 +48,7 @@ import ch.vd.unireg.utils.RegDateEditor;
 @Controller
 public class RapportPrestationController {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationController.class);
 
 	public static final String DROIT_CONSULTATION_RT = "vous ne possédez pas les droits de consultation des rapports de prestations imposables";
 	public static final String DROIT_MODIFICATION_RT = "vous ne possédez pas les droits de modification des rapports de prestations imposables";

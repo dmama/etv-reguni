@@ -40,7 +40,7 @@ import ch.vd.unireg.tiers.timeline.AdresseTimelineView.Table;
 @Controller
 public class AdresseTimelineController {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(AdresseTimelineController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdresseTimelineController.class);
 
 	public static final String ID_PARAMETER = "id";
 

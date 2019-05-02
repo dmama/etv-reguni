@@ -25,7 +25,7 @@ public class JspTagInfra extends BodyTagSupport {
 
 	private static final long serialVersionUID = -8958197495549589352L;
 
-	private final Logger LOGGER = LoggerFactory.getLogger(JspTagInfra.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagInfra.class);
 
 	private String entityType;
 	private Integer entityId;

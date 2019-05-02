@@ -56,9 +56,9 @@ import ch.vd.unireg.type.TypeTache;
 
 public class DeterminationDIsPPAEmettreProcessor {
 
-	private static final int BATCH_SIZE = 100;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeterminationDIsPPAEmettreProcessor.class);
 
-	final Logger LOGGER = LoggerFactory.getLogger(DeterminationDIsPPAEmettreProcessor.class);
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final PeriodeFiscaleDAO periodeDAO;

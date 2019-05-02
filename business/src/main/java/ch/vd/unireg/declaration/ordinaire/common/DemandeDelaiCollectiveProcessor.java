@@ -36,9 +36,9 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
  */
 public class DemandeDelaiCollectiveProcessor {
 
-	private static final int BATCH_SIZE = 100;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DemandeDelaiCollectiveProcessor.class);
 
-	final Logger LOGGER = LoggerFactory.getLogger(DemandeDelaiCollectiveProcessor.class);
+	private static final int BATCH_SIZE = 100;
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

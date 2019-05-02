@@ -48,9 +48,9 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ProduireStatsDIsProcessor {
 
-	private static final int BATCH_SIZE = 100;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProduireStatsDIsProcessor.class);
 
-	final Logger LOGGER = LoggerFactory.getLogger(ProduireStatsDIsProcessor.class);
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final ServiceInfrastructureService infraService;

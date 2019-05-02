@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 
 public class IndexerTransactionalTest extends BusinessTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(IndexerTransactionalTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndexerTransactionalTest.class);
 
 	private GlobalIndexInterface globalIndex;
 	private static final String TYPE = "perfi";

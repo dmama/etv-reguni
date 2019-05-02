@@ -67,7 +67,7 @@ public class JspTagBandeauTiers extends RequestContextAwareTag {
 
 	private static final long serialVersionUID = 7545284534993448401L;
 
-	private final Logger LOGGER = LoggerFactory.getLogger(JspTagBandeauTiers.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagBandeauTiers.class);
 
 	/*
 	 * Ces membres sont statiques pour permettre l'injection par Spring des beans accessibles par toutes les instances de ce tag

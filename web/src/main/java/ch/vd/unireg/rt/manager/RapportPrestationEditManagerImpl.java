@@ -48,7 +48,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationEditManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationEditManagerImpl.class);
 
 	private HibernateTemplate hibernateTemplate;
 	private TiersDAO tiersDAO;

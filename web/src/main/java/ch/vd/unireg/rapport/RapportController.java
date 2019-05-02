@@ -81,7 +81,7 @@ import ch.vd.unireg.utils.RegDateEditor;
 @RequestMapping(value = "/rapport")
 public class RapportController {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(RapportController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RapportController.class);
 
 	private TiersDAO tiersDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;

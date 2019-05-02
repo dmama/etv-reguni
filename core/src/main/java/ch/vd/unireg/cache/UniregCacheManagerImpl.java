@@ -25,7 +25,7 @@ import ch.vd.unireg.utils.LogLevel;
 
 public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(UniregCacheManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UniregCacheManagerImpl.class);
 
 	private final Map<String, UniregCacheInterface> map = new HashMap<>();
 

@@ -8,7 +8,7 @@ import ch.vd.unireg.indexer.MockIndexable;
 
 public class ConcurrentAccessIndexerThread extends AbstractConcurrentAccessThread {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ConcurrentAccessIndexerThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConcurrentAccessIndexerThread.class);
 
 	public ConcurrentAccessIndexerThread(GlobalIndexInterface globalIndex) {
 

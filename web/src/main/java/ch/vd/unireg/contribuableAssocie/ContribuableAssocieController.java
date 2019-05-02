@@ -43,7 +43,7 @@ import static ch.vd.unireg.utils.HtmlFormConstants.TYPE_RECHERCHE_NOM_MAP_NAME;
 @RequestMapping(value = "/contribuable-associe")
 public class ContribuableAssocieController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(ContribuableAssocieController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContribuableAssocieController.class);
 
 	private TiersService tiersService;
 	private ParamApplicationManager paramApplicationManager;

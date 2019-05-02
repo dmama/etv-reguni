@@ -28,7 +28,7 @@ public class JspTagOut extends BodyTagSupport {
 
 	private static final long serialVersionUID = 1793304913541750349L;
 
-	// private final Logger LOGGER = LoggerFactory.getLogger(JspTagInfra.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(JspTagInfra.class);
 
 	private Class clazz;
 	private Object value;

@@ -9,7 +9,7 @@ import ch.vd.unireg.scheduler.JobParamBoolean;
 
 public class UpdateSequencesJob extends JobDefinition {
 
-	// private final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
 
 	public static final String NAME = "UpdateSequencesJob";
 

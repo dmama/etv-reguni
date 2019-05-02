@@ -28,14 +28,14 @@ import ch.vd.unireg.security.AccessDeniedException;
  */
 public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ordered {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(NotifyingExceptionResolver.class);
+
 	private NotificationService notificationService;
 	private String applicationName;
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	/** map des exceptions (indexées par leur sha1) déjà envoyées + le nombre d'envois */
 	private final Map<String, Integer> exceptions = new HashMap<>();
-
-	protected final Logger LOGGER = LoggerFactory.getLogger(NotifyingExceptionResolver.class);
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setNotificationService(NotificationService notificationService) {

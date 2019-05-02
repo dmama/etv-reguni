@@ -39,7 +39,7 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 @RequestMapping(value = "/admin/indexation")
 public class GestionIndexationController {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(GestionIndexationController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GestionIndexationController.class);
 
 	private GlobalIndexInterface globalIndex;
 	private IndexationManager indexationManager;

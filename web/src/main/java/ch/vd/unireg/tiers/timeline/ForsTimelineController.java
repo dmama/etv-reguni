@@ -54,7 +54,7 @@ import ch.vd.unireg.tiers.TiersService;
 @Controller
 public class ForsTimelineController {
 
-//	private final Logger LOGGER = LoggerFactory.getLogger(ForsTimelineController.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(ForsTimelineController.class);
 
 	public static final String ID_PARAMETER = "id";
 	public static final String FOR_PRINT = "print";

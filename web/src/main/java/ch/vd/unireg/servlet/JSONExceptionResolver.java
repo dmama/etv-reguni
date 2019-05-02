@@ -22,7 +22,7 @@ import org.springframework.web.util.WebUtils;
  */
 public class JSONExceptionResolver implements HandlerExceptionResolver, Ordered {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(JSONExceptionResolver.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JSONExceptionResolver.class);
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 	private final MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();

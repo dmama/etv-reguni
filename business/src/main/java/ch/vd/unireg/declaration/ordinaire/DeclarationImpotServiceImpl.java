@@ -139,6 +139,8 @@ import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_SNC;
 
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
+	// private static final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
+
 	/**
 	 * Ce sont les codes des régimes fiscaux vaudois spécifiques aux holdings (11 et 12) et sociétés de base (41C et 42C)
 	 */
@@ -147,8 +149,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * Code de regime fiscal pour les sociétés de type SNC
 	 */
 	private static final String CODE_REGIME_FISCAL_SNC = "80";
-
-	// private final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
 
 	private EvenementFiscalService evenementFiscalService;
 	private EditiqueCompositionService editiqueCompositionService;

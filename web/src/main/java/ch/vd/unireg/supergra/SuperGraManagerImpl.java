@@ -152,7 +152,7 @@ import ch.vd.unireg.validation.ValidationInterceptor;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(SuperGraManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SuperGraManagerImpl.class);
 
 	private static final String DISCRIMINATOR_ATTNAME = "<discriminator>";
 

@@ -21,7 +21,7 @@ import ch.vd.unireg.type.TypeAdresseTiers;
 
 public class CloseAdresseValidator implements Validator {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(CloseAdresseValidator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CloseAdresseValidator.class);
 
 	private TiersService tiersService;
 	private SecurityProviderInterface securityProvider;

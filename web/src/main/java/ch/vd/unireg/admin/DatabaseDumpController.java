@@ -44,7 +44,7 @@ import ch.vd.unireg.utils.UniregModeHelper;
 @RequestMapping(value = "/admin/dbdump")
 public class DatabaseDumpController {
 
-	// private final Logger LOGGER = LoggerFactory.getLogger(DatabaseDumpController.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseDumpController.class);
 
 	private static final int MAX_TIERS_TO_DUMP = 1000;
 

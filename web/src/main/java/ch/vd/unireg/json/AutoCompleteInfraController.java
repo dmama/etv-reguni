@@ -37,7 +37,7 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 @Controller
 public class AutoCompleteInfraController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteInfraController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteInfraController.class);
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 

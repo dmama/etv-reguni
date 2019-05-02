@@ -7,7 +7,7 @@ import ch.vd.unireg.scheduler.JobDefinition;
 
 public class OptimizeIndexJob extends JobDefinition {
 
-	// private final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
 
 	public static final String NAME = "OptimizeIndexJob";
 

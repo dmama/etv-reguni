@@ -61,7 +61,7 @@ import static ch.vd.unireg.utils.HtmlFormConstants.TYPE_RECHERCHE_NOM_MAP_NAME;
 @RequestMapping(value = "/registrefoncier/communaute")
 public class CommunauteRFController {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CommunauteRFController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommunauteRFController.class);
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits d'élection du principal de communauté RF";
 

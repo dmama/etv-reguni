@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings("JavaDoc")
 public class CacheValueWithPartsTest extends WithoutSpringTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CacheValueWithPartsTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CacheValueWithPartsTest.class);
 
 	private static final int ITERATIONS = 1000;
 
@@ -162,7 +162,7 @@ public class CacheValueWithPartsTest extends WithoutSpringTest {
 
 	private static class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-		private final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandler.class);
+		private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandler.class);
 
 		private Exception exception = null;
 

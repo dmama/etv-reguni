@@ -19,9 +19,9 @@ import ch.vd.unireg.utils.LogLevel;
  */
 public class EmailNotificationService implements NotificationService {
 
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+	private static final Logger LOGGER = LoggerFactory.getLogger(EmailNotificationService.class);
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(EmailNotificationService.class);
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
 	private final MailSender mailSender;
 	private final SimpleMailMessage templateMessage;

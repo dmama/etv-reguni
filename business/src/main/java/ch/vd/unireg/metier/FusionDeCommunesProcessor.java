@@ -61,7 +61,7 @@ import ch.vd.unireg.validation.ValidationInterceptor;
  */
 public class FusionDeCommunesProcessor {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(OuvertureForsContribuablesMajeursProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OuvertureForsContribuablesMajeursProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

@@ -42,7 +42,7 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 @RequestMapping(value = "/admin/")
 public class BatchController {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(BatchController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BatchController.class);
 
 	private BatchScheduler batchScheduler;
 	private SecurityProviderInterface securityProvider;

@@ -30,9 +30,10 @@ import ch.vd.unireg.tiers.TiersService;
 
 public class ComparerSituationFamilleProcessor {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComparerSituationFamilleProcessor.class);
+
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = LoggerFactory.getLogger(ComparerSituationFamilleProcessor.class);
 	private final ServiceCivilService serviceCivil;
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

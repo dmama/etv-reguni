@@ -2,8 +2,6 @@ package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -41,7 +39,7 @@ import static ch.vd.unireg.utils.HttpSessionUtils.getOptionalBooleanParam;
 @Controller
 public class TiersVisuController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
 
 	private static final String MODE_IMPRESSION = "printview";
 

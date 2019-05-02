@@ -19,7 +19,7 @@ import ch.vd.unireg.type.TypeTache;
 
 public class ProduireListeTachesEnInstanceParOIDProcessor {
 
-	final Logger LOGGER = LoggerFactory.getLogger(ProduireListeTachesEnInstanceParOIDProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProduireListeTachesEnInstanceParOIDProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 

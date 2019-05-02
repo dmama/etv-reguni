@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.common.JobTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.JobTest;
 import ch.vd.unireg.scheduler.BatchScheduler;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.type.TypeAdresseCivil;
@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 
 public class DeterminerDIsPPJobTest extends JobTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(DeterminerDIsPPJobTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeterminerDIsPPJobTest.class);
 
 	// Copie du fichier tiers-basic sans les données relatives aux déclarations
 	private static final String DB_UNIT_DATA_FILE = "DetermineDIsPPJobTest.xml";

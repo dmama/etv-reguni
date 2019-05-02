@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 public class IndexerPerformanceTest extends BusinessTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(IndexerPerformanceTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndexerPerformanceTest.class);
 
 	private GlobalIndexInterface globalIndex;
 	private static final int maxHits = 100;

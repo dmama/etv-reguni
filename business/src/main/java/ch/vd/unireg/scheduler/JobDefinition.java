@@ -48,7 +48,7 @@ import ch.vd.unireg.utils.UniregModeHelper;
  */
 public abstract class JobDefinition implements InitializingBean, Comparable<JobDefinition> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(JobDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JobDefinition.class);
 
 	public static final String DATE_TRAITEMENT = "DATE_TRAITEMENT"; // pour le testing uniquement
 

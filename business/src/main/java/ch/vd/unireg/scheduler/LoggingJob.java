@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class LoggingJob extends JobDefinition {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(LoggingJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoggingJob.class);
 
 	public static final String NAME = "Logging";
 

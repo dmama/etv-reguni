@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class ExceptionThrowingJob extends JobDefinition {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ExceptionThrowingJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionThrowingJob.class);
 
 	public static final String NAME = "ExceptionThrowing";
 

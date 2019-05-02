@@ -71,7 +71,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class AdresseServiceImpl implements AdresseService {
 
-	// private final Logger LOGGER = LoggerFactory.getLogger(AdresseServiceImpl.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(AdresseServiceImpl.class);
 
 	private static final String SUFFIXE_DEFUNT_MASCULIN = ", défunt";
 	private static final String SUFFIXE_DEFUNT_FEMININ = ", défunte";

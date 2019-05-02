@@ -31,9 +31,9 @@ import ch.vd.unireg.tiers.TiersService;
 
 public class ComparerForFiscalEtCommuneProcessor {
 
-	private static final int BATCH_SIZE = 100;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComparerForFiscalEtCommuneProcessor.class);
 
-	final Logger LOGGER = LoggerFactory.getLogger(ComparerForFiscalEtCommuneProcessor.class);
+	private static final int BATCH_SIZE = 100;
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

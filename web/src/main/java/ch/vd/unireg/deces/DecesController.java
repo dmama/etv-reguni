@@ -42,7 +42,7 @@ import static ch.vd.unireg.utils.HtmlFormConstants.TYPE_RECHERCHE_NOM_MAP_NAME;
 @RequestMapping(value = "/deces")
 public class DecesController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(DecesController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DecesController.class);
 
 	public static final String DECES_LIST_ATTRIBUTE_NAME = "list";
 

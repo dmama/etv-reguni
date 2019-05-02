@@ -14,7 +14,7 @@ import ch.vd.unireg.tiers.TiersDAO;
 
 public class IndexationManagerImpl implements IndexationManager {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(IndexationManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndexationManagerImpl.class);
 
 	private GlobalTiersIndexer tiersIndexer;
 	private DataEventService dataEventService;

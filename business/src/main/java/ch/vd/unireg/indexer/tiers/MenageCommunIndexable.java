@@ -30,7 +30,7 @@ import ch.vd.unireg.tiers.TiersService;
  */
 public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiquesIndexable<MenageCommun> {
 
-	// private final Logger LOGGER = LoggerFactory.getLogger(MenageCommunIndexable.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(MenageCommunIndexable.class);
 
 	private final PersonnePhysiqueIndexable ppIndexable1;
 	private final PersonnePhysiqueIndexable ppIndexable2;

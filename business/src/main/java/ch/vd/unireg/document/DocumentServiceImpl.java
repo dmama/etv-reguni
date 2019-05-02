@@ -27,7 +27,7 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
  */
 public class DocumentServiceImpl implements DocumentService {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(DocumentServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentServiceImpl.class);
 
 	private HibernateTemplate hibernateTemplate;
 

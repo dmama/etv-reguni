@@ -23,7 +23,7 @@ import ch.vd.unireg.tiers.TiersDAO;
  */
 public class CheckCoherenceIndexerJob extends JobDefinition {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CheckCoherenceIndexerJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CheckCoherenceIndexerJob.class);
 
 	public static final String NAME = "CheckCoherenceIndexerJob";
 

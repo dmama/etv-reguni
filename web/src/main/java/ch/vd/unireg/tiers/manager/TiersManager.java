@@ -162,7 +162,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
  */
 public class TiersManager implements MessageSourceAware {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(TiersManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersManager.class);
 
 	private static final List<TypeAdresseCivil> TYPES_ADRESSES_CIVILES = Arrays.asList(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.TUTEUR);
 

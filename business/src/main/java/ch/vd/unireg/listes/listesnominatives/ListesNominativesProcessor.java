@@ -38,7 +38,7 @@ import ch.vd.unireg.tiers.TiersService;
  */
 public class ListesNominativesProcessor extends ListesProcessor<ListesNominativesResults, ListesNominativesThread> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ListesNominativesProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListesNominativesProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 

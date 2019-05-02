@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BatchRunnerClient {
 
-	static private final Logger LOGGER = LoggerFactory.getLogger(BatchRunnerClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BatchRunnerClient.class);
 
 	private final String serviceUrl;
 	private final String username;

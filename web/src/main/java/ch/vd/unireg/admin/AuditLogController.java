@@ -21,7 +21,7 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 @Controller
 public class AuditLogController {
 
-	//private final Logger LOGGER = LoggerFactory.getLogger(AuditLogController.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogController.class);
 
 	private static final String TABLE_NAME = "logs";
 	private static final int PAGE_SIZE = 50;

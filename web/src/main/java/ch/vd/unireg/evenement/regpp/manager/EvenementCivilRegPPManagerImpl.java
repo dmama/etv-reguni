@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
@@ -22,6 +20,8 @@ import ch.vd.unireg.evenement.common.view.ErreurEvenementCivilView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -34,7 +34,7 @@ import ch.vd.unireg.type.TypeEvenementCivil;
  */
 public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilRegPPManager, MessageSourceAware {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilRegPPManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilRegPPManagerImpl.class);
 
 	private EvenementCivilProcessor evenementCivilProcessor;
 	private EvenementCivilRegPPDAO evenementDAO;

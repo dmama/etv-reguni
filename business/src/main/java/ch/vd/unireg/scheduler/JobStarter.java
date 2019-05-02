@@ -16,7 +16,7 @@ import ch.vd.unireg.utils.LogLevel;
 
 public class JobStarter implements Job, InterruptableJob {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(JobStarter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JobStarter.class);
 
 	private volatile JobDefinition job;
 

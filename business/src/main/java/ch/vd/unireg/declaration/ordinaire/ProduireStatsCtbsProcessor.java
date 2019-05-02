@@ -63,9 +63,9 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  */
 public class ProduireStatsCtbsProcessor {
 
-	private static final int BATCH_SIZE = 100;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProduireStatsCtbsProcessor.class);
 
-	final Logger LOGGER = LoggerFactory.getLogger(ProduireStatsCtbsProcessor.class);
+	private static final int BATCH_SIZE = 100;
 
 	private final HibernateTemplate hibernateTemplate;
 	private final ServiceInfrastructureService infraService;

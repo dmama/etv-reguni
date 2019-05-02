@@ -7,7 +7,7 @@ import ch.vd.unireg.indexer.GlobalIndexInterface;
 
 public abstract class AbstractConcurrentAccessThread extends Thread {
 
-	private Logger LOGGER = LoggerFactory.getLogger(AbstractConcurrentAccessThread.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConcurrentAccessThread.class);
 	
 	private boolean stopPlease = false;
 	protected GlobalIndexInterface globalIndex;

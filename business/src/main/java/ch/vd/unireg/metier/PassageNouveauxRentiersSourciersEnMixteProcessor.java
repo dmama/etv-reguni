@@ -43,7 +43,7 @@ import ch.vd.unireg.type.Sexe;
 
 public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(PassageNouveauxRentiersSourciersEnMixteProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PassageNouveauxRentiersSourciersEnMixteProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

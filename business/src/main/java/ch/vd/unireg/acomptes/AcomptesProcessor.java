@@ -26,7 +26,7 @@ import ch.vd.unireg.tiers.TiersService;
 
 public class AcomptesProcessor extends ListesProcessor<AcomptesResults, AcomptesThread> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(AcomptesProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AcomptesProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;

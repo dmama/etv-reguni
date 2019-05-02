@@ -41,7 +41,7 @@ import ch.vd.unireg.tiers.TypeTiers;
  */
 public class ValidationJob extends JobDefinition {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ValidationJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ValidationJob.class);
 
 	public static final String NAME = "ValidationJob";
 

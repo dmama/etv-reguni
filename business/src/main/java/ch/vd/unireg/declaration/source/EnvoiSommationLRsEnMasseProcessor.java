@@ -28,7 +28,7 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationLRsEnMasseProcessor {
 
-private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

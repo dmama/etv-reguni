@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -40,6 +42,8 @@ import ch.vd.unireg.utils.WebContextUtils;
  *
  */
 public class TiersEditManagerImpl extends TiersManager implements TiersEditManager {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersEditManagerImpl.class);
 
 	private RemarqueDAO remarqueDAO;
 

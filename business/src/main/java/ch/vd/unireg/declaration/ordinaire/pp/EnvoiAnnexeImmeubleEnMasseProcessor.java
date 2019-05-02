@@ -45,7 +45,7 @@ import ch.vd.unireg.type.TypeDocument;
 
 public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
-	final Logger LOGGER = LoggerFactory.getLogger(EnvoiAnnexeImmeubleEnMasseProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiAnnexeImmeubleEnMasseProcessor.class);
 
 	private final TiersService tiersService;
 	private final PeriodeFiscaleDAO periodeDAO;

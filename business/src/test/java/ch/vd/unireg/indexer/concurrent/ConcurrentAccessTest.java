@@ -12,7 +12,7 @@ import static org.junit.Assert.assertFalse;
 
 public class ConcurrentAccessTest extends BusinessTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ConcurrentAccessTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConcurrentAccessTest.class);
 
 	private GlobalIndexInterface globalIndex;
 

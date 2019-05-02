@@ -23,7 +23,7 @@ import ch.vd.unireg.tiers.view.LocalisationView;
  */
 public class JspTagLocalisation extends BodyTagSupport {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(JspTagLocalisation.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagLocalisation.class);
 
 	private static final AtomicInteger counter = new AtomicInteger();
 

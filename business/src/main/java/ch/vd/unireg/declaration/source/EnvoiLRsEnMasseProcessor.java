@@ -33,7 +33,7 @@ import ch.vd.unireg.type.CategorieImpotSource;
 
 public class EnvoiLRsEnMasseProcessor {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

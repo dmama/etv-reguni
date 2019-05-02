@@ -37,7 +37,7 @@ public class ListeNoteProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = LoggerFactory.getLogger(ListeNoteProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListeNoteProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;

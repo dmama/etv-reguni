@@ -54,7 +54,7 @@ import ch.vd.unireg.utils.WebContextUtils;
  */
 public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(AdresseManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdresseManagerImpl.class);
 
 	private static final String TYPE_LOCALITE_SUISSE = "suisse";
 

@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.service.host.Operateur;
 @Controller
 public class AutoCompleteSecurityController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteSecurityController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteSecurityController.class);
 
 	private ServiceSecuriteService serviceSecuriteService;
 

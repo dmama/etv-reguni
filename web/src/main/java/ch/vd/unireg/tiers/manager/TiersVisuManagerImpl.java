@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.adresse.AdresseException;
@@ -44,6 +46,8 @@ import ch.vd.unireg.tiers.view.TiersVisuView;
  * @author xcifde
  */
 public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManager {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersVisuManagerImpl.class);
 
 	private MouvementVisuManager mouvementVisuManager;
 

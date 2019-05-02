@@ -8,10 +8,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
@@ -22,6 +18,10 @@ import ch.vd.unireg.evenement.common.view.EvenementCivilDetailView;
 import ch.vd.unireg.evenement.common.view.TiersAssocieView;
 import ch.vd.unireg.individu.IndividuView;
 import ch.vd.unireg.individu.WebCivilService;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -39,13 +39,14 @@ import ch.vd.unireg.utils.WebContextUtils;
  */
 abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilManagerImpl.class);
+
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
 	protected ServiceCivilService serviceCivilService;
 	protected ServiceInfrastructureService serviceInfrastructureService;
 	protected MessageSource messageSource;
 	protected WebCivilService webCivilService;
-	private final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilManagerImpl.class);
 
 	@SuppressWarnings("unused")
 	public void setWebCivilService(WebCivilService webCivilService) {

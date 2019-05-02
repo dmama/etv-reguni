@@ -31,7 +31,6 @@ import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -46,7 +45,7 @@ import ch.vd.unireg.type.TypeAdresseTiers;
 
 public class TiersAdresseValidator implements Validator {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(TiersAdresseValidator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TiersAdresseValidator.class);
 
 	private AdresseService adresseService;
 	private TiersService tiersService;

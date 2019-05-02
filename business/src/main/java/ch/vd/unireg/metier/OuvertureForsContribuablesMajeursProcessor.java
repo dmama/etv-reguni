@@ -56,7 +56,7 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  */
 public class OuvertureForsContribuablesMajeursProcessor {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(OuvertureForsContribuablesMajeursProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OuvertureForsContribuablesMajeursProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 

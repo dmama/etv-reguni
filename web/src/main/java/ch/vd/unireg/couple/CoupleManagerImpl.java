@@ -28,7 +28,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class CoupleManagerImpl implements CoupleManager {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CoupleManagerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CoupleManagerImpl.class);
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;

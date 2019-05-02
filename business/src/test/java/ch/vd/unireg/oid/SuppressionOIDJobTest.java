@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
 
 public class SuppressionOIDJobTest extends BusinessTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(SuppressionOIDJobTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SuppressionOIDJobTest.class);
 
 	private SuppressionOIDJob job;
 	private LoggingStatusManager status;
