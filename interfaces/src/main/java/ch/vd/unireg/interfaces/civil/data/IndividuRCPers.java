@@ -56,8 +56,8 @@ import ch.vd.unireg.type.TypePermisInvalideException;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = 9048462821163407226L;
-	protected final Logger LOGGER = LoggerFactory.getLogger(IndividuRCPers.class);
+	private static final long serialVersionUID = -2754084333586025853L;
+	private static final Logger LOGGER = LoggerFactory.getLogger(IndividuRCPers.class);
 
 	private final long noTechnique;
 	private final StatutIndividu statut;
