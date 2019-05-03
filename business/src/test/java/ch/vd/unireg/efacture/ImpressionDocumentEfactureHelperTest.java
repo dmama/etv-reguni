@@ -26,6 +26,8 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.TypeDocument;
 
+import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_NOM_SERVICE_EXPEDITEUR;
+import static ch.vd.unireg.editique.EditiqueAbstractHelperImpl.CAT_TRAITE_PAR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -79,6 +81,7 @@ public class ImpressionDocumentEfactureHelperTest {
 		final InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur = entete.getExpediteur();
 		assertNotNull(expediteur);
 		assertEquals("021'316'00'00", expediteur.getNumTelephone());
-		assertEquals("Centre d'appels téléphoniques", expediteur.getTraitePar());
+		assertEquals(CAT_TRAITE_PAR, expediteur.getTraitePar());
+		assertEquals(CAT_NOM_SERVICE_EXPEDITEUR, expediteur.getSrvExp());
 	}
 }
