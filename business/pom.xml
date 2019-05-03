@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-efacture</artifactId>
-			<version>1.10</version>
+			<version>1.11-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>

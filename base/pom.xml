@@ -172,57 +172,57 @@
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-capitastra</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-cyber</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-ech</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-editique</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-events</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-fidor</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-host-interfaces</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-infra</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-party</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-rcpers</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-rcent</artifactId>
-				<version>${unireg.jaxb2.version}</version>
+				<version>${unireg-jaxb2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.vd.registre</groupId>
@@ -322,24 +322,11 @@
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-bindings-soap</artifactId>
 				<version>${cxf.version}</version>
-				<exclusions>
-					<!-- Pour éviter d'inclure cette librairie qui redéfinit com.sun.xml.bind.v2.model.nav.Nagivator (entre autres) -->
-					<exclusion>
-						<groupId>com.sun.xml.bind</groupId>
-						<artifactId>jaxb-core</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 				<version>${cxf.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.xml.bind</groupId>
-						<artifactId>jaxb-core</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -359,7 +346,7 @@
 			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-wsclient-refsec</artifactId>
-				<version>${wsclient-ref-sec-version}</version>
+				<version>${wsclient-refsec-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -745,7 +732,7 @@
 		<unireg-nexus.log4j.location>file:${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg-log4j2.xml</unireg-nexus.log4j.location>
 
 		<!-- Application settings -->
-		<copyright.year>2015</copyright.year>
+		<copyright.year>2019</copyright.year>
 		<dao.framework>hibernate</dao.framework>
 		<web.framework>spring</web.framework>
 		<amp.genericCore>true</amp.genericCore>
@@ -762,7 +749,7 @@
 		<embedded-tomcat.version>4.0.0</embedded-tomcat.version>
 		<spring.version>4.3.9.RELEASE</spring.version>
 		<spring.security.version>4.2.5.RELEASE</spring.security.version>
-		<cxf.version>3.1.14</cxf.version>
+		<cxf.version>3.3.1</cxf.version>
 		<brave.version>4.16.2</brave.version>
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
 		<jencks.version>2.2-dsi.0</jencks.version>
@@ -771,9 +758,9 @@
 		<ws.v5.version>5.5.4-SNAPSHOT</ws.v5.version>
 		<ws.v6.version>6.5.4-SNAPSHOT</ws.v6.version>
 		<ws.v7.version>7.19</ws.v7.version>
-		<unireg.jaxb2.version>6.19-SNAPSHOT</unireg.jaxb2.version>
+		<unireg-jaxb2.version>6.19-SNAPSHOT</unireg-jaxb2.version>
 		<servlet.common.version>2.3-SNAPSHOT</servlet.common.version>
-		<wsclient-ref-sec-version>1.4.0-SNAPSHOT</wsclient-ref-sec-version>
+		<wsclient-refsec-version>1.4.0-SNAPSHOT</wsclient-refsec-version>
 		<shared-jmx.version>4.2.0</shared-jmx.version>
 
 		<!-- Testing dependency versions -->

@@ -40,22 +40,22 @@
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>5.19</version>
+			<version>5.20-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-rcpers</artifactId>
-			<version>5.6</version>
+			<version>5.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-rcent</artifactId>
-			<version>3.3.5</version>
+			<version>3.3.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-host-interfaces</artifactId>
-			<version>1.6</version>
+			<version>1.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>

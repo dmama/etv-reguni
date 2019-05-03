@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-securite</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
