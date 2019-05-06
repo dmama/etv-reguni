@@ -118,15 +118,15 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(TEST_OP_NAME, TEST_OP_NO_IND, Role.VISU_ALL);
-				addOperateur("op2", 2222, Role.VISU_ALL);
-				addOperateur("op3", 3333, Role.VISU_ALL);
-				addOperateur("op4", 4444, Role.VISU_ALL);
-				addOperateur("op5", 5555, Role.VISU_ALL);
-				addOperateur("op6", 6666, Role.VISU_ALL);
-				addOperateur("op7", 7777, Role.VISU_ALL);
-				addOperateur("op8", 8888, Role.VISU_ALL);
-				addOperateur("op9", 9999, Role.VISU_ALL);
+				addOperateur(TEST_OP_NAME, Role.VISU_ALL);
+				addOperateur("op2", Role.VISU_ALL);
+				addOperateur("op3", Role.VISU_ALL);
+				addOperateur("op4", Role.VISU_ALL);
+				addOperateur("op5", Role.VISU_ALL);
+				addOperateur("op6", Role.VISU_ALL);
+				addOperateur("op7", Role.VISU_ALL);
+				addOperateur("op8", Role.VISU_ALL);
+				addOperateur("op9", Role.VISU_ALL);
 			}
 		});
 
@@ -201,12 +201,12 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(TEST_OP_NAME, TEST_OP_NO_IND, Role.VISU_ALL);
-				addOperateur("op2", 2222, Role.VISU_ALL);
-				addOperateur("op3", 3333, Role.VISU_ALL);
-				addOperateur("op4", 4444, Role.VISU_ALL);
-				addOperateur("op5", 5555, Role.VISU_ALL);
-				addOperateur("op6", 6666, Role.VISU_ALL);
+				addOperateur(TEST_OP_NAME, Role.VISU_ALL);
+				addOperateur("op2", Role.VISU_ALL);
+				addOperateur("op3", Role.VISU_ALL);
+				addOperateur("op4", Role.VISU_ALL);
+				addOperateur("op5", Role.VISU_ALL);
+				addOperateur("op6", Role.VISU_ALL);
 			}
 		});
 
@@ -264,10 +264,10 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(TEST_OP_NAME, TEST_OP_NO_IND, Role.VISU_ALL);
-				addOperateur("op2", 2222, Role.VISU_ALL);
-				addOperateur("op3", 3333, Role.VISU_ALL);
-				addOperateur("op4", 4444, Role.VISU_ALL);
+				addOperateur(TEST_OP_NAME, Role.VISU_ALL);
+				addOperateur("op2", Role.VISU_ALL);
+				addOperateur("op3", Role.VISU_ALL);
+				addOperateur("op4", Role.VISU_ALL);
 			}
 		});
 
@@ -317,14 +317,14 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(TEST_OP_NAME, TEST_OP_NO_IND, Role.VISU_ALL);
-				addOperateur("op2", 2222, Role.VISU_ALL);
-				addOperateur("op3", 3333, Role.VISU_ALL);
-				addOperateur("op4", 4444, Role.VISU_ALL);
-				addOperateur("dirAci1", 10000, Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE);
-				addOperateur("dirAci2", 10001, Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE, Role.ECRITURE_DOSSIER_PROTEGE);
-				addOperateur("dirAci3", 10002, Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE);
-				addOperateur("dirAci4", 10003, Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE, Role.ECRITURE_DOSSIER_PROTEGE);
+				addOperateur(TEST_OP_NAME, Role.VISU_ALL);
+				addOperateur("op2", Role.VISU_ALL);
+				addOperateur("op3", Role.VISU_ALL);
+				addOperateur("op4", Role.VISU_ALL);
+				addOperateur("dirAci1", Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE);
+				addOperateur("dirAci2", Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE, Role.ECRITURE_DOSSIER_PROTEGE);
+				addOperateur("dirAci3", Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE);
+				addOperateur("dirAci4", Role.VISU_ALL, Role.LECTURE_DOSSIER_PROTEGE, Role.ECRITURE_DOSSIER_PROTEGE);
 			}
 		});
 
@@ -380,11 +380,11 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur("zaiamx", 442451, Role.VISU_ALL); // Anouchka Rossier
-				addOperateur("zaiduj", 50824, Role.VISU_ALL); // Jean-François Durgnat
-				addOperateur("zaipwy", 52038, Role.VISU_ALL); // Pierre Wicky
-				addOperateur("zaiadu", 47017, Role.VISU_ALL); // Jean-Claude Durgnat
-				addOperateur("zaiyrz", 52771, Role.VISU_ALL); // Yvon Rudaz
+				addOperateur("zaiamx", Role.VISU_ALL); // Anouchka Rossier
+				addOperateur("zaiduj", Role.VISU_ALL); // Jean-François Durgnat
+				addOperateur("zaipwy", Role.VISU_ALL); // Pierre Wicky
+				addOperateur("zaiadu", Role.VISU_ALL); // Jean-Claude Durgnat
+				addOperateur("zaiyrz", Role.VISU_ALL); // Yvon Rudaz
 			}
 		});
 

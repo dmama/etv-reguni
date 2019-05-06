@@ -61,7 +61,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		return operatorsByVisa.get(visa);
 	}
 
-	protected void addOperateur(String visa, long noIndividuOperateur, Role... roles) {
+	protected void addOperateur(String visa, Role... roles) {
 
 		final List<ProcedureSecurite> procedures = new ArrayList<>();
 		if (roles != null) {
@@ -72,7 +72,6 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 
 		final Operateur o = new Operateur();
 		o.setCode(visa);
-		o.setIndividuNoTechnique(noIndividuOperateur);
 		operatorsByVisa.put(visa, o);
 		profilesOperatorByIndividu.put(visa, new ProfileOperateurImpl(visa, procedures));
 	}

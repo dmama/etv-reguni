@@ -65,7 +65,7 @@ public class AutorisationCacheTest extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateur, 42L, Role.VISU_ALL, Role.MODIF_HC_HS, Role.ADR_PP_D, Role.ADR_PP_C, Role.ADR_PP_B);
+				addOperateur(visaOperateur, Role.VISU_ALL, Role.MODIF_HC_HS, Role.ADR_PP_D, Role.ADR_PP_C, Role.ADR_PP_B);
 			}
 		});
 
@@ -215,15 +215,12 @@ public class AutorisationCacheTest extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateurAvecDroitDecision, 42L, Role.VISU_ALL, Role.GEST_DECISION_ACI, Role.MODIF_VD_ORD, Role.MODIF_HAB_DEBPUR, Role.FOR_AUTRE);
-				addOperateur(visaOperateurSansDroitDecision, 42L, Role.VISU_ALL, Role.MODIF_VD_ORD, Role.MODIF_HAB_DEBPUR, Role.FOR_AUTRE);
+				addOperateur(visaOperateurAvecDroitDecision, Role.VISU_ALL, Role.GEST_DECISION_ACI, Role.MODIF_VD_ORD, Role.MODIF_HAB_DEBPUR, Role.FOR_AUTRE);
+				addOperateur(visaOperateurSansDroitDecision, Role.VISU_ALL, Role.MODIF_VD_ORD, Role.MODIF_HAB_DEBPUR, Role.FOR_AUTRE);
 			}
 		});
 
 
-		final long noIndividuLui = 236723537L;
-		final long noIndividuElle = 231923587L;
-		final long noIndividuElleEx = 236736537L;
 		final class IdsDecision {
 			public Long idOriginal;
 			Long idNouvel;

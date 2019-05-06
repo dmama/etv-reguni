@@ -6,8 +6,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +23,7 @@ import ch.vd.unireg.interfaces.service.host.Operateur;
 @Controller
 public class AutoCompleteSecurityController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteSecurityController.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteSecurityController.class);
 
 	private ServiceSecuriteService serviceSecuriteService;
 
@@ -60,16 +58,14 @@ public class AutoCompleteSecurityController {
 			final List<TypeCollectivite> colls = Arrays.asList(TypeCollectivite.SIGLE_ACI, TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD,
 					TypeCollectivite.SIGLE_ACIPP, TypeCollectivite.SIGLE_CIR,TypeCollectivite.SIGLE_S_ACI);
 			final List<Operateur> operateurs = serviceSecuriteService.getUtilisateurs(colls);
-			if (operateurs != null) {
-				for (Operateur operateur : operateurs) {
-					if (operateur.getCode().toLowerCase().startsWith(term) || StringComparator.toLowerCaseWithoutAccent(operateur.getNom()).startsWith(term) ||
-							StringComparator.toLowerCaseWithoutAccent(operateur.getPrenom()).startsWith(term)) {
-						final String label = operateur.getNom() + ' ' + operateur.getPrenom();
-						list.add(new AutoCompleteItem(label, label + " (" + operateur.getCode() + ')', operateur.getCode(), String.valueOf(operateur.getIndividuNoTechnique())));
-					}
-					if (list.size() >= 50) { // [SIFISC-482] on limite à 50 le nombre de résultats retournés
-						break;
-					}
+			for (Operateur operateur : operateurs) {
+				if (operateur.getCode().toLowerCase().startsWith(term) || StringComparator.toLowerCaseWithoutAccent(operateur.getNom()).startsWith(term) ||
+						StringComparator.toLowerCaseWithoutAccent(operateur.getPrenom()).startsWith(term)) {
+					final String label = operateur.getNom() + ' ' + operateur.getPrenom();
+					list.add(new AutoCompleteItem(label, label + " (" + operateur.getCode() + ')', operateur.getCode()));
+				}
+				if (list.size() >= 50) { // [SIFISC-482] on limite à 50 le nombre de résultats retournés
+					break;
 				}
 			}
 		}

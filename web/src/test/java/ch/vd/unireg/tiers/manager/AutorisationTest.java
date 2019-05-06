@@ -38,8 +38,7 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-
-				addOperateur(visaOperateur, 42L, Role.MODIF_VD_ORD);
+				addOperateur(visaOperateur, Role.MODIF_VD_ORD);
 			}
 		});
 
@@ -101,12 +100,11 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-
-				addOperateur(visaOperateurDi, 43L, Role.DI_DELAI_PP,
+				addOperateur(visaOperateurDi, Role.DI_DELAI_PP,
 				             Role.DI_DESANNUL_PP, Role.DI_DUPLIC_PP,
 				             Role.DI_EMIS_PP, Role.DI_QUIT_PP,
 				             Role.DI_SOM_PP, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
-				addOperateur(visaOperateurSimple, 44L, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
+				addOperateur(visaOperateurSimple, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
 			}
 		});
 
@@ -186,12 +184,11 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-
-				addOperateur(visaOperateurDi, 43L, Role.DI_DELAI_PP,
+				addOperateur(visaOperateurDi, Role.DI_DELAI_PP,
 				             Role.DI_DESANNUL_PP, Role.DI_DUPLIC_PP,
 				             Role.DI_EMIS_PP, Role.DI_QUIT_PP,
 				             Role.DI_SOM_PP, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
-				addOperateur(visaOperateurSimple, 44L, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
+				addOperateur(visaOperateurSimple, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
 			}
 		});
 
@@ -271,9 +268,8 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateur, 42L, Role.MODIF_VD_SOURC);
+				addOperateur(visaOperateur, Role.MODIF_VD_SOURC);
 			}
-
 		});
 
 		// mise en place civile
@@ -332,7 +328,7 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateur, 42L, Role.MODIF_HC_HS);
+				addOperateur(visaOperateur, Role.MODIF_HC_HS);
 			}
 		});
 
@@ -387,13 +383,12 @@ public class AutorisationTest  extends WebTest {
 	public void testAutorisationModifIdeCtbI107() throws Exception {
 
 		final String visaOperateur = "usrreg01";
-		final long noIndividuFederico = 452120L;
 
 		// extrait du profile OID
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateur, 42L, Role.MODIF_NONHAB_INACTIF);
+				addOperateur(visaOperateur, Role.MODIF_NONHAB_INACTIF);
 			}
 		});
 
@@ -432,7 +427,7 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateur, 42L, Role.MODIF_HC_HS, Role.MODIF_NONHAB_DEBPUR);
+				addOperateur(visaOperateur, Role.MODIF_HC_HS, Role.MODIF_NONHAB_DEBPUR);
 			}
 		});
 
@@ -507,7 +502,7 @@ public class AutorisationTest  extends WebTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOperateur, 42L, Role.MODIF_NONHAB_DEBPUR);
+				addOperateur(visaOperateur, Role.MODIF_NONHAB_DEBPUR);
 			}
 		});
 

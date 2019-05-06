@@ -58,7 +58,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur("test", 1234, Role.VISU_LIMITE);
+				addOperateur("test", Role.VISU_LIMITE);
 			}
 		});
 

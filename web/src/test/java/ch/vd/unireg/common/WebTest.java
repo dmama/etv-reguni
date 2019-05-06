@@ -105,7 +105,7 @@ public abstract class WebTest extends AbstractBusinessTest {
 			protected void init() {
 				// on définit l'opérateur par défaut
 				super.init();
-				addOperateur(getDefaultOperateurName(), 0, Role.VISU_ALL);
+				addOperateur(getDefaultOperateurName(), Role.VISU_ALL);
 			}
 		});
 	}

@@ -15,7 +15,6 @@ public class Operateur implements Serializable, Comparable {
 	private String nom;
 	private String prenom;
 	private String email;
-	private long individuNoTechnique;
 	private String code;
 
 
@@ -28,7 +27,6 @@ public class Operateur implements Serializable, Comparable {
 		op.setNom(o.getNom());
 		op.setPrenom(o.getPrenom());
 		op.setEmail(o.getEmail());
-		op.setIndividuNoTechnique(o.getIndividuNoTechnique());
 		op.setCode(o.getCode());
 
 
@@ -71,16 +69,6 @@ public class Operateur implements Serializable, Comparable {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	@Deprecated
-	public Long getIndividuNoTechnique() {
-		return individuNoTechnique;
-	}
-
-	@Deprecated
-	public void setIndividuNoTechnique(long individuNoTechnique) {
-		this.individuNoTechnique = individuNoTechnique;
 	}
 
 	public String getCode() {

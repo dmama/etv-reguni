@@ -403,10 +403,6 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		Niveau restricted = null;
 		boolean otherOperatorsGranted = false;
 
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("L'opérateur [" + operateur.getCode() + "] possède le numéro technique = " + operateur.getIndividuNoTechnique());
-		}
-
 		for (DroitAcces d : droits) {
 			if (d.isAnnule()) {
 				continue;

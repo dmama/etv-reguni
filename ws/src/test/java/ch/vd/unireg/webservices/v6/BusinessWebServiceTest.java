@@ -258,22 +258,18 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	public void testSecurite() throws Exception {
 
 		final String visaOmnipotent = "omnis";
-		final long noIndividuOmnipotent = 45121L;
 		final String visaActeur = "bébel";
-		final long noIndividuActeur = 4131544L;
 		final String visaVoyeur = "fouineur";
-		final long noIndividuVoyeur = 857451L;
 		final String visaGrouillot = "larve";
-		final long noIndividuGrouillot = 378362L;
 
 		// mise en place du service sécurité
 		serviceSecurite.setUp(new MockServiceSecuriteService() {
 			@Override
 			protected void init() {
-				addOperateur(visaOmnipotent, noIndividuOmnipotent, Role.VISU_ALL, Role.ECRITURE_DOSSIER_PROTEGE);
-				addOperateur(visaActeur, noIndividuActeur, Role.VISU_ALL);
-				addOperateur(visaVoyeur, noIndividuVoyeur, Role.VISU_ALL);
-				addOperateur(visaGrouillot, noIndividuGrouillot, Role.VISU_ALL);
+				addOperateur(visaOmnipotent, Role.VISU_ALL, Role.ECRITURE_DOSSIER_PROTEGE);
+				addOperateur(visaActeur, Role.VISU_ALL);
+				addOperateur(visaVoyeur, Role.VISU_ALL);
+				addOperateur(visaGrouillot, Role.VISU_ALL);
 			}
 		});
 
