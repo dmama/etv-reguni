@@ -34,7 +34,7 @@ public class DataEventJmsHandlerTest extends BusinessTest {
 		final ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
 		provider.addIncludeFilter(new AssignableTypeFilter(superclass));
 
-		final Set<BeanDefinition> components = provider.findCandidateComponents("ch/vd");
+		final Set<BeanDefinition> components = provider.findCandidateComponents("ch/vd/unireg");
 		final Set<Class<? extends T>> subclasses = new HashSet<>();
 		for (BeanDefinition component : components) {
 			//noinspection unchecked

@@ -3,8 +3,8 @@ package ch.vd.unireg.migreg;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.slf4j.Logger;
@@ -14,6 +14,7 @@ import ch.vd.unireg.type.TypeMigRegError;
 
 @Entity
 @Table(name = "MIGREG_ERROR")
+@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 public class MigrationError {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationError.class);
@@ -30,7 +31,8 @@ public class MigrationError {
 	private String nomIndividu;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(generator = "defaultGenerator")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 	public Long getId() {
 		return id;
 	}

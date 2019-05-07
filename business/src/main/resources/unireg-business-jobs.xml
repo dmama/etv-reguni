@@ -720,15 +720,6 @@
 		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
-    <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.unireg.database.DumpDatabaseJob">
-        <constructor-arg value="700"/>
-        <constructor-arg value="Exporter toutes les données de la base dans un fichier sur le serveur"/>
-        <property name="dbService" ref="databaseService"/>
-        <property name="docService" ref="docService"/>
-        <property name="tiersDAO" ref="tiersDAO"/>
-		<property name="transactionManager" ref="transactionManager"/>
-    </bean>
-
     <bean id="loadDatabaseJob" parent="schedulerJob" class="ch.vd.unireg.database.LoadDatabaseJob">
         <constructor-arg value="701"/>
         <constructor-arg value="Recharger toutes les données de la base à partir d'un fichier sur le serveur"/>

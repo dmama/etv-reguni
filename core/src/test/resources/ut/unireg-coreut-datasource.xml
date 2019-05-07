@@ -74,6 +74,9 @@
 
 	<!-- hibernateProperties specifiques à cette datasource. -->
 	<util:map id="hibernateProperties">
+		<entry key="hibernate.transaction.coordinator_class" value="jta"/>
+		<!-- voir https://vladmihalcea.com/hibernate-aggressive-connection-release/ -->
+		<entry key="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
 		<entry key="hibernate.connection.autocommit" value="false" />
 		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory" />
 		<entry key="hibernate.dialect" value-ref="hibernateDialectClassName" />

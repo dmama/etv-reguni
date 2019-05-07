@@ -2,8 +2,8 @@ package ch.vd.unireg.hibernate.dialect;
 
 import java.sql.Types;
 
+import org.hibernate.boot.model.TypeContributions;
 import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.metamodel.spi.TypeContributions;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.StringNVarcharType;

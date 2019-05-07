@@ -11,7 +11,6 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.dao.DataAccessException;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -69,17 +68,5 @@ public abstract class BaseDAOImpl<T, PK extends Serializable> extends GenericDAO
 			map.put(param.getKey(), param.getValue());
 		}
 		return map;
-	}
-
-	@Override
-	@Deprecated
-	public Iterator<?> iterate(String queryString, Object[] values, FlushMode flushModeOverride) throws DataAccessException {
-		return super.iterate(queryString, values, flushModeOverride);
-	}
-
-	@Override
-	@Deprecated
-	public List<?> find(String queryString, Object[] values, FlushMode flushModeOverride) throws DataAccessException {
-		return super.find(queryString, values, flushModeOverride);
 	}
 }

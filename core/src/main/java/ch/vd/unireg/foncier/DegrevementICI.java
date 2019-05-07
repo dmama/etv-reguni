@@ -111,13 +111,13 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 		return nonIntegrable;
 	}
 
-	@Transient
-	public boolean isNonIntegrable() {
-		return nonIntegrable != null && nonIntegrable;
-	}
-
 	public void setNonIntegrable(Boolean nonIntegrable) {
 		this.nonIntegrable = nonIntegrable;
+	}
+
+	@Transient
+	public boolean nonIntegrable() {
+		return nonIntegrable != null && nonIntegrable;
 	}
 
 	/**

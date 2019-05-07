@@ -5,8 +5,7 @@
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- La session factory -->
-	<bean id="sessionFactoryRegDate" class="ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean">
-		<property name="description" value="Unireg-UT"/>
+	<bean id="sessionFactoryRegDate" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="annotatedClasses">
 			<list>
 				<value>ch.vd.unireg.hibernate.RegDateUserTypeTest$TestData</value>

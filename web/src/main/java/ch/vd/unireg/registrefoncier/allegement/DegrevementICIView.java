@@ -28,7 +28,7 @@ public class DegrevementICIView implements Annulable, DateRange {
 		this.location = Optional.ofNullable(data.getLocation()).map(DonneesUtilisation::new).orElse(null);
 		this.propreUsage = Optional.ofNullable(data.getPropreUsage()).map(DonneesUtilisation::new).orElse(null);
 		this.loiLogement = Optional.ofNullable(data.getLoiLogement()).map(DonneesLoiLogement::new).orElse(null);
-		this.nonIntegrable = data.isNonIntegrable();
+		this.nonIntegrable = data.nonIntegrable();
 	}
 
 	@Override

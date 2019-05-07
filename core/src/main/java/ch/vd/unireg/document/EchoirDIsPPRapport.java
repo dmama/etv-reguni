@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("EnvoiDIsRapport")
+@DiscriminatorValue("EchoirDIsPPRapport")
 public class EchoirDIsPPRapport extends Document {
 
 	public EchoirDIsPPRapport() {

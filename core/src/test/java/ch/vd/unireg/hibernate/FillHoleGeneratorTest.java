@@ -28,7 +28,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 
 		generator = new FillHoleGenerator("TIERS", "S_CTB", ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
-		generator.configure(StandardBasicTypes.LONG, new Properties(), dialect);
+		generator.configure(StandardBasicTypes.LONG, new Properties(), sessionFactory.getSessionFactoryOptions().getServiceRegistry());
 
 		resetSequence();
 	}

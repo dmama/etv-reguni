@@ -7835,7 +7835,7 @@ debut PF                                                                        
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 			assertNotNull(pp);
 			assertTrue(pp.isHabitantVD());
-			assertFalse(pp.isParenteDirty());
+			assertFalse(pp.parenteDirty());
 
 			// lancement du traitement
 			return tiersService.initParentesDepuisFiliationsCiviles(pp);
@@ -7853,7 +7853,7 @@ debut PF                                                                        
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 			assertNotNull(pp);
 			assertTrue(pp.isHabitantVD());
-			assertTrue(pp.isParenteDirty());
+			assertTrue(pp.parenteDirty());
 			return null;
 		});
 	}
@@ -7887,7 +7887,7 @@ debut PF                                                                        
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 			assertNotNull(pp);
 			assertTrue(pp.isHabitantVD());
-			assertFalse(pp.isParenteDirty());
+			assertFalse(pp.parenteDirty());
 
 			// lancement du traitement
 			return tiersService.refreshParentesSurPersonnePhysique(pp, false);
@@ -7905,7 +7905,7 @@ debut PF                                                                        
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 			assertNotNull(pp);
 			assertTrue(pp.isHabitantVD());
-			assertTrue(pp.isParenteDirty());
+			assertTrue(pp.parenteDirty());
 			return null;
 		});
 	}

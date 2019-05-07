@@ -29,6 +29,7 @@
 		<property name="dialect" ref="hibernateDialect"/>
 		<property name="autorisationCache" ref="autorisationCache"/>
 		<property name="communauteRFProcessor" ref="communauteRFProcessor"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
 </beans>

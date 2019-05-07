@@ -459,7 +459,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@Transient
-	public boolean isParenteDirty() {
+	public boolean parenteDirty() {
 		return parenteDirty != null && parenteDirty;
 	}
 

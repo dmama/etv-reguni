@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("EnvoiDIsRapport")
+@DiscriminatorValue("EnvoiFormulairesDemandeDegrevementICIRapport")
 public class EnvoiFormulairesDemandeDegrevementICIRapport extends Document {
 
 	public EnvoiFormulairesDemandeDegrevementICIRapport() {

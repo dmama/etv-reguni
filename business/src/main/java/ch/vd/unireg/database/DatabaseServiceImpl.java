@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -30,11 +32,13 @@ import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.CompositeOperation;
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.operation.ManagedInsertOperation;
+import org.hibernate.boot.model.relational.Namespace;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle8iDialect;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,12 +46,12 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.dbutils.SqlFileExecutor;
@@ -61,7 +65,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 	private static final String CORE_TRUNCATE_SQL = "/sql/core_truncate_tables.sql";
 
-	private DescriptiveSessionFactoryBean sessionFactoryBean;
+	private LocalSessionFactoryBean sessionFactoryBean;
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
 	private DataEventService dataEventService;
@@ -193,10 +197,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.setIgnoreWarnings(false);
 
-		final Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
-		while (tables.hasNext()) {
-
-			final Table table = tables.next();
+		for (final Table table : getHibernateTables()) {
 			if (!table.isPhysicalTable()) {
 				continue;
 			}
@@ -217,6 +218,15 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 
 		return max;
+	}
+
+	@NotNull
+	private List<Table> getHibernateTables() {
+		final Iterable<Namespace> namespaces = MetadataExtractorIntegrator.INSTANCE.getDatabase().getNamespaces();
+		return StreamSupport.stream(namespaces.spliterator(), false)
+				.map(Namespace::getTables)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
 	}
 
 	private long getMaxIdOfTiers(String listeEntite) {
@@ -244,7 +254,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			sendTruncateDatabaseEvent();
 			SqlFileExecutor.execute(transactionManager, dataSource, CORE_TRUNCATE_SQL);
 		}
-		catch (Exception e) {
+		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du truncate de la base.", e);
 
 			/* Debug code pour aider à comprendre des problèmes de tables qui disparaissent dans les test unitaires sous Hudson */
@@ -295,12 +305,9 @@ public class DatabaseServiceImpl implements DatabaseService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public String[] getTableNamesFromHibernate(boolean reverse) {
 		ArrayList<String> t = new ArrayList<>();
-		Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
-		while (tables.hasNext()) {
-			Table table = tables.next();
+		for (Table table : getHibernateTables()) {
 			if (table.isPhysicalTable()) {
 				addTableName(t, table);
 			}
@@ -316,9 +323,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		if (tables.contains(table.getName())) {
 			return;
 		}
-		Iterator<Table> ts = sessionFactoryBean.getConfiguration().getTableMappings();
-		while (ts.hasNext()) {
-			Table t = ts.next();
+		for (Table t : getHibernateTables()) {
 			if (t.equals(table)) {
 				continue;
 			}
@@ -715,7 +720,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setSessionFactoryBean(DescriptiveSessionFactoryBean sessionFactoryBean) {
+	public void setSessionFactoryBean(LocalSessionFactoryBean sessionFactoryBean) {
 		this.sessionFactoryBean = sessionFactoryBean;
 	}
 

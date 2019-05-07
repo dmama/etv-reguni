@@ -8,11 +8,13 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
+import org.hibernate.boot.model.relational.Database;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
 
 import ch.vd.unireg.hibernate.FillHoleGenerator;
@@ -48,39 +50,44 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	/**
 	 * Instancie pour chaque type passé en paramètre un générator d'Id se basant
 	 * sur une séquence. Le nom de la séquence est récupéré dans params.
-	 *
-	 * @see org.hibernate.id.SequenceHiLoGenerator#configure(org.hibernate.type.Type,
-	 *      java.util.Properties, org.hibernate.dialect.Dialect)
 	 */
 	@Override
-	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
+	public void configure(Type type, Properties params, ServiceRegistry serviceRegistry) throws MappingException {
 
-		dpiGenerator = createSequence(type, params, dialect, DebiteurPrestationImposable.FIRST_ID, DPI_SEQ_NAME);
-		caacGenerator = createSequence(type, params, dialect, AutreCommunaute.CAAC_GEN_FIRST_ID, CAAC_SEQ_NAME);
-		pmGenerator = createSequence(type, params, dialect, Entreprise.FIRST_ID, PM_SEQ_NAME);
-		etbGenerator = createSequence(type, params, dialect, Etablissement.ETB_GEN_FIRST_ID, ETB_SEQ_NAME);
+		dpiGenerator = configureSequence(type, params, serviceRegistry, DebiteurPrestationImposable.FIRST_ID, DPI_SEQ_NAME);
+		caacGenerator = configureSequence(type, params, serviceRegistry, AutreCommunaute.CAAC_GEN_FIRST_ID, CAAC_SEQ_NAME);
+		pmGenerator = configureSequence(type, params, serviceRegistry, Entreprise.FIRST_ID, PM_SEQ_NAME);
+		etbGenerator = configureSequence(type, params, serviceRegistry, Etablissement.ETB_GEN_FIRST_ID, ETB_SEQ_NAME);
 
 		ctbGenerator = new FillHoleGenerator("TIERS", CTB_SEQ_NAME, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
-		ctbGenerator.configure(type, params, dialect);
+		ctbGenerator.configure(type, params, serviceRegistry);
 	}
 
-	private PersistentIdentifierGenerator createSequence(Type type, Properties params, Dialect dialect, int sequenceOffset, String seqName) {
+	private PersistentIdentifierGenerator configureSequence(Type type, Properties params, ServiceRegistry serviceRegistry, int sequenceOffset, String seqName) {
 
 		Properties properties = new Properties();
 		properties.putAll(params);
-		properties.put("sequence_name", seqName);
-		properties.put("initial_value", String.valueOf(sequenceOffset));
+		properties.put(SequenceStyleGenerator.SEQUENCE_PARAM, seqName);
+		properties.put(SequenceStyleGenerator.INCREMENT_PARAM, 1);
+		properties.put(SequenceStyleGenerator.INITIAL_PARAM, String.valueOf(sequenceOffset));
 
 		SequenceStyleGenerator generator = new SequenceStyleGenerator();
-		generator.configure(type, properties, dialect);
+		generator.configure(type, properties, serviceRegistry);
 		return generator;
+	}
+
+	@Override
+	public void registerExportables(Database database) {
+		ctbGenerator.registerExportables(database);
+		dpiGenerator.registerExportables(database);
+		caacGenerator.registerExportables(database);
+		pmGenerator.registerExportables(database);
+		etbGenerator.registerExportables(database);
 	}
 
 	/**
 	 * Génère un ID pour l'objet passé en paramètre. Se base sur la classe de
 	 * l'objet pour récupérér le SequenceGenerator adéquat.
-	 *
-	 * @see org.hibernate.id.SequenceHiLoGenerator#generate(org.hibernate.engine.spi.SessionImplementor, java.lang.Object)
 	 */
 	@Override
 	public synchronized Serializable generate(SessionImplementor session, Object object) throws HibernateException {
@@ -157,10 +164,6 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 
 	/**
 	 * The SQL required to remove the underlying database objects.
-	 *
-	 * @param dialect
-	 * @return String
-	 * @throws HibernateException
 	 */
 	@Override
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
@@ -177,10 +180,6 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 
 	/**
 	 * The SQL required to create the underlying database objects.
-	 *
-	 * @param dialect
-	 * @return String[]
-	 * @throws HibernateException
 	 */
 	@Override
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {

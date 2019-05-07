@@ -2,15 +2,12 @@ package ch.vd.unireg.common;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -19,7 +16,6 @@ import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.CachedDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.csv.CsvProducer;
@@ -27,29 +23,27 @@ import org.dbunit.dataset.stream.IDataSetProducer;
 import org.dbunit.dataset.stream.StreamingDataSet;
 import org.dbunit.dataset.xml.FlatDtdProducer;
 import org.dbunit.dataset.xml.FlatXmlProducer;
-import org.dbunit.dataset.xml.XmlDataSetWriter;
 import org.dbunit.dataset.xml.XmlProducer;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.mapping.ForeignKey;
-import org.hibernate.mapping.Table;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.unireg.audit.AuditManager;
+import ch.vd.unireg.dbutils.SqlFileExecutor;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -200,10 +194,12 @@ import static org.junit.Assert.assertNull;
 })
 public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
+	private static final String CORE_TRUNCATE_SQL = "/sql/core_truncate_tables.sql";
+
 	protected DataSource dataSource;
 	protected JdbcTemplate jdbcTemplate;
 	protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	protected DescriptiveSessionFactoryBean sessionFactoryBean;
+	protected LocalSessionFactoryBean sessionFactoryBean;
 	protected ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 	protected HibernateTemplate hibernateTemplate;
 	protected Dialect dialect;
@@ -224,7 +220,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		sessionFactoryBean = getBean(DescriptiveSessionFactoryBean.class, "&sessionFactory");
+		sessionFactoryBean = getBean(LocalSessionFactoryBean.class, "&sessionFactory");
 		sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		dialect = getBean(Dialect.class, "hibernateDialect");
@@ -272,26 +268,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * virtual method to truncate the database
 	 */
 	protected void truncateDatabase() throws Exception {
-		doInNewTransaction(status -> {
-			deleteFromTables(getTableNames(false));
-			return null;
-		});
-	}
-
-	@SuppressWarnings("unchecked")
-	public String[] getTableNames(boolean reverse) {
-		ArrayList<String> t = new ArrayList<>();
-		Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
-		while (tables.hasNext()) {
-			Table table = tables.next();
-			if (table.isPhysicalTable()) {
-				addTableName(t, table);
-			}
-		}
-		if (reverse) {
-			Collections.reverse(t);
-		}
-		return t.toArray(new String[t.size()]);
+		SqlFileExecutor.execute(transactionManager, dataSource, CORE_TRUNCATE_SQL);
 	}
 
 	/**
@@ -374,38 +351,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	}
 
-	/**
-	 * Permet d'extraire les données de la db pour un fichier DBUnit de type {@link #getProducerType()}
-	 * @param filename le nom du fichier
-	 * @throws Exception exception
-	 */
-	public void dumpDatabase(String filename) throws Exception {
-		dumpDatabase(new FileWriter(filename));
-	}
-
-	/**
-	 * Permet d'extraire les données de la db pour un fichier DBUnit de type {@link #getProducerType()}
-	 * @param writer writer
-	 * @throws Exception exception
-	 */
-	public void dumpDatabase(Writer writer) throws Exception {
-		// full database export
-		Connection dsCon = DataSourceUtils.getConnection( dataSource);
-		try {
-			DatabaseConnection connection = createNewConnection(dsCon);
-			QueryDataSet dataSet = new QueryDataSet(connection);
-			for (String tablename : getTableNames(false)) {
-				dataSet.addTable(tablename);
-			}
-			XmlDataSetWriter dataSetWriter = new XmlDataSetWriter(writer, "UTF-8");
-			dataSetWriter.write(dataSet);
-
-		}
-		finally {
-			DataSourceUtils.releaseConnection(dsCon, dataSource);
-		}
-	}
-
 	protected static DatabaseConnection createNewConnection(Connection connection) {
 		final DatabaseConnection dbConnection = new DatabaseConnection(connection);
 		final DatabaseConfig config = dbConnection.getConfig();
@@ -424,42 +369,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return JdbcTestUtils.deleteFromTables(jdbcTemplate, names);
 	}
 
-	/**
-	 *
-	 * @param tables
-	 * @param table
-	 */
-	@SuppressWarnings("unchecked")
-	private void addTableName(ArrayList<String> tables, Table table) {
-		if (tables.contains(table.getName())) {
-			return;
-		}
-		Iterator<Table> ts = sessionFactoryBean.getConfiguration().getTableMappings();
-		while ( ts.hasNext()) {
-			Table t = ts.next();
-			if ( t.equals(table)){
-				continue;
-			}
-			Iterator<ForeignKey> relationships = t.getForeignKeyIterator();
-			while (relationships.hasNext()) {
-				ForeignKey fk = relationships.next();
-				if (fk.getReferencedTable().equals(table)) {
-					addTableName(tables, fk.getTable());
-				}
-			}
-		}
-		tables.add(table.getName());
-
-	}
-
-	/**
-	 *
-	 * @param src
-	 * @param format
-	 * @param forwardonly
-	 * @return
-	 * @throws DatabaseUnitException
-	 */
 	protected IDataSet getSrcDataSet(File src, ProducerType format, boolean forwardonly) throws DatabaseUnitException {
 		logger.debug("getSrcDataSet(src=" + src + ", format=" + format + ", forwardonly=" + forwardonly + ") - start");
 

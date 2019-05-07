@@ -4,9 +4,11 @@ import java.util.Properties;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.StandardBasicTypes;
 
 import ch.vd.unireg.common.HibernateEntity;
@@ -25,8 +27,10 @@ public class Sequence {
 		this.generatorClass = generatorClass;
 	}
 
-	public Object nextValue(final Dialect dialect, HibernateTemplate hibernateTemplate, final HibernateEntity entity) {
+	public Object nextValue(final ServiceRegistry serviceRegistry, HibernateTemplate hibernateTemplate, final HibernateEntity entity) {
 		if (sequenceName != null) {
+			final JdbcEnvironment jdbcEnvironment = serviceRegistry.getService(JdbcEnvironment.class);
+			final Dialect dialect = jdbcEnvironment.getDialect();
 			final String sql = dialect.getSequenceNextValString(sequenceName);
 			return hibernateTemplate.execute(session -> {
 				final SQLQuery query = session.createSQLQuery(sql);
@@ -39,7 +43,7 @@ public class Sequence {
 			}
 			try {
 				final IdentifierGenerator generator = generatorClass.newInstance();
-				((Configurable) generator).configure(StandardBasicTypes.LONG, new Properties(), dialect);
+				((Configurable) generator).configure(StandardBasicTypes.LONG, new Properties(), serviceRegistry);
 				return hibernateTemplate.execute(session -> generator.generate((SessionImplementor) session, entity));
 			}
 			catch (Exception e) {

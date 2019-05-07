@@ -6,11 +6,11 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.List;
 
@@ -71,10 +71,12 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 	@Table(name = "TEST_TIERS")
 	@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 	@DiscriminatorValue("Tiers")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 	public static class Tiers {
 
 		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
+		@GeneratedValue(generator = "defaultGenerator")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 		public Long id;
 
 		@OneToMany(mappedBy = "sujet", fetch = FetchType.LAZY)
@@ -103,10 +105,12 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 
 	@Entity
 	@Table(name = "TEST_RAPPORT")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 	public static class Rapport {
 
 		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
+		@GeneratedValue(generator = "defaultGenerator")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 		public Long id;
 
 		@ManyToOne(fetch = FetchType.EAGER)

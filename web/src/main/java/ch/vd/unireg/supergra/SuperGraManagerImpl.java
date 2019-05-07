@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.type.StandardBasicTypes;
 import org.jetbrains.annotations.NotNull;
@@ -165,6 +167,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private Dialect dialect;
 	private FiscalDataEventListener autorisationCache;
 	private CommunauteRFProcessor communauteRFProcessor;
+	private SessionFactory sessionFactory;
 
 	private List<String> annotatedClass;
 	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<>(EntityType.class);
@@ -403,6 +406,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	public void setCommunauteRFProcessor(CommunauteRFProcessor communauteRFProcessor) {
 		this.communauteRFProcessor = communauteRFProcessor;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 	}
 
 	@Override
@@ -897,7 +904,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					throw new IllegalArgumentException();
 				}
 
-				final Number id = (Number) sequence.nextValue(dialect, hibernateTemplate, clazz.newInstance());
+				final StandardServiceRegistry serviceRegistry = sessionFactory.getSessionFactoryOptions().getServiceRegistry();
+				final Number id = (Number) sequence.nextValue(serviceRegistry, hibernateTemplate, clazz.newInstance());
 				return id.longValue();
 			}
 			catch (Exception e) {

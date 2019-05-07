@@ -10,25 +10,42 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
+import org.hibernate.boot.model.relational.Database;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.LobCreationContext;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.PersistentIdentifierGenerator;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
 
+/**
+ * Générateur qui attribue les ids non-alloués d'une table dans une plage déterminée.
+ */
 public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentifierGenerator, Configurable {
 
+	/**
+	 * Le table sur laquelle chercher les ids non-alloués
+	 */
 	private final String tableName;
+	/**
+	 * Le nom de la séquence utilisée comme position de recherche du prochain id non-alloué
+	 */
 	private final String seqName;
+	/**
+	 * La borne inférieure (comprise) de la plage d'allocation.
+	 */
 	private final int minId;
+	/**
+	 * La borne supérieure (comprise) de la plage d'allocation.
+	 */
 	private final int maxId;
 
 	private String[] sqlDrop;
 	private String[] sqlCreate;
 	private LongSequence generator;
-
 
 	public FillHoleGenerator(String name, String seqName, int minId, int maxId) {
 		this.tableName = name;
@@ -38,10 +55,18 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 	}
 
 	@Override
-	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
+	public void configure(Type type, Properties params, ServiceRegistry serviceRegistry) throws MappingException {
+		final JdbcEnvironment jdbcEnvironment = serviceRegistry.getService(JdbcEnvironment.class);
+		final Dialect dialect = jdbcEnvironment.getDialect();
+
 		generator = new LongSequence(seqName, dialect);
 		sqlDrop = dialect.getDropSequenceStrings(seqName);
 		sqlCreate = dialect.getCreateSequenceStrings(seqName, minId, 1);
+	}
+
+	@Override
+	public void registerExportables(Database database) {
+		// à priori, rien à faire ici dans la mesure où la séquence peut être recrée à la volée en cours d'exécution
 	}
 
 	private static final class LongSequence {

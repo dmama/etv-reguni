@@ -2672,7 +2672,7 @@ public class TiersServiceImpl implements TiersService {
 					}
 				}
 			}
-			if (parenteDirty != pp.isParenteDirty()) {
+			if (parenteDirty != pp.parenteDirty()) {
 				setParenteDirtyFlag(pp, parenteDirty);
 			}
 			return result.isEmpty() ? ParenteUpdateResult.EMPTY : result;
@@ -2859,7 +2859,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 
-			if (parenteDirty != pp.isParenteDirty()) {
+			if (parenteDirty != pp.parenteDirty()) {
 				setParenteDirtyFlag(pp, parenteDirty);
 			}
 

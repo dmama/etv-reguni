@@ -342,8 +342,7 @@
 	</util:list>
 
 	<!-- La session factory -->
-	<bean id="sessionFactory" class="ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean">
-		<property name="description" value="Unireg"/>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="annotatedClasses" ref="hibernateAnnotatedClasses" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties" ref="hibernateProperties" />

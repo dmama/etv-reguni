@@ -771,7 +771,7 @@ public class DegrevementExonerationController {
 	private String showEditDegrevement(Model model, DegrevementICI degrevement, EditDegrevementView view) {
 		model.addAttribute("idContribuable", degrevement.getContribuable().getNumero());
 		model.addAttribute("immeuble", new ResumeImmeubleView(degrevement.getImmeuble(), null, registreFoncierService));
-		model.addAttribute("degrevementNonIntegrable", degrevement.isNonIntegrable());
+		model.addAttribute("degrevementNonIntegrable", degrevement.nonIntegrable());
 		model.addAttribute("editDegrevementCommand", view);
 		return "tiers/edition/pm/degrevement-exoneration/edit-degrevement";
 	}

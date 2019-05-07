@@ -69,7 +69,8 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	 * @return the id
 	 */
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
+	//@GeneratedValue(generator = "defaultGenerator")
+	//@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 	public Long getId() {
 		return id;
 	}

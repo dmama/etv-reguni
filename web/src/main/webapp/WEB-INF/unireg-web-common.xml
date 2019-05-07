@@ -35,7 +35,7 @@
 
 	<alias alias="webThreadPool" name="webBraveThreadPool"/>
 
-	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate5.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 

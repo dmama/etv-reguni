@@ -468,7 +468,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(status -> {
 			final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
 			Assert.assertNotNull(enfant1);
-			Assert.assertTrue(enfant1.isParenteDirty());
+			Assert.assertTrue(enfant1.parenteDirty());
 			return null;
 		});
 
@@ -571,7 +571,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(status -> {
 			final PersonnePhysique enfant1 = (PersonnePhysique) tiersDAO.get(ppEnfant1);
 			Assert.assertNotNull(enfant1);
-			Assert.assertTrue(enfant1.isParenteDirty());
+			Assert.assertTrue(enfant1.parenteDirty());
 			return null;
 		});
 

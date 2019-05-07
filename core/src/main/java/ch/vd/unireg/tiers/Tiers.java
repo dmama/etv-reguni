@@ -63,6 +63,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 @Table(name = "TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
+@GenericGenerator(name = "tiersGenerator", strategy = "ch.vd.unireg.tiers.TiersMultiSequenceGenerator")
 public abstract class Tiers extends HibernateEntity implements BusinessComparable<Tiers> {
 
 	/**
@@ -129,14 +130,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	@Id
 	@Column(name = "NUMERO")
-	@GeneratedValue(generator = "tiersSequence")
-	@GenericGenerator(name = "tiersSequence", strategy = "ch.vd.unireg.tiers.TiersMultiSequenceGenerator")
-	/*
-	 * @GenericGenerator(name = "tiersSequence", strategy = "ch.vd.unireg.tiers.MultiSequenceGenerator", parameters = { @Parameter(name =
-	 * "max_lo", value = "50"), @Parameter(name = "sequence", value = "S_TIERS"), @Parameter(name = "entitiesSequencesMap", value =
-	 * "ch.vd.unireg.tiers.Habitant=S_HABITANT, ch.vd.unireg.tiers.NonHabitant=S_NON_HABITANT"), @Parameter(name = "sequenceOffset",
-	 * value = "1000000") } )
-	 */
+	@GeneratedValue(generator = "tiersGenerator")
 	public Long getNumero() {
 		return numero;
 	}

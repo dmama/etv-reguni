@@ -2,8 +2,9 @@ package ch.vd.unireg.hibernate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.SQLQuery;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.dbutils.SqlFileExecutor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -29,6 +31,7 @@ import static org.junit.Assert.fail;
 public class RegDateUserTypeTest extends CoreDAOTest {
 
 	@Entity(name = "TEST_DATA")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 	public static class TestData {
 
 		private Long id;
@@ -48,7 +51,8 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 		}
 
 		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
+		@GeneratedValue(generator = "defaultGenerator")
+	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 		public Long getId() {
 			return id;
 		}
@@ -84,6 +88,12 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		sessionFactory = getBean(SessionFactory.class, "sessionFactoryRegDate");
+	}
+
+	@Override
+	protected void truncateDatabase() throws Exception {
+		super.truncateDatabase();
+		SqlFileExecutor.execute(transactionManager, dataSource, Collections.singletonList("delete from TEST_DATA"));
 	}
 
 	@Test
@@ -214,14 +224,4 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 			return null;
 		});
 	}
-
-	@Override
-	public String[] getTableNames(boolean reverse) {
-		String[] origNames = super.getTableNames(reverse);
-		String[] names = new String[origNames.length+1];
-		names[0] = "TEST_DATA";
-		System.arraycopy(origNames, 0, names, 1, origNames.length);
-		return names;
-	}
-
 }

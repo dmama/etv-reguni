@@ -3002,7 +3002,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNull(relEnfant.getDateFin());
 				assertFalse(relEnfant.isAnnule());
 
-				assertFalse(maman.isParenteDirty());
+				assertFalse(maman.parenteDirty());
 			}
 
 			// les relations depuis bébé
@@ -3020,7 +3020,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNull(relParent.getDateFin());
 				assertFalse(relParent.isAnnule());
 
-				assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
+				assertTrue(bebe.parenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
 			}
 
 			return null;
@@ -3054,7 +3054,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNull(relParent.getDateFin());
 				assertFalse(relParent.isAnnule());
 
-				assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
+				assertTrue(bebe.parenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
 			}
 
 			return null;
@@ -3101,7 +3101,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertFalse(relParent.isAnnule());
 			}
 
-			assertFalse(bebe.isParenteDirty());
+			assertFalse(bebe.parenteDirty());
 			return null;
 		});
 	}
