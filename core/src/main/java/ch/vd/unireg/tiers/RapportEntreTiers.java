@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -96,7 +95,6 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 
 	@Column(name = "TIERS_SUJET_ID", nullable = false)
 	@Index(name = "IDX_RET_TRS_SUJ_ID", columnNames = "TIERS_SUJET_ID")
-	@ForeignKey(name = "FK_RET_TRS_SUJ_ID")
 	public Long getSujetId() {
 		return sujetId;
 	}
@@ -111,7 +109,6 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 
 	@Column(name = "TIERS_OBJET_ID", nullable = false)
 	@Index(name = "IDX_RET_TRS_OBJ_ID", columnNames = "TIERS_OBJET_ID")
-	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
 	public Long getObjetId() {
 		return objetId;
 	}

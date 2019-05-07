@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,10 +104,8 @@ public class CoordonneesFinancieres extends HibernateDateRangeEntity implements 
 	@ManyToOne(cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
-
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_COORDFIN_TIERS_ID", columnNames = "TIERS_ID")
-	@ForeignKey(name = "FK_COORDFIN_TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

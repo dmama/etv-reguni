@@ -5,6 +5,7 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -97,8 +97,7 @@ public class BeneficeServitudeRF extends HibernateDateRangeEntity implements Lin
 
 	// configuration hibernate : l'ayant-droit ne possède pas les bénéfices de servitude
 	@ManyToOne
-	@JoinColumn(name = "AYANT_DROIT_ID", nullable = false)
-	@ForeignKey(name = "FK_SERV_AD_RF_AYANT_DROIT_ID")
+	@JoinColumn(name = "AYANT_DROIT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SERV_AD_RF_AYANT_DROIT_ID"))
 	public AyantDroitRF getAyantDroit() {
 		return ayantDroit;
 	}

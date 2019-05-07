@@ -76,7 +76,7 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 
 		@Id
 		@GeneratedValue(generator = "defaultGenerator")
-	@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
+		@SequenceGenerator(name = "defaultGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
 		public Long id;
 
 		@OneToMany(mappedBy = "sujet", fetch = FetchType.LAZY)

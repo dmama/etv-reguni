@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
@@ -405,8 +405,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-	@JoinColumn(name = "CONJOINT_ID")
-	@ForeignKey(name = "FK_REQDES_PP_CONJOINT_ID")
+	@JoinColumn(name = "CONJOINT_ID", foreignKey = @ForeignKey(name = "FK_REQDES_PP_CONJOINT_ID"))
 	public PartiePrenante getConjointPartiePrenante() {
 		return conjointPartiePrenante;
 	}
@@ -416,8 +415,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "PARTIE_PRENANTE_ID", nullable = false)
-	@ForeignKey(name = "FK_REQDES_RPP_PP_ID")
+	@JoinColumn(name = "PARTIE_PRENANTE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REQDES_RPP_PP_ID"))
 	public Set<RolePartiePrenante> getRoles() {
 		return roles;
 	}
@@ -427,8 +425,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-	@JoinColumn(name = "UNITE_TRAITEMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_REQDES_PP_UT_ID")
+	@JoinColumn(name = "UNITE_TRAITEMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REQDES_PP_UT_ID"))
 	public UniteTraitement getUniteTraitement() {
 		return uniteTraitement;
 	}
@@ -438,7 +435,6 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@Column(name = "NO_CTB_CREE", nullable = true)
-	@ForeignKey(name = "FK_REQDES_PP_CTB_CREE")
 	public Long getNumeroContribuableCree() {
 		return numeroContribuableCree;
 	}

@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -13,7 +14,6 @@ import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
@@ -159,8 +159,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false)
-	@ForeignKey(name = "FK_EV_ERR_EV_ECH_ID")
+	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_EV_ERR_EV_ECH_ID"))
 	public Set<EvenementCivilEchErreur> getErreurs() {
 		return erreurs;
 	}

@@ -3,10 +3,10 @@ package ch.vd.unireg.mouvement;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -27,8 +27,7 @@ public class EnvoiDossierVersCollectiviteAdministrative extends EnvoiDossier imp
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "COLL_ADMIN_DEST_ID")
-	@ForeignKey(name = "FK_ENV_DOS_CA_DEST_ID")
+	@JoinColumn(name = "COLL_ADMIN_DEST_ID", foreignKey = @ForeignKey(name = "FK_ENV_DOS_CA_DEST_ID"))
 	public CollectiviteAdministrative getCollectiviteAdministrativeDestinataire() {
 		return collectiviteAdministrativeDestinataire;
 	}

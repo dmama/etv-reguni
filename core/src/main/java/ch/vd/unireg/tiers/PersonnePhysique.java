@@ -8,6 +8,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -15,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
@@ -380,8 +380,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "NON_HABITANT_ID", nullable = false)
-	@ForeignKey(name = "FK_ID_PERS_TRS_ID")
+	@JoinColumn(name = "NON_HABITANT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ID_PERS_TRS_ID"))
 	public Set<IdentificationPersonne> getIdentificationsPersonnes() {
 		return identificationsPersonnes;
 	}

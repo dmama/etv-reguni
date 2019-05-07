@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -20,7 +21,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -149,7 +149,6 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
 	@Index(name = "IDX_DEL_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public DocumentFiscal getDocumentFiscal() {
 		return documentFiscal;
@@ -162,8 +161,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	// configuration hibernate : le délai ne possède pas les demandes mandataires
 	@Nullable
 	@ManyToOne(fetch = FetchType.LAZY)  // fetch lazy pour ne pas pénaliser les performances de chargement des déclarations (WS, entre autres)
-	@JoinColumn(name = "DEMANDE_MANDATAIRE_ID")
-	@ForeignKey(name = "FK_DELAI_DEM_MAND_ID")
+	@JoinColumn(name = "DEMANDE_MANDATAIRE_ID", foreignKey = @ForeignKey(name = "FK_DELAI_DEM_MAND_ID"))
 	@Index(name = "IDX_DELAI_DEM_MAND_ID", columnNames = "DEMANDE_MANDATAIRE_ID")
 	public DemandeDelaisMandataire getDemandeMandataire() {
 		return demandeMandataire;

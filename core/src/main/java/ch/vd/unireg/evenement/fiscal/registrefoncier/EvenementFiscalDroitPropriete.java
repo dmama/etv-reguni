@@ -3,10 +3,10 @@ package ch.vd.unireg.evenement.fiscal.registrefoncier;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +27,8 @@ public class EvenementFiscalDroitPropriete extends EvenementFiscalDroit {
 		this.droit = droit;
 	}
 
-	@JoinColumn(name = "DROIT_PROP_ID")
+	@JoinColumn(name = "DROIT_PROP_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_DROIT_PROP_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_DROIT_PROP_ID")
 	public DroitProprieteRF getDroit() {
 		return droit;
 	}

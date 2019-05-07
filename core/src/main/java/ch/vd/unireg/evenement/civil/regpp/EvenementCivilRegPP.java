@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -15,7 +16,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -122,8 +122,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false)
-	@ForeignKey(name = "FK_EV_ERR_EV_RGR_ID")
+	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_EV_ERR_EV_RGR_ID"))
 	public Set<EvenementCivilRegPPErreur> getErreurs() {
 		return erreurs;
 	}

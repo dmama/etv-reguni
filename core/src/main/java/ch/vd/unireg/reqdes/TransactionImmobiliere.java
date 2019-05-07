@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,8 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
@@ -86,8 +85,7 @@ public class TransactionImmobiliere extends HibernateEntity {
 	}
 
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "EVENEMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_REQDES_TI_EVT_ID")
+	@JoinColumn(name = "EVENEMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REQDES_TI_EVT_ID"))
 	public EvenementReqDes getEvenementReqDes() {
 		return evenementReqDes;
 	}

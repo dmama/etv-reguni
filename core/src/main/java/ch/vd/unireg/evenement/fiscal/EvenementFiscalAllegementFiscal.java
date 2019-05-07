@@ -5,10 +5,9 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.LengthConstants;
@@ -40,8 +39,7 @@ public class EvenementFiscalAllegementFiscal extends EvenementFiscalTiers {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ALLEGEMENT_ID")
-	@ForeignKey(name = "FK_EVTFISC_ALLGMT_ID")
+	@JoinColumn(name = "ALLEGEMENT_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_ALLGMT_ID"))
 	public AllegementFiscal getAllegementFiscal() {
 		return allegementFiscal;
 	}

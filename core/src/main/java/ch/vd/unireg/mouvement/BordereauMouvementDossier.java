@@ -3,6 +3,7 @@ package ch.vd.unireg.mouvement;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -11,8 +12,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Set;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -50,8 +49,7 @@ public class BordereauMouvementDossier extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "BORDEREAU_ID")
-	@ForeignKey(name = "FK_MVT_DOSSIER_BORD_ID")
+	@JoinColumn(name = "BORDEREAU_ID", foreignKey = @ForeignKey(name = "FK_MVT_DOSSIER_BORD_ID"))
 	public Set<MouvementDossier> getContenu() {
 		return contenu;
 	}

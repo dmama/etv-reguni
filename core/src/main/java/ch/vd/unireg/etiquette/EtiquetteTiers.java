@@ -3,6 +3,7 @@ package ch.vd.unireg.etiquette;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -13,7 +14,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,9 +67,8 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ETIQUETTE_ID", nullable = false)
+	@JoinColumn(name = "ETIQUETTE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ETIQTIERS_ETIQ_ID"))
 	@Index(name = "IDX_ETIQTIERS_ETIQ_ID", columnNames = "ETIQUETTE_ID")
-	@ForeignKey(name = "FK_ETIQTIERS_ETIQ_ID")
 	public Etiquette getEtiquette() {
 		return etiquette;
 	}
@@ -83,7 +82,6 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_ETIQTIERS_TIERS_ID", columnNames = "TIERS_ID")
-	@ForeignKey(name = "FK_ETIQTIERS_TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

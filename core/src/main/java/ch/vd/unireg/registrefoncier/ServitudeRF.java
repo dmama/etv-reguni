@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -15,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,8 +76,7 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 
 	// configuration hibernate : la servitude possède les liens vers les bénéficiaires
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DROIT_ID", nullable = false)
-	@ForeignKey(name = "FK_SERV_AD_RF_DROIT_ID")
+	@JoinColumn(name = "DROIT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SERV_AD_RF_DROIT_ID"))
 	public Set<BeneficeServitudeRF> getBenefices() {
 		return benefices;
 	}
@@ -96,8 +95,7 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 
 	// configuration hibernate : la servitude possède les liens vers les bénéficiaires
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DROIT_ID", nullable = false)
-	@ForeignKey(name = "FK_SERV_IMM_RF_DROIT_ID")
+	@JoinColumn(name = "DROIT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SERV_IMM_RF_DROIT_ID"))
 	public Set<ChargeServitudeRF> getCharges() {
 		return charges;
 	}

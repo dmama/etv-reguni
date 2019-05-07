@@ -6,10 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -41,9 +41,8 @@ public class EvenementFiscalRapprochementTiersRF extends EvenementFiscal {
 		this.type = type;
 	}
 
-	@JoinColumn(name = "RAPPROCHEMENT_ID")
+	@JoinColumn(name = "RAPPROCHEMENT_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_RAPPR_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_RAPPR_ID")
 	public RapprochementRF getRapprochement() {
 		return rapprochement;
 	}

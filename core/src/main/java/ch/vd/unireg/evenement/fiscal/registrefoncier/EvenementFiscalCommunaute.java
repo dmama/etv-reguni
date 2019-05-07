@@ -6,10 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,9 +47,8 @@ public class EvenementFiscalCommunaute extends EvenementFiscalRF {
 		this.type = type;
 	}
 
-	@JoinColumn(name = "COMMUNAUTE_ID")
+	@JoinColumn(name = "COMMUNAUTE_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_COMMUNAUTE_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_COMMUNAUTE_ID")
 	public CommunauteRF getCommunaute() {
 		return communaute;
 	}

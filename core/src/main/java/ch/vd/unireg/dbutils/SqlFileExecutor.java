@@ -71,7 +71,13 @@ public class SqlFileExecutor {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("SQL: " + statement);
 				}
-				template.execute(statement);
+				try {
+					template.execute(statement);
+				}
+				catch (Exception e) {
+					LOGGER.warn("Exception lors de l'exécution du statement = [" + statement + "]");
+					throw e;
+				}
 			}
 			return null;
 		});

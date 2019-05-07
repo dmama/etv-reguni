@@ -17,7 +17,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +69,6 @@ public abstract class LiberationDocumentFiscal extends HibernateEntity implement
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@ForeignKey(name = "FK_LIB_DOCFISC_DOCFISC_ID")
 	@Index(name = "IDX_LIB_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public DocumentFiscal getDocumentFiscal() {
 		return documentFiscal;

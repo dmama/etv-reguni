@@ -2,6 +2,7 @@ package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,7 +13,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -81,9 +81,8 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
+	@JoinColumn(name = "ENTREPRISE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_BOUCLEMENT_ENTR_ID"))
 	@Index(name = "IDX_BOUCLEMENT_ENTR_ID", columnNames = "ENTREPRISE_ID")
-	@ForeignKey(name = "FK_BOUCLEMENT_ENTR_ID")
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}

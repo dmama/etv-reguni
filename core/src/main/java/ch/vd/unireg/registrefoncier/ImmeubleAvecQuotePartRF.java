@@ -3,12 +3,11 @@ package ch.vd.unireg.registrefoncier;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.hibernate.annotations.ForeignKey;
 
 @Entity
 public abstract class ImmeubleAvecQuotePartRF extends ImmeubleRF {
@@ -20,8 +19,7 @@ public abstract class ImmeubleAvecQuotePartRF extends ImmeubleRF {
 
 	// configuration hibernate : l'immeuble possède les quotes-parts
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_QUOTE_PART_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_QUOTE_PART_RF_IMMEUBLE_ID"))
 	public Set<QuotePartRF> getQuotesParts() {
 		return quotesParts;
 	}

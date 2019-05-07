@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,7 +13,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
@@ -91,9 +91,8 @@ public class EvenementRFMutation extends HibernateEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "IMPORT_ID", nullable = false)
+	@JoinColumn(name = "IMPORT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_EV_MUT_RF_IMPORT_ID"))
 	@Index(name = "IDX_EV_RF_IMP_ID")
-	@ForeignKey(name = "FK_EV_MUT_RF_IMPORT_ID")
 	public EvenementRFImport getParentImport() {
 		return parentImport;
 	}

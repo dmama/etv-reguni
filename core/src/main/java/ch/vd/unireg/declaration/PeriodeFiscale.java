@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,8 +75,7 @@ public class PeriodeFiscale extends HibernateEntity {
 
 	// configuration hibernate : la période fiscale possède les paramètres
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "PERIODE_ID", nullable = false)
-	@ForeignKey(name = "FK_PARAM_PF_ID")
+	@JoinColumn(name = "PERIODE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PARAM_PF_ID"))
 	public Set<ParametrePeriodeFiscale> getParametrePeriodeFiscale() {
 		return parametrePeriodeFiscale;
 	}
@@ -94,8 +93,7 @@ public class PeriodeFiscale extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "PERIODE_ID")
-	@ForeignKey(name = "FK_DOC_PF_ID")
+	@JoinColumn(name = "PERIODE_ID", foreignKey = @ForeignKey(name = "FK_DOC_PF_ID"))
 	public Set<ModeleDocument> getModelesDocument() {
 		return modelesDocument;
 	}

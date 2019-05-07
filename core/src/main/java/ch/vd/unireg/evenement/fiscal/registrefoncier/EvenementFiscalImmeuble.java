@@ -6,10 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,9 +51,8 @@ public class EvenementFiscalImmeuble extends EvenementFiscalRF {
 		this.type = type;
 	}
 
-	@JoinColumn(name = "IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_IMMEUBLE_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

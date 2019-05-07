@@ -5,6 +5,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -22,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,7 +70,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 */
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter une déclaration à un tiers sans automatiquement modifier celui-ci (perfs)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DOCFISC_TRS_ID"))
 	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
@@ -87,8 +87,8 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @return the delais
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
+	// msi : je ne comprends pas pourquoi la colonne est insertable/updatable = false
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false, foreignKey = @ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID"))
 	public Set<DelaiDocumentFiscal> getDelais() {
 		return delais;
 	}
@@ -122,8 +122,8 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @return les liberations
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@ForeignKey(name = "FK_LIB_DOCFISC_DOCFISC_ID")
+	// msi : je ne comprends pas pourquoi la colonne est insertable/updatable = false
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false, foreignKey = @ForeignKey(name = "FK_LIB_DOCFISC_DOCFISC_ID"))
 	public Set<LiberationDocumentFiscal> getLiberations() {
 		return liberations;
 	}
@@ -153,8 +153,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @return the etats
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", nullable = false)
-	@ForeignKey(name = "FK_ET_DOCFISC_DOCFISC_ID")
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ET_DOCFISC_DOCFISC_ID"))
 	public Set<EtatDocumentFiscal> getEtats() {
 		return etats;
 	}

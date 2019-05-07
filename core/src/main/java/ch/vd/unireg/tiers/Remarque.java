@@ -2,6 +2,7 @@ package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,7 +13,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,9 +59,8 @@ public class Remarque extends HibernateEntity implements LinkedEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REMARQUE_TRS_ID"))
 	@Index(name = "IDX_REMARQUE_TIERS_ID", columnNames = "TIERS_ID")
-	@ForeignKey(name = "FK_REMARQUE_TRS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

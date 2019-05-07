@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -43,7 +42,6 @@ public class AdresseAutreTiers extends AdresseTiers {
 	}
 
 	@Column(name = "AUTRE_TIERS_ID")
-	@ForeignKey(name = "FK_ADR_AT_TRS_ID")
 	@Index(name = "IDX_ADR_AT_TRS_ID", columnNames = "AUTRE_TIERS_ID")
 	public Long getAutreTiersId() {
 		return autreTiersId;

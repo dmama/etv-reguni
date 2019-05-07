@@ -5,6 +5,7 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,8 +76,7 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements L
 
 	// configuration hibernate : l'ayant-droit ne possède pas les principaux de communauté
 	@ManyToOne
-	@JoinColumn(name = "PRINCIPAL_ID", nullable = false)
-	@ForeignKey(name = "FK_PRINCIPAL_ID")
+	@JoinColumn(name = "PRINCIPAL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PRINCIPAL_ID"))
 	@Index(name = "IDX_PRINC_PRINCIPAL_ID", columnNames = "PRINCIPAL_ID")
 	public TiersRF getPrincipal() {
 		return principal;

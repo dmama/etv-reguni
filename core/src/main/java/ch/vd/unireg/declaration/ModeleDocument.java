@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.unireg.common.HibernateEntity;
@@ -69,8 +69,7 @@ public class ModeleDocument extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "MODELE_ID")
-	@ForeignKey(name = "FK_FLLE_MODOC_ID")
+	@JoinColumn(name = "MODELE_ID", foreignKey = @ForeignKey(name = "FK_FLLE_MODOC_ID"))
 	public Set<ModeleFeuilleDocument> getModelesFeuilleDocument() {
 		return modelesFeuilleDocument;
 	}

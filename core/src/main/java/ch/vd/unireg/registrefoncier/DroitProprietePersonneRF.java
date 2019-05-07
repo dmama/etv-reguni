@@ -1,12 +1,12 @@
 package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +24,7 @@ public abstract class DroitProprietePersonneRF extends DroitProprieteRF {
 
 	@Nullable
 	@ManyToOne
-	@JoinColumn(name = "COMMUNAUTE_ID")
-	@ForeignKey(name = "FK_DROIT_RF_COMMUNAUTE_ID")
+	@JoinColumn(name = "COMMUNAUTE_ID", foreignKey = @ForeignKey(name = "FK_DROIT_RF_COMMUNAUTE_ID"))
 	@Index(name = "IDX_DROIT_RF_COMM_ID")
 	public CommunauteRF getCommunaute() {
 		return communaute;

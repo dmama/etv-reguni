@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -23,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,9 +63,8 @@ public abstract class DroitProprieteRF extends DroitRF {
 
 	// configuration hibernate : l'ayant-droit ne possède pas les droits (les droits pointent vers les ayants-droits, c'est tout)
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "AYANT_DROIT_ID")
+	@JoinColumn(name = "AYANT_DROIT_ID", foreignKey = @ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID"))
 	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
-	@ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID")
 	public AyantDroitRF getAyantDroit() {
 		return ayantDroit;
 	}
@@ -76,8 +75,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 
 	// configuration hibernate : l'immeuble ne possède pas les droits (les droits pointent vers les immeubles, c'est tout)
 	@ManyToOne
-	@JoinColumn(name = "IMMEUBLE_ID")
-	@ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", foreignKey = @ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID"))
 	@Index(name = "IDX_DROIT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
@@ -113,8 +111,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 
 	// configuration hibernate : le droit possède les raison d'acquisition
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DROIT_ID", nullable = false)
-	@ForeignKey(name = "FK_RAISON_ACQ_RF_DROIT_ID")
+	@JoinColumn(name = "DROIT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RAISON_ACQ_RF_DROIT_ID"))
 	public Set<RaisonAcquisitionRF> getRaisonsAcquisition() {
 		return raisonsAcquisition;
 	}

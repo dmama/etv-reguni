@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -16,7 +17,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,7 +58,6 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@OneToMany(mappedBy = "contribuable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_MOV_DOS_CTB_ID")
 	public Set<MouvementDossier> getMouvementsDossier() {
 		return mouvementsDossier;
 	}
@@ -82,7 +81,6 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_DA_TRS_ID")
 	public Set<DroitAcces> getDroitsAccesAppliques() {
 		return droitsAccesAppliques;
 	}
@@ -441,8 +439,7 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
-	@ForeignKey(name = "FK_IDE_TIERS_ID")
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_IDE_TIERS_ID"))
 	public Set<IdentificationEntreprise> getIdentificationsEntreprise() {
 		return identificationsEntreprise;
 	}
@@ -466,8 +463,7 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "CTB_ID", nullable = false)
-	@ForeignKey(name = "FK_ADR_MAND_CTB_ID")
+	@JoinColumn(name = "CTB_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ADR_MAND_CTB_ID"))
 	public Set<AdresseMandataire> getAdressesMandataires() {
 		return adressesMandataires;
 	}
@@ -485,8 +481,7 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
-	@ForeignKey(name = "FK_DECISION_ACI_TRS_ID")
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DECISION_ACI_TRS_ID"))
 	public Set<DecisionAci> getDecisionsAci() {
 		return decisionsAci;
 	}

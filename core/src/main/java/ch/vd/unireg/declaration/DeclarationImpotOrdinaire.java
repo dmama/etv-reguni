@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Date;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
@@ -32,7 +31,6 @@ public abstract class DeclarationImpotOrdinaire extends DeclarationAvecCodeContr
 	private boolean libre;
 
 	@Column(name = "RETOUR_COLL_ADMIN_ID")
-	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
 	public Long getRetourCollectiviteAdministrativeId() {
 		return retourCollectiviteAdministrativeId;
 	}

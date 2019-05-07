@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
@@ -13,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,8 +76,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 * @return the periode
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
-	@JoinColumn(name = "PERIODE_ID")
-	@ForeignKey(name = "FK_DOCFISC_PF_ID")
+	@JoinColumn(name = "PERIODE_ID", foreignKey = @ForeignKey(name = "FK_DOCFISC_PF_ID"))
 	public PeriodeFiscale getPeriode() {
 		return periode;
 	}
@@ -127,8 +126,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 * @return the modeleDocument
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
-	@JoinColumn(name = "MODELE_DOC_ID")
-	@ForeignKey(name = "FK_DOCFISC_MODOC_ID")
+	@JoinColumn(name = "MODELE_DOC_ID", foreignKey = @ForeignKey(name = "FK_DOCFISC_MODOC_ID"))
 	public ModeleDocument getModeleDocument() {
 		return modeleDocument;
 	}

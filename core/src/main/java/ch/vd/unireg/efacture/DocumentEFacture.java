@@ -2,6 +2,7 @@ package ch.vd.unireg.efacture;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -9,8 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
@@ -49,8 +48,7 @@ public class DocumentEFacture extends HibernateEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "TIERS_ID", nullable = false)
-	@ForeignKey(name = "FK_DOC_EFACTURE_TIERS_ID")
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DOC_EFACTURE_TIERS_ID"))
 	public Tiers getTiers() {
 		return tiers;
 	}

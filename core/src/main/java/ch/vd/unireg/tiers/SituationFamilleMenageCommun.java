@@ -1,13 +1,9 @@
-/**
- *
- */
 package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -33,7 +29,6 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 
 	@Column(name = "TIERS_PRINCIPAL_ID")
 	@Index(name = "IDX_SIT_FAM_MC_CTB_ID", columnNames = "TIERS_PRINCIPAL_ID")
-	@ForeignKey(name = "FK_SIT_FAM_MC_CTB_ID")
 	public Long getContribuablePrincipalId() {
 		return contribuablePrincipalId;
 	}

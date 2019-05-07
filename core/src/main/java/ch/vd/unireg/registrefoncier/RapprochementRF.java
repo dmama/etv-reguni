@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -21,7 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -92,9 +92,8 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "RF_TIERS_ID", nullable = false)
+	@JoinColumn(name = "RF_TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RFAPP_RFTIERS_ID"))
 	@Index(name = "IDX_RFAPP_RFTIERS_ID")
-	@ForeignKey(name = "FK_RFAPP_RFTIERS_ID")
 	public TiersRF getTiersRF() {
 		return tiersRF;
 	}
@@ -104,9 +103,8 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "CTB_ID", nullable = false)
+	@JoinColumn(name = "CTB_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RAPPRF_CTB_ID"))
 	@Index(name = "IDX_RFAPP_CTB_ID")
-	@ForeignKey(name = "FK_RAPPRF_CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;
 	}

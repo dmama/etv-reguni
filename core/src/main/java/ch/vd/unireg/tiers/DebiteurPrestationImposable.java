@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -187,8 +187,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DEBITEUR_ID", nullable = false)
-	@ForeignKey(name = "FK_PERIODICITE_DB_ID")
+	@JoinColumn(name = "DEBITEUR_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PERIODICITE_DB_ID"))
 	public Set<Periodicite> getPeriodicites() {
 		return periodicites;
 	}

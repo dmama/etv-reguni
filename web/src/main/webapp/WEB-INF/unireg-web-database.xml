@@ -81,6 +81,7 @@
 		<entry key="hibernate.dialect" value="${oracle.hibernate.dialect}" />
 		<entry key="hibernate.query.substitutions" value="${oracle.hibernate.query.substitutions}" />
 		<entry key="hibernate.hbm2ddl.auto" value="${extprop.hibernate.hbm2ddl.mode}" />
+		<entry key="hibernate.hbm2ddl.import_files" value="schema_create_addons.sql" />
 		<entry key="hibernate.default_schema" value="${extprop.hibernate.schema}" />
 	</util:map>
 

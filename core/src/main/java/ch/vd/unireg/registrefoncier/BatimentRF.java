@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateEntity;
@@ -79,8 +79,7 @@ public class BatimentRF extends HibernateEntity {
 
 	// configuration hibernate : le bâtiment possède les descriptions du bâtiment
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "BATIMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_DESCR_BAT_RF_BATIMENT_ID")
+	@JoinColumn(name = "BATIMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DESCR_BAT_RF_BATIMENT_ID"))
 	public Set<DescriptionBatimentRF> getDescriptions() {
 		return descriptions;
 	}
@@ -99,8 +98,7 @@ public class BatimentRF extends HibernateEntity {
 
 	// configuration hibernate : le bâtiment possède les implantations
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "BATIMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_IMPLANTATION_RF_BATIMENT_ID")
+	@JoinColumn(name = "BATIMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_IMPLANTATION_RF_BATIMENT_ID"))
 	public Set<ImplantationRF> getImplantations() {
 		return implantations;
 	}

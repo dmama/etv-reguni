@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -74,7 +75,7 @@ public abstract class MouvementDossier extends HibernateEntity {
 
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter un mouvement de dossier à un contribuable sans automatiquement modifier celui-ci (perfs)
-	@JoinColumn(name = "CTB_ID")
+	@JoinColumn(name = "CTB_ID", foreignKey = @ForeignKey(name = "FK_MOV_DOS_CTB_ID"))
 	@Index(name = "IDX_MVT_DOSSIER_CTB_ID", columnNames = "CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;

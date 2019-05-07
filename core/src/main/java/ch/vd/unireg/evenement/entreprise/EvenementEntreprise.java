@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -185,8 +185,7 @@ public class EvenementEntreprise extends HibernateEntity {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "NO_ANNONCE_IDE")
-	@ForeignKey(name = "FK_EV_ORG_REFANNIDE_ID")
+	@JoinColumn(name = "NO_ANNONCE_IDE", foreignKey = @ForeignKey(name = "FK_EV_ORG_REFANNIDE_ID"))
 	public ReferenceAnnonceIDE getReferenceAnnonceIDE() {
 		return referenceAnnonceIDE;
 	}
@@ -237,8 +236,7 @@ public class EvenementEntreprise extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	@JoinColumn(name = "EVT_ORGANISATION_ID", nullable = false)
-	@ForeignKey(name = "FK_EV_ERR_EV_ORGA_ID")
+	@JoinColumn(name = "EVT_ORGANISATION_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_EV_ERR_EV_ORGA_ID"))
 	@OrderColumn(name = "LIST_INDEX", nullable = false)
 	public List<EvenementEntrepriseErreur> getErreurs() {
 		return erreurs;

@@ -13,7 +13,6 @@ import javax.persistence.Transient;
 import java.util.Comparator;
 import java.util.Objects;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -137,7 +136,6 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 	})
 	@JoinColumn(name = "DROIT_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_RAISON_ACQ_RF_DROIT_ID", columnNames = "DROIT_ID")
-	@ForeignKey(name = "FK_RAISON_ACQ_RF_IMMEUBLE_ID")
 	public DroitProprieteRF getDroit() {
 		return droit;
 	}

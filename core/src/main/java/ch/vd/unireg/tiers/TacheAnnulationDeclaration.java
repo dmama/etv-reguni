@@ -1,10 +1,9 @@
 package ch.vd.unireg.tiers;
 
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.Declaration;
@@ -26,8 +25,7 @@ public abstract class TacheAnnulationDeclaration<T extends Declaration> extends 
 	}
 
 	@ManyToOne(targetEntity = Declaration.class)
-	@JoinColumn(name = "DECLARATION_ID")
-	@ForeignKey(name = "FK_TACH_DECL_ID")
+	@JoinColumn(name = "DECLARATION_ID", foreignKey = @ForeignKey(name = "FK_TACH_DECL_ID"))
 	public T getDeclaration() {
 		return declaration;
 	}

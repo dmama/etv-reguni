@@ -5,6 +5,7 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,7 +17,6 @@ import javax.persistence.UniqueConstraint;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -98,8 +98,7 @@ public class ChargeServitudeRF extends HibernateDateRangeEntity implements Linke
 
 	// configuration hibernate : l'immeuble ne possède pas les liens
 	@ManyToOne
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_SERV_IMM_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SERV_IMM_RF_IMMEUBLE_ID"))
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

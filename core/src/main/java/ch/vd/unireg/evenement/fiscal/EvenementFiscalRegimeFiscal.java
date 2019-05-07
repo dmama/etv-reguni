@@ -5,10 +5,9 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.LengthConstants;
@@ -40,8 +39,7 @@ public class EvenementFiscalRegimeFiscal extends EvenementFiscalTiers {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "REGIME_FISCAL_ID")
-	@ForeignKey(name = "FK_EVTFISC_REGFISC_ID")
+	@JoinColumn(name = "REGIME_FISCAL_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_REGFISC_ID"))
 	public RegimeFiscal getRegimeFiscal() {
 		return regimeFiscal;
 	}

@@ -19,7 +19,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -122,7 +121,6 @@ public abstract class EtatDocumentFiscal<E extends EtatDocumentFiscal> extends H
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@ForeignKey(name = "FK_ET_DOCFISC_DOCFISC_ID")
 	@Index(name = "IDX_ET_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public DocumentFiscal getDocumentFiscal() {
 		return documentFiscal;

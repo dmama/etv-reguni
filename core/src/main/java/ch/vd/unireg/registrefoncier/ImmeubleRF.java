@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -20,7 +21,6 @@ import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -148,8 +148,7 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	// configuration hibernate : l'immeuble possède les situations
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_SIT_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SIT_RF_IMMEUBLE_ID"))
 	public Set<SituationRF> getSituations() {
 		return situations;
 	}
@@ -168,8 +167,7 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	// configuration hibernate : l'immeuble possède les surfaces totales
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_SURF_TOT_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SURF_TOT_RF_IMMEUBLE_ID"))
 	public Set<SurfaceTotaleRF> getSurfacesTotales() {
 		return surfacesTotales;
 	}
@@ -204,8 +202,7 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	// configuration hibernate : l'immeuble possède les estimations fiscales
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_ESTIM_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ESTIM_RF_IMMEUBLE_ID"))
 	public Set<EstimationRF> getEstimations() {
 		return estimations;
 	}

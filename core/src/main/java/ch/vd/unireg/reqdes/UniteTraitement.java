@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,8 +17,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Date;
 import java.util.Set;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
@@ -80,8 +79,7 @@ public class UniteTraitement extends HibernateEntity {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "UNITE_TRAITEMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_REQDES_UT_ERR_UT_ID")
+	@JoinColumn(name = "UNITE_TRAITEMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REQDES_UT_ERR_UT_ID"))
 	public Set<ErreurTraitement> getErreurs() {
 		return erreurs;
 	}
@@ -91,8 +89,7 @@ public class UniteTraitement extends HibernateEntity {
 	}
 
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "EVENEMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_REQDES_UT_EVT_ID")
+	@JoinColumn(name = "EVENEMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REQDES_UT_EVT_ID"))
 	public EvenementReqDes getEvenement() {
 		return evenement;
 	}

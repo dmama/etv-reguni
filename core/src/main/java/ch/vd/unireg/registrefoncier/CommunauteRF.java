@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,8 +82,7 @@ public class CommunauteRF extends AyantDroitRF {
 
 	// configuration hibernate : la communauté possède les regroupements
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "COMMUNAUTE_ID", nullable = false)
-	@ForeignKey(name = "FK_REGRCOMM_RF_COMMUNAUTE_ID")
+	@JoinColumn(name = "COMMUNAUTE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REGRCOMM_RF_COMMUNAUTE_ID"))
 	public Set<RegroupementCommunauteRF> getRegroupements() {
 		return regroupements;
 	}

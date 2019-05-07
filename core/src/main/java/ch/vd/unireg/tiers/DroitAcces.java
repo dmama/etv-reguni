@@ -2,6 +2,7 @@ package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -113,7 +114,7 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter un droit d'accès à un tiers sans automatiquement modifier celui-ci (perfs + audit)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DA_TRS_ID"))
 	@Index(name = "IDX_DA_TIERS_ID", columnNames = "TIERS_ID")
 	public Contribuable getTiers() {
 		return tiers;

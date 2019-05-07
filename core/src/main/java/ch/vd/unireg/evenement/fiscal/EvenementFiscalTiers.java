@@ -2,10 +2,9 @@ package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.tiers.Tiers;
@@ -26,9 +25,8 @@ public abstract class EvenementFiscalTiers extends EvenementFiscal {
 		this.tiers = tiers;
 	}
 
-	@JoinColumn(name = "TIERS_ID")
+	@JoinColumn(name = "TIERS_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_TIERS_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

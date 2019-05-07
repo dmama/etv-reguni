@@ -5,6 +5,7 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -133,8 +133,7 @@ public class SituationRF extends HibernateDateRangeEntity implements LinkedEntit
 
 	// configuration hibernate : la situation pointe vers une commune, mais ne la possède pas
 	@ManyToOne
-	@JoinColumn(name = "COMMUNE_ID", nullable = false)
-	@ForeignKey(name = "FK_SITUATION_RF_COMMUNE_ID")
+	@JoinColumn(name = "COMMUNE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SITUATION_RF_COMMUNE_ID"))
 	@Index(name = "IDX_SITUATION_RF_COMMUNE_ID", columnNames = "COMMUNE_ID")
 	public CommuneRF getCommune() {
 		return commune;

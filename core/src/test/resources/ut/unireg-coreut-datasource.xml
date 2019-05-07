@@ -85,6 +85,7 @@
 		<entry key="hibernate.jdbc.batch_size" value="0" />
 		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
 		<entry key="hibernate.hbm2ddl.auto" value="create" />
+		<entry key="hibernate.hbm2ddl.import_files" value="schema_create_addons.sql" />
 	</util:map>
 
 </beans>

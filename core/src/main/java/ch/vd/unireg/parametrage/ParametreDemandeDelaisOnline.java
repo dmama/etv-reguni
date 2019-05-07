@@ -7,13 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.AnnulableHelper;
@@ -52,8 +52,7 @@ public class ParametreDemandeDelaisOnline extends ParametrePeriodeFiscale {
 	 */
 	// configuration hibernate : le paramètre possède les périodes
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "PARAM_PF_DELAI_ID", nullable = false)
-	@ForeignKey(name = "FK_PARAM_PF_DELAI_PERIODE_ID")
+	@JoinColumn(name = "PARAM_PF_DELAI_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PARAM_PF_DELAI_PERIODE_ID"))
 	public Set<DelaisAccordablesOnline> getPeriodesDelais() {
 		return periodesDelais;
 	}

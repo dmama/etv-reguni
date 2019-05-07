@@ -3,6 +3,7 @@ package ch.vd.unireg.evenement.ide;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -11,7 +12,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.unireg.common.HibernateEntity;
@@ -65,9 +65,8 @@ public class ReferenceAnnonceIDE extends HibernateEntity {
 		this.id = id;
 	}
 
-	@JoinColumn(name = "ETABLISSEMENT_ID", nullable = false)
+	@JoinColumn(name = "ETABLISSEMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REFANNIDE_ETAB_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_REFANNIDE_ETAB_ID")
 	@Index(name = "IDX_EVTANNIDE_ETAB_ID")
 	public Etablissement getEtablissement() {
 		return etablissement;

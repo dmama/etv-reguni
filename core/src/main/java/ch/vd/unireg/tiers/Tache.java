@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -14,7 +15,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -119,8 +119,7 @@ public abstract class Tache extends HibernateEntity {
 
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter une tâche à un tiers sans automatiquement modifier celui-ci (perfs)
-	@JoinColumn(name = "CTB_ID")
-	@ForeignKey(name = "FK_TACH_CTB_ID")
+	@JoinColumn(name = "CTB_ID", foreignKey = @ForeignKey(name = "FK_TACH_CTB_ID"))
 	@Index(name = "IDX_TACHE_CTB_ID", columnNames = "CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;
@@ -132,8 +131,7 @@ public abstract class Tache extends HibernateEntity {
 
     @ManyToOne
 	// msi-bnm: pas de cascade, parce qu'on veut pouvoir ajouter une tâche à une collectivitée sans automatiquement modifier celle-ci (perfs)
-	@JoinColumn(name = "CA_ID")
-	@ForeignKey(name = "FK_TACH_CA_ID")
+	@JoinColumn(name = "CA_ID", foreignKey = @ForeignKey(name = "FK_TACH_CA_ID"))
 	public CollectiviteAdministrative getCollectiviteAdministrativeAssignee() {
 		return collectiviteAdministrativeAssignee;
 	}

@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -111,8 +111,7 @@ public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity 
 
 	// configuration hibernate : le modèle de communauté possède les principaux
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "MODEL_COMMUNAUTE_ID", nullable = false)
-	@ForeignKey(name = "FK_PRINC_MODCOMM_ID")
+	@JoinColumn(name = "MODEL_COMMUNAUTE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PRINC_MODCOMM_ID"))
 	public Set<PrincipalCommunauteRF> getPrincipaux() {
 		return principaux;
 	}

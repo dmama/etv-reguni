@@ -3,6 +3,7 @@ package ch.vd.unireg.tiers;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -15,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,8 +49,7 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 
 	// configuration hibernate : le contribuable possède les allègements fonciers
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "CTB_ID", nullable = false)
-	@ForeignKey(name = "FK_AFONC_CTB_ID")
+	@JoinColumn(name = "CTB_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_AFONC_CTB_ID"))
 	public Set<AllegementFoncier> getAllegementsFonciers() {
 		return allegementsFonciers;
 	}

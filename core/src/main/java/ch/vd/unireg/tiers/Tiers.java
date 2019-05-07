@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -25,7 +26,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -216,7 +216,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_COORDFIN_TIERS_ID"))
 	public Set<CoordonneesFinancieres> getCoordonneesFinancieres() {
 		return coordonneesFinancieres;
 	}
@@ -342,8 +342,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
-	@JoinColumn(name = "TIERS_OBJET_ID")
+	@JoinColumn(name = "TIERS_OBJET_ID", foreignKey = @ForeignKey(name = "FK_RET_TRS_OBJ_ID"))
 	public Set<RapportEntreTiers> getRapportsObjet() {
 		return rapportsObjet;
 	}
@@ -364,8 +363,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_RET_TRS_SUJ_ID")
-	@JoinColumn(name = "TIERS_SUJET_ID")
+	@JoinColumn(name = "TIERS_SUJET_ID", foreignKey = @ForeignKey(name = "FK_RET_TRS_SUJ_ID"))
 	public Set<RapportEntreTiers> getRapportsSujet() {
 		return rapportsSujet;
 	}
@@ -457,8 +455,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
-	@ForeignKey(name = "FK_ADR_TRS_ID")
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ADR_TRS_ID"))
 	public Set<AdresseTiers> getAdressesTiers() {
 		return adressesTiers;
 	}
@@ -468,7 +465,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_DOCFISC_TRS_ID")
 	public Set<DocumentFiscal> getDocumentsFiscaux() {
 		return documentsFiscaux;
 	}
@@ -539,8 +535,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
-	@ForeignKey(name = "FK_FF_TIERS_ID")
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_FF_TIERS_ID"))
 	public Set<ForFiscal> getForsFiscaux() {
 		return forsFiscaux;
 	}
@@ -796,7 +791,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * Les liens datés vers les étiquettes associées au tiers
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "TIERS_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ETIQTIERS_TIERS_ID"))
 	public Set<EtiquetteTiers> getEtiquettes() {
 		return etiquettes;
 	}

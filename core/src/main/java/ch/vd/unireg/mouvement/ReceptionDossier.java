@@ -5,11 +5,10 @@ package ch.vd.unireg.mouvement;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.type.Localisation;
@@ -23,8 +22,7 @@ public abstract class ReceptionDossier extends MouvementDossier {
 	private CollectiviteAdministrative collectiviteAdministrativeReceptrice;
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "COLL_ADMIN_RECEPTRICE_ID")
-	@ForeignKey(name = "FK_REC_DOS_CA_ID")
+	@JoinColumn(name = "COLL_ADMIN_RECEPTRICE_ID", foreignKey = @ForeignKey(name = "FK_REC_DOS_CA_ID"))
 	public CollectiviteAdministrative getCollectiviteAdministrativeReceptrice() {
 		return collectiviteAdministrativeReceptrice;
 	}

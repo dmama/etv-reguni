@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -16,7 +17,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,8 +84,7 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "IMMEUBLE_ID")
-	@ForeignKey(name = "FK_AFONC_RF_IMMEUBLE_ID")
+	@JoinColumn(name = "IMMEUBLE_ID", foreignKey = @ForeignKey(name = "FK_AFONC_RF_IMMEUBLE_ID"))
 	@Index(name = "IDX_AFONC_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;

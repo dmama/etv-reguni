@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,7 +13,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -91,9 +91,8 @@ public class Etiquette extends HibernateEntity {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "COLADM_ID", nullable = true)
+	@JoinColumn(name = "COLADM_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_ETIQ_CA_ID"))
 	@Index(name = "IDX_ETIQ_CA_ID", columnNames = "COLADM_ID")
-	@ForeignKey(name = "FK_ETIQ_CA_ID")
 	public CollectiviteAdministrative getCollectiviteAdministrative() {
 		return collectiviteAdministrative;
 	}

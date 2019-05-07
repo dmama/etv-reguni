@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -17,7 +18,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import java.util.Date;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,9 +64,8 @@ public abstract class EvenementExterne extends HibernateEntity {
 	/**
 	 * @return the tiers
 	 */
-	@JoinColumn(name = "TIERS_ID")
+	@JoinColumn(name = "TIERS_ID", foreignKey = @ForeignKey(name = "FK_EV_EXT_TRS_ID"))
 	@ManyToOne()
-	@ForeignKey(name = "FK_EV_EXT_TRS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}
