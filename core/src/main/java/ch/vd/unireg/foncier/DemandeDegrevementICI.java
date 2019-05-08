@@ -7,8 +7,6 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Index;
-
 import ch.vd.unireg.common.CodeControleHelper;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuivi;
@@ -48,7 +46,6 @@ public class DemandeDegrevementICI extends AutreDocumentFiscalAvecSuivi {
 	// configuration hibernate : l'immeuble ne possède pas les droits (les droits pointent vers les immeubles, c'est tout)
 	@ManyToOne
 	@JoinColumn(name = "DD_IMMEUBLE_ID", foreignKey = @ForeignKey(name = "FK_DD_RF_IMMEUBLE_ID"))
-	@Index(name = "IDX_DD_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

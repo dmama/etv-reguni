@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,7 +94,6 @@ public abstract class AutreDocumentFiscal extends DocumentFiscal {
 
 	@ManyToOne
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Entreprise getEntreprise() {
 		return (Entreprise) getTiers();
 	}

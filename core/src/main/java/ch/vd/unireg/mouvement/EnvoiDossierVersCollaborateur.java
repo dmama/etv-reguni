@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import org.hibernate.annotations.Index;
-
 @Entity
 @DiscriminatorValue(value = "EnvoiVersCollaborateur")
 public class EnvoiDossierVersCollaborateur extends EnvoiDossier {
@@ -23,7 +21,6 @@ public class EnvoiDossierVersCollaborateur extends EnvoiDossier {
 	}
 
 	@Column(name = "VISA_COLLABORATEUR", length = 25)
-	@Index(name = "IDX_VISA_COLLABORATEUR")
 	public String getVisaDestinataire() {
 		return visaDestinataire;
 	}

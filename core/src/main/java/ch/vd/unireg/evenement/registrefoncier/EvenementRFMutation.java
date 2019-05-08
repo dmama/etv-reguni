@@ -7,13 +7,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,12 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 
 @Entity
-@Table(name = "EVENEMENT_RF_MUTATION")
+@Table(name = "EVENEMENT_RF_MUTATION", indexes = {
+		@Index(name = "IDX_EV_RF_IMP_ID", columnList = "IMPORT_ID"),
+		@Index(name="IDX_EV_RF_MUT_ETAT", columnList = "ETAT"),
+		@Index(name="IDX_EV_RF_MUT_TYPE_ENTITE", columnList = "TYPE_ENTITE"),
+		@Index(name = "IDX_EV_RF_ID_RF", columnList = "ID_RF")
+})
 public class EvenementRFMutation extends HibernateEntity {
 
 	private Long id;
@@ -92,7 +97,6 @@ public class EvenementRFMutation extends HibernateEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "IMPORT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_EV_MUT_RF_IMPORT_ID"))
-	@Index(name = "IDX_EV_RF_IMP_ID")
 	public EvenementRFImport getParentImport() {
 		return parentImport;
 	}
@@ -103,7 +107,6 @@ public class EvenementRFMutation extends HibernateEntity {
 
 	@Column(name = "ETAT", length = LengthConstants.RF_ETAT_EVENEMENT)
 	@Enumerated(EnumType.STRING)
-	@Index(name="IDX_EV_RF_MUT_ETAT")
 	public EtatEvenementRF getEtat() {
 		return etat;
 	}
@@ -114,7 +117,6 @@ public class EvenementRFMutation extends HibernateEntity {
 
 	@Column(name = "TYPE_ENTITE", length = LengthConstants.RF_TYPE_ENTITE, nullable = false)
 	@Enumerated(EnumType.STRING)
-	@Index(name="IDX_EV_RF_MUT_TYPE_ENTITE")
 	public TypeEntiteRF getTypeEntite() {
 		return typeEntite;
 	}
@@ -146,7 +148,6 @@ public class EvenementRFMutation extends HibernateEntity {
 	 * </ul>
 	 * @return l'idRF de l'entité liée à la mutation.
 	 */
-	@Index(name = "IDX_EV_RF_ID_RF")
 	@Column(name = "ID_RF", length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;

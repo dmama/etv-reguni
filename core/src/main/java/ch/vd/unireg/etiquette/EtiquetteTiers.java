@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -14,7 +15,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -26,7 +26,10 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.tiers.Tiers;
 
 @Entity
-@Table(name = "ETIQUETTE_TIERS")
+@Table(name = "ETIQUETTE_TIERS", indexes = {
+		@Index(name = "IDX_ETIQTIERS_ETIQ_ID", columnList = "ETIQUETTE_ID"),
+		@Index(name = "IDX_ETIQTIERS_TIERS_ID", columnList = "TIERS_ID")
+})
 public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEntity, Duplicable<EtiquetteTiers> {
 
 	private Long id;
@@ -68,7 +71,6 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 
 	@ManyToOne
 	@JoinColumn(name = "ETIQUETTE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_ETIQTIERS_ETIQ_ID"))
-	@Index(name = "IDX_ETIQTIERS_ETIQ_ID", columnNames = "ETIQUETTE_ID")
 	public Etiquette getEtiquette() {
 		return etiquette;
 	}
@@ -81,7 +83,6 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_ETIQTIERS_TIERS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

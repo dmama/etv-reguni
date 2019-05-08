@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -21,7 +22,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,10 @@ import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 @Entity
-@Table(name = "DELAI_DOCUMENT_FISCAL")
+@Table(name = "DELAI_DOCUMENT_FISCAL", indexes = {
+		@Index(name = "IDX_DEL_DOCFISC_DOCFISC_ID", columnList = "DOCUMENT_FISCAL_ID"),
+		@Index(name = "IDX_DELAI_DEM_MAND_ID", columnList = "DEMANDE_MANDATAIRE_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 public abstract class DelaiDocumentFiscal extends HibernateEntity implements Comparable<DelaiDocumentFiscal>, LinkedEntity {
@@ -149,7 +152,6 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_DEL_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public DocumentFiscal getDocumentFiscal() {
 		return documentFiscal;
 	}
@@ -162,7 +164,6 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	@Nullable
 	@ManyToOne(fetch = FetchType.LAZY)  // fetch lazy pour ne pas pénaliser les performances de chargement des déclarations (WS, entre autres)
 	@JoinColumn(name = "DEMANDE_MANDATAIRE_ID", foreignKey = @ForeignKey(name = "FK_DELAI_DEM_MAND_ID"))
-	@Index(name = "IDX_DELAI_DEM_MAND_ID", columnNames = "DEMANDE_MANDATAIRE_ID")
 	public DemandeDelaisMandataire getDemandeMandataire() {
 		return demandeMandataire;
 	}

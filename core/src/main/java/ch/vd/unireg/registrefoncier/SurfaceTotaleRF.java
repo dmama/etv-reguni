@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -27,7 +27,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * La surface totale d'un immeuble inscrit au registre foncier.
  */
 @Entity
-@Table(name = "RF_SURFACE_TOTALE")
+@Table(name = "RF_SURFACE_TOTALE", indexes = @Index(name = "IDX_SURF_TOT_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
@@ -80,7 +80,6 @@ public class SurfaceTotaleRF extends HibernateDateRangeEntity implements LinkedE
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "IMMEUBLE_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_SURF_TOT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -13,7 +14,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.type.DayMonth;
 
 @Entity
-@Table(name = "BOUCLEMENT")
+@Table(name = "BOUCLEMENT", indexes = @Index(name = "IDX_BOUCLEMENT_ENTR_ID", columnList = "ENTREPRISE_ID"))
 public class Bouclement extends HibernateEntity implements LinkedEntity {
 
 	private Long id;
@@ -82,7 +82,6 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "ENTREPRISE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_BOUCLEMENT_ENTR_ID"))
-	@Index(name = "IDX_BOUCLEMENT_ENTR_ID", columnNames = "ENTREPRISE_ID")
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}

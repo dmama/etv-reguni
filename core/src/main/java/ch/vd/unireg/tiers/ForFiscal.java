@@ -9,6 +9,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +61,7 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  * </pre>
  */
 @Entity
-@Table(name = "FOR_FISCAL")
+@Table(name = "FOR_FISCAL", indexes = @Index(name = "IDX_FF_TIERS_ID", columnList = "TIERS_ID"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "FOR_TYPE", discriminatorType = DiscriminatorType.STRING)
 @AttributeOverrides({
@@ -154,7 +154,6 @@ public abstract class ForFiscal extends LocalisationDatee implements Comparable<
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_FF_TIERS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

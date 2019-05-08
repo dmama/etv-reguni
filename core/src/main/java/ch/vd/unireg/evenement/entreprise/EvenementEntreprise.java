@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -20,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,12 @@ import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 
 @Entity
-@Table(name = "EVENEMENT_ORGANISATION")
+@Table(name = "EVENEMENT_ORGANISATION", indexes = {
+		@Index(name = "IDX_EV_ORGA_NO_EV", columnList = "NO_EVENEMENT"),
+		@Index(name = "IDX_EV_ORGA_ETAT", columnList = "ETAT"),
+		@Index(name = "IDX_EV_ORGA_NO_ORGA", columnList = "NO_ORGANISATION"),
+		@Index(name = "IDX_EV_ORGA_FORME_JUR", columnList = "FORME_JURIDIQUE")
+})
 public class EvenementEntreprise extends HibernateEntity {
 
 	private long id;
@@ -125,7 +130,6 @@ public class EvenementEntreprise extends HibernateEntity {
 	 * @return le numéro d'événement RCEnt
 	 */
 	@Column(name = "NO_EVENEMENT", nullable = false)
-	@Index(name = "IDX_EV_ORGA_NO_EV")
 	public long getNoEvenement() {
 		return noEvenement;
 	}
@@ -146,7 +150,6 @@ public class EvenementEntreprise extends HibernateEntity {
 
 	@Column(name = "ETAT", length = LengthConstants.EVTORGANISATION_ETAT, nullable = false)
 	@Enumerated(EnumType.STRING)
-	@Index(name = "IDX_EV_ORGA_ETAT")
 	public EtatEvenementEntreprise getEtat() {
 		return etat;
 	}
@@ -175,7 +178,6 @@ public class EvenementEntreprise extends HibernateEntity {
 	}
 
 	@Column(name = "NO_ORGANISATION", nullable = false)
-	@Index(name = "IDX_EV_ORGA_NO_ORGA")
 	public long getNoEntrepriseCivile() {
 		return noEntrepriseCivile;
 	}
@@ -225,7 +227,6 @@ public class EvenementEntreprise extends HibernateEntity {
 	}
 
 	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.PM_FORME)
-	@Index(name = "IDX_EV_ORGA_FORME_JUR")
 	@Enumerated(EnumType.STRING)
 	public FormeJuridiqueEntreprise getFormeJuridique() {
 		return formeJuridique;

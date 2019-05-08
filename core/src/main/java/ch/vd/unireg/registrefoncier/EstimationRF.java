@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -16,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * Estimation fiscale d'un immeuble inscrit au registre foncier.
  */
 @Entity
-@Table(name = "RF_ESTIMATION")
+@Table(name = "RF_ESTIMATION", indexes = @Index(name = "IDX_ESTIM_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
@@ -198,7 +198,6 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "IMMEUBLE_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_ESTIM_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

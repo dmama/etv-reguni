@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -13,7 +14,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +28,7 @@ import ch.vd.unireg.type.CategorieIdentifiant;
  * Voir norme eCH-0044.
  */
 @Entity
-@Table(name = "IDENTIFICATION_PERSONNE")
+@Table(name = "IDENTIFICATION_PERSONNE", indexes = @Index(name = "IDX_ID_PERS_TIERS_ID", columnList = "NON_HABITANT_ID"))
 public class IdentificationPersonne extends HibernateEntity implements LinkedEntity {
 
 	private Long id;
@@ -56,7 +56,6 @@ public class IdentificationPersonne extends HibernateEntity implements LinkedEnt
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "NON_HABITANT_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_ID_PERS_TIERS_ID", columnNames = "NON_HABITANT_ID")
 	public PersonnePhysique getPersonnePhysique() {
 		return personnePhysique;
 	}

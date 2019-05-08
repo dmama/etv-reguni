@@ -5,8 +5,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
-
 import ch.vd.unireg.type.Localisation;
 
 @Entity
@@ -27,7 +25,6 @@ public class ReceptionDossierPersonnel extends ReceptionDossier {
 	}
 
 	@Column(name = "VISA_COLLABORATEUR", length = 25)
-	@Index(name = "IDX_VISA_COLLABORATEUR")
 	public String getVisaRecepteur() {
 		return visaRecepteur;
 	}

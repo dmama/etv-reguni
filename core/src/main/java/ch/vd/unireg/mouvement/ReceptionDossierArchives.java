@@ -7,8 +7,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
-
 import ch.vd.unireg.type.Localisation;
 
 @Entity
@@ -26,7 +24,6 @@ public class ReceptionDossierArchives extends ReceptionDossier implements Elemen
 	@Override
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "BORDEREAU_ID", insertable = false, updatable = false, nullable = true)
-	@Index(name = "IDX_MVT_DOSSIER_BORD_ID", columnNames = "BORDEREAU_ID")
 	public BordereauMouvementDossier getBordereau() {
 		return bordereau;
 	}

@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ import ch.vd.unireg.type.PeriodiciteDecompte;
 // ajouter une propriété PeriodicitéDecompte et supprimer toutes la hierarchie de classe
 
 @Entity
-@Table(name = "PERIODICITE")
+@Table(name = "PERIODICITE", indexes = @Index(name = "IDX_P_DEBITEUR_ID", columnList = "DEBITEUR_ID"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Periodicite extends HibernateEntity implements CollatableDateRange<Periodicite>, LinkedEntity, Duplicable<Periodicite> {
 
@@ -200,7 +200,6 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "DEBITEUR_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_P_DEBITEUR_ID", columnNames = "DEBITEUR_ID")
 	public DebiteurPrestationImposable getDebiteur() {
 		return debiteur;
 	}

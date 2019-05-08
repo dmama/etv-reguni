@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +29,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * La description d'un bâtiment (valide pendant une période donnée).
  */
 @Entity
-@Table(name = "RF_DESCRIPTION_BATIMENT")
+@Table(name = "RF_DESCRIPTION_BATIMENT", indexes = @Index(name = "IDX_DESCR_BAT_RF_BATIMENT_ID", columnList = "BATIMENT_ID"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT")),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
@@ -116,7 +116,6 @@ public class DescriptionBatimentRF extends HibernateDateRangeEntity implements L
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "BATIMENT_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_DESCR_BAT_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
 	public BatimentRF getBatiment() {
 		return batiment;
 	}

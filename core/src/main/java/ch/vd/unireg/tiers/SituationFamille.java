@@ -8,6 +8,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -18,7 +19,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,10 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.type.EtatCivil;
 
 @Entity
-@Table(name = "SITUATION_FAMILLE")
+@Table(name = "SITUATION_FAMILLE", indexes = {
+		@Index(name = "IDX_SIT_FAM_CTB_ID", columnList = "CTB_ID"),
+		@Index(name = "IDX_SIT_FAM_MC_CTB_ID", columnList = "TIERS_PRINCIPAL_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "SITUATION_FAMILLE_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("AbstractSituationFamille")
@@ -79,7 +82,6 @@ public abstract class SituationFamille extends HibernateDateRangeEntity implemen
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "CTB_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_SIT_FAM_CTB_ID", columnNames = "CTB_ID")
 	public ContribuableImpositionPersonnesPhysiques getContribuable() {
 		return contribuable;
 	}

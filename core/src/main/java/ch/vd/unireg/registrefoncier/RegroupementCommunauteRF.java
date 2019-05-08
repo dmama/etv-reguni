@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -16,7 +17,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateDateRangeEntity;
@@ -27,7 +27,10 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * Lien entre une communauté RF (issue de Capitastra) et une communauté de référence (données propres à Unireg)
  */
 @Entity
-@Table(name = "RF_REGROUPEMENT_COMMUNAUTE")
+@Table(name = "RF_REGROUPEMENT_COMMUNAUTE", indexes = {
+		@Index(name = "IDX_REGRCOMM_RF_COMMUNAUTE_ID", columnList = "COMMUNAUTE_ID"),
+		@Index(name = "IDX_REGRCOMM_RF_MODEL_ID", columnList = "MODEL_ID")
+})
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
@@ -71,7 +74,6 @@ public class RegroupementCommunauteRF extends HibernateDateRangeEntity implement
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "COMMUNAUTE_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_REGRCOMM_RF_COMMUNAUTE_ID", columnNames = "COMMUNAUTE_ID")
 	public CommunauteRF getCommunaute() {
 		return communaute;
 	}
@@ -83,7 +85,6 @@ public class RegroupementCommunauteRF extends HibernateDateRangeEntity implement
 	// configuration hibernate : le modèle ne possède pas les regroupements
 	@ManyToOne
 	@JoinColumn(name = "MODEL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REGRCOMM_RF_MODEL_ID"))
-	@Index(name = "IDX_REGRCOMM_RF_MODEL_ID", columnNames = "MODEL_ID")
 	public ModeleCommunauteRF getModele() {
 		return modele;
 	}

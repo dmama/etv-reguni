@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -60,7 +61,12 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
  * </ul>
  */
 @Entity
-@Table(name = "TIERS")
+@Table(name = "TIERS", indexes = {
+		@Index(name = "IDX_TIERS_NO_ENTREPRISE", columnList = "NUMERO_ENTREPRISE"),
+		@Index(name = "IDX_TIERS_NO_ETABLISSEMENT", columnList = "NUMERO_ETABLISSEMENT"),
+		@Index(name = "IDX_NUMERO_INDIVIDU", columnList = "NUMERO_INDIVIDU"),
+		@Index(name = "IDX_ANC_NO_SRC", columnList = "ANCIEN_NUMERO_SOURCIER")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
 @GenericGenerator(name = "tiersGenerator", strategy = "ch.vd.unireg.tiers.TiersMultiSequenceGenerator")

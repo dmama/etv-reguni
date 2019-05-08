@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
@@ -198,7 +197,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	 * Peut ne pas etre unique!
 	 */
 	@Column(name = "NUMERO_INDIVIDU")
-	@Index(name = "IDX_NUMERO_INDIVIDU")
 	public Long getNumeroIndividu() {
 		return numeroIndividu;
 	}
@@ -219,7 +217,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@Column(name = "ANCIEN_NUMERO_SOURCIER")
-	@Index(name = "IDX_ANC_NO_SRC", columnNames = "ANCIEN_NUMERO_SOURCIER")
 	public Long getAncienNumeroSourcier() {
 		return ancienNumeroSourcier;
 	}

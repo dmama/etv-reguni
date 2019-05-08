@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -16,7 +17,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -29,7 +29,11 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * Surface d'un immeuble inscrit au registre foncier.
  */
 @Entity
-@Table(name = "RF_SURFACE_AU_SOL")
+@Table(name = "RF_SURFACE_AU_SOL", indexes = {
+		@Index(name = "IDX_SURF_SOL_RF_TYPE", columnList = "TYPE"),
+		@Index(name = "IDX_SURF_SOL_RF_SURFACE", columnList = "SURFACE"),
+		@Index(name = "IDX_SURF_SOL_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID")
+})
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
@@ -73,7 +77,6 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity implements LinkedEn
 		this.id = id;
 	}
 
-	@Index(name = "IDX_SURF_SOL_RF_TYPE")
 	@Column(name = "TYPE", nullable = false, length = LengthConstants.RF_TYPE_SURFACE_AU_SOL)
 	public String getType() {
 		return type;
@@ -83,7 +86,6 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity implements LinkedEn
 		this.type = type;
 	}
 
-	@Index(name = "IDX_SURF_SOL_RF_SURFACE")
 	@Column(name = "SURFACE", nullable = false)
 	public int getSurface() {
 		return surface;
@@ -96,7 +98,6 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity implements LinkedEn
 	// configuration hibernate : l'immeuble ne possède pas les surfaces au sol
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SURF_SOL_RF_IMMEUBLE_ID"))
-	@Index(name = "IDX_SURF_SOL_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

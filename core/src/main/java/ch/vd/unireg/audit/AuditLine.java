@@ -6,18 +6,18 @@ package ch.vd.unireg.audit;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.LengthConstants;
 
 @Entity
-@Table(name = "AUDIT_LOG")
+@Table(name = "AUDIT_LOG", indexes = @Index(name = "IDX_AUDIT_LOG_DATE", columnList = "LOG_DATE"))
 public class AuditLine {
 
 	public static final int MESSAGE_MAX_LENGTH = LengthConstants.LOG_MESSAGE;
@@ -78,7 +78,6 @@ public class AuditLine {
 	}
 
 	@Column(name = "LOG_DATE")
-	@Index(name = "IDX_AUDIT_LOG_DATE")
 	public Date getDate() {
 		return date;
 	}

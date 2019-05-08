@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -15,7 +16,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
@@ -25,11 +25,13 @@ import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
 
 @Entity
-@Table(name = "TACHE")
-@org.hibernate.annotations.Table(appliesTo = "TACHE", indexes = {
-	@Index(name = "IDX_TACHE_ANNULATION_DATE", columnNames = {
-		"ANNULATION_DATE"
-	})
+@Table(name = "TACHE", indexes = {
+		@Index(name = "IDX_TACHE_ANNULATION_DATE", columnList = "ANNULATION_DATE"),
+		@Index(name = "IDX_TACHE_DATE_ECH", columnList = "DATE_ECHEANCE"),
+		@Index(name = "IDX_TACHE_ETAT", columnList = "ETAT"),
+		@Index(name = "IDX_TACHE_CTB_ID", columnList = "CTB_ID"),
+		@Index(name = "IDX_TACHE_TYPE_CTB", columnList = "DECL_TYPE_CTB"),
+		@Index(name = "IDX_TACHE_TYPE_DOC", columnList = "DECL_TYPE_DOC")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TACHE_TYPE", discriminatorType = DiscriminatorType.STRING, length = LengthConstants.TACHE_TYPE)
@@ -97,7 +99,6 @@ public abstract class Tache extends HibernateEntity {
 
 	@Column(name = "DATE_ECHEANCE")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
-	@Index(name = "IDX_TACHE_DATE_ECH")
 	public RegDate getDateEcheance() {
 		return dateEcheance;
 	}
@@ -108,7 +109,6 @@ public abstract class Tache extends HibernateEntity {
 
 	@Column(name = "ETAT", length = LengthConstants.TACHE_ETAT, nullable = false)
 	@Type(type = "ch.vd.unireg.hibernate.TypeEtatTacheUserType")
-	@Index(name = "IDX_TACHE_ETAT")
 	public TypeEtatTache getEtat() {
 		return etat;
 	}
@@ -120,7 +120,6 @@ public abstract class Tache extends HibernateEntity {
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter une tâche à un tiers sans automatiquement modifier celui-ci (perfs)
 	@JoinColumn(name = "CTB_ID", foreignKey = @ForeignKey(name = "FK_TACH_CTB_ID"))
-	@Index(name = "IDX_TACHE_CTB_ID", columnNames = "CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;
 	}

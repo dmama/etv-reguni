@@ -7,6 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * Modèle de communauté qui permet de regrouper les communautés RF constituées des mêmes membres.
  */
 @Entity
-@Table(name = "RF_MODELE_COMMUNAUTE")
+@Table(name = "RF_MODELE_COMMUNAUTE", indexes = @Index(name = "IDX_MODCOMM_HASHCODE", columnList = "MEMBRES_HASH_CODE"))
 public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity {
 
 	/**
@@ -80,7 +80,6 @@ public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity 
 	}
 
 	@Column(name = "MEMBRES_HASH_CODE")
-	@Index(name = "IDX_MODCOMM_HASHCODE", columnNames = "MEMBRES_HASH_CODE")
 	public int getMembresHashCode() {
 		return membresHashCode;
 	}

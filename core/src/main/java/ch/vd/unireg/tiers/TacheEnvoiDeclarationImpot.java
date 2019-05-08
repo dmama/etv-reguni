@@ -3,7 +3,6 @@ package ch.vd.unireg.tiers;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
@@ -73,7 +72,6 @@ public abstract class TacheEnvoiDeclarationImpot extends TacheEnvoiDocument impl
 
 	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
 	@Type(type = "ch.vd.unireg.hibernate.TypeContribuableUserType")
-	@Index(name = "IDX_TACHE_TYPE_CTB")
 	public TypeContribuable getTypeContribuable() {
 		return typeContribuable;
 	}

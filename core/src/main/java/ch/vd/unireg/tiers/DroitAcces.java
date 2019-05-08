@@ -5,13 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -44,7 +44,10 @@ import ch.vd.unireg.type.TypeDroitAcces;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @Entity
-@Table(name = "DROIT_ACCES")
+@Table(name = "DROIT_ACCES", indexes = {
+		@Index(name = "IDX_VISA_OPERATEUR", columnList = "VISA_OPERATEUR"),
+		@Index(name = "IDX_DA_TIERS_ID", columnList = "TIERS_ID")
+})
 public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<DroitAcces> {
 
 	private Long id;
@@ -83,7 +86,6 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	}
 
 	@Column(name = "VISA_OPERATEUR", length = 25)
-	@Index(name = "IDX_VISA_OPERATEUR")
 	public String getVisaOperateur() {
 		return visaOperateur;
 	}
@@ -115,7 +117,6 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter un droit d'accès à un tiers sans automatiquement modifier celui-ci (perfs + audit)
 	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DA_TRS_ID"))
-	@Index(name = "IDX_DA_TIERS_ID", columnNames = "TIERS_ID")
 	public Contribuable getTiers() {
 		return tiers;
 	}

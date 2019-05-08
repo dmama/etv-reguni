@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import org.hibernate.annotations.Index;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.type.TypeDocument;
@@ -36,7 +34,6 @@ public abstract class TacheEnvoiDocument extends Tache {
 
 	@Column(name = "DECL_TYPE_DOC", length = LengthConstants.MODELEDOC_TYPE)
 	@Enumerated(EnumType.STRING)
-	@Index(name = "IDX_TACHE_TYPE_DOC")
 	public TypeDocument getTypeDocument() {
 		return typeDocument;
 	}

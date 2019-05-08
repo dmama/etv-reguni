@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.AnnulableHelper;
@@ -64,7 +63,6 @@ public abstract class DroitProprieteRF extends DroitRF {
 	// configuration hibernate : l'ayant-droit ne possède pas les droits (les droits pointent vers les ayants-droits, c'est tout)
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "AYANT_DROIT_ID", foreignKey = @ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID"))
-	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
 	public AyantDroitRF getAyantDroit() {
 		return ayantDroit;
 	}
@@ -76,7 +74,6 @@ public abstract class DroitProprieteRF extends DroitRF {
 	// configuration hibernate : l'immeuble ne possède pas les droits (les droits pointent vers les immeubles, c'est tout)
 	@ManyToOne
 	@JoinColumn(name = "IMMEUBLE_ID", foreignKey = @ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID"))
-	@Index(name = "IDX_DROIT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}

@@ -7,13 +7,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.type.TypeTiersEtiquette;
 
 @Entity
-@Table(name = "ETIQUETTE")
+@Table(name = "ETIQUETTE", indexes = @Index(name = "IDX_ETIQ_CA_ID", columnList = "COLADM_ID"))
 @TypeDef(name = "ActionAutoEtiquette", typeClass = ActionAutoEtiquetteUserType.class)
 public class Etiquette extends HibernateEntity {
 
@@ -92,7 +92,6 @@ public class Etiquette extends HibernateEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "COLADM_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_ETIQ_CA_ID"))
-	@Index(name = "IDX_ETIQ_CA_ID", columnNames = "COLADM_ID")
 	public CollectiviteAdministrative getCollectiviteAdministrative() {
 		return collectiviteAdministrative;
 	}

@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -14,7 +15,6 @@ import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,10 @@ import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 @Entity
-@Table(name = "EVENEMENT_CIVIL_ECH")
+@Table(name = "EVENEMENT_CIVIL_ECH", indexes = {
+		@Index(name = "IDX_EV_CIV_ECH_ETAT", columnList = "ETAT"),
+		@Index(name = "IDX_EV_CIV_ECH_NO_IND", columnList = "NO_INDIVIDU")
+})
 public class EvenementCivilEch extends HibernateEntity implements EvenementCivilEchFacade {
 
 	private Long id;
@@ -108,7 +111,6 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 
 	@Column(name = "ETAT", length = LengthConstants.EVTCIVILECH_ETAT, nullable = false)
 	@Type(type = "ch.vd.unireg.hibernate.EtatEvenementCivilUserType")
-	@Index(name = "IDX_EV_CIV_ECH_ETAT")
 	public EtatEvenementCivil getEtat() {
 		return etat;
 	}
@@ -137,7 +139,6 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	@Column(name = "NO_INDIVIDU")
-	@Index(name = "IDX_EV_CIV_ECH_NO_IND")
 	public Long getNumeroIndividu() {
 		return numeroIndividu;
 	}

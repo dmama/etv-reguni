@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -18,7 +19,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
@@ -30,10 +30,14 @@ import ch.vd.unireg.tiers.Contribuable;
  * Classe de base des mouvements de dossiers
  */
 @Entity
-@Table(name = "MOUVEMENT_DOSSIER")
+@Table(name = "MOUVEMENT_DOSSIER", indexes = {
+		@Index(name = "IDX_MOUVEMENT_DOSSIER_ETAT_CTB", columnList = "ETAT, CTB_ID"),
+		@Index(name = "IDX_VISA_COLLABORATEUR", columnList = "VISA_COLLABORATEUR"),
+		@Index(name = "IDX_MVT_DOSSIER_CTB_ID", columnList = "CTB_ID"),
+		@Index(name = "IDX_MVT_DOSSIER_BORD_ID", columnList = "BORDEREAU_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "MVT_TYPE", discriminatorType = DiscriminatorType.STRING)
-@org.hibernate.annotations.Table(appliesTo = "MOUVEMENT_DOSSIER", indexes = { @Index(name = "IDX_MOUVEMENT_DOSSIER_ETAT_CTB", columnNames = {"ETAT", "CTB_ID"})})
 public abstract class MouvementDossier extends HibernateEntity {
 
 	/**
@@ -76,7 +80,7 @@ public abstract class MouvementDossier extends HibernateEntity {
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter un mouvement de dossier à un contribuable sans automatiquement modifier celui-ci (perfs)
 	@JoinColumn(name = "CTB_ID", foreignKey = @ForeignKey(name = "FK_MOV_DOS_CTB_ID"))
-	@Index(name = "IDX_MVT_DOSSIER_CTB_ID", columnNames = "CTB_ID")
+
 	public Contribuable getContribuable() {
 		return contribuable;
 	}

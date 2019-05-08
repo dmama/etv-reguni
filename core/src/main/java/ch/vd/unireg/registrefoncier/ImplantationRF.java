@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -17,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,10 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * L'implantation d'un bâtiment sur une parcelle (immeuble)
  */
 @Entity
-@Table(name = "RF_IMPLANTATION")
+@Table(name = "RF_IMPLANTATION", indexes = {
+		@Index(name = "IDX_IMPLANT_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID"),
+		@Index(name = "IDX_IMPLANT_RF_BATIMENT_ID", columnList = "BATIMENT_ID")
+})
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
@@ -103,7 +106,6 @@ public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEn
 	// configuration hibernate : l'immeuble ne possède pas les implantations
 	@ManyToOne
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_IMPLANTATION_RF_IMMEUBLE_ID"))
-	@Index(name = "IDX_IMPLANT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}
@@ -117,7 +119,6 @@ public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEn
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "BATIMENT_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_IMPLANT_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
 	public BatimentRF getBatiment() {
 		return batiment;
 	}

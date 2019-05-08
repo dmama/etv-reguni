@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -13,7 +14,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateEntity;
@@ -25,7 +25,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * [UNIREG-1059] Une remarque associée à un tiers. Un tiers peut posséder 0 ou n remarques.
  */
 @Entity
-@Table(name = "REMARQUE")
+@Table(name = "REMARQUE", indexes = @Index(name = "IDX_REMARQUE_TIERS_ID", columnList = "TIERS_ID"))
 public class Remarque extends HibernateEntity implements LinkedEntity {
 
 	private Long id;
@@ -60,7 +60,6 @@ public class Remarque extends HibernateEntity implements LinkedEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REMARQUE_TRS_ID"))
-	@Index(name = "IDX_REMARQUE_TIERS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

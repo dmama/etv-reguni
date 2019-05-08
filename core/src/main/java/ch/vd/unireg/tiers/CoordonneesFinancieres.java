@@ -8,6 +8,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -16,7 +17,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 @Entity
-@Table(name = "COORDONNEE_FINANCIERE")
+@Table(name = "COORDONNEE_FINANCIERE", indexes = @Index(name = "IDX_COORDFIN_TIERS_ID", columnList = "TIERS_ID"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT")),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
@@ -105,7 +105,6 @@ public class CoordonneesFinancieres extends HibernateDateRangeEntity implements 
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_COORDFIN_TIERS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

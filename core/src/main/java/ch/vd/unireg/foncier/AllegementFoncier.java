@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -17,7 +18,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateDateRangeEntity;
@@ -28,7 +28,10 @@ import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
-@Table(name = "ALLEGEMENT_FONCIER")
+@Table(name = "ALLEGEMENT_FONCIER", indexes = {
+		@Index(name = "IDX_AFONC_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID"),
+		@Index(name = "IDX_AFONC_CTB_ID", columnList = "CTB_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE_ALLEGEMENT", length = LengthConstants.AFONC_TYPE, discriminatorType = DiscriminatorType.STRING)
 public abstract class AllegementFoncier extends HibernateDateRangeEntity implements LinkedEntity {
@@ -85,7 +88,6 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 
 	@ManyToOne
 	@JoinColumn(name = "IMMEUBLE_ID", foreignKey = @ForeignKey(name = "FK_AFONC_RF_IMMEUBLE_ID"))
-	@Index(name = "IDX_AFONC_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}
@@ -96,7 +98,6 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 
 	@ManyToOne
 	@JoinColumn(name = "CTB_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_AFONC_CTB_ID", columnNames = "CTB_ID")
 	public ContribuableImpositionPersonnesMorales getContribuable() {
 		return contribuable;
 	}

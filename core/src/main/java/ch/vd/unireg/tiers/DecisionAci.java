@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -15,7 +16,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -28,7 +28,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
-@Table(name = "DECISION_ACI")
+@Table(name = "DECISION_ACI", indexes = @Index(name = "IDX_DECISION_ACI_TIERS_ID", columnList = "TIERS_ID"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN")),
@@ -77,7 +77,6 @@ public class DecisionAci extends LocalisationDatee implements LinkedEntity, Dupl
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_DECISION_ACI_TIERS_ID", columnNames = "TIERS_ID")
 	public Contribuable getContribuable() {
 		return contribuable;
 	}

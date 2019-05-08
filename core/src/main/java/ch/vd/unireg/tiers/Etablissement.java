@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -43,7 +42,6 @@ public class Etablissement extends Contribuable {
 	private Set<DomicileEtablissement> domiciles;
 
 	@Column(name = "NUMERO_ETABLISSEMENT")
-	@Index(name = "IDX_TIERS_NO_ETABLISSEMENT")
 	public Long getNumeroEtablissement() {
 		return numeroEtablissement;
 	}

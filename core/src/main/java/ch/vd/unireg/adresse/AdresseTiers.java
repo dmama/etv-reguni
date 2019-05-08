@@ -7,6 +7,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -17,7 +18,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +32,10 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.TypeAdresseTiers;
 
 @Entity
-@Table(name = "ADRESSE_TIERS")
+@Table(name = "ADRESSE_TIERS", indexes = {
+		@Index(name = "IDX_ADR_TRS_ID", columnList = "TIERS_ID"),
+		@Index(name = "IDX_ADR_AT_TRS_ID", columnList = "AUTRE_TIERS_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class AdresseTiers extends HibernateDateRangeEntity implements Comparable<AdresseTiers>, Duplicable<AdresseTiers>, LinkedEntity {
@@ -85,7 +88,6 @@ public abstract class AdresseTiers extends HibernateDateRangeEntity implements C
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_ADR_TRS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

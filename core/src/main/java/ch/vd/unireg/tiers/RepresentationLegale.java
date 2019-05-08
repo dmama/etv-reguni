@@ -6,7 +6,6 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -35,7 +34,6 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 	}
 
 	@Column(name = "TIERS_TUTEUR_ID")
-	@Index(name = "IDX_RET_TRS_TUT_ID", columnNames = "TIERS_TUTEUR_ID")
 	public Long getAutoriteTutelaireId() {
 		return autoriteTutelaireId;
 	}

@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -16,7 +17,6 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateDateRangeEntity;
@@ -24,7 +24,10 @@ import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 @Entity
-@Table(name = "RF_PRINCIPAL_COMMUNAUTE")
+@Table(name = "RF_PRINCIPAL_COMMUNAUTE", indexes = {
+		@Index(name = "IDX_PRINC_MODCOMM_ID", columnList = "MODEL_COMMUNAUTE_ID"),
+		@Index(name = "IDX_PRINC_PRINCIPAL_ID", columnList = "PRINCIPAL_ID")
+})
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
@@ -65,7 +68,6 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements L
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "MODEL_COMMUNAUTE_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_PRINC_MODCOMM_ID", columnNames = "MODEL_COMMUNAUTE_ID")
 	public ModeleCommunauteRF getModeleCommunaute() {
 		return modeleCommunaute;
 	}
@@ -77,7 +79,6 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements L
 	// configuration hibernate : l'ayant-droit ne possède pas les principaux de communauté
 	@ManyToOne
 	@JoinColumn(name = "PRINCIPAL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PRINCIPAL_ID"))
-	@Index(name = "IDX_PRINC_PRINCIPAL_ID", columnNames = "PRINCIPAL_ID")
 	public TiersRF getPrincipal() {
 		return principal;
 	}

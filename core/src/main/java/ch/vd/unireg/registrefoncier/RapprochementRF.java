@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -22,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -37,7 +37,10 @@ import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.type.TypeRapprochementRF;
 
 @Entity
-@Table(name = "RAPPROCHEMENT_RF")
+@Table(name = "RAPPROCHEMENT_RF", indexes = {
+		@Index(name = "IDX_RFAPP_RFTIERS_ID", columnList = "RF_TIERS_ID"),
+		@Index(name = "IDX_RFAPP_CTB_ID", columnList = "CTB_ID")
+})
 @AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true))
 public class RapprochementRF extends HibernateDateRangeEntity implements Duplicable<RapprochementRF>, Rerangeable<RapprochementRF>, LinkedEntity {
 
@@ -93,7 +96,6 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "RF_TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RFAPP_RFTIERS_ID"))
-	@Index(name = "IDX_RFAPP_RFTIERS_ID")
 	public TiersRF getTiersRF() {
 		return tiersRF;
 	}
@@ -104,7 +106,6 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "CTB_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RAPPRF_CTB_ID"))
-	@Index(name = "IDX_RFAPP_CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;
 	}

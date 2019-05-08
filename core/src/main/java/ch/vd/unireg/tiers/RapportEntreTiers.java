@@ -8,6 +8,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.SequenceGenerator;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -30,7 +30,11 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 @Entity
-@Table(name = "RAPPORT_ENTRE_TIERS")
+@Table(name = "RAPPORT_ENTRE_TIERS", indexes = {
+		@Index(name = "IDX_RET_TRS_SUJ_ID", columnList = "TIERS_SUJET_ID"),
+		@Index(name = "IDX_RET_TRS_OBJ_ID", columnList = "TIERS_OBJET_ID"),
+		@Index(name = "IDX_RET_TRS_TUT_ID", columnList = "TIERS_TUTEUR_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
 @AttributeOverrides({
@@ -94,7 +98,6 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 	}
 
 	@Column(name = "TIERS_SUJET_ID", nullable = false)
-	@Index(name = "IDX_RET_TRS_SUJ_ID", columnNames = "TIERS_SUJET_ID")
 	public Long getSujetId() {
 		return sujetId;
 	}
@@ -108,7 +111,6 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 	}
 
 	@Column(name = "TIERS_OBJET_ID", nullable = false)
-	@Index(name = "IDX_RET_TRS_OBJ_ID", columnNames = "TIERS_OBJET_ID")
 	public Long getObjetId() {
 		return objetId;
 	}

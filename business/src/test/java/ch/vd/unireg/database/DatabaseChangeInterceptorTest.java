@@ -69,7 +69,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * [UNIREG-2581] Test qui s'assure que toutes les modifications faites sur les tiers provoquent bien l'envoi de notifications de changement.
  */
-@SuppressWarnings({"JavaDoc", "Duplicates"})
 public class DatabaseChangeInterceptorTest extends BusinessTest {
 
 	private MockDataEventService eventService;

@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -13,7 +14,6 @@ import javax.persistence.Transient;
 import java.util.Comparator;
 import java.util.Objects;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,7 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 
 @Entity
-@Table(name = "RF_RAISON_ACQUISITION")
+@Table(name = "RF_RAISON_ACQUISITION", indexes = @Index(name = "IDX_RAISON_ACQ_RF_DROIT_ID", columnList = "DROIT_ID"))
 public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<RaisonAcquisitionRF> {
 
 	private static final Comparator<RegDate> REG_DATE_COMPARATOR = Comparator.nullsFirst(RegDate::compareTo);
@@ -135,7 +135,6 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "DROIT_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_RAISON_ACQ_RF_DROIT_ID", columnNames = "DROIT_ID")
 	public DroitProprieteRF getDroit() {
 		return droit;
 	}

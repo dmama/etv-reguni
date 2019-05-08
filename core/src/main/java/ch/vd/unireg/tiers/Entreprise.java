@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +72,6 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private boolean ideDesactive;
 
 	@Column(name = "NUMERO_ENTREPRISE")
-	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
 	public Long getNumeroEntreprise() {
 		return numeroEntreprise;
 	}

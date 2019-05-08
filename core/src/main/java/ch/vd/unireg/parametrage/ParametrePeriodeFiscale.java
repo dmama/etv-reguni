@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -14,14 +15,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
-
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 
 @Entity
-@Table(name = "PARAMETRE_PERIODE_FISCALE")
+@Table(name = "PARAMETRE_PERIODE_FISCALE", indexes = @Index(name = "IDX_PARAM_PF_PERIODE_ID", columnList = "PERIODE_ID"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "PPF_TYPE", length = LengthConstants.PARAMETRE_PF_TYPE, discriminatorType = DiscriminatorType.STRING)
 public abstract class ParametrePeriodeFiscale extends HibernateEntity {
@@ -61,7 +60,6 @@ public abstract class ParametrePeriodeFiscale extends HibernateEntity {
 	// configuration hibernate : la période fiscale possède les paramètres
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "PERIODE_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_PARAM_PF_PERIODE_ID", columnNames = "PERIODE_ID")
 	public PeriodeFiscale getPeriodefiscale() {
 		return periodefiscale;
 	}

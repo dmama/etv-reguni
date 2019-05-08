@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -23,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -36,7 +36,10 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 @Entity
-@Table(name = "DOCUMENT_FISCAL")
+@Table(name = "DOCUMENT_FISCAL", indexes = {
+		@Index(name = "IDX_DOCFISC_TRS_ID", columnList = "TIERS_ID"),
+		@Index(name = "IDX_DD_RF_IMMEUBLE_ID", columnList = "DD_IMMEUBLE_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class DocumentFiscal extends HibernateEntity implements LinkedEntity {
@@ -71,7 +74,6 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter une déclaration à un tiers sans automatiquement modifier celui-ci (perfs)
 	@JoinColumn(name = "TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DOCFISC_TRS_ID"))
-	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}

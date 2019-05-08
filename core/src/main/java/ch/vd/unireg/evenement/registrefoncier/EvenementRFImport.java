@@ -6,11 +6,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +22,10 @@ import ch.vd.unireg.common.LengthConstants;
  * Un événement d'import d'une extraction hebdomadaire du registre foncier.
  */
 @Entity
-@Table(name = "EVENEMENT_RF_IMPORT")
+@Table(name = "EVENEMENT_RF_IMPORT", indexes = {
+		@Index(name="IDX_EV_RF_IMP_TYPE", columnList = "TYPE"),
+		@Index(name="IDX_EV_RF_IMP_ETAT", columnList = "ETAT")
+})
 public class EvenementRFImport extends HibernateEntity {
 
 	private Long id;
@@ -84,7 +87,6 @@ public class EvenementRFImport extends HibernateEntity {
 
 	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_IMPORT, nullable = false)
 	@Enumerated(EnumType.STRING)
-	@Index(name="IDX_EV_RF_IMP_TYPE")
 	public TypeImportRF getType() {
 		return type;
 	}
@@ -95,7 +97,6 @@ public class EvenementRFImport extends HibernateEntity {
 
 	@Column(name = "ETAT", length = LengthConstants.RF_ETAT_EVENEMENT, nullable = false)
 	@Enumerated(EnumType.STRING)
-	@Index(name="IDX_EV_RF_IMP_ETAT")
 	public EtatEvenementRF getEtat() {
 		return etat;
 	}

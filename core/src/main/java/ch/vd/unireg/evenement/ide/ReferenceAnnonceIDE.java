@@ -6,13 +6,12 @@ import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Index;
 
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
@@ -22,7 +21,10 @@ import ch.vd.unireg.tiers.Etablissement;
  * @author Raphaël Marmier, 2016-08-15, <raphael.marmier@vd.ch>
  */
 @Entity
-@Table(name = "REFERENCE_ANNONCE_IDE")
+@Table(name = "REFERENCE_ANNONCE_IDE", indexes = {
+		@Index(name = "IDX_EVTANNIDE_ETAB_ID", columnList = "ETABLISSEMENT_ID"),
+		@Index(name = "IDX_EVTANNIDE_BUSINESS_ID", columnList = "MSG_BUSINESS_ID")
+})
 public class ReferenceAnnonceIDE extends HibernateEntity {
 
 	/**
@@ -67,7 +69,6 @@ public class ReferenceAnnonceIDE extends HibernateEntity {
 
 	@JoinColumn(name = "ETABLISSEMENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_REFANNIDE_ETAB_ID"))
 	@ManyToOne(fetch = FetchType.EAGER)
-	@Index(name = "IDX_EVTANNIDE_ETAB_ID")
 	public Etablissement getEtablissement() {
 		return etablissement;
 	}
@@ -77,7 +78,6 @@ public class ReferenceAnnonceIDE extends HibernateEntity {
 	}
 
 	@Column(name = "MSG_BUSINESS_ID", length = LengthConstants.REFANNONCEIDE_BUSINESS_ID)
-	@Index(name = "IDX_EVTANNIDE_BUSINESS_ID")
 	public String getMsgBusinessId() {
 		return msgBusinessId;
 	}

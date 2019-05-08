@@ -8,6 +8,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.SequenceGenerator;
@@ -31,6 +32,10 @@ import ch.vd.unireg.common.linkedentity.LinkedEntity;
 @Entity
 @Table(name = "RF_DROIT", uniqueConstraints = {
 		@UniqueConstraint(name = "IDX_DROIT_MASTER_VERSION_ID_RF", columnNames = {"MASTER_ID_RF", "VERSION_ID_RF"}),
+}, indexes = {
+		@Index(name = "IDX_DROIT_RF_COMM_ID", columnList = "COMMUNAUTE_ID"),
+		@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnList = "AYANT_DROIT_ID"),
+		@Index(name = "IDX_DROIT_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
