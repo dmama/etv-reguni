@@ -166,6 +166,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * The SQL required to remove the underlying database objects.
 	 */
 	@Override
+	@Deprecated
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
 
 		final List<String> sqlDropStrings = new ArrayList<>();
@@ -182,6 +183,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * The SQL required to create the underlying database objects.
 	 */
 	@Override
+	@Deprecated
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {
 
 		List<String> sqlCreateStrings = new ArrayList<>();

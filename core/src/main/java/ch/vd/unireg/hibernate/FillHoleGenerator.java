@@ -154,7 +154,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		return seqName;
 	}
 
-	private void dropAndCreateSequence(Connection connection) throws SQLException {
+	void dropAndCreateSequence(Connection connection) throws SQLException {
 		for (String sql : sqlDrop) {
 			executeSql(connection, sql);
 		}
@@ -171,11 +171,13 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 	}
 
 	@Override
+	@Deprecated
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {
 		return dialect.getCreateSequenceStrings(seqName, minId, 1);
 	}
 
 	@Override
+	@Deprecated
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
 		return dialect.getDropSequenceStrings(seqName);
 	}

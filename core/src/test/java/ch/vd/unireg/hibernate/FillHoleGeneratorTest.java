@@ -1,7 +1,6 @@
 package ch.vd.unireg.hibernate;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.Properties;
 
 import org.hibernate.SessionFactory;
@@ -34,22 +33,8 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	private void resetSequence() throws Exception {
-
-		final String[] drops = generator.sqlDropStrings(dialect);
-		final String[] creates = generator.sqlCreateStrings(dialect);
-
 		try (Connection con = dataSource.getConnection()) {
-			for (String d : drops) {
-				try (PreparedStatement st = con.prepareStatement(d)) {
-					st.execute();
-				}
-			}
-
-			for (String c : creates) {
-				try (PreparedStatement st = con.prepareStatement(c)) {
-					st.execute();
-				}
-			}
+			generator.dropAndCreateSequence(con);
 		}
 	}
 
@@ -129,7 +114,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	/**
 	 * Ajoute les ids spécifié dans la table TIERs
 	 */
-	private void addIds(final Long... ids) throws Exception {
+	private void addIds(final Long... ids) {
 		doInNewTransaction(status -> {
 			for (Long id : ids) {
 				final PersonnePhysique pp = new PersonnePhysique(false);
@@ -153,7 +138,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	/**
 	 * Ajoute les ids spécifié dans la table MIGREG_ERROR
 	 */
-	private void addErrorIds(final Long... ids) throws Exception {
+	private void addErrorIds(final Long... ids) {
 		doInNewTransaction(status -> {
 			for (Long id : ids) {
 				MigrationError e = new MigrationError();
@@ -165,7 +150,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		});
 	}
 
-	private Long nextId() throws Exception {
+	private Long nextId() {
 		return doInNewTransaction(status -> {
 			final SessionImpl session = (SessionImpl) sessionFactory.getCurrentSession();
 			return (Long) generator.generate(session, new PersonnePhysique());
