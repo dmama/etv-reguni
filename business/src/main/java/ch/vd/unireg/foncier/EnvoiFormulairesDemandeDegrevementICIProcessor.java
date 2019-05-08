@@ -398,33 +398,35 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	List<EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable> findCouples(RegDate dateTraitement) {
 
 		// les droits de propriété pointent vers un immeuble
-		final String hqlProps = "SELECT DISTINCT RAPP.contribuable.id, DT.id, DT.immeuble.id"
+		final String hqlProps = "SELECT DISTINCT CTB.id, DT.id, DT.immeuble.id"
 				+ " FROM RapprochementRF AS RAPP"
 				+ " JOIN RAPP.tiersRF.droitsPropriete AS DT"
-				+ " WHERE RAPP.contribuable.class = 'Entreprise'"
+				+ " JOIN RAPP.contribuable AS CTB"
+				+ " WHERE type(CTB) = Entreprise"
 				+ " AND (RAPP.dateDebut IS NULL OR RAPP.dateDebut <= :dateTraitement)"
 				+ " AND (RAPP.dateFin IS NULL OR RAPP.dateFin >= :dateTraitement)"
 				+ " AND RAPP.annulationDate IS NULL"
 				+ " AND DT.annulationDate IS NULL"
 				+ " AND DT.dateDebutMetier <= :debutAnnee"
 				+ " AND (DT.dateFin IS NULL OR DT.dateFin >= :debutAnnee)"
-				+ " ORDER BY DT.immeuble.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
+				+ " ORDER BY DT.immeuble.id, CTB.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
 
 		// les servitudes pointent vers plusieurs immeubles
-		final String hqlServ = "SELECT DISTINCT RAPP.contribuable.id, SERV.id, IMM.id"
+		final String hqlServ = "SELECT DISTINCT CTB.id, SERV.id, IMM.id"
 				+ " FROM RapprochementRF AS RAPP"
 				+ " JOIN RAPP.tiersRF.beneficesServitudes AS BENE"
+				+ " JOIN RAPP.contribuable AS CTB"
 				+ " JOIN BENE.servitude AS SERV"
 				+ " JOIN SERV.charges AS CHARG"
 				+ " JOIN CHARG.immeuble AS IMM"
-				+ " WHERE RAPP.contribuable.class = 'Entreprise'"
+				+ " WHERE type(CTB) = Entreprise"
 				+ " AND (RAPP.dateDebut IS NULL OR RAPP.dateDebut <= :dateTraitement)"
 				+ " AND (RAPP.dateFin IS NULL OR RAPP.dateFin >= :dateTraitement)"
 				+ " AND RAPP.annulationDate IS NULL"
 				+ " AND SERV.annulationDate IS NULL"
 				+ " AND SERV.dateDebutMetier <= :debutAnnee"
 				+ " AND (SERV.dateFinMetier IS NULL OR SERV.dateFinMetier >= :debutAnnee)"
-				+ " ORDER BY IMM.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
+				+ " ORDER BY IMM.id, CTB.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
 
 		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapProps = executeFindInfoDroitsHql(dateTraitement, hqlProps);
 		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapServ = executeFindInfoDroitsHql(dateTraitement, hqlServ);

@@ -191,7 +191,13 @@ public class RecalculTachesProcessor {
 
 		final String hql;
 		if (existingTasksCleanup) {
-			hql = String.format("select distinct t.contribuable.id from Tache as t where etat = '%s' and t.annulationDate is null and t.contribuable.class in %s order by t.contribuable.id",
+			hql = String.format("select distinct ctb.id " +
+					                    "from Tache as t " +
+					                    "join t.contribuable as ctb " +
+					                    "where etat = '%s' " +
+					                    "and t.annulationDate is null " +
+					                    "and type(ctb) in %s " +
+					                    "order by ctb.id",
 			                    TypeEtatTache.EN_INSTANCE.name(),
 			                    ctbClassPart);
 		}
@@ -200,7 +206,13 @@ public class RecalculTachesProcessor {
 					? "(ForFiscalPrincipalPP, ForFiscalSecondaire)"
 					: "(ForFiscalPrincipalPM, ForFiscalSecondaire)";
 
-			hql = String.format("select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in %s and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ctb.class in %s order by ctb.id",
+			hql = String.format("select distinct ctb.id " +
+					                    "from Contribuable as ctb inner " +
+					                    "join ctb.forsFiscaux as for " +
+					                    "where type(for) in %s " +
+					                    "and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' " +
+					                    "and type(ctb) in %s " +
+					                    "order by ctb.id",
 		                        forClassPart,
 		                        ctbClassPart);
 		}

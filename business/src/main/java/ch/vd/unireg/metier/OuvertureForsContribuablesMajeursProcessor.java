@@ -533,7 +533,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			+ "        WHERE                                                       "
 			+ "            rap.annulationDate IS null                              "
 			+ "            AND rap.sujetId = hab.id                                "
-			+ "            AND rap.class = AppartenanceMenage                      "
+			+ "            AND type(rap) = AppartenanceMenage                      "
 			+ "            AND rap.dateDebut <= :date                              "
 			+ "            AND (rap.dateFin IS null OR rap.dateFin >= :date)       "
 			+ "        )                                                           "

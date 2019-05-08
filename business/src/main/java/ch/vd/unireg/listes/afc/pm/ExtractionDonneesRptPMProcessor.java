@@ -104,7 +104,7 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
 		b.append(" AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
-		b.append(" AND for.class IN (ForFiscalPrincipalPM, ForFiscalSecondaire)");
+		b.append(" AND type(for) IN (ForFiscalPrincipalPM, ForFiscalSecondaire)");
 		b.append(" AND (for.genreImpot = 'BENEFICE_CAPITAL')");
 		b.append(" AND for.dateDebut <= :finPeriode");
 		b.append(" AND (for.dateFin IS NULL OR for.dateFin >= :debutPeriode)");

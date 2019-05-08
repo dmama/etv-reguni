@@ -108,7 +108,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	}
 
 	private static String buildWhereClassFragment(Set<TypeRapportEntreTiers> types, String alias) {
-		final StringBuilder b = new StringBuilder(String.format("and %s.class in (", alias));
+		final StringBuilder b = new StringBuilder(String.format("and type(%s) in (", alias));
 		boolean first = true;
 		for (TypeRapportEntreTiers type : types) {
 			if (!first) {

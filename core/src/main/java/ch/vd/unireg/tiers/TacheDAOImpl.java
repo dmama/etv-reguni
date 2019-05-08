@@ -326,7 +326,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<TypeTache, List<String>> getCommentairesDistincts() {
-		final String hql = "select distinct t.class, t.commentaire from Tache t where t.commentaire is not null";
+		final String hql = "select distinct type(t), t.commentaire from Tache t where t.commentaire is not null";
 		final Query query = getCurrentSession().createQuery(hql);
 
 		//noinspection unchecked

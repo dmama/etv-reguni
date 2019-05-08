@@ -108,7 +108,7 @@ public class ListeEchangeRenseignementsProcessor extends ListesProcessor<ListeEc
 		b.append("SELECT DISTINCT ctb.id FROM Contribuable AS ctb");
 		b.append(" INNER JOIN ctb.forsFiscaux AS fors");
 		b.append(" WHERE ctb.annulationDate IS NULL");
-		b.append(String.format(" AND ctb.class IN (%s)", inPart));
+		b.append(String.format(" AND type(ctb) IN (%s)", inPart));
 		b.append(" AND fors.annulationDate IS NULL");
 		b.append(" AND type(fors) IN (ForFiscalPrincipalPP,ForFiscalPrincipalPM)");  // SIFISC-29785
 		b.append(" AND fors.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");

@@ -139,7 +139,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
 		b.append(" AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
-		b.append(" AND for.class IN (ForFiscalPrincipalPP, ForFiscalSecondaire)");
+		b.append(" AND type(for) IN (ForFiscalPrincipalPP, ForFiscalSecondaire)");
 		b.append(" AND (for.modeImposition IS NULL OR for.modeImposition != 'SOURCE')");
 		b.append(" AND for.motifRattachement != 'DIPLOMATE_ETRANGER'");
 		b.append(" AND for.dateDebut <= :finPeriode");
@@ -172,7 +172,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 		b.append("SELECT DISTINCT ctb.id FROM ContribuableImpositionPersonnesPhysiques AS ctb");
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
-		b.append(" AND for.class = ForFiscalPrincipalPP");
+		b.append(" AND type(for) = ForFiscalPrincipalPP");
 		b.append(" AND for.modeImposition = 'SOURCE'");
 		b.append(" AND for.dateDebut <= :finPeriode");
 		b.append(" AND (for.dateFin IS NULL OR for.dateFin >= :debutPeriode)");

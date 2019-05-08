@@ -88,7 +88,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final Session session = getCurrentSession();
 		final Map<Class, List<Tiers>> map = new HashMap<>();
 		for (Class clazz : TIERS_CLASSES) {
-			final Query query = session.createQuery("from Tiers t where t.class = " + clazz.getSimpleName());
+			final Query query = session.createQuery("from Tiers t where type(t) = " + clazz.getSimpleName());
 			query.setMaxResults(count);
 			final List<Tiers> tiers = query.list();
 			if (tiers != null && !tiers.isEmpty()) {

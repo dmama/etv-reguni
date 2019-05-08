@@ -191,7 +191,7 @@ public class ValidationJob extends JobDefinition {
 					.map(TypeTiers::getConcreteTiersClass)
 					.map(Class::getSimpleName)
 					.collect(Collectors.toList()));
-			return hibernateTemplate.find("select t.numero from Tiers t where t.class in (:classes) order by t.numero asc", params, null);
+			return hibernateTemplate.find("select t.numero from Tiers t where type(t) in (:classes) order by t.numero asc", params, null);
 		});
 
 		statusManager.setMessage(String.format("%d tiers trouvés", ids.size()));

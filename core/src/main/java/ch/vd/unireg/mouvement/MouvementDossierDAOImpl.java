@@ -162,7 +162,7 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 
 	private static void buildWhereClausePartieCollectiviteAdministrativeDestinataire(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (criteria.getIdCollAdministrativeDestinataire() != null) {
-			b.append(" AND mvt.class = ").append(EnvoiDossierVersCollectiviteAdministrative.class.getSimpleName());
+			b.append(" AND type(mvt) = ").append(EnvoiDossierVersCollectiviteAdministrative.class.getSimpleName());
 			b.append(" AND mvt.collectiviteAdministrativeDestinataire.id = :colAdmDest");
 			params.put("colAdmDest", criteria.getIdCollAdministrativeDestinataire());
 		}
@@ -170,7 +170,7 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 
 	private static void buildWhereClausePartieIndividuDestinataire(MouvementDossierCriteria criteria, StringBuilder b, Map<String, Object> params) {
 		if (StringUtils.isNotBlank(criteria.getVisaDestinataire())) {
-			b.append(" AND mvt.class = ").append(EnvoiDossierVersCollaborateur.class.getSimpleName());
+			b.append(" AND type(mvt) = ").append(EnvoiDossierVersCollaborateur.class.getSimpleName());
 			b.append(" AND mvt.visaDestinataire = :visaDestinataire");
 			params.put("visaDestinataire", criteria.getVisaDestinataire().toLowerCase());
 		}
@@ -196,7 +196,7 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 					throw new RuntimeException("Type de localisation non-supportée : " + criteria.getLocalisation());
 			}
 
-			b.append(" AND mvt.class = ").append(clazz.getSimpleName());
+			b.append(" AND type(mvt) = ").append(clazz.getSimpleName());
 			if (StringUtils.isNotBlank(criteria.getVisaRecepteur())) {
 				b.append(" AND mvt.visaRecepteur = :visaRecepteur");
 				params.put("visaRecepteur", criteria.getVisaRecepteur().toLowerCase());
