@@ -41,7 +41,9 @@ public class ConnectionPoolLoggerExecutionListener extends AbstractTestExecution
 		if (connectionManager != null) {
 			final int usedCount = connectionManager.getConnectionCount() - connectionManager.getIdleConnectionCount();
 			final int totalCount = connectionManager.getPartitionMaxSize();
-			LOGGER.warn(prefix + " connection pool(" + connectionManager.hashCode() + ") = " + usedCount + "/" + totalCount);
+			if (usedCount > 0) {
+				LOGGER.warn(prefix + " connection pool(" + connectionManager.hashCode() + ") = " + usedCount + "/" + totalCount);
+			}
 		}
 	}
 }
