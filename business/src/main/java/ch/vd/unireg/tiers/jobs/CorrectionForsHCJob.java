@@ -94,12 +94,12 @@ public class CorrectionForsHCJob extends JobDefinition {
 	private List<Long> retrieveIdFors() {
 		
 		final String queryStr= "select ffp.id from ForFiscalPrincipalPP as ffp"
+			+ " join ffp.tiers tiers"
 			+ " where ffp.typeAutoriteFiscale!='COMMUNE_OU_FRACTION_VD'"
 			+ " and ffp.dateFin is null and ffp.annulationDate is null"
-			+ " and ffp.tiers.class=MenageCommun";
+			+ " and type(tiers)=MenageCommun";
 		
 		return hibernateTemplate.find(queryStr, null);
-
 	}
 
 	@SuppressWarnings("unchecked")

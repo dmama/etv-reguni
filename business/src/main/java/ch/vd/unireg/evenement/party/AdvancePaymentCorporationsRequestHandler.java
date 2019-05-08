@@ -413,7 +413,14 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 
 	private List<Long> fetchPmIds() {
 		return hibernateTemplate.executeWithNewSession(session -> {
-			final String hql = "select distinct ff.tiers.id from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.tiers.class='Entreprise' order by ff.tiers.id";
+			final String hql = "select distinct tiers.id " +
+					"from ForFiscal as ff " +
+					"join ff.tiers tiers " +
+					"where ff.annulationDate is null " +
+					"and ff.typeAutoriteFiscale=:taf " +
+					"and ff.genreImpot=:gi " +
+					"and type(tiers)=Entreprise " +
+					"order by tiers.id";
 			final Query query = session.createQuery(hql);
 			query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);

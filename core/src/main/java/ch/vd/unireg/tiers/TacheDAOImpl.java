@@ -164,7 +164,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 			clause = "from " + typeTache.name() + " tache where 1=1 ";
 		}
 		if (criterion.isInvertTypeTache()) {
-			clause += " and tache.class != " + typeTache.name() + ' ';
+			clause += " and type(tache) != " + typeTache.name() + ' ';
 		}
 
 		// Contribuable
@@ -441,7 +441,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 			"select " +
 					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +
 					"from Tache tache " +
-					"where tache.class != TacheNouveauDossier and tache.etat = 'EN_INSTANCE' and tache.dateEcheance <= :dateEcheance and tache.annulationDate is null " +
+					"where type(tache) != TacheNouveauDossier and tache.etat = 'EN_INSTANCE' and tache.dateEcheance <= :dateEcheance and tache.annulationDate is null " +
 					"group by tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative";
 
 	static final String queryDossiers =

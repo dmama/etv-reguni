@@ -149,7 +149,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final FlushMode mode = session.getFlushMode();
 		session.setFlushMode(FlushMode.MANUAL);
 		try {
-			final String hql = "select r.objetId, r.sujetId from RapportEntreTiers r where r.class != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))";
+			final String hql = "select r.objetId, r.sujetId from RapportEntreTiers r where type(r) != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))";
 			list = queryObjectsByIds(hql, input, session);
 		}
 		finally {
@@ -208,7 +208,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final StringBuilder hqlSujets = new StringBuilder();
 		hqlSujets.append("select r.sujetId from RapportEntreTiers r where r.annulationDate is null");
 		if (excludeContactsImpotSource) {
-			hqlSujets.append(" and r.class != ContactImpotSource");
+			hqlSujets.append(" and type(r) != ContactImpotSource");
 		}
 		hqlSujets.append(" and r.objetId in (:ids)");
 		return hqlSujets.toString();
@@ -218,7 +218,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final StringBuilder hqlSujets = new StringBuilder();
 		hqlSujets.append("select r.objetId from RapportEntreTiers r where r.annulationDate is null");
 		if (excludeContactsImpotSource) {
-			hqlSujets.append(" and r.class != ContactImpotSource");
+			hqlSujets.append(" and type(r) != ContactImpotSource");
 		}
 		hqlSujets.append(" and r.sujetId in (:ids)");
 		return hqlSujets.toString();
@@ -640,7 +640,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		// conditions sur les types
 		if (types != null && !types.isEmpty()) {
-			whereClause.append(" and tiers.class in (");
+			whereClause.append(" and type(tiers) in (");
 			boolean first = true;
 			for (TypeTiers t : types) {
 				if (!first) {

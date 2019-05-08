@@ -55,16 +55,23 @@ public class RoleHelper {
 			final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 			final RegDate finAnnee = RegDate.get(annee, 12, 31);
 			final StringBuilder b = new StringBuilder();
-			b.append("SELECT DISTINCT ff.tiers.numero FROM ForFiscalRevenuFortune ff WHERE ff.tiers.class IN (:classes) AND ff.annulationDate IS NULL AND ff.dateDebut <= :fin AND (ff.dateFin IS NULL OR ff.dateFin >= :debut) AND ff.typeAutoriteFiscale = :tafVD");
+			b.append("SELECT DISTINCT tiers.numero ")
+					.append("FROM ForFiscalRevenuFortune ff ")
+					.append("JOIN ff.tiers tiers ")
+					.append("WHERE type(tiers) IN (:classes) ")
+					.append("AND ff.annulationDate IS NULL ")
+					.append("AND ff.dateDebut <= :fin ")
+					.append("AND (ff.dateFin IS NULL OR ff.dateFin >= :debut) ")
+					.append("AND ff.typeAutoriteFiscale = :tafVD");
 			if (ofsCommunes != null && !ofsCommunes.isEmpty()) {
 				b.append(" AND ff.numeroOfsAutoriteFiscale IN (:communes)");
 			}
-			b.append(" ORDER BY ff.tiers.numero");
+			b.append(" ORDER BY tiers.numero");
 			final String hql = b.toString();
 
 			return hibernateTemplate.execute(session -> {
 				final Query query = session.createQuery(hql);
-				query.setParameterList("classes", population.getClasses().stream().map(Class::getSimpleName).collect(Collectors.toList()));
+				query.setParameterList("classes", population.getClasses());
 				query.setParameter("tafVD", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 				query.setParameter("debut", debutAnnee);
 				query.setParameter("fin", finAnnee);

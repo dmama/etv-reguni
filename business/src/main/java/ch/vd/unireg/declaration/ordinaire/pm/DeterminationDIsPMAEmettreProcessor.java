@@ -659,8 +659,14 @@ public class DeterminationDIsPMAEmettreProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(status -> hibernateTemplate.execute(session -> {
-			final String hql =
-					"select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ff.genreImpot = 'BENEFICE_CAPITAL' order by ff.tiers.id";
+			final String hql = "select distinct tiers.id " +
+					"from ForFiscalRevenuFortune as ff " +
+					"join ff.tiers tiers " +
+					"where type(tiers) = Entreprise " +
+					"and ff.annulationDate is null " +
+					"and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' " +
+					"and ff.genreImpot = 'BENEFICE_CAPITAL' " +
+					"order by tiers.id";
 			final Query query = session.createQuery(hql);
 			//noinspection unchecked
 			return (List<Long>) query.list();

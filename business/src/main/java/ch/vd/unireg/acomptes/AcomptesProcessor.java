@@ -94,7 +94,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 									+ "    cont.annulationDate IS null                                               	"
 									+ "    AND fors.annulationDate IS null                                           	"
 									+ "    AND fors.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'                   	"
-									+ "    AND (fors.class = ForFiscalPrincipalPP OR fors.class = ForFiscalSecondaire) 	"
+									+ "    AND (type(fors) = ForFiscalPrincipalPP OR type(fors) = ForFiscalSecondaire) 	"
 									+ "    AND (fors.modeImposition IS null OR fors.modeImposition IN ('ORDINAIRE', 'INDIGENT', 'DEPENSE', 'MIXTE_137_1')) "
 									+ "    AND fors.motifRattachement != 'DIPLOMATE_ETRANGER'							"
 									+ "    AND (fors.dateDebut IS null OR fors.dateDebut <= :finAnnee)               	"
@@ -102,7 +102,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 									+ "        (                                                                     	"
 									+ "            (fors.dateFin IS null OR fors.dateFin >= :debutAnnee)               	" // = for actif n'importe quand dans l'année
 									+ "        OR                                                                    	"
-									+ "            (fors.class = ForFiscalSecondaire                                 	"
+									+ "            (type(fors) = ForFiscalSecondaire                                 	"
 									+ "             AND (fors.motifRattachement = 'IMMEUBLE_PRIVE'                    	"
 									+ "					OR fors.motifRattachement = 'ACTIVITE_INDEPENDANTE')			"
 									+ "             AND (fors.dateFin IS null OR fors.dateFin >= :debutAnnee))       	" // = for actif n'importe quand dans l'année

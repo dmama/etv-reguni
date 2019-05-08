@@ -110,7 +110,7 @@ public class ListeEchangeRenseignementsProcessor extends ListesProcessor<ListeEc
 		b.append(" WHERE ctb.annulationDate IS NULL");
 		b.append(String.format(" AND ctb.class IN (%s)", inPart));
 		b.append(" AND fors.annulationDate IS NULL");
-		b.append(" AND fors.class IN (ForFiscalPrincipalPP,ForFiscalPrincipalPM)");  // SIFISC-29785
+		b.append(" AND type(fors) IN (ForFiscalPrincipalPP,ForFiscalPrincipalPM)");  // SIFISC-29785
 		b.append(" AND fors.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
 		b.append(" AND fors.dateDebut <= :finAnnee");
 		b.append(" AND (fors.dateFin IS NULL OR fors.dateFin >= :debutAnnee)");

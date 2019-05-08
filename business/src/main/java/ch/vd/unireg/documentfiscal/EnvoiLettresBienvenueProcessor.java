@@ -188,8 +188,15 @@ public class EnvoiLettresBienvenueProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
-			final String hql =
-					"select distinct ff.tiers.numero from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.dateDebut>=:seuil and ff.tiers.class='Entreprise' order by ff.tiers.numero";
+			final String hql = "select distinct tiers.numero " +
+					"from ForFiscal as ff " +
+					"join ff.tiers tiers " +
+					"where ff.annulationDate is null " +
+					"and ff.typeAutoriteFiscale=:taf " +
+					"and ff.genreImpot=:gi " +
+					"and ff.dateDebut>=:seuil " +
+					"and type(tiers)= Entreprise " +
+					"order by tiers.numero";
 			final Query query = session.createQuery(hql);
 			query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 			query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);

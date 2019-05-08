@@ -119,7 +119,7 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 	    final TypeEtatDocumentFiscal etat = criterion.getEtat();
 	    if (etat != null) {
 			if (etat != TypeEtatDocumentFiscal.EMIS) {
-				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ");
+				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and type(etat) = ");
 
 				final Class<? extends EtatDeclaration> classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
 				builder.append(classeOfEtatDeclaration.getName());
@@ -144,7 +144,7 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 						throw new IllegalArgumentException("Valeur de l'état non-supportée : " + etat);
 				}
 
-				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class in (");
+				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and type(etat) in (");
 				boolean first = true;
 				for (Class<? extends EtatDeclaration> classeEtatInterdit : classesEtatDeclarationsInterdits) {
 					if (!first) {

@@ -156,10 +156,10 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
 			final String queryString;
 			if (StringUtils.isBlank(sb.toString())) {
-				queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s)  ORDER BY tiers.id ASC", inPopulationCriteria);
+				queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE type(tiers) IN (%s)  ORDER BY tiers.id ASC", inPopulationCriteria);
 			}
 			else {
-				queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE tiers.class IN (%s) AND (%s) ORDER BY tiers.id ASC", inPopulationCriteria, sb.toString());
+				queryString = String.format("SELECT tiers.id FROM Tiers AS tiers WHERE type(tiers) IN (%s) AND (%s) ORDER BY tiers.id ASC", inPopulationCriteria, sb.toString());
 			}
 
 			final Query query = session.createQuery(queryString);

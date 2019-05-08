@@ -181,7 +181,7 @@ public class ListeNoteProcessor {
 						+ "WHERE                                                                         "
 						+ "        cont.annulationDate IS null                                           "
 						+ "    AND fors.annulationDate IS null                                           "
-						+ "    AND fors.class = ForFiscalSecondaire                                      "
+						+ "    AND type(fors) = ForFiscalSecondaire                                      "
 						+ "    AND fors.motifFermeture IN ('VENTE_IMMOBILIER', 'FIN_EXPLOITATION')       "
 						+ "    AND fors.dateFin IS NOT null                                              "
 						+ "    AND fors.dateFin BETWEEN :debutAnnee AND :finAnnee                        "

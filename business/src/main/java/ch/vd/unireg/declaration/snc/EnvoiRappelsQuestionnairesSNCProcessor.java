@@ -163,9 +163,9 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 				if (periodeFiscale != null) {
 					b.append(" AND qsnc.periode.annee = :pf");
 				}
-				b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
+				b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND type(etat) = EtatDeclarationEmise)");
 				b.append(
-						" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
+						" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND type(etat) IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
 				b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE qsnc.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
 				b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
 				b.append(" ORDER BY qsnc.tiers.id ASC, qsnc.dateDebut ASC");

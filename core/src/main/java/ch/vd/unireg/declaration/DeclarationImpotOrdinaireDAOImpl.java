@@ -133,14 +133,15 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 
 	@Override
 	public List<Long> findIdsDeclarationsOrdinairesEmisesFrom(int periodeDebut) {
-		final Query query = getCurrentSession().createQuery("select etat.documentFiscal.id " +
+		final Query query = getCurrentSession().createQuery("select di.id " +
 				                                                    "from EtatDeclarationEmise etat " +
+				                                                    "join etat.documentFiscal di " +
 				                                                    "where etat.annulationDate is null " +
-				                                                    "and etat.documentFiscal.annulationDate is null " +
-				                                                    "and etat.documentFiscal.class in ('DI', 'DIPM') " +
-				                                                    "and etat.documentFiscal.periode.annee >= :periode " +
-				                                                    "and etat.documentFiscal.tiers.annulationDate is null " +
-				                                                    "order by etat.documentFiscal.tiers.id, etat.documentFiscal.id");
+				                                                    "and di.annulationDate is null " +
+				                                                    "and type(di) in (DeclarationImpotOrdinairePP, DeclarationImpotOrdinairePM) " +
+				                                                    "and di.periode.annee >= :periode " +
+				                                                    "and di.tiers.annulationDate is null " +
+				                                                    "order by di.tiers.id, di.id");
 		query.setParameter("periode", periodeDebut);
 
 		//noinspection unchecked
