@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -929,7 +929,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		final String sql =
 				"INSERT INTO RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, TIERS_SUJET_ID, TIERS_OBJET_ID)" +
 						"VALUES ('AppartenanceMenage', " + dialect.getSelectSequenceNextValString("hibernate_sequence") + ", CURRENT_DATE, :muser, CURRENT_DATE, :muser, :dateDebut, :dateFin, :idPrincipal, :id)";
-		final SQLQuery query5 = session.createSQLQuery(sql);
+		final NativeQuery query5 = session.createNativeQuery(sql);
 		query5.setParameter("muser", user);
 		query5.setParameter("id", menageId);
 		query5.setParameter("idPrincipal", ppId);
@@ -945,7 +945,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			final String user = AuthenticationHelper.getCurrentPrincipal();
 
 			// Transformation de la personne physique en ménage commun
-			final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
+			final NativeQuery query0 = session.createNativeQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
 					                                               "PP_HABITANT=NULL, " +
 					                                               "NUMERO_INDIVIDU=NULL, " +
 					                                               "ANCIEN_NUMERO_SOURCIER = null," +
@@ -967,23 +967,23 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			query0.setParameter("muser", user);
 			query0.executeUpdate();
 
-			final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id OR TIERS_PRINCIPAL_ID=:id");
+			final NativeQuery query1 = session.createNativeQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id OR TIERS_PRINCIPAL_ID=:id");
 			query1.setParameter("id", ppId);
 			query1.executeUpdate();
 
-			final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
+			final NativeQuery query2 = session.createNativeQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
 			query2.setParameter("id", ppId);
 			query2.executeUpdate();
 
-			final SQLQuery query3 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:id OR TIERS_OBJET_ID=:id) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'");
+			final NativeQuery query3 = session.createNativeQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:id OR TIERS_OBJET_ID=:id) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'");
 			query3.setParameter("id", ppId);
 			query3.executeUpdate();
 
-			final SQLQuery query4 = session.createSQLQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
+			final NativeQuery query4 = session.createNativeQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
 			query4.setParameter("id", ppId);
 			query4.executeUpdate();
 
-			final SQLQuery query5 = session.createSQLQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
+			final NativeQuery query5 = session.createNativeQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
 			query5.setParameter("id", ppId);
 			query5.executeUpdate();
 
@@ -1009,22 +1009,22 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			final String user = AuthenticationHelper.getCurrentPrincipal();
 
 			// Transformation du ménage commun en personne physique
-			final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='PersonnePhysique', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, INDEX_DIRTY=" +
+			final NativeQuery query0 = session.createNativeQuery("UPDATE TIERS SET TIERS_TYPE='PersonnePhysique', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, INDEX_DIRTY=" +
 					                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='MenageCommun'");
 			query0.setParameter("id", mcId);
 			query0.setParameter("muser", user);
 			query0.executeUpdate();
 
-			final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id");
+			final NativeQuery query1 = session.createNativeQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id");
 			query1.setParameter("id", mcId);
 			query1.executeUpdate();
 
-			final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_OBJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
+			final NativeQuery query2 = session.createNativeQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_OBJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
 			query2.setParameter("id", mcId);
 			query2.executeUpdate();
 
 			// Association de la personne physique avec l'individu
-			final SQLQuery query3 = session.createSQLQuery("UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=" +
+			final NativeQuery query3 = session.createNativeQuery("UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=" +
 					                                               dialect.toBooleanValueString(true) + ", NUMERO_INDIVIDU=:indNo, INDEX_DIRTY=" +
 					                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id");
 			query3.setParameter("muser", user);

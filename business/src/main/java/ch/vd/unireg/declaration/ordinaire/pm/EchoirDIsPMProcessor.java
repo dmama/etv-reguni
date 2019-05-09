@@ -182,7 +182,7 @@ public class EchoirDIsPMProcessor {
 			final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
 			return hibernateTemplate.execute(session -> {
 
-				final Query query = session.createSQLQuery(sql);
+				final Query query = session.createNativeQuery(sql);
 				//noinspection unchecked
 				final List<Object[]> rows = query.list();
 				if (rows != null && !rows.isEmpty()) {

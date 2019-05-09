@@ -121,7 +121,7 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		else {
 			throw new IllegalArgumentException("Type de dialect inconnu = [" + dialect.getClass() + "]");
 		}
-		final Query query = getCurrentSession().createSQLQuery(queryString);
+		final Query query = getCurrentSession().createNativeQuery(queryString);
 		query.setParameter("id", importId);
 		// query.setMaxResults(maxResults); le maxResults ne fonctionne *pas* avec les deletes !
 		return query.executeUpdate();

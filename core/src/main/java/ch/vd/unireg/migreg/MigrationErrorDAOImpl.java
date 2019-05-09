@@ -49,7 +49,7 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 	public void removeForContribuable(final long numeroCtb) {
 		final Session session = getCurrentSession();
 		final String hql = "delete from MIGREG_ERROR where NO_CONTRIBUABLE = " + numeroCtb;
-		final Query query = session.createSQLQuery(hql);
+		final Query query = session.createNativeQuery(hql);
 		query.executeUpdate();
 	}
 

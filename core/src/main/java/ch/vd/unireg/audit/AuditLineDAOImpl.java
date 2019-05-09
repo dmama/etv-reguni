@@ -108,7 +108,7 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 		template.execute(status -> {
 			final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 			final long id = getNextId();
-			final Query query = getCurrentSession().createSQLQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (:id, :logLevel, :docId, :evtId, :threadId, :msg, :logDate, :logUser)");
+			final Query query = getCurrentSession().createNativeQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (:id, :logLevel, :docId, :evtId, :threadId, :msg, :logDate, :logUser)");
 			query.setLong("id", id);
 			query.setParameter("logLevel", line.getLevel().toString());
 			query.setParameter("docId", line.getDocumentId(), StandardBasicTypes.LONG);
@@ -123,7 +123,7 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 	}
 
 	private long getNextId() {
-		final Query query = getCurrentSession().createSQLQuery(nextValSql);
+		final Query query = getCurrentSession().createNativeQuery(nextValSql);
 		return ((Number) query.uniqueResult()).longValue();
 	}
 
@@ -145,7 +145,7 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 	@Override
 	public int purge(RegDate seuilPurge) {
 		final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
-		final Query query = getCurrentSession().createSQLQuery("delete from AUDIT_LOG WHERE LOG_DATE < :seuil");
+		final Query query = getCurrentSession().createNativeQuery("delete from AUDIT_LOG WHERE LOG_DATE < :seuil");
 		query.setTimestamp("seuil", seuilTimestamp);
 		return query.executeUpdate();
 	}

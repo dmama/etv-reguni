@@ -67,7 +67,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 				+ " ORDER BY CA.NUMERO_CA, TA.TACHE_TYPE";
 
 		final List<Object[]> tachesTrouvees = hibernateTemplate.execute(session -> {
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			//noinspection unchecked
 			return (List<Object[]>) query.list();
 		});

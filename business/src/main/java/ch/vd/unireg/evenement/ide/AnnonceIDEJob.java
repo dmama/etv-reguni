@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.hibernate.SQLQuery;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.query.NativeQuery;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -145,7 +145,7 @@ public class AnnonceIDEJob extends JobDefinition {
 		}
 
 		return hibernateTemplate.executeWithNewSession(session -> {
-			final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
+			final NativeQuery query = session.createNativeQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
 			query.setParameter("id", tiers.getNumero());
 			query.executeUpdate();
 
@@ -165,7 +165,7 @@ public class AnnonceIDEJob extends JobDefinition {
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
 		return template.execute(status -> hibernateTemplate.executeWithNewSession(session -> {
-			final SQLQuery query = session.createSQLQuery("SELECT t.numero FROM tiers t WHERE t.ide_dirty = " + dialect.toBooleanValueString(true) + " AND t.annulation_date is null");
+			final NativeQuery query = session.createNativeQuery("SELECT t.numero FROM tiers t WHERE t.ide_dirty = " + dialect.toBooleanValueString(true) + " AND t.annulation_date is null");
 			//noinspection unchecked
 			final List<Number> list = query.list();
 			return list.stream()

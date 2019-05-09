@@ -3,7 +3,7 @@ package ch.vd.unireg.supergra;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.SQLQuery;
+import org.hibernate.query.NativeQuery;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -94,7 +94,7 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 
 			// [SIFISC-7972] on vérifie que les données spécifiques aux PP ont bien été annulées dans la base
 			hibernateTemplate.execute(session -> {
-				final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
+				final NativeQuery query = session.createNativeQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
 						                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
 						                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
 				query.setParameter(0, id);

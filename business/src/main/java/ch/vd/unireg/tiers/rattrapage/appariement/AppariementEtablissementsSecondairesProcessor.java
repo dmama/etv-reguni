@@ -133,7 +133,7 @@ public class AppariementEtablissementsSecondairesProcessor {
 					+ " WHERE ENTR.NUMERO_ENTREPRISE IS NOT NULL AND ENTR.ANNULATION_DATE IS NULL AND ENTR.TIERS_TYPE='Entreprise'"
 					+ " ORDER BY ENTR.NUMERO";
 
-			final Query query = session.createSQLQuery(String.format(sql, dbDialect.toBooleanValueString(false)));
+			final Query query = session.createNativeQuery(String.format(sql, dbDialect.toBooleanValueString(false)));
 			final List<Number> brutto = query.list();
 			final List<Long> res = new LinkedList<>();
 			for (Number id : brutto) {

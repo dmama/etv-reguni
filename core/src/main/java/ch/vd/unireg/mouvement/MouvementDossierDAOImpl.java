@@ -407,7 +407,7 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 	public List<ProtoBordereauMouvementDossier> getAllProtoBordereaux(final Integer noCollAdmInitiatricePourFiltrage) {
 
 		final Session session = getCurrentSession();
-		final Query query = session.createSQLQuery(PROTO_BORDEREAUX_SQL);
+		final Query query = session.createNativeQuery(PROTO_BORDEREAUX_SQL);
 		final List<Object[]> rows = (List<Object[]>) query.list();
 		if (rows != null && !rows.isEmpty()) {
 			final List<ProtoBordereauMouvementDossier> liste = new ArrayList<>(rows.size());

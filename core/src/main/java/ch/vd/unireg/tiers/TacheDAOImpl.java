@@ -418,7 +418,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			// met-à-jour les tâches concernées
-			final Query update = session.createSQLQuery(updateCollAdm);
+			final Query update = session.createNativeQuery(updateCollAdm);
 			for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
 				//UNIREG-1585 l'oid est mis à jour sur les tâches que s'iln'est pas null
 				if (e.getValue() != null) {

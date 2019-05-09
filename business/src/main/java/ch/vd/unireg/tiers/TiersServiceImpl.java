@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.SQLQuery;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1229,31 +1229,31 @@ public class TiersServiceImpl implements TiersService {
         hibernateTemplate.execute(session -> {
 	        {
 		        final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:tiersId";
-		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        final NativeQuery query = session.createNativeQuery(deleteQuery);
 		        query.setLong("tiersId", numeroTiers);
 		        query.executeUpdate();
 	        }
 	        {
 		        final String deleteQuery = "DELETE FROM DROIT_ACCES WHERE TIERS_ID=:tiersId";
-		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        final NativeQuery query = session.createNativeQuery(deleteQuery);
 		        query.setLong("tiersId", numeroTiers);
 		        query.executeUpdate();
 	        }
 	        {
 		        final String deleteQuery = "DELETE FROM SITUATION_FAMILLE WHERE TIERS_PRINCIPAL_ID=:tiersId";
-		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        final NativeQuery query = session.createNativeQuery(deleteQuery);
 		        query.setLong("tiersId", numeroTiers);
 		        query.executeUpdate();
 	        }
 	        {
 		        final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:tiersId AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'";
-		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        final NativeQuery query = session.createNativeQuery(deleteQuery);
 		        query.setLong("tiersId", numeroTiers);
 		        query.executeUpdate();
 	        }
 	        {
 		        final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:tiersId OR TIERS_OBJET_ID=:tiersId) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'";
-		        final SQLQuery query = session.createSQLQuery(deleteQuery);
+		        final NativeQuery query = session.createNativeQuery(deleteQuery);
 		        query.setLong("tiersId", numeroTiers);
 		        query.executeUpdate();
 	        }
@@ -1262,7 +1262,7 @@ public class TiersServiceImpl implements TiersService {
 
         // changement du type de tiers
         hibernateTemplate.execute(session -> {
-	        final SQLQuery query = session.createSQLQuery("UPDATE TIERS SET " + typeAnnotation.name() + "=:newType, LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
+	        final NativeQuery query = session.createNativeQuery("UPDATE TIERS SET " + typeAnnotation.name() + "=:newType, LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
 			                                                      "PP_HABITANT=NULL, " +
 			                                                      "NUMERO_INDIVIDU=NULL, " +
 			                                                      "ANCIEN_NUMERO_SOURCIER = null," +
@@ -1305,7 +1305,7 @@ public class TiersServiceImpl implements TiersService {
             hibernateTemplate.execute(session -> {
 	            final String updateSFQuery = String.format("update SITUATION_FAMILLE set LOG_MDATE=CURRENT_DATE, LOG_MUSER=:user, %1$s=:newClass where ID=:id", columnTypeSituationFamille.name());
 
-	            final SQLQuery query = session.createSQLQuery(updateSFQuery);
+	            final NativeQuery query = session.createNativeQuery(updateSFQuery);
 	            query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
 	            query.setParameter("newClass", valueTypeSituationFamille.value());
 	            query.setParameter("id", idSF);
@@ -2685,7 +2685,7 @@ public class TiersServiceImpl implements TiersService {
 	private void setParenteDirtyFlag(final long ppId, final boolean flag) {
 		final String sql = "UPDATE TIERS SET PP_PARENTE_DIRTY=:flag WHERE NUMERO=:id";
 		final int nbChanged = hibernateTemplate.execute(session -> {
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			query.setBoolean("flag", flag);
 			query.setLong("id", ppId);
 			return query.executeUpdate();

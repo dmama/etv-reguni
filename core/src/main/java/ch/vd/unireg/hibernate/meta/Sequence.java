@@ -2,12 +2,12 @@ package ch.vd.unireg.hibernate.meta;
 
 import java.util.Properties;
 
-import org.hibernate.SQLQuery;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.StandardBasicTypes;
 
@@ -33,7 +33,7 @@ public class Sequence {
 			final Dialect dialect = jdbcEnvironment.getDialect();
 			final String sql = dialect.getSequenceNextValString(sequenceName);
 			return hibernateTemplate.execute(session -> {
-				final SQLQuery query = session.createSQLQuery(sql);
+				final NativeQuery query = session.createNativeQuery(sql);
 				return query.uniqueResult();
 			});
 		}

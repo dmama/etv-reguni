@@ -316,7 +316,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 
 		final String sql = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE RAPPORT_ENTRE_TIERS_TYPE=:discriminator";
 		final Session session = getCurrentSession();
-		final Query query = session.createSQLQuery(sql);
+		final Query query = session.createNativeQuery(sql);
 		query.setParameter("discriminator", discriminatorValue);
 		return query.executeUpdate();
 	}

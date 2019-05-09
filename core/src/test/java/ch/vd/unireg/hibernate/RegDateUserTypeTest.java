@@ -7,11 +7,11 @@ import javax.persistence.SequenceGenerator;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -166,7 +166,7 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 
 		doInNewTransaction(status -> {
 			final Session session = sessionFactory.getCurrentSession();
-			session.createSQLQuery("delete from TEST_DATA").executeUpdate();
+			session.createNativeQuery("delete from TEST_DATA").executeUpdate();
 			assertEquals(0L, ((Number) session.createQuery("select count(*) from TEST_DATA").uniqueResult()).longValue());
 			return null;
 		});
@@ -199,7 +199,7 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 
 		doInNewTransaction(status -> {
 			final Session session = sessionFactory.getCurrentSession();
-			final SQLQuery query = session.createSQLQuery("select ID, FULLDATE, PARTIALDATE from TEST_DATA order by ID asc");
+			final NativeQuery query = session.createNativeQuery("select ID, FULLDATE, PARTIALDATE from TEST_DATA order by ID asc");
 			query.addScalar("ID", StandardBasicTypes.LONG);
 			query.addScalar("FULLDATE", StandardBasicTypes.INTEGER);
 			query.addScalar("PARTIALDATE", StandardBasicTypes.INTEGER);

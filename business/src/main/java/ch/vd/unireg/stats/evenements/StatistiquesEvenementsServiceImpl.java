@@ -601,7 +601,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	@SuppressWarnings({"unchecked"})
 	private <T> List<T> executeSelect(final String sql, @Nullable final Map<String, Object> sqlParameters, final SelectCallback<T> callback) {
 		return hibernateTemplate.executeWithNewSession(session -> {
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			setParameters(query, sqlParameters);
 			final List<Object[]> results = query.list();
 			if (results != null && !results.isEmpty()) {
@@ -623,7 +623,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	@SuppressWarnings({"unchecked"})
 	private <T extends Enum<T>> Map<T, Integer> getNombreParModalite(final Class<T> enumClass, final String sql, @Nullable final Map<String, Object> sqlParameters) {
 		return hibernateTemplate.executeWithNewSession(session -> {
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			setParameters(query, sqlParameters);
 			final List<Object[]> result = query.list();
 			if (result != null && !result.isEmpty()) {
@@ -650,7 +650,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	private <K, V> Map<K, V> buildMapFromSql(final String sql, @Nullable final Map<String, Object> sqlParameters, final MapSelectCallback<K, V> callback) {
 		return hibernateTemplate.executeWithNewSession(session -> {
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			setParameters(query, sqlParameters);
 			final List<Object[]> results = query.list();
 			if (results != null && !results.isEmpty()) {

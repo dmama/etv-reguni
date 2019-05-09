@@ -181,7 +181,7 @@ public class EchoirQuestionnairesSNCProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(status -> hibernateTemplate.execute(session -> {
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			//noinspection unchecked
 			final List<Object[]> rows = query.list();
 			return rows.stream()

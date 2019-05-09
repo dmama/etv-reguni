@@ -2,7 +2,7 @@ package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.List;
 
-import org.hibernate.SQLQuery;
+import org.hibernate.query.NativeQuery;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +115,7 @@ public class ImportCodesSegmentProcessor {
 
 	private void setNewCodeSegment(final DeclarationImpotOrdinairePP di, final int codeSegment) {
 		hibernateTemplate.execute(session -> {
-			final SQLQuery query = session.createSQLQuery("UPDATE DOCUMENT_FISCAL SET CODE_SEGMENT=:codeSegment, LOG_MDATE=:mdate, LOG_MUSER=:muser WHERE ID=:id");
+			final NativeQuery query = session.createNativeQuery("UPDATE DOCUMENT_FISCAL SET CODE_SEGMENT=:codeSegment, LOG_MDATE=:mdate, LOG_MUSER=:muser WHERE ID=:id");
 			query.setInteger("codeSegment", codeSegment);
 			query.setTimestamp("mdate", DateHelper.getCurrentDate());
 			query.setString("muser", AuthenticationHelper.getCurrentPrincipal());

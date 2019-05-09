@@ -3,7 +3,7 @@ package ch.vd.unireg.indexer.tiers;
 import java.util.Comparator;
 import java.util.List;
 
-import org.hibernate.SQLQuery;
+import org.hibernate.query.NativeQuery;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -174,7 +174,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 	private void resetDirtyFlag(final Long id) throws Exception {
 		doInNewTransactionAndSession(status -> {
 			hibernateTemplate.execute(session -> {
-				final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = " + id);
+				final NativeQuery query = session.createNativeQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = " + id);
 				query.executeUpdate();
 				return null;
 			});

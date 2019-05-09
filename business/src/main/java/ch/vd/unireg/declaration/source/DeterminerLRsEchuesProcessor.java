@@ -191,7 +191,7 @@ public class DeterminerLRsEchuesProcessor {
 
 		final List<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = template.execute(status -> hibernateTemplate.execute(session -> {
 
-			final Query query = session.createSQLQuery(sql);
+			final Query query = session.createNativeQuery(sql);
 			if (periodeFiscale != null) {
 				query.setParameter("pf", periodeFiscale);
 			}

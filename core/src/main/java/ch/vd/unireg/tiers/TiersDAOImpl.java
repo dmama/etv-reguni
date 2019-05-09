@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
@@ -26,6 +25,7 @@ import org.hibernate.criterion.Subqueries;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -742,7 +742,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@Override
 	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
 		final Session session = getCurrentSession();
-		final SQLQuery query = session.createSQLQuery(SQL_QUERY_INDIVIDUS_LIES_PARENTE);
+		final NativeQuery query = session.createNativeQuery(SQL_QUERY_INDIVIDUS_LIES_PARENTE);
 		query.setLong("noIndividu", noIndividuSource);
 		//noinspection unchecked
 		final List<? extends Number> list = query.list();
@@ -894,7 +894,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		final List<Long> list;
 		try {
-			final SQLQuery query = session.createSQLQuery(sql);
+			final NativeQuery query = session.createNativeQuery(sql);
 			query.setParameter("noIndividu", numeroIndividu);
 
 			// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
@@ -988,7 +988,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		session.flush();
 
 		final List<Long> list;
-		final SQLQuery query = session.createSQLQuery(sql);
+		final NativeQuery query = session.createNativeQuery(sql);
 		query.setParameter("noCantonal", numeroCantonal);
 
 		// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
@@ -1136,7 +1136,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 				"and e.annulation_date is null " +
 				"order by e.numero";
 
-		final SQLQuery query = session.createSQLQuery(q);
+		final NativeQuery query = session.createNativeQuery(q);
 		//noinspection unchecked
 		final List<? extends Number> list = query.list();
 		return list.stream()
@@ -1176,8 +1176,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			// met-à-jour les tiers concernés
-			final Query update = session.createSQLQuery("update TIERS set OID = :oid where NUMERO = :id");
-			final Query updateForNullValue = session.createSQLQuery("update TIERS set OID = null where NUMERO = :id");
+			final Query update = session.createNativeQuery("update TIERS set OID = :oid where NUMERO = :id");
+			final Query updateForNullValue = session.createNativeQuery("update TIERS set OID = null where NUMERO = :id");
 			for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
 				if (e.getValue() != null) {
 					update.setParameter("id", e.getKey());
@@ -1895,7 +1895,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 						"ORDER BY CTB_ID                                                          ";
 
 		final Session session = getCurrentSession();
-		final SQLQuery queryObject = session.createSQLQuery(RequeteContribuablesModifies);
+		final NativeQuery queryObject = session.createNativeQuery(RequeteContribuablesModifies);
 		queryObject.setTimestamp("debut", dateDebutRech);
 		queryObject.setTimestamp("fin", dateFinRech);
 
@@ -1939,7 +1939,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			final String sql = "UPDATE TIERS SET BLOC_REMB_AUTO=:newFlag, LOG_MDATE=:now, LOG_MUSER=:user WHERE NUMERO=:numero AND (BLOC_REMB_AUTO IS NULL OR BLOC_REMB_AUTO != :newFlag)";
-			final SQLQuery query = getCurrentSession().createSQLQuery(sql);
+			final NativeQuery query = getCurrentSession().createNativeQuery(sql);
 			query.setParameter("newFlag", newFlag);
 			query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
 			query.setParameter("now", DateHelper.getCurrentDate());
@@ -1958,13 +1958,13 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			return;
 		}
 
-		final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(flag) + " where NUMERO in (:ids)");
+		final NativeQuery query = session.createNativeQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(flag) + " where NUMERO in (:ids)");
 		query.setParameterList("ids", ids);
 		query.executeUpdate();
 
 		if (!flag) {
 			// [UNIREG-1979] On remet aussi à zéro tous les tiers dont la date 'reindex_on' est atteinte aujourd'hui
-			final SQLQuery q = session.createSQLQuery("update TIERS set REINDEX_ON = null where REINDEX_ON is not null and REINDEX_ON <= :today and NUMERO in (:ids)");
+			final NativeQuery q = session.createNativeQuery("update TIERS set REINDEX_ON = null where REINDEX_ON is not null and REINDEX_ON <= :today and NUMERO in (:ids)");
 			q.setParameter("today", RegDate.get().index());
 			q.setParameterList("ids", ids);
 			q.executeUpdate();

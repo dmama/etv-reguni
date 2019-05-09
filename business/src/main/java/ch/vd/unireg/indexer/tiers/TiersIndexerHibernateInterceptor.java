@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.CallbackException;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,7 +183,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 			template.execute(status -> {
 				final Session session = sessionFactory.openSession();
 				try {
-					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
+					final NativeQuery query = session.createNativeQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
 
 					final BatchIterator<Long> batchIterator = new StandardBatchIterator<>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
 					while (batchIterator.hasNext()) {
