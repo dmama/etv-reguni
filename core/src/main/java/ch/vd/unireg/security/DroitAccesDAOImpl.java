@@ -56,7 +56,7 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		else {
 			final Session session = getCurrentSession();
 			final Query q = session.createQuery(query);
-			q.setString("visaOper", visaOperateur.toLowerCase());
+			q.setParameter("visaOper", visaOperateur.toLowerCase());
 			q.setFirstResult(paramPagination.getSqlFirstResult());
 			q.setMaxResults(paramPagination.getSqlMaxResults());
 			list = q.list();

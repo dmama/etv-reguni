@@ -1,5 +1,6 @@
 package ch.vd.unireg.audit;
 
+import javax.persistence.TemporalType;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
@@ -109,13 +110,13 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 			final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 			final long id = getNextId();
 			final Query query = getCurrentSession().createNativeQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (:id, :logLevel, :docId, :evtId, :threadId, :msg, :logDate, :logUser)");
-			query.setLong("id", id);
+			query.setParameter("id", id);
 			query.setParameter("logLevel", line.getLevel().toString());
 			query.setParameter("docId", line.getDocumentId(), StandardBasicTypes.LONG);
 			query.setParameter("evtId", line.getEvenementId(), StandardBasicTypes.LONG);
 			query.setParameter("threadId", line.getThreadId(), StandardBasicTypes.LONG);
 			query.setParameter("msg", line.getMessage());
-			query.setTimestamp("logDate", now);
+			query.setParameter("logDate", now, TemporalType.TIMESTAMP);
 			query.setParameter("logUser", AuthenticationHelper.getCurrentPrincipal());
 			query.executeUpdate();
 			return null;
@@ -146,7 +147,7 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 	public int purge(RegDate seuilPurge) {
 		final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
 		final Query query = getCurrentSession().createNativeQuery("delete from AUDIT_LOG WHERE LOG_DATE < :seuil");
-		query.setTimestamp("seuil", seuilTimestamp);
+		query.setParameter("seuil", seuilTimestamp, TemporalType.TIMESTAMP);
 		return query.executeUpdate();
 	}
 }

@@ -1,5 +1,6 @@
 package ch.vd.unireg.common;
 
+import javax.persistence.TemporalType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -25,7 +26,7 @@ public abstract class HibernateQueryHelper {
 					query.setParameterList(paramEntry.getKey(), (Collection) value);
 				}
 				else if (value instanceof Date) {
-					query.setTimestamp(paramEntry.getKey(), (Date) value);
+					query.setParameter(paramEntry.getKey(), (Date) value, TemporalType.TIMESTAMP);
 				}
 				else {
 					query.setParameter(paramEntry.getKey(), value);

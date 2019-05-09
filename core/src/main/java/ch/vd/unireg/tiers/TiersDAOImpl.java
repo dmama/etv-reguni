@@ -1,6 +1,7 @@
 package ch.vd.unireg.tiers;
 
 import javax.persistence.FlushModeType;
+import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -743,7 +744,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	public Set<Long> getNumerosIndividusLiesParParente(long noIndividuSource) {
 		final Session session = getCurrentSession();
 		final NativeQuery query = session.createNativeQuery(SQL_QUERY_INDIVIDUS_LIES_PARENTE);
-		query.setLong("noIndividu", noIndividuSource);
+		query.setParameter("noIndividu", noIndividuSource);
 		//noinspection unchecked
 		final List<? extends Number> list = query.list();
 		final Set<Long> set = new HashSet<>(list.size());
@@ -1896,8 +1897,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		final Session session = getCurrentSession();
 		final NativeQuery queryObject = session.createNativeQuery(RequeteContribuablesModifies);
-		queryObject.setTimestamp("debut", dateDebutRech);
-		queryObject.setTimestamp("fin", dateFinRech);
+		queryObject.setParameter("debut", dateDebutRech, TemporalType.TIMESTAMP);
+		queryObject.setParameter("fin", dateFinRech, TemporalType.TIMESTAMP);
 
 		final List<Object> listeResultat = queryObject.list();
 		final List<Long> listeCtbModifies = new ArrayList<>(listeResultat.size());

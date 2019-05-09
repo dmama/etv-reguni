@@ -54,7 +54,6 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Long> getAllNoCtb() {
 		return find("select migreg_error.noContribuable from MigrationError as migreg_error", null);
 	}
@@ -64,7 +63,7 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 	public List<Long> getAllNoCtbForTypeError(final TypeMigRegError type) {
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur = ?");
-		query.setInteger(0, type.ordinal());
+		query.setParameter(0, type.ordinal());
 		return query.list();
 	}
 
@@ -73,12 +72,11 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 	public List<Long> getAllNoCtbForTypeErrorNeq(final TypeMigRegError type) {
 		final Session session = getCurrentSession();
 		Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur <> ?");
-		query.setInteger(0, type.ordinal());
+		query.setParameter(0, type.ordinal());
 		return query.list();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<MigrationError> getMigregErrorsInCtbRange(int ctbStart, int ctbEnd) {
 		final List<MigrationError> list;
 		if (ctbStart > 0 && ctbEnd > 0) {
