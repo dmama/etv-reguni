@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -78,7 +79,7 @@ public class FlagEntreprise extends HibernateDateRangeEntity implements LinkedEn
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID")
+	@JoinColumn(name = "ENTREPRISE_ID", foreignKey = @ForeignKey(name = "FK_FLAG_ENTRP_ID"))
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}

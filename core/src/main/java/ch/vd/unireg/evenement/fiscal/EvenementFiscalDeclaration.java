@@ -23,7 +23,7 @@ public abstract class EvenementFiscalDeclaration extends EvenementFiscalTiers {
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "DECLARATION_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_DECL_ID"))
+	@JoinColumn(name = "DECLARATION_ID", foreignKey = @ForeignKey(name = "FK_EVTFISC_DOCFISC_ID"))
 	public Declaration getDeclaration() {
 		return declaration;
 	}

@@ -31,7 +31,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  */
 @Entity
 @Table(name = "RF_SITUATION", indexes = {
-		@Index(name = "IDX_SITUATION_RF_COMMUNE_ID", columnList = "COMMUNE_ID"),
+		@Index(name = "IDX_SIT_RF_COMMUNE_ID", columnList = "COMMUNE_ID"),
 		@Index(name = "IDX_SIT_RF_IMMEUBLE_ID", columnList = "IMMEUBLE_ID")
 })
 @AttributeOverrides({
@@ -136,7 +136,7 @@ public class SituationRF extends HibernateDateRangeEntity implements LinkedEntit
 
 	// configuration hibernate : la situation pointe vers une commune, mais ne la possède pas
 	@ManyToOne
-	@JoinColumn(name = "COMMUNE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SITUATION_RF_COMMUNE_ID"))
+	@JoinColumn(name = "COMMUNE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_SIT_RF_COMMUNE_ID"))
 	public CommuneRF getCommune() {
 		return commune;
 	}

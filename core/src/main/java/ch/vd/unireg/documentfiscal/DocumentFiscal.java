@@ -38,7 +38,7 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 @Entity
 @Table(name = "DOCUMENT_FISCAL", indexes = {
 		@Index(name = "IDX_DOCFISC_TRS_ID", columnList = "TIERS_ID"),
-		@Index(name = "IDX_DD_RF_IMMEUBLE_ID", columnList = "DD_IMMEUBLE_ID")
+		@Index(name = "IDX_DOCFISC_DD_RF_IMMEUBLE_ID", columnList = "DD_IMMEUBLE_ID")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)

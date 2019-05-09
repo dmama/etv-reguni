@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -81,7 +82,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "ENTREPRISE_ID")
+	@JoinColumn(name = "ENTREPRISE_ID", foreignKey = @ForeignKey(name = "FK_REGFISC_ENTR_ID"))
 	public Set<RegimeFiscal> getRegimesFiscaux() {
 		return regimesFiscaux;
 	}
@@ -145,7 +146,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	// configuration hibernate : l'entreprise possède les données civiles
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
+	@JoinColumn(name = "ENTREPRISE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DONCIV_ENTRP_ID"))
 	public Set<DonneeCivileEntreprise> getDonneesCiviles() {
 		return donneesCiviles;
 	}
@@ -316,7 +317,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "ENTREPRISE_ID")
+	@JoinColumn(name = "ENTREPRISE_ID", foreignKey = @ForeignKey(name = "FK_ETAENT_ENTR_ID"))
 	public Set<EtatEntreprise> getEtats() {
 		return etats;
 	}

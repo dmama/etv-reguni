@@ -5,6 +5,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -107,7 +108,7 @@ public abstract class AllegementFiscal extends HibernateDateRangeEntity implemen
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID")
+	@JoinColumn(name = "ENTREPRISE_ID", foreignKey = @ForeignKey(name = "FK_ALLFISC_ENTR_ID"))
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}

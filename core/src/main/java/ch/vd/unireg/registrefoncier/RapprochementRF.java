@@ -38,8 +38,8 @@ import ch.vd.unireg.type.TypeRapprochementRF;
 
 @Entity
 @Table(name = "RAPPROCHEMENT_RF", indexes = {
-		@Index(name = "IDX_RFAPP_RFTIERS_ID", columnList = "RF_TIERS_ID"),
-		@Index(name = "IDX_RFAPP_CTB_ID", columnList = "CTB_ID")
+		@Index(name = "IDX_RAPPRF_RFTIERS_ID", columnList = "RF_TIERS_ID"),
+		@Index(name = "IDX_RAPPRF_CTB_ID", columnList = "CTB_ID")
 })
 @AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true))
 public class RapprochementRF extends HibernateDateRangeEntity implements Duplicable<RapprochementRF>, Rerangeable<RapprochementRF>, LinkedEntity {
@@ -95,7 +95,7 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "RF_TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RFAPP_RFTIERS_ID"))
+	@JoinColumn(name = "RF_TIERS_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_RAPPRF_RFTIERS_ID"))
 	public TiersRF getTiersRF() {
 		return tiersRF;
 	}

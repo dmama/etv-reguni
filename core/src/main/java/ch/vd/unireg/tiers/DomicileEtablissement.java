@@ -4,8 +4,10 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -24,7 +26,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
-@Table(name = "DOMICILE_ETABLISSEMENT")
+@Table(name = "DOMICILE_ETABLISSEMENT", indexes = @Index(name = "IDX_DOM_ETB_ETB_ID", columnList = "ETABLISSEMENT_ID"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN")),
@@ -68,7 +70,7 @@ public class DomicileEtablissement extends LocalisationDatee implements LinkedEn
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ETABLISSEMENT_ID")
+	@JoinColumn(name = "ETABLISSEMENT_ID", foreignKey = @ForeignKey(name = "FK_DOM_ETB_ETB_ID"))
 	public Etablissement getEtablissement() {
 		return etablissement;
 	}

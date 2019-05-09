@@ -91,8 +91,8 @@ public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity 
 	// configuration hibernate : le modèle de communauté gère les membres
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "RF_MEMBRE_COMMUNAUTE",
-			joinColumns = @JoinColumn(name = "MODEL_COMMUNAUTE_ID"),
-			inverseJoinColumns = @JoinColumn(name = "AYANT_DROIT_ID"))
+			joinColumns = @JoinColumn(name = "MODEL_COMMUNAUTE_ID", foreignKey = @ForeignKey(name = "FK_MEMCOMM_MODEL_ID")),
+			inverseJoinColumns = @JoinColumn(name = "AYANT_DROIT_ID", foreignKey = @ForeignKey(name = "FK_MEMCOMM_AYANTDROIT_ID")))
 	public Set<AyantDroitRF> getMembres() {
 		return membres;
 	}
