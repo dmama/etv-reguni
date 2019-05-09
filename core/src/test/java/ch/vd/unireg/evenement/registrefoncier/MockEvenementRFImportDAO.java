@@ -1,5 +1,6 @@
 package ch.vd.unireg.evenement.registrefoncier;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -8,7 +9,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,7 +45,7 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	}
 
 	@Override
-	public boolean exists(Long id, FlushMode flushModeOverride) {
+	public boolean exists(Long id, FlushModeType flushModeOverride) {
 		throw new NotImplementedException("");
 	}
 

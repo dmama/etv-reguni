@@ -1,9 +1,9 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 
 	@Nullable
-	ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride);
+	ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushModeType flushModeOverride);
 
 	@Nullable
 	ImmeubleRF findByEgrid(@NotNull String egrid);

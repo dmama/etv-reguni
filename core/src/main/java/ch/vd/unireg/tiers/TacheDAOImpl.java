@@ -1,6 +1,8 @@
 package ch.vd.unireg.tiers;
 
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.FlushModeType;
+import javax.persistence.metamodel.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,15 +14,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
-import org.hibernate.metadata.ClassMetadata;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.support.DataAccessUtils;
 
@@ -46,19 +47,14 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// récupération des mappings autours des tâches
-		final Map<String, TypeTache> typesTache = new HashMap<>();
-		for (Map.Entry<String, ClassMetadata> entry : getSessionFactory().getAllClassMetadata().entrySet()) {
-			final ClassMetadata metadata = entry.getValue();
-			final Class<?> clazz = metadata.getMappedClass();
-			if (Tache.class.isAssignableFrom(clazz)) {
-				final DiscriminatorValue discriminator = clazz.getAnnotation(DiscriminatorValue.class);
-				if (discriminator != null) {
-					final TypeTache type = TypeTache.valueOf(clazz.getSimpleName());
-					typesTache.put(discriminator.value(), type);
-				}
-			}
-		}
-		this.typesTachesDiscriminators = typesTache;
+		this.typesTachesDiscriminators = getSessionFactory().getMetamodel().getManagedTypes().stream()
+				.filter(m -> m.getPersistenceType() == Type.PersistenceType.ENTITY)         // on ne s'intéresse qu'aux entités
+				.map(Type::getJavaType)                                                     // on va chercher les types java
+				.filter(type -> type.isAssignableFrom(Tache.class))                         // on ne prend que les tâches
+				.filter(clazz -> clazz.getAnnotation(DiscriminatorValue.class) != null)     // qui possèdent une annotation DiscriminatorValue
+																							// on insère tout ça dans une map (clé : discriminant, valeur : type de tâche)
+				.collect(Collectors.toMap(clazz -> clazz.getAnnotation(DiscriminatorValue.class).value(),
+				                          clazz -> TypeTache.valueOf(clazz.getSimpleName())));
 	}
 
 	/**
@@ -79,7 +75,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		final Map<String, Object> params = new HashMap<>();
 		final String query = "select tache " + buildFromWhereClause(criterion, params) + " order by tache.id asc";
 
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		return find(query, params, mode);
 	}
 
@@ -144,7 +140,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		final Map<String, Object> params = new HashMap<>();
 		final String query = "select count(*) " + buildFromWhereClause(criterion, params);
 
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		return DataAccessUtils.intResult(find(query, params, mode));
 	}
 
@@ -287,7 +283,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		}
 		final String query = String.format("from Tache tache where tache.contribuable.id = :noCtb and tache.annulationDate is null and tache.etat in ('EN_INSTANCE', 'EN_COURS')%s", commentSql);
 		parametres.add(Pair.of("noCtb", noCtb));
-		final List<Tache> list = find(query, buildNamedParameters(parametres), FlushMode.MANUAL);
+		final List<Tache> list = find(query, buildNamedParameters(parametres), FlushModeType.COMMIT);
 		return !list.isEmpty();
 	}
 
@@ -319,7 +315,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		                              buildNamedParameters(Pair.of("noCtb", noCtb),
 		                                                   Pair.of("debut", dateDebut),
 		                                                   Pair.of("fin", dateFin)),
-		                              FlushMode.MANUAL);
+		                              FlushModeType.COMMIT);
 		return !list.isEmpty();
 	}
 
@@ -386,7 +382,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 				+ "tache.declaration.id = :noDi and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
 		final List<Tache> list = find(query,
 		                              buildNamedParameters(Pair.of("ctb", noCtb), Pair.of("noDi", noDi)),
-		                              FlushMode.MANUAL);
+		                              FlushModeType.COMMIT);
 		return !list.isEmpty();
 	}
 
@@ -398,7 +394,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 	@SuppressWarnings("unchecked")
 	public <T extends Tache> List<T> listTaches(long noCtb, TypeTache type) {
 		final String query = "from " + type.name() + " tache where tache.contribuable.id = :noCtb";
-		return find(query, buildNamedParameters(Pair.of("noCtb", noCtb)) , FlushMode.MANUAL);
+		return find(query, buildNamedParameters(Pair.of("noCtb", noCtb)) , FlushModeType.COMMIT);
 	}
 
 	private static final String updateCollAdm =
@@ -418,8 +414,8 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
 		final Session session = getCurrentSession();
-		final FlushMode mode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
+		final FlushModeType mode = session.getFlushMode();
+		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			// met-à-jour les tâches concernées
 			final Query update = session.createSQLQuery(updateCollAdm);

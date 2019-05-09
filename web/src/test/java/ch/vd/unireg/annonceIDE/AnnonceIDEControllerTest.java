@@ -1,5 +1,6 @@
 package ch.vd.unireg.annonceIDE;
 
+import javax.persistence.FlushModeType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -10,7 +11,6 @@ import java.util.Set;
 
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
@@ -434,7 +434,7 @@ public class AnnonceIDEControllerTest {
 		}
 
 		@Override
-		public boolean exists(Long id, FlushMode flushModeOverride) {
+		public boolean exists(Long id, FlushModeType flushModeOverride) {
 			return false;
 		}
 
@@ -558,7 +558,7 @@ public class AnnonceIDEControllerTest {
 		}
 
 		@Override
-		public boolean exists(Long id, FlushMode flushModeOverride) {
+		public boolean exists(Long id, FlushModeType flushModeOverride) {
 			return false;
 		}
 

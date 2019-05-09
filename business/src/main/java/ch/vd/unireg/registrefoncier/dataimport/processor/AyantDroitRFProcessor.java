@@ -1,10 +1,10 @@
 package ch.vd.unireg.registrefoncier.dataimport.processor;
 
+import javax.persistence.FlushModeType;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.camel.converter.jaxp.StringSource;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,7 +107,7 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private ImmeubleRF findImmeuble(@NotNull String idRf) {
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushMode.MANUAL);
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushModeType.COMMIT);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}
@@ -125,7 +125,7 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 
 		final String idRF = ayantDroit.getIdRF();
 
-		final AyantDroitRF persisted = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), FlushMode.MANUAL);
+		final AyantDroitRF persisted = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), FlushModeType.COMMIT);
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}

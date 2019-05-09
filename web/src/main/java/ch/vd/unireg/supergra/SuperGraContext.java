@@ -1,11 +1,11 @@
 package ch.vd.unireg.supergra;
 
+import javax.persistence.FlushModeType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +45,7 @@ public class SuperGraContext {
 		this.validationInterceptor = validationInterceptor;
 		this.communauteRFProcessor = communauteRFProcessor;
 
-		this.session.setFlushMode(FlushMode.COMMIT);
+		this.session.setFlushMode(FlushModeType.COMMIT);
 	}
 
 	/**

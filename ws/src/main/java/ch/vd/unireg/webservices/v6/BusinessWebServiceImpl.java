@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v6;
 
+import javax.persistence.FlushModeType;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +21,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -771,7 +771,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			template.setReadOnly(true);
 			return template.execute(status -> {
 				// on ne veut vraiment pas modifier la base
-				return context.hibernateTemplate.execute(FlushMode.MANUAL, session -> doExtract());
+				status.setRollbackOnly();
+				return context.hibernateTemplate.execute(FlushModeType.COMMIT, session -> doExtract());
 			});
 		}
 

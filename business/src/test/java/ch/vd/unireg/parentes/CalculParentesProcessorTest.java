@@ -1,12 +1,12 @@
 package ch.vd.unireg.parentes;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.FlushMode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -269,7 +269,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 
 		// vérification en base
 		doInNewTransactionAndSession(status -> {
-			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
+			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushModeType.AUTO);
 			Assert.assertNotNull(parentes);
 			Assert.assertEquals(4, parentes.size());
 			final List<Parente> copyToSort = new ArrayList<>(parentes);
@@ -397,7 +397,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 
 		// vérification en base
 		doInNewTransactionAndSession(status -> {
-			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
+			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushModeType.AUTO);
 			Assert.assertNotNull(parentes);
 			Assert.assertEquals(2, parentes.size());
 			final List<Parente> copyToSort = new ArrayList<>(parentes);
@@ -507,7 +507,7 @@ public class CalculParentesProcessorTest extends BusinessTest {
 
 		// vérification en base
 		doInNewTransactionAndSession(status -> {
-			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushMode.AUTO);
+			final List<Parente> parentes = hibernateTemplate.find("from Parente", FlushModeType.AUTO);
 			Assert.assertNotNull(parentes);
 			Assert.assertEquals(2, parentes.size());
 			final List<Parente> copyToSort = new ArrayList<>(parentes);

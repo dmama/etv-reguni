@@ -1,11 +1,11 @@
 package ch.vd.unireg.evenement.ide;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -131,7 +131,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public boolean exists(Long aLong, FlushMode flushMode) {
+		public boolean exists(Long aLong, FlushModeType flushMode) {
 			throw new UnsupportedOperationException(OPERATION_NON_SUPPORTEE);
 		}
 

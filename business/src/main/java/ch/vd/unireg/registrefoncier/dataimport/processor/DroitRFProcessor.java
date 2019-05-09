@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dataimport.processor;
 
+import javax.persistence.FlushModeType;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.util.Collections;
@@ -12,7 +13,6 @@ import java.util.stream.Collectors;
 import org.apache.camel.converter.jaxp.StringSource;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,7 +123,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 
 		final String immeubleIdRF = mutation.getIdRF();
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(immeubleIdRF), FlushMode.MANUAL);
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(immeubleIdRF), FlushModeType.COMMIT);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble avec l'idRF=[" + immeubleIdRF + "] n'existe pas.");
 		}
@@ -173,7 +173,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private AyantDroitRF findAyantDroit(@NotNull String idRf) {
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushMode.MANUAL);
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushModeType.COMMIT);
 		if (ayantDroit == null) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}
@@ -185,7 +185,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		if (idRf == null) {
 			return null;
 		}
-		final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushMode.MANUAL);
+		final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushModeType.COMMIT);
 		if (communaute == null) {
 			throw new IllegalArgumentException("La communauté idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}

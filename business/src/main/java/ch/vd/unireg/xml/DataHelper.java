@@ -1,5 +1,6 @@
 package ch.vd.unireg.xml;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1143,7 +1143,7 @@ public abstract class DataHelper {
 			final Map<String, Long> params = new HashMap<>(1);
 			params.put("menageId", a.getObjetId());
 
-			final FlushMode flushMode = doNotAutoflush ? FlushMode.MANUAL : null;
+			final FlushModeType flushMode = doNotAutoflush ? FlushModeType.COMMIT : null;
 			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipalPP f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, flushMode);
 			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {

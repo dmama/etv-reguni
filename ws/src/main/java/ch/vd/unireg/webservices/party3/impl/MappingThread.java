@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.party3.impl;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.hibernate.FlushMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -53,7 +53,7 @@ public class MappingThread implements Runnable {
 			final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
 			template.setReadOnly(true); // on ne veut pas modifier la base
 
-			template.execute(status -> context.hibernateTemplate.execute(FlushMode.MANUAL, session -> {
+			template.execute(status -> context.hibernateTemplate.execute(FlushModeType.COMMIT, session -> {
 				mapParties();
 				return null;
 			}));

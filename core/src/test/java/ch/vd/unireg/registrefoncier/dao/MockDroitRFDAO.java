@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +80,7 @@ public class MockDroitRFDAO implements DroitRFDAO {
 	}
 
 	@Override
-	public boolean exists(Long id, FlushMode flushModeOverride) {
+	public boolean exists(Long id, FlushModeType flushModeOverride) {
 		throw new NotImplementedException("");
 	}
 

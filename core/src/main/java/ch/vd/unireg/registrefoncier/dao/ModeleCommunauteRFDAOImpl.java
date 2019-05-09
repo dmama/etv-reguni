@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ public class ModeleCommunauteRFDAOImpl extends BaseDAOImpl<ModeleCommunauteRF, L
 
 		// on fait une sélection par hashCode (attention : il peut y avoir des collisions sur le hashCode et on doit vérifier les résultats)
 		//noinspection unchecked
-		final List<ModeleCommunauteRF> list = find("from ModeleCommunauteRF where membresHashCode = :hashCode and annulationDate is null", params, FlushMode.MANUAL);
+		final List<ModeleCommunauteRF> list = find("from ModeleCommunauteRF where membresHashCode = :hashCode and annulationDate is null", params, FlushModeType.COMMIT);
 
 		// on recherche le modèle qui correspond aux membres spécifiés
 		for (ModeleCommunauteRF modele : list) {

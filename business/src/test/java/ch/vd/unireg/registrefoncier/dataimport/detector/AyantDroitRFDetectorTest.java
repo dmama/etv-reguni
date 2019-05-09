@@ -1,10 +1,10 @@
 package ch.vd.unireg.registrefoncier.dataimport.detector;
 
+import javax.persistence.FlushModeType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
@@ -72,7 +72,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -167,7 +167,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -306,7 +306,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				switch (key.getIdRF()) {
 				case idRFPP:
 					return pp;
@@ -437,7 +437,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				switch (key.getIdRF()) {
 				case idRFPP:
 					return pp;
@@ -487,7 +487,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -604,7 +604,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				switch (key.getIdRF()) {
 				case idRFPP:
 					return pp;
@@ -679,7 +679,7 @@ public class AyantDroitRFDetectorTest {
 		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
 			@Nullable
 			@Override
-			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 				switch (key.getIdRF()) {
 				case idRFPP:
 					return pp;

@@ -1,10 +1,10 @@
 package ch.vd.unireg.transaction;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -65,7 +65,7 @@ public class XaTransactionTest extends BusinessItTest {
 		}
 
 		// on vérifie que les données sont bien insérées
-		final List<AutreCommunaute> lines = doInNewTransaction(status -> hibernateTemplate.find("from AutreCommunaute", FlushMode.MANUAL));
+		final List<AutreCommunaute> lines = doInNewTransaction(status -> hibernateTemplate.find("from AutreCommunaute", FlushModeType.COMMIT));
 		assertEquals(20, lines.size());
 		lines.sort(Comparator.comparing(AutreCommunaute::getNom));
 		for (int i = 0; i < 20; ++i) {
@@ -102,7 +102,7 @@ public class XaTransactionTest extends BusinessItTest {
 		assertEquals(0, messages.size());
 
 		// on vérifie qu'aucune donnée n'a été insérée
-		final List<AutreCommunaute> lines = doInNewTransaction(status -> hibernateTemplate.find("from AutreCommunaute", FlushMode.MANUAL));
+		final List<AutreCommunaute> lines = doInNewTransaction(status -> hibernateTemplate.find("from AutreCommunaute", FlushModeType.COMMIT));
 		assertEquals(0, lines.size());
 	}
 
@@ -130,7 +130,7 @@ public class XaTransactionTest extends BusinessItTest {
 		assertEquals(0, messages.size());
 
 		// on vérifie qu'aucune donnée n'a été insérée
-		final List<AutreCommunaute> lines = doInNewTransaction(status -> hibernateTemplate.find("from AutreCommunaute", FlushMode.MANUAL));
+		final List<AutreCommunaute> lines = doInNewTransaction(status -> hibernateTemplate.find("from AutreCommunaute", FlushModeType.COMMIT));
 		assertEquals(0, lines.size());
 	}
 

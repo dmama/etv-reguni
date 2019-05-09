@@ -1,5 +1,6 @@
 package ch.vd.unireg.declaration;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 			LOGGER.trace("DeclarationImpotCriteria Params: " + Arrays.toString(params.entrySet().toArray(new Map.Entry[0])));
 		}
 
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		final List<DeclarationImpotOrdinaire> list = find(query, params, mode);
 		final List<DeclarationImpotOrdinaire> listRtr = new ArrayList<>();
 

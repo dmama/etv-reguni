@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 import ch.vd.unireg.type.delai.Delai;
@@ -37,7 +37,7 @@ public class DelaiListUserType extends GenericUserType implements UserType {
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+	public Object nullSafeGet(ResultSet resultSet, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
 		final String string = resultSet.getString(names[0]);
 		if (resultSet.wasNull()) {
 			return Collections.emptyList();
@@ -50,7 +50,7 @@ public class DelaiListUserType extends GenericUserType implements UserType {
 	}
 
 	@Override
-	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
 		//noinspection unchecked
 		final List<Delai> list = (List<Delai>) value;
 		if (list == null || list.isEmpty()) {

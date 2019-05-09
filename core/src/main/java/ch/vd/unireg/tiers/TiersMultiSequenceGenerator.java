@@ -10,7 +10,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.boot.model.relational.Database;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
@@ -90,7 +90,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * l'objet pour récupérér le SequenceGenerator adéquat.
 	 */
 	@Override
-	public synchronized Serializable generate(SessionImplementor session, Object object) throws HibernateException {
+	public synchronized Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
 
 		Tiers tiers = (Tiers) object;
 		Long numeroTiers = tiers.getNumero();

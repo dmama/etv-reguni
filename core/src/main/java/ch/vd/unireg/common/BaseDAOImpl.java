@@ -1,5 +1,6 @@
 package ch.vd.unireg.common;
 
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
@@ -27,23 +27,23 @@ public abstract class BaseDAOImpl<T, PK extends Serializable> extends GenericDAO
 		super(persistentClass);
 	}
 
-	public <U> List<U> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
+	public <U> List<U> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushModeOverride) {
 		return hibernateTemplate.find(hql, namedParams, flushModeOverride);
 	}
 
-	public <U> U findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
+	public <U> U findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushModeOverride) {
 		return hibernateTemplate.findUnique(hql, namedParams, flushModeOverride);
 	}
 
-	public <U> Iterator<U> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
+	public <U> Iterator<U> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushModeOverride) {
 		return hibernateTemplate.iterate(hql, namedParams, flushModeOverride);
 	}
 
-	public <U> List<U> find(String hql, @Nullable FlushMode flushModeOverride) {
+	public <U> List<U> find(String hql, @Nullable FlushModeType flushModeOverride) {
 		return hibernateTemplate.find(hql, flushModeOverride);
 	}
 
-	public <U> Iterator<U> iterate(String hql, @Nullable FlushMode flushModeOverride) {
+	public <U> Iterator<U> iterate(String hql, @Nullable FlushModeType flushModeOverride) {
 		return hibernateTemplate.iterate(hql, flushModeOverride);
 	}
 

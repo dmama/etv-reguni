@@ -370,7 +370,7 @@ public class InitialisationIFoncProcessor {
 								"   (drt.dateFinMetier is null OR drt.dateFinMetier >= :dateReference) AND " +
 								"   (sit.dateDebut is null OR sit.dateDebut <= :dateReference) AND " +
 								"   (sit.dateFin is null OR sit.dateFin >= :dateReference) AND " +
-								"   ((sit.noOfsCommuneSurchargee is null AND sit.commune.noOfs = :commune) OR sit.noOfsCommuneSurchargee = :commune))";
+								"   ((sit.noOfsCommuneSurchargee is null AND sit.commune.noOfs = :commune) OR sit.noOfsCommuneSurchargee = :commune)";
 				final String hqlServitudes =
 						"SELECT serv.id FROM ServitudeRF serv " +
 								"JOIN serv.charges chg " +
@@ -385,7 +385,7 @@ public class InitialisationIFoncProcessor {
 								"   (chg.dateFin is null OR chg.dateFin >= :dateReference) AND " +
 								"   (sit.dateDebut is null OR sit.dateDebut <= :dateReference) AND " +
 								"   (sit.dateFin is null OR sit.dateFin >= :dateReference) AND " +
-								"   ((sit.noOfsCommuneSurchargee is null AND sit.commune.noOfs = :commune) OR sit.noOfsCommuneSurchargee = :commune))";
+								"   ((sit.noOfsCommuneSurchargee is null AND sit.commune.noOfs = :commune) OR sit.noOfsCommuneSurchargee = :commune)";
 				queryDroits = session.createQuery(hqlDroits);
 				queryDroits.setParameter("dateReference", dateReference);
 				queryDroits.setParameter("commune", ofsCommune);

@@ -1,5 +1,6 @@
 package ch.vd.unireg.indexer.jobs;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +20,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.TermQuery;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -186,7 +186,7 @@ public class DatabaseIndexationProcessor {
 		try {
 			final Session session = sessionFactory.openSession();
 			try {
-				session.setFlushMode(FlushMode.MANUAL);
+				session.setFlushMode(FlushModeType.COMMIT);
 				callback.accept(session);
 			}
 			finally {

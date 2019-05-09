@@ -1,8 +1,8 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +22,9 @@ public class RapprochementRFDAOImpl extends BaseDAOImpl<RapprochementRF, Long> i
 	@Override
 	public List<RapprochementRF> findByContribuable(long ctbId, boolean noAutoFlush) {
 		final Session session = getCurrentSession();
-		final FlushMode oldMode = session.getFlushMode();
+		final FlushModeType oldMode = session.getFlushMode();
 		if (noAutoFlush) {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 		}
 		try {
 			final Query query = session.createQuery("FROM RapprochementRF rrf WHERE rrf.contribuable.id=:ctbId ORDER BY rrf.id");
@@ -41,9 +41,9 @@ public class RapprochementRFDAOImpl extends BaseDAOImpl<RapprochementRF, Long> i
 	@Override
 	public List<RapprochementRF> findByTiersRF(long tiersRFId, boolean noAutoFlush) {
 		final Session session = getCurrentSession();
-		final FlushMode oldMode = session.getFlushMode();
+		final FlushModeType oldMode = session.getFlushMode();
 		if (noAutoFlush) {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 		}
 		try {
 			final Query query = session.createQuery("FROM RapprochementRF rrf WHERE rrf.tiersRF.id=:tiersRFId ORDER BY rrf.id");

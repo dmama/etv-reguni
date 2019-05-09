@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 	}
 
 	@Override
-	public boolean exists(Long id, FlushMode flushModeOverride) {
+	public boolean exists(Long id, FlushModeType flushModeOverride) {
 		throw new NotImplementedException("");
 	}
 
@@ -88,7 +88,7 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 
 	@Nullable
 	@Override
-	public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+	public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride) {
 		return db.stream()
 				.filter(a -> Objects.equals(a.getIdRF(), key.getIdRF()))
 				.findFirst()

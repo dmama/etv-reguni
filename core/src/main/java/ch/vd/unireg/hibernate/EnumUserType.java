@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -49,8 +49,8 @@ public class EnumUserType<E extends Enum<E>> extends GenericUserType implements 
         return clazz;
     }
 
-	@Override
-	public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+    @Override
+    public Object nullSafeGet(ResultSet resultSet, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
         String name = resultSet.getString(names[0]);
         E result = null;
         if (!resultSet.wasNull()) {
@@ -59,12 +59,12 @@ public class EnumUserType<E extends Enum<E>> extends GenericUserType implements 
         return result;
     }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+    @Override
+    public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (null == value) {
             preparedStatement.setNull(index, Types.VARCHAR);
         } else {
+            //noinspection unchecked
             preparedStatement.setString(index, ((E)value).name());
         }
     }

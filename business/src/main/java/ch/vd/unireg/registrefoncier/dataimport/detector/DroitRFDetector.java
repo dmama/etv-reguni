@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dataimport.detector;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -224,7 +224,7 @@ public class DroitRFDetector {
 	 */
 	private void detecterMutationsDroitsPropriete(@NotNull String idRF, @NotNull List<EigentumAnteil> droits, @NotNull EvenementRFImport parentImport) {
 
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushMode.MANUAL);
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushModeType.COMMIT);
 		if (immeuble == null) {
 			// l'immeuble n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
 			final EvenementRFMutation mutation = new EvenementRFMutation();

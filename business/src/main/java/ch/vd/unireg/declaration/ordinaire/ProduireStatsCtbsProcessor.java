@@ -1,12 +1,12 @@
 package ch.vd.unireg.declaration.ordinaire;
 
+import javax.persistence.FlushModeType;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +134,7 @@ public class ProduireStatsCtbsProcessor {
 	private void traiteBatch(final List<Long> batch, final StatistiquesCtbs rapport, final StatusManager status, final int nbTotalContribuables, final int nbCtbTraites) {
 
 		// on ne va rien changer
-		hibernateTemplate.execute(FlushMode.MANUAL, session -> {
+		hibernateTemplate.execute(FlushModeType.COMMIT, session -> {
 			boolean first = true;
 			final Iterator<Long> iterator = batch.iterator();
 			while (iterator.hasNext() && !status.isInterrupted()) {

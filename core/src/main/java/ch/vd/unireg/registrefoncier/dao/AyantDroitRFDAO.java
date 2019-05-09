@@ -1,9 +1,9 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ import ch.vd.unireg.registrefoncier.key.AyantDroitRFKey;
 public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 
 	@Nullable
-	AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride);
+	AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushModeType flushModeOverride);
 
 	/**
 	 * @param typeDroit le type de droit à considérer

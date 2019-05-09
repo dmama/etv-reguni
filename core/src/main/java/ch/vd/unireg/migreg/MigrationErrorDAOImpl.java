@@ -1,10 +1,10 @@
 package ch.vd.unireg.migreg;
 
+import javax.persistence.FlushModeType;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
@@ -24,7 +24,7 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 
 		MigrationError error = null;
 		final String query = "from MigrationError m where m.noContribuable = :noCtb";
-		final List<MigrationError> list = find(query, buildNamedParameters(Pair.of("noCtb", numeroCtb)), FlushMode.MANUAL);
+		final List<MigrationError> list = find(query, buildNamedParameters(Pair.of("noCtb", numeroCtb)), FlushModeType.COMMIT);
 		if (!list.isEmpty()) {
 			if (list.size() != 1) {
 				throw new IllegalArgumentException();

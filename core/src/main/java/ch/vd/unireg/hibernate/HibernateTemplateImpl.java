@@ -1,12 +1,12 @@
 package ch.vd.unireg.hibernate;
 
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -50,9 +50,9 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 	}
 
 	@Override
-	public <T> T execute(FlushMode flushMode, HibernateCallback<T> callback) {
+	public <T> T execute(FlushModeType flushMode, HibernateCallback<T> callback) {
 		final Session session = getCurrentSession();
-		final FlushMode old = session.getFlushMode();
+		final FlushModeType old = session.getFlushMode();
 		final boolean changeMode = (flushMode != null && old != flushMode);
 		if (changeMode) {
 			session.setFlushMode(flushMode);
@@ -91,9 +91,9 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+	public <T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode) {
 		final Session session = getCurrentSession();
-		final FlushMode oldFlushMode = session.getFlushMode();
+		final FlushModeType oldFlushModeType = session.getFlushMode();
 		if (flushMode != null) {
 			session.setFlushMode(flushMode);
 		}
@@ -104,16 +104,16 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		}
 		finally {
 			if (flushMode != null) {
-				session.setFlushMode(oldFlushMode);
+				session.setFlushMode(oldFlushModeType);
 			}
 		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+	public <T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode) {
 		final Session session = getCurrentSession();
-		final FlushMode oldFlushMode = session.getFlushMode();
+		final FlushModeType oldFlushModeType = session.getFlushMode();
 		if (flushMode != null) {
 			session.setFlushMode(flushMode);
 		}
@@ -124,16 +124,16 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		}
 		finally {
 			if (flushMode != null) {
-				session.setFlushMode(oldFlushMode);
+				session.setFlushMode(oldFlushModeType);
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode) {
 		final Session session = getCurrentSession();
-		final FlushMode oldFlushMode = session.getFlushMode();
+		final FlushModeType oldFlushModeType = session.getFlushMode();
 		if (flushMode != null) {
 			session.setFlushMode(flushMode);
 		}
@@ -144,18 +144,18 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		}
 		finally {
 			if (flushMode != null) {
-				session.setFlushMode(oldFlushMode);
+				session.setFlushMode(oldFlushModeType);
 			}
 		}
 	}
 
 	@Override
-	public <T> List<T> find(String hql, @Nullable FlushMode flushMode) {
+	public <T> List<T> find(String hql, @Nullable FlushModeType flushMode) {
 		return find(hql, null, flushMode);
 	}
 
 	@Override
-	public <T> Iterator<T> iterate(String hql, @Nullable FlushMode flushMode) {
+	public <T> Iterator<T> iterate(String hql, @Nullable FlushModeType flushMode) {
 		return iterate(hql, null, flushMode);
 	}
 }

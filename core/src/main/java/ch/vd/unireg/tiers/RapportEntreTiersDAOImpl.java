@@ -1,6 +1,7 @@
 package ch.vd.unireg.tiers;
 
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.FlushModeType;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +43,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	public List<RapportEntreTiers> getRepresentationLegaleAvecTuteurEtPupille(Long noTiersTuteur, Long noTiersPupille, boolean doNotAutoFlush) {
 
 		String query = "from RapportEntreTiers ret where ret.objetId = :tuteur and ret.sujetId = :pupille";
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		return find(query,
 		            buildNamedParameters(Pair.of("tuteur", noTiersTuteur),
 		                                 Pair.of("pupille", noTiersPupille)),
@@ -79,7 +79,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	@Override
 	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, final Long numeroSourcier, boolean activesOnly, boolean doNotAutoFlush) {
 		final StringBuilder b = new StringBuilder();
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteur and rapport.sujetId = :sourcier");
 		if (activesOnly) {
 			b.append(" and rapport.dateFin is null and rapport.annulationDate is null");

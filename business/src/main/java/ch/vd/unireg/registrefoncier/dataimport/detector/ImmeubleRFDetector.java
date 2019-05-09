@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dataimport.detector;
 
+import javax.persistence.FlushModeType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +11,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -140,7 +140,7 @@ public class ImmeubleRFDetector {
 
 					// on va voir si l'immeuble existe dans la base
 					final ImmeubleRFKey key = ImmeubleRFHelper.newImmeubleRFKey(immeuble);
-					final ImmeubleRF immeubleRF = immeubleRFDAO.find(key, FlushMode.MANUAL);
+					final ImmeubleRF immeubleRF = immeubleRFDAO.find(key, FlushModeType.COMMIT);
 
 					// on détermine ce qu'il faut faire
 					final TypeMutationRF typeMutation;

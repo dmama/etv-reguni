@@ -1,9 +1,9 @@
 package ch.vd.unireg.evenement.ide;
 
+import javax.persistence.FlushModeType;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -31,9 +31,9 @@ public class ReferenceAnnonceIDEDAOImpl extends BaseDAOImpl<ReferenceAnnonceIDE,
 		crit.addOrder(Order.asc("etablissement.numero"));
 
 		final List<ReferenceAnnonceIDE> list;
-		final FlushMode mode = session.getFlushMode();
+		final FlushModeType mode = session.getFlushMode();
 		try {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 			list = crit.list();
 		}
 		finally {
@@ -60,9 +60,9 @@ public class ReferenceAnnonceIDEDAOImpl extends BaseDAOImpl<ReferenceAnnonceIDE,
 		crit.addOrder(Order.desc("id"));
 
 		final List<ReferenceAnnonceIDE> list;
-		final FlushMode mode = session.getFlushMode();
+		final FlushModeType mode = session.getFlushMode();
 		try {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 			list = crit.list();
 		}
 		finally {

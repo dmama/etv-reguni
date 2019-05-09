@@ -1,12 +1,12 @@
 package ch.vd.unireg.registrefoncier.dataimport.processor;
 
+import javax.persistence.FlushModeType;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.apache.camel.converter.jaxp.StringSource;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,7 +171,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 		final String idRF = newImmeuble.getIdRF();
 
-		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble), FlushMode.MANUAL);
+		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble), FlushModeType.COMMIT);
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}
@@ -330,7 +330,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull String idRF) {
 
-		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushMode.MANUAL);
+		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushModeType.COMMIT);
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}

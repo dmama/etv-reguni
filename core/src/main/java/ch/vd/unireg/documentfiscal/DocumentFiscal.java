@@ -88,9 +88,9 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	/**
 	 * @return the delais
 	 */
+	// configuration hibernate : le document possède les délais
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	// msi : je ne comprends pas pourquoi la colonne est insertable/updatable = false
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false, foreignKey = @ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID"))
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID"))
 	public Set<DelaiDocumentFiscal> getDelais() {
 		return delais;
 	}

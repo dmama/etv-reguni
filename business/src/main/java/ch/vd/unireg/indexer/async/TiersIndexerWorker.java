@@ -1,5 +1,6 @@
 package ch.vd.unireg.indexer.async;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -101,7 +101,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			try {
 				final Session session = sessionFactory.openSession();
 				try {
-					session.setFlushMode(FlushMode.MANUAL);
+					session.setFlushMode(FlushModeType.COMMIT);
 					final List<Tiers> list;
 
 					if (batch.size() == 1) {

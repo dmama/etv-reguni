@@ -1,11 +1,11 @@
 package ch.vd.unireg.declaration;
 
+import javax.persistence.FlushModeType;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.FlushMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> im
 	public PeriodeFiscale getPeriodeFiscaleByYear(final int year) {
 
 		/**
-		 * FlushMode.MANUAL => Ici, on applique un petit hack pour éviter un side-effect indésirable de l'intercepteur de validation des
+		 * FlushModeType.COMMIT => Ici, on applique un petit hack pour éviter un side-effect indésirable de l'intercepteur de validation des
 		 * tiers.
 		 *
 		 * <pre>
@@ -67,7 +67,7 @@ public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> im
 		 */
 		final Map<String, Integer> params = new HashMap<>(1);
 		params.put("year", year);
-		final Iterator<?> i = iterate("from PeriodeFiscale periode where periode.annee = :year", params, FlushMode.MANUAL);
+		final Iterator<?> i = iterate("from PeriodeFiscale periode where periode.annee = :year", params, FlushModeType.COMMIT);
 
 		PeriodeFiscale periode = null;
 

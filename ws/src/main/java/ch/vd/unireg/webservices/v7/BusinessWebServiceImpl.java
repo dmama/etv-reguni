@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7;
 
+import javax.persistence.FlushModeType;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -1352,6 +1352,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			// chaque thread doit s'exécuter dans une transaction propre
 			return executeInReadOnlyTx(currentPrincipal, currentOID, status -> {
 				// on ne veut vraiment pas modifier la base
+				status.setRollbackOnly();
 				return executeInManualFlush(session -> resolvePartyBatch(batch, parts));
 			});
 		}, threadPool);
@@ -1620,7 +1621,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	private <T> T executeInManualFlush(@NotNull HibernateCallback<T> callback) {
-		return context.hibernateTemplate.execute(FlushMode.MANUAL, callback);
+		return context.hibernateTemplate.execute(FlushModeType.COMMIT, callback);
 	}
 }
 

@@ -1,12 +1,12 @@
 package ch.vd.unireg.hibernate;
 
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ public class MockHibernateTemplate implements HibernateTemplate {
 	}
 
 	@Override
-	public <T> T execute(FlushMode flushMode, HibernateCallback<T> callback) throws HibernateException {
+	public <T> T execute(FlushModeType flushMode, HibernateCallback<T> callback) throws HibernateException {
 		throw new NotImplementedException("");
 	}
 
@@ -47,27 +47,27 @@ public class MockHibernateTemplate implements HibernateTemplate {
 	}
 
 	@Override
-	public <T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+	public <T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode) {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public <T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+	public <T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode) {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode) {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public <T> List<T> find(String hql, @Nullable FlushMode flushMode) {
+	public <T> List<T> find(String hql, @Nullable FlushModeType flushMode) {
 		throw new NotImplementedException("");
 	}
 
 	@Override
-	public <T> Iterator<T> iterate(String hql, @Nullable FlushMode flushMode) {
+	public <T> Iterator<T> iterate(String hql, @Nullable FlushModeType flushMode) {
 		throw new NotImplementedException("");
 	}
 }

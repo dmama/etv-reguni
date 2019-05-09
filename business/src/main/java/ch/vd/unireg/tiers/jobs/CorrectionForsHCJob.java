@@ -1,12 +1,12 @@
 package ch.vd.unireg.tiers.jobs;
 
+import javax.persistence.FlushModeType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,9 +110,9 @@ public class CorrectionForsHCJob extends JobDefinition {
 			criteria.add(Restrictions.in("id", ids));
 			criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-			final FlushMode mode = session.getFlushMode();
+			final FlushModeType mode = session.getFlushMode();
 			try {
-				session.setFlushMode(FlushMode.MANUAL);
+				session.setFlushMode(FlushModeType.COMMIT);
 				return criteria.list();
 			}
 			finally {

@@ -1,12 +1,12 @@
 package ch.vd.unireg.declaration;
 
+import javax.persistence.FlushModeType;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.type.TypeDocument;
@@ -37,7 +37,7 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 		params.put("pf", periode);
 		params.put("typeDocument", type);
 		final String query = "FROM ModeleDocument m WHERE m.periodeFiscale = :pf AND m.typeDocument = :typeDocument";
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		final List<ModeleDocument> list = find(query, params, mode);
 		if (list != null && !list.isEmpty()) {
 			if (list.size() > 1) {
@@ -65,7 +65,7 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 		final Map<String, Object> params = buildNamedParameters(Pair.of("pf", periode),
 		                                                        Pair.of("typeDocument", TypeDocument.LISTE_RECAPITULATIVE));
 		final String query = "FROM ModeleDocument m WHERE m.periodeFiscale = :pf AND m.typeDocument = :typeDocument";
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		final List<ModeleDocument> list = find(query, params, mode);
 		if (list != null && !list.isEmpty()) {
 			if (list.size() > 1) {

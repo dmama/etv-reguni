@@ -1,5 +1,6 @@
 package ch.vd.unireg.tiers.etats;
 
+import javax.persistence.FlushModeType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -7,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -383,7 +383,7 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 	}
 
 	@Override
-	public boolean exists(Long aLong, FlushMode flushMode) {
+	public boolean exists(Long aLong, FlushModeType flushMode) {
 		return false;
 	}
 

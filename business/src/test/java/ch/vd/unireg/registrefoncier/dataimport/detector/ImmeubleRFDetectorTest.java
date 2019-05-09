@@ -1,11 +1,11 @@
 package ch.vd.unireg.registrefoncier.dataimport.detector;
 
+import javax.persistence.FlushModeType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
@@ -87,7 +87,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -128,7 +128,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -226,7 +226,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -573,7 +573,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushModeType flushModeOverride) {
 				return null;
 			}
 		};
@@ -936,7 +936,7 @@ public class ImmeubleRFDetectorTest {
 
 		@Nullable
 		@Override
-		public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
+		public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushModeType flushModeOverride) {
 			if (key.getIdRF().equals(idRfBienFonds)) {
 				return bienFonds;
 			}

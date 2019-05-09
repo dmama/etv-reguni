@@ -373,7 +373,7 @@
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
 			<artifactId>shared-hibernate</artifactId>
-			<version>7.0.0</version>
+			<version>7.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -453,18 +453,12 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.0.9.Final</version>
+			<version>5.2.18.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.3.0.Final</version>
-		</dependency>
-		<dependency>
-			<!-- pour le support de log4j2, à supprimer lors du passage à Hibernate 5 -->
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-			<version>3.2.1.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>

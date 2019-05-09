@@ -1,9 +1,9 @@
 package ch.vd.unireg.metier.piis;
 
+import javax.persistence.FlushModeType;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -102,7 +102,7 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 	}
 
 	private List<Long> getIdsPersonnesPhysiques() {
-		return hibernateTemplate.execute(FlushMode.MANUAL, session -> {
+		return hibernateTemplate.execute(FlushModeType.COMMIT, session -> {
 			final Query query = session.createQuery("select pp.numero from PersonnePhysique pp order by pp.numero");
 			//noinspection unchecked
 			return (List<Long>) query.list();

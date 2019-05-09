@@ -1,10 +1,10 @@
 package ch.vd.unireg.declaration.ordinaire.pm;
 
+import javax.persistence.FlushModeType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.FlushMode;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -807,7 +807,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		assertEquals(DeterminationDIsPMResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
 
 		doInNewTransactionAndSession(status -> {
-			final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushMode.AUTO);
+			final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushModeType.AUTO);
 			assertNotNull(taches);
 			assertEquals(2, taches.size());
 			{

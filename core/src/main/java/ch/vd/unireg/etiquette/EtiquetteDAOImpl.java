@@ -1,9 +1,8 @@
 package ch.vd.unireg.etiquette;
 
+import javax.persistence.FlushModeType;
 import java.util.Collections;
 import java.util.List;
-
-import org.hibernate.FlushMode;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 
@@ -18,7 +17,7 @@ public class EtiquetteDAOImpl extends BaseDAOImpl<Etiquette, Long> implements Et
 		if (!doNotAutoflush) {
 			return getAll();
 		}
-		return find("from Etiquette", Collections.emptyMap(), FlushMode.MANUAL);
+		return find("from Etiquette", Collections.emptyMap(), FlushModeType.COMMIT);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import java.sql.Types;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -35,7 +35,7 @@ public class StringAsClobUserType extends GenericUserType implements UserType {
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
 		try (Reader reader = rs.getCharacterStream(names[0])) {
 			if (rs.wasNull()) {
 				return null;
@@ -51,7 +51,7 @@ public class StringAsClobUserType extends GenericUserType implements UserType {
 	}
 
 	@Override
-	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
 		if (value != null) {
 			final String string = (String) value;
 			st.setCharacterStream(index, new StringReader(string), string.length());

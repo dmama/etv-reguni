@@ -150,6 +150,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 		return -delaiAccordeAu.compareTo(autreDelaiAccordeAu);
 	}
 
+	// configuration hibernate : le délai est possédé par le document fiscal
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
 	public DocumentFiscal getDocumentFiscal() {

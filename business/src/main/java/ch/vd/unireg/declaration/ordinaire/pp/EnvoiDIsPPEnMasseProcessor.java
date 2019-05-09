@@ -1,5 +1,6 @@
 package ch.vd.unireg.declaration.ordinaire.pp;
 
+import javax.persistence.FlushModeType;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -287,11 +287,11 @@ public class EnvoiDIsPPEnMasseProcessor {
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
 		return hibernateTemplate.execute(session -> {
-			FlushMode mode = session.getFlushMode();
+			FlushModeType mode = session.getFlushMode();
 			try {
 				// On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de tâches déjà modifiées
 				// concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
-				session.setFlushMode(FlushMode.MANUAL);
+				session.setFlushMode(FlushModeType.COMMIT);
 				final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
 				queryObject.setParameter("typeContribuable", typeContribuable);
 				queryObject.setParameter("typeDocument", typeDocument);
@@ -820,13 +820,13 @@ public class EnvoiDIsPPEnMasseProcessor {
 
 			// On récupère toutes les DIs correspondant au critères du cache
 			final List<DeclarationImpotOrdinairePP> list = hibernateTemplate.execute(session -> {
-				final FlushMode mode = session.getFlushMode();
+				final FlushModeType mode = session.getFlushMode();
 				try {
 					/*
 					 * On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de déclarations
 					 * déjà créées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
 					 */
-					session.setFlushMode(FlushMode.MANUAL);
+					session.setFlushMode(FlushModeType.COMMIT);
 
 					// on récupère le numéro de la période
 					final Query queryPeriode = session.createQuery("SELECT p.id FROM PeriodeFiscale AS p WHERE p.annee = :annee");

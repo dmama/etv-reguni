@@ -1,10 +1,10 @@
 package ch.vd.unireg.registrefoncier.dataimport.detector;
 
+import javax.persistence.FlushModeType;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -124,7 +124,7 @@ public class AyantDroitRFDetector {
 
 		final boolean isImmeuble = (rechteinhaber instanceof Grundstueck);
 		final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(rechteinhaber);
-		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key, FlushMode.MANUAL);
+		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key, FlushModeType.COMMIT);
 
 		// on détermine ce qu'il faut faire
 		final TypeMutationRF typeMutation;

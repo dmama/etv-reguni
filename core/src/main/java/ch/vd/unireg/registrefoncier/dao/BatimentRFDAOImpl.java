@@ -1,10 +1,10 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ public class BatimentRFDAOImpl extends BaseDAOImpl<BatimentRF, Long> implements 
 
 	@Nullable
 	@Override
-	public BatimentRF find(@NotNull BatimentRFKey key, @Nullable FlushMode flushModeOverride) {
+	public BatimentRF find(@NotNull BatimentRFKey key, @Nullable FlushModeType flushModeOverride) {
 		return findUnique("from BatimentRF where masterIdRF = :masterIdRF", buildNamedParameters(Pair.of("masterIdRF", key.getMasterIdRF())), flushModeOverride);
 	}
 

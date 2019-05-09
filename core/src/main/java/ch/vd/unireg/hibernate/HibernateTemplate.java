@@ -1,11 +1,11 @@
 package ch.vd.unireg.hibernate;
 
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +50,7 @@ public interface HibernateTemplate {
 	 * @param callback callback to call
 	 * @return value returned by the callback
 	 */
-	<T> T execute(FlushMode flushMode, HibernateCallback<T> callback) throws HibernateException;
+	<T> T execute(FlushModeType flushMode, HibernateCallback<T> callback) throws HibernateException;
 
 	/**
 	 * Calls the callback in the context of a new session created for the occasion
@@ -73,7 +73,7 @@ public interface HibernateTemplate {
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
+	<T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode);
 
 	/**
 	 * Returns the unique entity corresponding to the given HQL request (using named parameters)
@@ -84,7 +84,7 @@ public interface HibernateTemplate {
 	 * @param <T>         entities' type
 	 * @return list of found entities
 	 */
-	<T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
+	<T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode);
 
 	/**
 	 * Returns an iterator on the list of entities corresponding to the given HQL request (using named parameters)
@@ -94,7 +94,7 @@ public interface HibernateTemplate {
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
+	<T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushModeType flushMode);
 
 	/**
 	 * Returns the list of entities corresponding to the given HQL request (no parameters)
@@ -103,7 +103,7 @@ public interface HibernateTemplate {
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> List<T> find(String hql, @Nullable FlushMode flushMode);
+	<T> List<T> find(String hql, @Nullable FlushModeType flushMode);
 
 	/**
 	 * Returns an iterator on the list of entities corresponding to the given HQL request (no parameters)
@@ -112,6 +112,6 @@ public interface HibernateTemplate {
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> Iterator<T> iterate(String hql, @Nullable FlushMode flushMode);
+	<T> Iterator<T> iterate(String hql, @Nullable FlushModeType flushMode);
 
 }

@@ -1,5 +1,6 @@
 package ch.vd.unireg.common;
 
+import javax.persistence.FlushModeType;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.hibernate.FlushMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -118,7 +118,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 			// comme ça on est certain de recréer une session à chaque fois
 			hibernateTemplate.executeWithNewSession(session -> {
 				// read-only transaction
-				session.setFlushMode(FlushMode.MANUAL);
+				session.setFlushMode(FlushModeType.COMMIT);
 				transactionTemplate.setReadOnly(true);
 				transactionTemplate.execute(status -> {
 					final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);

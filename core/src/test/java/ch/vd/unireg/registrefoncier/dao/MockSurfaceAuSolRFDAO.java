@@ -1,10 +1,10 @@
 package ch.vd.unireg.registrefoncier.dao;
 
+import javax.persistence.FlushModeType;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ public class MockSurfaceAuSolRFDAO implements SurfaceAuSolRFDAO {
 	}
 
 	@Override
-	public boolean exists(Long id, FlushMode flushModeOverride) {
+	public boolean exists(Long id, FlushModeType flushModeOverride) {
 		throw new NotImplementedException("");
 	}
 

@@ -1,5 +1,6 @@
 package ch.vd.unireg.tiers;
 
+import javax.persistence.FlushModeType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -12,7 +13,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +82,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public boolean exists(Long id, FlushMode flushModeOverride) {
+	public boolean exists(Long id, FlushModeType flushModeOverride) {
 		return target.exists(id, flushModeOverride);
 	}
 

@@ -1,5 +1,6 @@
 package ch.vd.unireg.tiers;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -68,7 +68,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	public Tiers get(long id, boolean doNotAutoFlush) {
 
 		final String query = "from Tiers t where t.numero = :id";
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		final List<Tiers> list = find(query, buildNamedParameters(Pair.of("id", id)), mode);
 		if (!list.isEmpty()) {
 			return list.get(0);
@@ -146,8 +146,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		final Session session = getCurrentSession();
 		final List<Object[]> list;
-		final FlushMode mode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
+		final FlushModeType mode = session.getFlushMode();
+		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			final String hql = "select r.objetId, r.sujetId from RapportEntreTiers r where type(r) != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))";
 			list = queryObjectsByIds(hql, input, session);
@@ -263,16 +263,16 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			return Collections.emptyList();
 		}
 
-		final FlushMode mode = session.getFlushMode();
-		if (mode != FlushMode.MANUAL) {
+		final FlushModeType mode = session.getFlushMode();
+		if (mode != FlushModeType.COMMIT) {
 			LOGGER.warn("Le 'flushMode' de la session hibernate est forcé en MANUAL.");
-			session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
+			session.setFlushMode(FlushModeType.COMMIT); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
 		}
 		try {
 			return getBatch(ids instanceof Set ? (Set) ids : new HashSet<>(ids), parts, session);
 		}
 		finally {
-			if (mode != FlushMode.MANUAL) {
+			if (mode != FlushModeType.COMMIT) {
 				session.setFlushMode(mode);
 			}
 		}
@@ -880,10 +880,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		final Session session = getCurrentSession();
 
-		FlushMode flushMode = null;
+		FlushModeType flushMode = null;
 		if (doNotAutoFlush) {
 			flushMode = session.getFlushMode();
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 		}
 		else {
 			// la requête ci-dessus n'est pas une requête HQL, donc hibernate ne fera pas les
@@ -1172,8 +1172,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
 		final Session session = getCurrentSession();
 
-		final FlushMode mode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
+		final FlushModeType mode = session.getFlushMode();
+		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			// met-à-jour les tiers concernés
 			final Query update = session.createSQLQuery("update TIERS set OID = :oid where NUMERO = :id");
@@ -1206,7 +1206,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict, boolean doNotAutoFlush) {
 		final String query = "from CollectiviteAdministrative col where col.identifiantDistrictFiscal = :noDistrict";
-		final FlushMode flushMode = doNotAutoFlush ? FlushMode.MANUAL : null;
+		final FlushModeType flushMode = doNotAutoFlush ? FlushModeType.COMMIT : null;
 		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noDistrict", numeroDistrict)), flushMode);
 		if (list == null || list.isEmpty()) {
 			return null;
@@ -1235,7 +1235,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
 
 		final String query = "from CollectiviteAdministrative col where col.numeroCollectiviteAdministrative = :noTechnique";
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final FlushModeType mode = (doNotAutoFlush ? FlushModeType.COMMIT : null);
 		final List<CollectiviteAdministrative> list = find(query, buildNamedParameters(Pair.of("noTechnique", numeroTechnique)), mode);
 		if (list == null || list.isEmpty()) {
 			return null;
@@ -1306,9 +1306,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
 		final List<Tiers> list;
-		final FlushMode mode = session.getFlushMode();
+		final FlushModeType mode = session.getFlushMode();
 		try {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 			list = crit.list();
 		}
 		finally {
@@ -1333,8 +1333,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
 		query.setParameter("dpiId", debiteur.getId());
 
-		final FlushMode mode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
+		final FlushModeType mode = session.getFlushMode();
+		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			return (Contribuable) query.uniqueResult();
 		}
@@ -1935,8 +1935,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@Override
 	public boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag) {
 		final Session session = getCurrentSession();
-		final FlushMode mode = session.getFlushMode();
-		session.setFlushMode(FlushMode.MANUAL);
+		final FlushModeType mode = session.getFlushMode();
+		session.setFlushMode(FlushModeType.COMMIT);
 		try {
 			final String sql = "UPDATE TIERS SET BLOC_REMB_AUTO=:newFlag, LOG_MDATE=:now, LOG_MUSER=:user WHERE NUMERO=:numero AND (BLOC_REMB_AUTO IS NULL OR BLOC_REMB_AUTO != :newFlag)";
 			final SQLQuery query = getCurrentSession().createSQLQuery(sql);

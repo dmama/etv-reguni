@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dataimport.detector;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -226,7 +226,7 @@ public class ServitudeRFDetector {
 	 */
 	@NotNull
 	private String resolveEgrid(@NotNull String masterIdRF) {
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(masterIdRF), FlushMode.MANUAL);
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(masterIdRF), FlushModeType.COMMIT);
 		if (immeuble == null) {
 			// l'immeuble n'existe pas dans le base, on utilise le masterIdRF
 			return masterIdRF;

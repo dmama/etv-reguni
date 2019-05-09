@@ -1,12 +1,12 @@
 package ch.vd.unireg.declaration;
 
+import javax.persistence.FlushModeType;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -27,9 +27,9 @@ public abstract class DeclarationDAOImpl<T extends Declaration> extends BaseDAOI
 		crit.setFetchMode("delais", FetchMode.JOIN);
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-		final FlushMode mode = session.getFlushMode();
+		final FlushModeType mode = session.getFlushMode();
 		try {
-			session.setFlushMode(FlushMode.MANUAL);
+			session.setFlushMode(FlushModeType.COMMIT);
 			//noinspection unchecked
 			return new HashSet<>(crit.list());
 		}

@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier.dataimport.processor;
 
+import javax.persistence.FlushModeType;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.util.Comparator;
@@ -9,7 +10,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,7 +119,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private ImmeubleRF findImmeuble(@NotNull String idRf) {
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushMode.MANUAL);
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushModeType.COMMIT);
 		if (immeuble == null) {
 			throw new ObjectNotFoundException("L'immeuble RF avec l'idRF=[" + idRf + "] n'existe pas dans la base.");
 		}
@@ -146,7 +146,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 
 		final String masterIdRF = newBatiment.getMasterIdRF();
 
-		final BatimentRF persisted = batimentRFDAO.find(new BatimentRFKey(masterIdRF), FlushMode.MANUAL);
+		final BatimentRF persisted = batimentRFDAO.find(new BatimentRFKey(masterIdRF), FlushModeType.COMMIT);
 		if (persisted == null) {
 			throw new IllegalArgumentException("Le bâtiment avec le masterIdRF=[" + masterIdRF + "] n'existe pas dans la DB.");
 		}
@@ -217,7 +217,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 
 	private void processSuppression(RegDate dateValeur, String masterIdRF) {
 
-		final BatimentRF persisted = batimentRFDAO.find(new BatimentRFKey(masterIdRF), FlushMode.MANUAL);
+		final BatimentRF persisted = batimentRFDAO.find(new BatimentRFKey(masterIdRF), FlushModeType.COMMIT);
 		if (persisted == null) {
 			throw new IllegalArgumentException("Le bâtiment avec le masterIdRF=[" + masterIdRF + "] n'existe pas dans la DB.");
 		}
