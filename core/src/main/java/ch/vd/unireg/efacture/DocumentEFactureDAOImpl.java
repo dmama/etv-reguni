@@ -1,7 +1,7 @@
 package ch.vd.unireg.efacture;
 
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 

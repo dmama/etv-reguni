@@ -3,8 +3,8 @@ package ch.vd.unireg.registrefoncier.dao;
 import javax.persistence.FlushModeType;
 import java.util.List;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;

@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.type.TypeMigRegError;

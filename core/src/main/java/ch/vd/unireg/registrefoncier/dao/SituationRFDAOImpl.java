@@ -3,7 +3,7 @@ package ch.vd.unireg.registrefoncier.dao;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.BaseDAOImpl;

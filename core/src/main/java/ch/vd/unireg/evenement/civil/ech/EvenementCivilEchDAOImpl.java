@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.common.pagination.ParamPagination;

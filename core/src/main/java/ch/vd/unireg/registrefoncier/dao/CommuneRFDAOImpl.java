@@ -1,6 +1,6 @@
 package ch.vd.unireg.registrefoncier.dao;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

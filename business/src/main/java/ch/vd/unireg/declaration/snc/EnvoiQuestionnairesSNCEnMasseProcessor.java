@@ -3,7 +3,7 @@ package ch.vd.unireg.declaration.snc;
 import java.time.Duration;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

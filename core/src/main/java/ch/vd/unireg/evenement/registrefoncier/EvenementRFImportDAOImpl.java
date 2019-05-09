@@ -2,7 +2,7 @@ package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

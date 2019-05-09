@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.jetbrains.annotations.Nullable;
 
 /**
