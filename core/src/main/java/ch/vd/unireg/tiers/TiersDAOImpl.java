@@ -2,6 +2,10 @@ package ch.vd.unireg.tiers;
 
 import javax.persistence.FlushModeType;
 import javax.persistence.TemporalType;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,13 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
@@ -775,23 +773,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
-		// FIXME (???) la date de référence n'est pas utilisée !
-		final Session session = getCurrentSession();
-		final Criteria criteria = session.createCriteria(PersonnePhysique.class);
-		criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
-		criteria.setProjection(Projections.property("numero"));
-		final DetachedCriteria subCriteria = DetachedCriteria.forClass(ForFiscal.class);
-		subCriteria.setProjection(Projections.id());
-		subCriteria.add(Restrictions.isNull("dateFin"));
-		subCriteria.add(Restrictions.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
-		criteria.add(Subqueries.notExists(subCriteria));
-		return criteria.list();
-	}
-
-
-	@Override
 	public boolean exists(final Long id) {
 
 		final String name = this.getPersistentClass().getCanonicalName();
@@ -811,10 +792,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		if (s.getPersistenceContext().containsEntity(key)) {
 			return true;
 		}
-		final Criteria criteria = s.createCriteria(getPersistentClass());
-		criteria.setProjection(Projections.rowCount());
-		criteria.add(Restrictions.eq("numero", id));
-		final int count = ((Number) criteria.uniqueResult()).intValue();
+
+		final Query query = session.createQuery("select count(*) from Tiers where numero = :id");
+		query.setParameter("id", id);
+		final int count = ((Number) query.uniqueResult()).intValue();
 		return count > 0;
 	}
 
@@ -1292,25 +1273,27 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Tiers getTiersForIndexation(final long id) {
 
 		final Session session = getCurrentSession();
-
-		final Criteria crit = session.createCriteria(Tiers.class);
-		crit.add(Restrictions.eq("numero", id));
-		crit.setFetchMode("rapportsSujet", FetchMode.JOIN);
-		crit.setFetchMode("forFiscaux", FetchMode.JOIN);
-		// msi : hibernate ne supporte pas plus de deux JOIN dans une même requête...
-		// msi : on préfère les for fiscaux aux adresses tiers qui - à cause de l'AdresseAutreTiers - impose un deuxième left outer join sur Tiers
-		// crit.setFetchMode("adressesTiers", FetchMode.JOIN);
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final CriteriaBuilder builder = session.getCriteriaBuilder();
 
 		final List<Tiers> list;
 		final FlushModeType mode = session.getFlushMode();
 		try {
 			session.setFlushMode(FlushModeType.COMMIT);
-			list = crit.list();
+
+			final CriteriaQuery<Tiers> query = builder.createQuery(Tiers.class);
+			final Root<Tiers> root = query.from(Tiers.class);
+			root.fetch("rapportsSujet", JoinType.LEFT); // force le préchargement
+			root.fetch("forFiscaux", JoinType.LEFT);
+			// msi : hibernate ne supporte pas plus de deux JOIN dans une même requête...
+			// msi : on préfère les for fiscaux aux adresses tiers qui - à cause de l'AdresseAutreTiers - impose un deuxième left outer join sur Tiers
+			// root.fetch("adressesTiers", JoinType.LEFT);
+			query.distinct(true);
+			query.where(builder.equal(root.get("numero"), id));
+
+			list = session.createQuery(query).list();
 		}
 		finally {
 			session.setFlushMode(mode);

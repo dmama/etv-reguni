@@ -3,8 +3,6 @@ package ch.vd.unireg.situationfamille;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +67,7 @@ public class ComparerSituationFamilleProcessor {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, ComparerSituationFamilleResults r) throws Exception {
+			public boolean doInTransaction(List<Long> batch, ComparerSituationFamilleResults r) {
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
 				return true;
@@ -94,15 +92,14 @@ public class ComparerSituationFamilleProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch, ComparerSituationFamilleResults r) throws Exception {
+	private void traiterBatch(final List<Long> batch, ComparerSituationFamilleResults r) {
 
-		// On charge tous les contribuables en vrac (avec préchargement des situations)
+		// On charge tous les situations en vrac
         final List<SituationFamilleMenageCommun> list = hibernateTemplate.execute(session -> {
-	        final Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);
-	        crit.add(Restrictions.in("id", batch));
-	        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+	        final Query query = session.createQuery("from SituationFamilleMenageCommun where id in (:batch)");
+	        query.setParameterList("batch", batch);
 	        //noinspection unchecked
-	        return (List<SituationFamilleMenageCommun>) crit.list();
+	        return (List<SituationFamilleMenageCommun>) query.list();
         });
 
 		for (SituationFamilleMenageCommun situation : list) {
@@ -133,7 +130,7 @@ public class ComparerSituationFamilleProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = template.execute(status -> {
+		return template.execute(status -> {
 			final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(session -> {
 				final Query queryObject = session.createQuery(queryMessage);
 				//noinspection unchecked
@@ -142,6 +139,5 @@ public class ComparerSituationFamilleProcessor {
 			Collections.sort(idsMessage);
 			return idsMessage;
 		});
-		return ids;
 	}
 }

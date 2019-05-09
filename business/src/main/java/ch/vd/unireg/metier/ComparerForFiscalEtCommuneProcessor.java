@@ -3,8 +3,6 @@ package ch.vd.unireg.metier;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +68,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, ComparerForFiscalEtCommuneResults r) throws Exception {
+			public boolean doInTransaction(List<Long> batch, ComparerForFiscalEtCommuneResults r) {
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
 				return true;
@@ -95,15 +93,14 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch, ComparerForFiscalEtCommuneResults r) throws Exception {
+	private void traiterBatch(final List<Long> batch, ComparerForFiscalEtCommuneResults r) {
 
-		// On charge tous les contribuables en vrac (avec préchargement des situations)
+		// On charge tous les contribuables en vrac
 		final List<Contribuable> list = hibernateTemplate.execute(session -> {
-			final Criteria crit = session.createCriteria(Contribuable.class);
-			crit.add(Restrictions.in("id", batch));
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			final Query query = session.createQuery("from Contribuable where id in (:batch)");
+			query.setParameterList("batch", batch);
 			//noinspection unchecked
-			return (List<Contribuable>) crit.list();
+			return (List<Contribuable>) query.list();
 		});
 
 		for (Contribuable contribuable : list) {
@@ -145,7 +142,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = template.execute(status -> {
+		return template.execute(status -> {
 			final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(session -> {
 				Query queryObject = session.createQuery(queryMessage);
 				//noinspection unchecked
@@ -154,6 +151,5 @@ public class ComparerForFiscalEtCommuneProcessor {
 			Collections.sort(idsMessage);
 			return idsMessage;
 		});
-		return ids;
 	}
 }

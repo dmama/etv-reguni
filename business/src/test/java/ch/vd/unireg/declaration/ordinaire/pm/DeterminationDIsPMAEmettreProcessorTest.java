@@ -47,7 +47,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings({"JavaDoc"})
 public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 	private DeterminationDIsPMAEmettreProcessor service;

@@ -3,10 +3,8 @@ package ch.vd.unireg.evenement.ide;
 import javax.persistence.FlushModeType;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 
@@ -19,22 +17,19 @@ public class ReferenceAnnonceIDEDAOImpl extends BaseDAOImpl<ReferenceAnnonceIDE,
 		super(ReferenceAnnonceIDE.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<ReferenceAnnonceIDE> getReferencesAnnonceIDE(long etablissementId) {
 
 		final Session session = getCurrentSession();
 
-		final Criteria crit = session.createCriteria(ReferenceAnnonceIDE.class);
-		crit.add(Restrictions.eq("etablissement.numero", etablissementId));
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		crit.addOrder(Order.asc("etablissement.numero"));
-
 		final List<ReferenceAnnonceIDE> list;
 		final FlushModeType mode = session.getFlushMode();
 		try {
 			session.setFlushMode(FlushModeType.COMMIT);
-			list = crit.list();
+			final Query query = session.createQuery("select distinct r from ReferenceAnnonceIDE r where r.etablissement.numero = :etablissementId order by r.etablissement.numero");
+			query.setParameter("etablissementId", etablissementId);
+			//noinspection unchecked
+			list = query.list();
 		}
 		finally {
 			session.setFlushMode(mode);
@@ -54,16 +49,13 @@ public class ReferenceAnnonceIDEDAOImpl extends BaseDAOImpl<ReferenceAnnonceIDE,
 
 		final Session session = getCurrentSession();
 
-		final Criteria crit = session.createCriteria(ReferenceAnnonceIDE.class);
-		crit.add(Restrictions.eq("etablissement.numero", etablissementId));
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		crit.addOrder(Order.desc("id"));
-
 		final List<ReferenceAnnonceIDE> list;
 		final FlushModeType mode = session.getFlushMode();
 		try {
 			session.setFlushMode(FlushModeType.COMMIT);
-			list = crit.list();
+			final Query query = session.createQuery("select distinct r from ReferenceAnnonceIDE r where r.etablissement.numero = :etablissementId order by id desc");
+			query.setParameter("etablissementId", etablissementId);
+			list = query.list();
 		}
 		finally {
 			session.setFlushMode(mode);

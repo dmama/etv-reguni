@@ -3,8 +3,6 @@ package ch.vd.unireg.adresse;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +64,7 @@ public class ResolutionAdresseProcessor {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, ResolutionAdresseResults r) throws Exception {
+			public boolean doInTransaction(List<Long> batch, ResolutionAdresseResults r) {
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
 				return true;
@@ -95,26 +93,22 @@ public class ResolutionAdresseProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch, ResolutionAdresseResults r) throws Exception {
-		//Chargement des messages d'identification
-		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
+	private void traiterBatch(final List<Long> batch, ResolutionAdresseResults r) {
+		// Chargement des adresses
 		final List<AdresseSuisse> list = hibernateTemplate.execute(session -> {
-			final Criteria crit = session.createCriteria(AdresseSuisse.class);
-			crit.add(Restrictions.in("id", batch));
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			final Query query = session.createQuery("from AdresseSuisse where id in (:ids)");
+			query.setParameterList("ids", batch);
 			//noinspection unchecked
-			return (List<AdresseSuisse>) crit.list();
+			return (List<AdresseSuisse>) query.list();
 		});
 		for (AdresseSuisse adresseSuisse : list) {
 			r.nbAdresseTotal++;
 			ressoudreAdresse(adresseSuisse, r);
 		}
-
-
 	}
 
 	private void ressoudreAdresse(AdresseSuisse adresseSuisse, ResolutionAdresseResults r) throws RuntimeException {
-		Rue rue = null;
+		Rue rue;
 		final Integer numeroRueAdresse = adresseSuisse.getNumeroRue();
 		try {
 			rue = infraService.getRueByNumero(numeroRueAdresse);

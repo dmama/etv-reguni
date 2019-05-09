@@ -2,8 +2,7 @@ package ch.vd.unireg.reqdes;
 
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 
@@ -13,20 +12,20 @@ public class EvenementReqDesDAOImpl extends BaseDAOImpl<EvenementReqDes, Long> i
 		super(EvenementReqDes.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementReqDes> findByNumeroMinute(String noMinute, String visaNotaire) {
-		final Criteria criteria = getCurrentSession().createCriteria(getPersistentClass());
-		criteria.add(Restrictions.eq("numeroMinute", noMinute));
-		criteria.add(Restrictions.eq("notaire.visa", visaNotaire));
-		return criteria.list();
+		final Query query = getCurrentSession().createQuery("from EvenementReqDes where numeroMinute = :numeroMinute and notaire.visa = :visa");
+		query.setParameter("numeroMinute", noMinute);
+		query.setParameter("visa", visaNotaire);
+		//noinspection unchecked
+		return query.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementReqDes> findByNoAffaire(long noAffaire) {
-		final Criteria criteria = getCurrentSession().createCriteria(getPersistentClass());
-		criteria.add(Restrictions.eq("noAffaire", noAffaire));
-		return criteria.list();
+		final Query query = getCurrentSession().createQuery("from EvenementReqDes where noAffaire = :noAffaire");
+		query.setParameter("noAffaire", noAffaire);
+		//noinspection unchecked
+		return query.list();
 	}
 }

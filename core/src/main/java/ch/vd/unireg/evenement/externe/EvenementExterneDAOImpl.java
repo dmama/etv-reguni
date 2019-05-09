@@ -1,21 +1,18 @@
 package ch.vd.unireg.evenement.externe;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 
 /**
  * DAO des événements externes.
- *
- * @author xcicfh
- *
  */
 public class EvenementExterneDAOImpl extends BaseDAOImpl<EvenementExterne, Long> implements EvenementExterneDAO {
 
@@ -25,33 +22,35 @@ public class EvenementExterneDAOImpl extends BaseDAOImpl<EvenementExterne, Long>
 
 	@Override
 	public boolean existe(final String businessId) {
-		final Session session = getCurrentSession();
-		final Criteria criteria = session.createCriteria(EvenementExterne.class);
-		criteria.setProjection(Projections.rowCount());
-		criteria.add(Restrictions.eq("businessId", businessId));
-		final int count = ((Number) criteria.uniqueResult()).intValue();
+		final Query query = getCurrentSession().createQuery("select count(*) from EvenementExterne where businessId = :businessId");
+		query.setParameter("businessId", businessId);
+		final int count = ((Number) query.uniqueResult()).intValue();
 		return count > 0;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Collection<EvenementExterne> getEvenementExternes(final boolean ascending, final EtatEvenementExterne... etatEvenementExternes) {
 		final Session session = getCurrentSession();
-		final Criteria criteria = session.createCriteria(EvenementExterne.class);
+		final CriteriaBuilder builder = session.getCriteriaBuilder();
+
+		final CriteriaQuery<EvenementExterne> query = builder.createQuery(EvenementExterne.class);
+		final Root<EvenementExterne> root = query.from(EvenementExterne.class);
+
 		if (ascending) {
-			criteria.addOrder(Order.asc("dateEvenement"));
+			query.orderBy(builder.asc(root.get("dateEvenement")));
 		}
 		else {
-			criteria.addOrder(Order.desc("dateEvenement"));
+			query.orderBy(builder.desc(root.get("dateEvenement")));
 		}
+
 		if (etatEvenementExternes != null && etatEvenementExternes.length > 0) {
-			criteria.add(Restrictions.in("etat", etatEvenementExternes));
+			query.where(root.get("etat").in((Object[]) etatEvenementExternes));
 		}
-		return criteria.list();
+
+		return session.createQuery(query).list();
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
 	public List<Long> getIdsQuittancesLRToMigrate() {
 		return find("select q.id from QuittanceLR q where q.type is null", null);
 	}

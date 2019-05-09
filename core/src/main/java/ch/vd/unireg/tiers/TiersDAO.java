@@ -170,12 +170,6 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	List<Long> getNumerosPMs(Collection<Long> tiersIds);
 
 	/**
-	 * Retourne la liste de tous les Numéros d'habitant des tiers en base
-	 * @return la liste de tous les Numéros d'habitant
-	 */
-	List<Long> getHabitantsForMajorite(RegDate dateReference);
-
-	/**
 	 * Retourne une liste de numero de Tiers dans le range passé
 	 *
 	 * @return la liste des numéros de CTBs trouvés

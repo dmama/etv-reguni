@@ -1,13 +1,13 @@
 package ch.vd.unireg.declaration.ordinaire.pm;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -138,12 +138,12 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
 		final List<Entreprise> list = hibernateTemplate.execute(session -> {
-			final Criteria crit = session.createCriteria(Entreprise.class);
-			crit.add(Restrictions.in("numero", batch));
-			crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-			//noinspection unchecked
-			return (List<Entreprise>) crit.list();
+			final CriteriaQuery<Entreprise> query = session.getCriteriaBuilder().createQuery(Entreprise.class);
+			final Root<Entreprise> root = query.from(Entreprise.class);
+			root.fetch("documentsFiscaux", JoinType.LEFT); // force le préchargement
+			query.distinct(true);
+			query.where(root.get("numero").in(batch));
+			return session.createQuery(query).list();
 		});
 
 		// Traitement de tous les contribuables

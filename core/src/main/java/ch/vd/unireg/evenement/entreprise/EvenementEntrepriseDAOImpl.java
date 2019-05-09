@@ -1,5 +1,9 @@
 package ch.vd.unireg.evenement.entreprise;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,11 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,27 +65,32 @@ public class EvenementEntrepriseDAOImpl extends BaseDAOImpl<EvenementEntreprise,
 		return getEvenementsNonTraites(Collections.singletonList(noEntrepriseCivile), false);
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<EvenementEntreprise> getEvenementsNonTraites(Collection<Long> nosEntreprisesCiviles, boolean nonTraitesSeulement) {
-		//final String hql = "from EvenementEntreprise as ec where ec.annulationDate is null and ec.noEntrepriseCivile in (:nosEntreprisesCiviles)" + (nonTraitesSeulement ? " and ec.etat in (:etats)" : StringUtils.EMPTY);
-		Criteria query = getCurrentSession().createCriteria(EvenementEntreprise.class, "eo");
-		query.add(Restrictions.isNull("annulationDate"));
-		query.add(Restrictions.in("noEntrepriseCivile", nosEntreprisesCiviles));
+
+		final CriteriaBuilder builder = getCurrentSession().getCriteriaBuilder();
+		final CriteriaQuery<EvenementEntreprise> query = builder.createQuery(EvenementEntreprise.class);
+
+		final Root<EvenementEntreprise> root = query.from(EvenementEntreprise.class);
+		query.distinct(true);
+
+		final List<Predicate> predicates = new ArrayList<>(3);
+		predicates.add(root.get("annulationDate").isNull());
+		predicates.add(root.get("noEntrepriseCivile").in(nosEntreprisesCiviles));
 		if (nonTraitesSeulement) {
-			query.add(Restrictions.in("etat", ETATS_NON_TRAITES));
+			predicates.add(root.get("etat").in(ETATS_NON_TRAITES));
 		}
-		query.addOrder(Order.asc("dateEvenement"));
-		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		return query.list();
+		query.where(predicates.toArray(new Predicate[0]));
+
+		query.orderBy(builder.asc(root.get("dateEvenement")));
+
+		return getCurrentSession().createQuery(query).list();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementEntreprise> getEvenementsARelancer() {
-		// final String hql = "from EvenementEntreprise as ec where ec.annulationDate is null and ec.etat = :etat";
-		Criteria query = getCurrentSession().createCriteria(EvenementEntreprise.class, "eo");
-		query.add(Restrictions.isNull("annulationDate"));
-		query.add(Restrictions.eq("etat", EtatEvenementEntreprise.A_TRAITER));
+		final Query query = getCurrentSession().createQuery("from EvenementEntreprise where annulationDate is null and etat = :etat");
+		query.setParameter("etat", EtatEvenementEntreprise.A_TRAITER);
+		//noinspection unchecked
 		return query.list();
 	}
 
@@ -143,16 +148,11 @@ public class EvenementEntrepriseDAOImpl extends BaseDAOImpl<EvenementEntreprise,
 		return filtres;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Long> getNosEntreprisesCivilesConcerneesParEvenementsPourRetry() {
-		//final String hql = "select distinct ec.noEntrepriseCivile from EvenementEntreprise ec where ec.annulationDate is null and ec.noEntrepriseCivile is not null and ec.etat in (:etats)";
-		Criteria query = getCurrentSession().createCriteria(EvenementEntreprise.class, "eo");
-		query.add(Restrictions.isNull("annulationDate"));
-		query.add(Restrictions.isNotNull("noEntrepriseCivile"));
-		query.add(Restrictions.in("etat", ETATS_NON_TRAITES));
-		query.setProjection(Projections.property("noEntrepriseCivile"));
-		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final Query query = getCurrentSession().createQuery("select noEntrepriseCivile from EvenementEntreprise where annulationDate is null and noEntrepriseCivile is not null and etat in (:etats)");
+		query.setParameter("etats", ETATS_NON_TRAITES);
+		//noinspection unchecked
 		return new HashSet<>(query.list());
 	}
 
@@ -191,29 +191,25 @@ public class EvenementEntrepriseDAOImpl extends BaseDAOImpl<EvenementEntreprise,
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<EvenementEntreprise> getEvenementsForNoEvenement(long noEvenement) {
-		Criteria query = getCurrentSession().createCriteria(EvenementEntreprise.class, "eo");
-		query.add(Restrictions.eq("noEvenement", noEvenement));
-		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final Query query = getCurrentSession().createQuery("from EvenementEntreprise where noEvenement = :noEvenement");
+		query.setParameter("noEvenement", noEvenement);
+		//noinspection unchecked
 		return query.list();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public EvenementEntreprise getEvenementForNoAnnonceIDE(long noAnnonce) {
-		Criteria query = getCurrentSession().createCriteria(EvenementEntreprise.class, "eo");
-		query.add(Restrictions.eq("referenceAnnonceIDE.id", noAnnonce));
-		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final Query query = getCurrentSession().createQuery("from EvenementEntreprise where referenceAnnonceIDE.id = :noAnnonce");
+		query.setParameter("noAnnonce", noAnnonce);
 		return (EvenementEntreprise) query.uniqueResult();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<EvenementEntreprise> getEvenementsForBusinessId(String businessId) {
-		Criteria query = getCurrentSession().createCriteria(EvenementEntreprise.class, "eo");
-		query.add(Restrictions.eq("businessId", businessId));
-		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final Query query = getCurrentSession().createQuery("from EvenementEntreprise where businessId = :businessId");
+		query.setParameter("businessId", businessId);
+		//noinspection unchecked
 		return query.list();
 	}
 

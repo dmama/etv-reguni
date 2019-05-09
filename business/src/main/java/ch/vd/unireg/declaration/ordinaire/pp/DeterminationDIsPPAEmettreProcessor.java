@@ -1,5 +1,8 @@
 package ch.vd.unireg.declaration.ordinaire.pp;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,9 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -192,12 +192,12 @@ public class DeterminationDIsPPAEmettreProcessor {
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
         final List<ContribuableImpositionPersonnesPhysiques> list = hibernateTemplate.execute(session -> {
-	        final Criteria crit = session.createCriteria(ContribuableImpositionPersonnesPhysiques.class);
-	        crit.add(Restrictions.in("numero", batch));
-	        crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
-	        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-	        //noinspection unchecked
-	        return (List<ContribuableImpositionPersonnesPhysiques>) crit.list();
+	        final CriteriaQuery<ContribuableImpositionPersonnesPhysiques> query = session.getCriteriaBuilder().createQuery(ContribuableImpositionPersonnesPhysiques.class);
+	        final Root<ContribuableImpositionPersonnesPhysiques> root = query.from(ContribuableImpositionPersonnesPhysiques.class);
+	        root.fetch("documentsFiscaux", JoinType.LEFT); // force le préchargement
+	        query.distinct(true);
+	        query.where(root.get("numero").in(batch));
+	        return session.createQuery(query).list();
         });
 
 		// Traite tous les contribuables

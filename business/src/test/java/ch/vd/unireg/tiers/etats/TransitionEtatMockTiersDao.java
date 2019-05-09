@@ -11,7 +11,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.declaration.Declaration;
@@ -144,11 +143,6 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 	@Nullable
 	@Override
 	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
 		throw new UnsupportedOperationException();
 	}
 

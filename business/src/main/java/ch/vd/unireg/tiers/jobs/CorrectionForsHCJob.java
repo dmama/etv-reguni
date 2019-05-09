@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -71,7 +70,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 		final BatchTransactionTemplate<Long> t = new BatchTransactionTemplate<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager);
 		t.execute(new BatchCallback<Long>() {
 			@Override
-			public boolean doInTransaction(List<Long> batch) throws Exception {
+			public boolean doInTransaction(List<Long> batch) {
 				return doBatch(batch, monitor);
 			}
 
@@ -90,7 +89,6 @@ public class CorrectionForsHCJob extends JobDefinition {
 		audit.success("Traitement de correction de fors HC terminé.");
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<Long> retrieveIdFors() {
 		
 		final String queryStr= "select ffp.id from ForFiscalPrincipalPP as ffp"
@@ -106,14 +104,12 @@ public class CorrectionForsHCJob extends JobDefinition {
 	private Set<ForFiscalPrincipal> getFors(final List<Long> ids) {
 		
 		final List<ForFiscalPrincipal> list = hibernateTemplate.execute(session -> {
-			final Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
-			criteria.add(Restrictions.in("id", ids));
-			criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-
 			final FlushModeType mode = session.getFlushMode();
 			try {
 				session.setFlushMode(FlushModeType.COMMIT);
-				return criteria.list();
+				final Query query = session.createQuery("from ForFiscalPrincipal where id in (:ids)");
+				query.setParameterList("ids", ids);
+				return query.list();
 			}
 			finally {
 				session.setFlushMode(mode);

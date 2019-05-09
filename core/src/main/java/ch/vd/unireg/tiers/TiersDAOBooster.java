@@ -196,11 +196,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
-		return target.getHabitantsForMajorite(dateReference);
-	}
-
-	@Override
 	public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
 		return target.getTiersInRange(ctbStart, ctbEnd);
 	}

@@ -22,7 +22,6 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
-@SuppressWarnings({"JavaDoc"})
 public class EvenementExterneProcessorTest extends BusinessTest {
 
 	private EvenementExterneProcessor processor;

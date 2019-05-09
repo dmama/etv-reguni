@@ -17,7 +17,7 @@ import ch.vd.unireg.type.TypeEvenementEntreprise;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@SuppressWarnings({"JavaDoc", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class EvenementEntrepriseDAOTest extends CoreDAOTest {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(EvenementEntrepriseDAOTest.class);

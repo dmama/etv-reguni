@@ -83,9 +83,6 @@ import static org.junit.Assert.fail;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@SuppressWarnings({
-		"FieldCanBeLocal", "JavaDoc"
-})
 public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	public IdentificationContribuableServiceTest() {

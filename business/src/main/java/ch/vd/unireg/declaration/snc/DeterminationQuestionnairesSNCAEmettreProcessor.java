@@ -1,5 +1,8 @@
 package ch.vd.unireg.declaration.snc;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,9 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -132,14 +132,14 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 			throw new DeclarationException("La période fiscale " + periodeFiscale + " n'existe pas dans la base de données.");
 		}
 
-		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
+		// On charge toutes les entreprises en vrac (avec préchargement des déclarations)
 		final List<Entreprise> list = hibernateTemplate.execute(session -> {
-			final Criteria crit = session.createCriteria(Entreprise.class);
-			crit.add(Restrictions.in("numero", ids));
-			crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-			//noinspection unchecked
-			return (List<Entreprise>) crit.list();
+			final CriteriaQuery<Entreprise> query = session.getCriteriaBuilder().createQuery(Entreprise.class);
+			final Root<Entreprise> root = query.from(Entreprise.class);
+			root.fetch("documentsFiscaux", JoinType.LEFT); // force le préchargement
+			query.distinct(true);
+			query.where(root.get("numero").in(ids));
+			return session.createQuery(query).list();
 		});
 
 		final CollectiviteAdministrative oipm = tiersService.getOfficeImpot(ServiceInfrastructureService.noOIPM);

@@ -64,7 +64,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@SuppressWarnings({"JavaDoc"})
 public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 	private DeterminationDIsPPAEmettreProcessor service;
@@ -1428,7 +1427,6 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	/**
 	 * [UNIREG-1980] Teste que le type de document pour un indigent qui a reçu des Vaudtax reste Vaudtax.
 	 */
-	@SuppressWarnings({"unchecked"})
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testEnvoiDIContribuableIndigentVaudTax() throws Exception {

@@ -3,9 +3,6 @@ package ch.vd.unireg.evenement.externe;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -56,7 +53,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, TraiterEvenementExterneResult r) throws Exception {
+			public boolean doInTransaction(List<Long> batch, TraiterEvenementExterneResult r) {
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
 				return true;
@@ -82,16 +79,14 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		return rapportFinal;
 	}
 
-	private void traiterBatch(final List<Long> batch, TraiterEvenementExterneResult r) throws EvenementExterneException {
+	private void traiterBatch(final List<Long> batch, TraiterEvenementExterneResult r) {
 
 		//Chargement des evenement externes
 		final List<EvenementExterne> list = hibernateTemplate.execute(session -> {
-			final Criteria crit = session.createCriteria(EvenementExterne.class);
-			crit.add(Restrictions.in("id", batch));
-			crit.addOrder(Order.asc("id"));
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			final Query query = session.createQuery("from EvenementExterne where id in (:ids) order by id");
+			query.setParameterList("ids", batch);
 			//noinspection unchecked
-			return (List<EvenementExterne>) crit.list();
+			return (List<EvenementExterne>) query.list();
 		});
 
 		for (EvenementExterne evenementExterne : list) {

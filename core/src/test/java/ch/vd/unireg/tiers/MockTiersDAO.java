@@ -143,11 +143,6 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
-		throw new NotImplementedException("");
-	}
-
-	@Override
 	public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
 		throw new NotImplementedException("");
 	}

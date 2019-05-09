@@ -41,7 +41,6 @@ import ch.vd.unireg.type.TypeTache;
 
 import static org.junit.Assert.assertNotNull;
 
-@SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES
 })

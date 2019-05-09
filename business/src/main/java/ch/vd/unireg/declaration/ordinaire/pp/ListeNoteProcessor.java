@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,15 +101,14 @@ public class ListeNoteProcessor {
 	}
 
 
-	private void traiterBatch(final List<Long> batch, final int annee, ListeNoteResults r) throws Exception {
+	private void traiterBatch(final List<Long> batch, final int annee, ListeNoteResults r) {
 
 		// On charge tous les contribuables en vrac
 		final List<Contribuable> list = hibernateTemplate.execute(session -> {
-			final Criteria crit = session.createCriteria(Contribuable.class);
-			crit.add(Restrictions.in("id", batch));
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			final Query query = session.createQuery("from Contribuable where id in (:ids)");
+			query.setParameterList("ids", batch);
 			//noinspection unchecked
-			return (List<Contribuable>) crit.list();
+			return (List<Contribuable>) query.list();
 		});
 
 		for (Contribuable contribuable : list) {

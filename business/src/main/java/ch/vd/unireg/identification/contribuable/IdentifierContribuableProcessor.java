@@ -6,8 +6,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +68,7 @@ public class IdentifierContribuableProcessor {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, IdentifierContribuableResults r) throws Exception {
+			public boolean doInTransaction(List<Long> batch, IdentifierContribuableResults r) {
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
 				return true;
@@ -103,15 +101,13 @@ public class IdentifierContribuableProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch, IdentifierContribuableResults rapport) throws Exception {
+	private void traiterBatch(final List<Long> batch, IdentifierContribuableResults rapport) {
 		//Chargement des messages d'identification
-		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
 		final List<IdentificationContribuable> list = hibernateTemplate.execute(session -> {
-			Criteria crit = session.createCriteria(IdentificationContribuable.class);
-			crit.add(Restrictions.in("id", batch));
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+			final Query query = session.createQuery("from IdentificationContribuable where id in (:ids)");
+			query.setParameterList("ids", batch);
 			//noinspection unchecked
-			return (List<IdentificationContribuable>) crit.list();
+			return (List<IdentificationContribuable>) query.list();
 		});
 		for (IdentificationContribuable identificationContribuable : list) {
 			++rapport.nbMessagesTotal;

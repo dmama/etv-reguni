@@ -4,10 +4,7 @@ import javax.persistence.FlushModeType;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 
 import ch.vd.unireg.common.BaseDAOImpl;
@@ -37,11 +34,9 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 
 	@Override
 	public boolean existsForContribuable(final long numeroCtb) {
-		final Session session = getCurrentSession();
-		final Criteria criteria = session.createCriteria(getPersistentClass());
-		criteria.setProjection(Projections.rowCount());
-		criteria.add(Restrictions.eq("noContribuable", numeroCtb));
-		final int count = ((Number) criteria.uniqueResult()).intValue();
+		final Query query = getCurrentSession().createQuery("select count(*) from MigrationError where noContribuable = :numeroCtb");
+		query.setParameter("numeroCtb", numeroCtb);
+		final int count = ((Number) query.uniqueResult()).intValue();
 		return count > 0;
 	}
 
