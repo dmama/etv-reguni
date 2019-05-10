@@ -97,7 +97,7 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 				final NativeQuery query = session.createNativeQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
 						                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
 						                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
-				query.setParameter(0, id);
+				query.setParameter(1, id);
 				final List list = query.list();
 				assertNotNull(list);
 				assertEquals(1, list.size());

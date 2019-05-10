@@ -58,7 +58,7 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 	public List<Long> getAllNoCtbForTypeError(final TypeMigRegError type) {
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur = ?");
-		query.setParameter(0, type.ordinal());
+		query.setParameter(1, type.ordinal());
 		return query.list();
 	}
 
@@ -67,7 +67,7 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 	public List<Long> getAllNoCtbForTypeErrorNeq(final TypeMigRegError type) {
 		final Session session = getCurrentSession();
 		Query query = session.createQuery("select m.noContribuable from MigrationError as m where m.typeErreur <> ?");
-		query.setParameter(0, type.ordinal());
+		query.setParameter(1, type.ordinal());
 		return query.list();
 	}
 
