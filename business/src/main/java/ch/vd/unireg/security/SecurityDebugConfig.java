@@ -149,6 +149,7 @@ public class SecurityDebugConfig implements InitializingBean {
 				LOGGER.warn("\n************************************************ Attention ********************************************************\n" +
 						            "* le debug de la sécurité est activé, mais l'application n'a pas été compilée avec le profil 'dev' => pas d'effet *\n" +
 						            "*******************************************************************************************************************");
+				securityDebug = false;
 			}
 
 			if (securityDebug && securityBypass != null) {
