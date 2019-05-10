@@ -20,8 +20,6 @@ import ch.vd.unireg.registrefoncier.dataimport.FichierServitudeRFParser;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRFImpl;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-
 /**
  * Cet utilitaire permet de rechercher les éléments qui matchent un pattern et de les imprimer dans la console.
  */
@@ -54,7 +52,9 @@ public class GrepImportUsufruits {
 		final String filename = args[1];
 
 		final File file = ResourceUtils.getFile("file:" + filename);
-		assertNotNull(file);
+		if (file == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final MutableInt servitudeCount = new MutableInt(0);
 		final MutableInt groupesBeneficiairesCount = new MutableInt(0);

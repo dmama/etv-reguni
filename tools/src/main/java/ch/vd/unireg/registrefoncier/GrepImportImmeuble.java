@@ -24,8 +24,6 @@ import ch.vd.unireg.registrefoncier.dataimport.FichierImmeublesRFParser;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRFImpl;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-
 /**
  * Cet utilitaire permet de rechercher les éléments qui matchent un pattern et de les imprimer dans la console.
  */
@@ -58,7 +56,9 @@ public class GrepImportImmeuble {
 		final String filename = args[1];
 
 		final File file = ResourceUtils.getFile("file:" + filename);
-		assertNotNull(file);
+		if (file == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final MutableInt immeubleCount = new MutableInt(0);
 		final MutableInt droitCount = new MutableInt(0);
