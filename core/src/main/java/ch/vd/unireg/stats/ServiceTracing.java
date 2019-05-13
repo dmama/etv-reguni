@@ -17,13 +17,14 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.tracing.datasource.TraceCollector;
 
 /**
  * Classe utilitaire qui permet de comptabiliser le ping moyen (depuis le début de l'application et sur les 5 dernières minutes) ainsi que le temps passé entre deux appels.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public final class ServiceTracing implements ServiceTracingInterface, ServiceTracingRecorder {
+public final class ServiceTracing implements ServiceTracingInterface, TraceCollector {
 
 	private static final long NANO_TO_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
 	private static final int RECENTS_SIZE = 5; // 5 minutes d'activité récente
@@ -354,22 +355,12 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	}
 
 	/**
-	 * Signale le début d'un appel d'une méthode. La valeur retournée doit être transmise à la méthode {@link #end(long)}.
+	 * Signale le début d'un appel d'une méthode. La valeur retournée doit être transmise à la méthode {@link #end(long, String, Supplier)}.
 	 *
 	 * @return un timestamp à transmettre à la méthode end().
 	 */
 	public long start() {
 		return System.nanoTime();
-	}
-
-	/**
-	 * Signale la fin d'un appel d'une méthode
-	 *
-	 * @param start la valeur retournée par la méthode {@link #start()}.
-	 */
-	@Override
-	public void end(long start) {
-		end(start, null, null);
 	}
 
 	/**

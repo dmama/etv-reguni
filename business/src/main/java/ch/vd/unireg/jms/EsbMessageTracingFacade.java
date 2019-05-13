@@ -9,11 +9,11 @@ import java.util.Set;
 
 import org.w3c.dom.Document;
 
+import ch.vd.shared.tracing.datasource.TraceCollector;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.OperationType;
 import ch.vd.technical.esb.util.EsbDataHandler;
-import ch.vd.unireg.stats.ServiceTracingRecorder;
 
 /**
  * Façade qui trace certains appels (<i>a priori</i> consomateurs) sur l'EsbMessage
@@ -21,11 +21,11 @@ import ch.vd.unireg.stats.ServiceTracingRecorder;
 public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	private final EsbMessage target;
-	private final ServiceTracingRecorder recorder;
+	private final TraceCollector collector;
 
-	public EsbMessageTracingFacade(EsbMessage target, ServiceTracingRecorder recorder) {
+	public EsbMessageTracingFacade(EsbMessage target, TraceCollector collector) {
 		this.target = target;
-		this.recorder = recorder;
+		this.collector = collector;
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 	@Override
 	public Source getBodyAsSource() {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			return target.getBodyAsSource();
 		}
@@ -175,14 +175,14 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsSource", null);
+			collector.end(start, t, "getBodyAsSource", null);
 		}
 	}
 
 	@Override
 	public Document getBodyAsDocument() throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			return target.getBodyAsDocument();
 		}
@@ -191,14 +191,14 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsDocument", null);
+			collector.end(start, t, "getBodyAsDocument", null);
 		}
 	}
 
 	@Override
 	public byte[] getBodyAsByteArray() throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			return target.getBodyAsByteArray();
 		}
@@ -207,14 +207,14 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsByteArray", null);
+			collector.end(start, t, "getBodyAsByteArray", null);
 		}
 	}
 
 	@Override
 	public byte[] getBodyAsByteArray(String encoding) throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			return target.getBodyAsByteArray(encoding);
 		}
@@ -223,14 +223,14 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsByteArray", () -> String.format("encoding=%s", encoding));
+			collector.end(start, t, "getBodyAsByteArray", () -> String.format("encoding=%s", encoding));
 		}
 	}
 
 	@Override
 	public String getBodyAsString() throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			return target.getBodyAsString();
 		}
@@ -239,14 +239,14 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsString", null);
+			collector.end(start, t, "getBodyAsString", null);
 		}
 	}
 
 	@Override
 	public String getBodyAsString(String encoding) throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			return target.getBodyAsString(encoding);
 		}
@@ -255,7 +255,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsString", () -> String.format("encoding=%s", encoding));
+			collector.end(start, t, "getBodyAsString", () -> String.format("encoding=%s", encoding));
 		}
 	}
 
@@ -272,7 +272,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 	@Override
 	public void bodyToOutputStream(OutputStream out) throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			target.bodyToOutputStream(out);
 		}
@@ -281,14 +281,14 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "bodyToOutputStream", null);
+			collector.end(start, t, "bodyToOutputStream", null);
 		}
 	}
 
 	@Override
 	public void bodyToOutputStream(OutputStream out, String encoding) throws Exception {
 		Throwable t = null;
-		final long start = recorder.start();
+		final long start = collector.start();
 		try {
 			target.bodyToOutputStream(out, encoding);
 		}
@@ -297,7 +297,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "bodyToOutputStream", () -> String.format("encoding=%s", encoding));
+			collector.end(start, t, "bodyToOutputStream", () -> String.format("encoding=%s", encoding));
 		}
 	}
 

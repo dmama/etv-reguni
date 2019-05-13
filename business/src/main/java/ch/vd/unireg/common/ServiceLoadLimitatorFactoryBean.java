@@ -158,7 +158,7 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 		@Override
 		public Object call() throws Exception {
 			// l'attente est terminée
-			waitingTracing.end(birth);
+			waitingTracing.end(birth, null, null);
 
 			// maintenant, on fait effectivement l'appel...
 			load.incrementAndGet();

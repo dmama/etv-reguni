@@ -28,11 +28,6 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.shared</groupId>
-			<artifactId>shared-tracing-datasource</artifactId>
-			<version>1.1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-core</artifactId>
 			<version>${project.parent.version}</version>
