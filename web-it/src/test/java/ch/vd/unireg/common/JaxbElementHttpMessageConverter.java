@@ -70,7 +70,7 @@ public class JaxbElementHttpMessageConverter extends AbstractJaxb2HttpMessageCon
 			return jaxbElement.getValue();
 		}
 		catch (UnmarshalException ex) {
-			throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + ex.getMessage(), ex);
+			throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + ex.getMessage(), ex, null);
 
 		}
 		catch (JAXBException ex) {
