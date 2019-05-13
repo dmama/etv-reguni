@@ -264,15 +264,14 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
+			if (!(o instanceof GetEntrepriseByNoIdeKey)) return false;
 			final GetEntrepriseByNoIdeKey that = (GetEntrepriseByNoIdeKey) o;
-			return noide != null ? noide.equals(that.noide) : that.noide == null;
+			return Objects.equals(noide, that.noide);
 		}
 
 		@Override
 		public int hashCode() {
-			return noide != null ? noide.hashCode() : 0;
+			return Objects.hash(noide);
 		}
 
 		@Override
@@ -293,7 +292,7 @@ public class ServiceEntrepriseCache implements ServiceEntrepriseRaw, UniregCache
 			return ids;
 		}
 		else {
-			return (Identifiers) element.getValue();
+			return (Identifiers) element.getObjectValue();
 		}
 	}
 

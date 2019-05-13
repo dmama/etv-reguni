@@ -483,19 +483,15 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
+			if (!(o instanceof KeyGetCommunesByEgid)) return false;
 			final KeyGetCommunesByEgid that = (KeyGetCommunesByEgid) o;
-
-			if (egid != that.egid) return false;
-			return !(date != null ? !date.equals(that.date) : that.date != null);
+			return egid == that.egid &&
+					Objects.equals(date, that.date);
 		}
 
 		@Override
 		public int hashCode() {
-			int result = egid;
-			result = 31 * result + (date != null ? date.hashCode() : 0);
-			return result;
+			return Objects.hash(egid, date);
 		}
 
 		@Override
@@ -782,7 +778,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			cache.put(new Element(key, resultat));
 		}
 		else {
-			//noinspection unchecked
 			resultat = (Localite) element.getObjectValue();
 		}
 
@@ -1658,7 +1653,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 		else {
 			//noinspection unchecked
-			resultat = (List<TypeRegimeFiscal>) element.getValue();
+			resultat = (List<TypeRegimeFiscal>) element.getObjectValue();
 		}
 		return resultat;
 	}
@@ -1691,7 +1686,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 		else {
 			//noinspection unchecked
-			resultat = (List<GenreImpotMandataire>) element.getValue();
+			resultat = (List<GenreImpotMandataire>) element.getObjectValue();
 		}
 		return resultat;
 	}
