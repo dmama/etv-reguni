@@ -87,12 +87,6 @@
 			<version>${servlet.common.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.shared</groupId>
-			<artifactId>shared-embedded-tomcat</artifactId>
-			<version>${embedded-tomcat.version}</version>
-			<scope>test</scope>
-	    </dependency>
-		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>${jsp.version}</version>

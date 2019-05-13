@@ -728,7 +728,6 @@
 
 		<!-- Framework dependency versions -->
 		<tomcat.version>8.0.17</tomcat.version>
-		<embedded-tomcat.version>4.0.0</embedded-tomcat.version>
 		<spring.version>4.3.9.RELEASE</spring.version>
 		<spring.security.version>4.2.5.RELEASE</spring.security.version>
 		<cxf.version>3.3.1</cxf.version>
