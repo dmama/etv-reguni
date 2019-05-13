@@ -14,7 +14,7 @@
 	    <%--@elvariable id="debiteurCriteriaView" type="ch.vd.unireg.rt.view.DebiteurListView"--%>
 	    <unireg:bandeauTiers numero="${debiteurCriteriaView.numeroSourcier}" titre="label.caracteristiques.sourcier" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
-	    <form:form method="get" id="formRechercheTiers" commandName="debiteurCriteriaView">
+	    <form:form method="get" id="formRechercheTiers" modelAttribute="debiteurCriteriaView">
 		    <form:hidden path="numeroSourcier"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>

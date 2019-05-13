@@ -13,14 +13,14 @@
 		<unireg:nextRowClass reset="1"/>
 		<fieldset>
 			<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
-			<form:form method="post" action="rechercher-pour-traitement.do" commandName="criteria">
+			<form:form method="post" action="rechercher-pour-traitement.do" modelAttribute="criteria">
 				<form:errors cssClass="error"/>
 				<jsp:include page="form.jsp"/>
 			</form:form>
 		</fieldset>
 
 		<c:if test="${found != null}">
-			<form:form method="post" action="inclure-dans-bordereau.do" commandName="found">
+			<form:form method="post" action="inclure-dans-bordereau.do" modelAttribute="found">
 				<script type="text/javascript">
 					function reinitMouvementDossierMasse(id) {
 						var form = $('<form method="POST" action="' + App.curl('/mouvement/masse/reinit.do?id=' + id +'&pagination=${pagination}') + '"/>');

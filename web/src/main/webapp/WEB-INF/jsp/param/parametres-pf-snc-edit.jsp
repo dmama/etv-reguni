@@ -21,7 +21,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-	<form:form name="form" id="formTermes" commandName="command">
+	<form:form name="form" id="formTermes" modelAttribute="command">
 		<form:hidden path="idPeriodeFiscale"/>
 		<form:hidden path="anneePeriodeFiscale"/>
 		<fieldset>

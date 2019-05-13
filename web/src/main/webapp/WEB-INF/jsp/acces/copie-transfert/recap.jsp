@@ -46,7 +46,7 @@
 
 	</form:form>
 
-	<form:form action="${action}" commandName="validationData" method="post">
+	<form:form action="${action}" modelAttribute="validationData" method="post">
 		<input type="hidden" name="visaOperateurReference" value="${visaOperateurReference}"/>
 		<input type="hidden" name="visaOperateurDestination" value="${visaOperateurDestination}"/>
 		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../copie-transfert.do';" />

@@ -199,7 +199,7 @@
 			</tr>
 		</table>
 
-		<form:form method="post" id="recapDemenagement" name="recapDemenagement" commandName="actionCommand">
+		<form:form method="post" id="recapDemenagement" name="recapDemenagement" modelAttribute="actionCommand">
 			<form:hidden path="idEntreprise"/>
 			<form:hidden path="dateDebutSiegeActuel"/>
 

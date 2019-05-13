@@ -82,7 +82,7 @@
 			</c:if>
 
 			<%-- Affichage des attributs de l'entité --%>
-			<form:form commandName="entity" method="post" action="update.do">
+			<form:form modelAttribute="entity" method="post" action="update.do">
 				<input type="hidden" name="id" value="${entity.key.id}">
 				<input type="hidden" name="class" value="${entity.key.type}">
 

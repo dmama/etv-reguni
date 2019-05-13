@@ -38,7 +38,7 @@
 			</tr>
 		</table>
 
-		<form:form method="post" id="formDonneesMandat" commandName="donneesMandat" action="ajouter-tiers-mandataire.do">
+		<form:form method="post" id="formDonneesMandat" modelAttribute="donneesMandat" action="ajouter-tiers-mandataire.do">
 			<!-- inclusion du tableau sur les données additionnelles d'un mandat -->
 			<jsp:include page="add-donnees-mandat.jsp"/>
 

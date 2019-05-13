@@ -13,7 +13,7 @@
 		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseAbsorbante}" titre="label.caracteristiques.fusion.entreprise.absorbante" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapDatesFusion" name="recapDatesFusion" action="choix-dates.do" commandName="actionCommand">
+		<form:form method="post" id="recapDatesFusion" name="recapDatesFusion" action="choix-dates.do" modelAttribute="actionCommand">
 			<form:hidden path="idEntrepriseAbsorbante"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.fusion.entreprises" /></span></legend>

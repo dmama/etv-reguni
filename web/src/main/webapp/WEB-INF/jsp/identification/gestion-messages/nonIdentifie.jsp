@@ -9,7 +9,7 @@
   	<tiles:put name="title"><fmt:message key="title.identification.recherche.personne" /></tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formNonIdentifie" name="formNonIdentifie" action="non-identifie.do?source=${source}&id=${messageData.id}" commandName="nonIdentification">
+	    <form:form method="post" id="formNonIdentifie" name="formNonIdentifie" action="non-identifie.do?source=${source}&id=${messageData.id}" modelAttribute="nonIdentification">
 	    	<input type="hidden"  name="__TARGET__" value="">
 			<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
 	    	<jsp:include page="../demande-identification.jsp" />

@@ -12,7 +12,7 @@
     
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRecherche" commandName="searchCommand" action="list.do?mode=${mode}&population=${population}">
+	    <form:form method="post" id="formRecherche" modelAttribute="searchCommand" action="list.do?mode=${mode}&population=${population}">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>

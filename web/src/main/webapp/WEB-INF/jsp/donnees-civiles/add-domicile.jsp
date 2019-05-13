@@ -13,7 +13,7 @@
 	<tiles:put name="body">
 		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'établissement"/>
 
-		<form:form id="addDomicileForm" commandName="command" action="add.do">
+		<form:form id="addDomicileForm" modelAttribute="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.etablissement.domicile" /></span></legend>
 

@@ -13,7 +13,7 @@
 
 		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false"/>
 
-		<form:form id="AddEtatEntrepriseForm" commandName="command" action="add.do">
+		<form:form id="AddEtatEntrepriseForm" modelAttribute="command" action="add.do">
 
 			<c:if test="${! empty command.previousType}">
 				<fieldset>

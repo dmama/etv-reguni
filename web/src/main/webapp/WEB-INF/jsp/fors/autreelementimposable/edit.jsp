@@ -24,7 +24,7 @@
 
 		<table border="0"><tr valign="top">
 		<td>
-			<form:form id="editForForm" commandName="command" action="edit.do">
+			<form:form id="editForForm" modelAttribute="command" action="edit.do">
 				<fieldset>
 					<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 

@@ -11,7 +11,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-		<form:form method="post" name="theForm" id="formQuittance" action="ajouter-quittance.do" commandName="quittance">
+		<form:form method="post" name="theForm" id="formQuittance" action="ajouter-quittance.do" modelAttribute="quittance">
 
 			<form:errors cssClass="error"/>
 

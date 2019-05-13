@@ -11,7 +11,7 @@
   	</tiles:put>
 
 	<tiles:put name="body">
-		<form:form name="formAddAdresse" commandName="closeCommand">
+		<form:form name="formAddAdresse" modelAttribute="closeCommand">
 		<fieldset>
 			<legend><span><fmt:message key="label.adresse.fermeture" /></span></legend>
 			<input type="hidden" name="idTiers" value="${view.numCTB}"/>

@@ -10,7 +10,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-	<form:form  action="annuler-restriction.do" id="formEditRestriction"  name="theForm" commandName="command">
+	<form:form  action="annuler-restriction.do" id="formEditRestriction"  name="theForm" modelAttribute="command">
 		<input type="hidden" value="${command.utilisateur.visaOperateur}" name="visaOperateur"/>
 		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
 		<unireg:nextRowClass reset="1"/>

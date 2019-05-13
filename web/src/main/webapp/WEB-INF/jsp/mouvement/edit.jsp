@@ -9,7 +9,7 @@
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form method="post" id="formEditMvt" name="theForm" commandName="nouveauMouvement">
+	<form:form method="post" id="formEditMvt" name="theForm" modelAttribute="nouveauMouvement">
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<unireg:bandeauTiers numero="${nouveauMouvement.contribuable.numero}" titre="caracteristiques.contribuable" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>

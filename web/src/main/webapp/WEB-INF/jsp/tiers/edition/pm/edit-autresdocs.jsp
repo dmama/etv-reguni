@@ -21,7 +21,7 @@
 			<%--@elvariable id="isRadieeRCOuDissoute" type="java.lang.Boolean"--%>
 			<%--@elvariable id="typesLettreBienvenue" type="java.util.List"--%>
 			<%--@elvariable id="print" type="ch.vd.unireg.documentfiscal.ImprimerAutreDocumentFiscalView"--%>
-			<form:form commandName="print" action="print.do" id="newDocForm" onsubmit="return NewAutreDoc.print();">
+			<form:form modelAttribute="print" action="print.do" id="newDocForm" onsubmit="return NewAutreDoc.print();">
 
 				<form:hidden path="noEntreprise"/>
 

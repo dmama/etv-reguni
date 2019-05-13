@@ -21,7 +21,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<form:form name="formAddDelai" id="formAddDelai" commandName="addDelaiCommand">
+		<form:form name="formAddDelai" id="formAddDelai" modelAttribute="addDelaiCommand">
 		<fieldset><legend><span><fmt:message key="label.delais" /></span></legend>
 		<table border="0">
 			<unireg:nextRowClass reset="0"/>

@@ -17,7 +17,7 @@
 		<unireg:bandeauTiers numero="${actionCommand.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapFinActivite" name="recapFinActivite" commandName="actionCommand">
+		<form:form method="post" id="recapFinActivite" name="recapFinActivite" modelAttribute="actionCommand">
 			<form:hidden path="idEntreprise"/>
 			<form:hidden path="dateFinActivite"/>
 			<fieldset>

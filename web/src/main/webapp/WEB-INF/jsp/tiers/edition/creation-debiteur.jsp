@@ -11,7 +11,7 @@
 	<tiles:put name="body">
 
 		<unireg:setAuth var="autorisations" tiersId=""/>
-		<form:form method="post" id="creationForm" name="createDPI" commandName="data" action="create.do?numeroCtbAss=${ctbAssocie}">
+		<form:form method="post" id="creationForm" name="createDPI" modelAttribute="data" action="create.do?numeroCtbAss=${ctbAssocie}">
 
 			<!--onglets-->
 			<div id="tiersCreationTabs">

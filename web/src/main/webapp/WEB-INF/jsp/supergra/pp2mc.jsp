@@ -19,7 +19,7 @@
 			<br/>
 
 			<%-- Affichage du formulaire de transformation de l'entité --%>
-			<form:form commandName="pp2mc" method="post" action="pp2mc.do">
+			<form:form modelAttribute="pp2mc" method="post" action="pp2mc.do">
 				<input type="hidden" name="id" value="${pp2mc.id}">
 
 				<table class="transform">

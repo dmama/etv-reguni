@@ -185,7 +185,7 @@ public class AnnonceIDEController {
 					listeAnnonces.addAll(map.values());
 					listeAnnonces.sort(Comparator.comparingLong(AnnonceIDE::getNumero));
 				}
-				final PageRequest pageable = new PageRequest(pageNumber, pageSize, null);
+				final PageRequest pageable = PageRequest.of(pageNumber, pageSize, null);
 				annonces = new PageImpl<>(listeAnnonces, pageable, listeAnnonces.size());
 			}
 			else {
@@ -235,7 +235,7 @@ public class AnnonceIDEController {
 		}
 
 		// on renseigne le modèle
-		final Page<AnnonceIDEView> page = PaginationHelper.buildPage(content, pageNumber, pageSize, annonces.getTotalElements(), new Sort(order));
+		final Page<AnnonceIDEView> page = PaginationHelper.buildPage(content, pageNumber, pageSize, annonces.getTotalElements(), Sort.by(order));
 		model.addAttribute("page", page);
 		model.addAttribute("totalElements", (int) page.getTotalElements());
 

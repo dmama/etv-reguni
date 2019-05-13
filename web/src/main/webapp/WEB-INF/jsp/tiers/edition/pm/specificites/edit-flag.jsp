@@ -13,7 +13,7 @@
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${flag.pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
 
-		<form:form id="editFlagForm" commandName="command" action="edit.do">
+		<form:form id="editFlagForm" modelAttribute="command" action="edit.do">
 
 			<fieldset>
 				<legend><span><fmt:message key="label.specificite"/></span></legend>

@@ -13,7 +13,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<form:form name="formModifRapport" commandName="rapportEditView" id="formModifRapport">
+		<form:form name="formModifRapport" modelAttribute="rapportEditView" id="formModifRapport">
 		<fieldset><legend><span><fmt:message key="label.rapport.tiers" /></span></legend>
 		<form:hidden path="id"/>
 		<form:hidden path="typeRapportEntreTiers"/>

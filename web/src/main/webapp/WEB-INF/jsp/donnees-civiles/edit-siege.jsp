@@ -15,7 +15,7 @@
 
 		<table border="0"><tr valign="top">
 		<td>
-			<form:form id="editDomicileForm" commandName="command" action="edit.do">
+			<form:form id="editDomicileForm" modelAttribute="command" action="edit.do">
 				<fieldset>
 					<legend><span><fmt:message key="label.entreprise.siege" /></span></legend>
 

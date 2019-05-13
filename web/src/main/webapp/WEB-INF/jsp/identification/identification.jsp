@@ -20,7 +20,7 @@
 	    <c:choose>
 		    <c:when test="${message.noCtbIdentifie == null}">
 
-			    <form:form method="post" id="formRecherchePersonne" name="theSearchForm" action="edit.do?source=${source}&id=${messageData.id}" commandName="identificationSearchCriteria">
+			    <form:form method="post" id="formRecherchePersonne" name="theSearchForm" action="edit.do?source=${source}&id=${messageData.id}" modelAttribute="identificationSearchCriteria">
 
 				    <fieldset>
 					    <legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
@@ -41,7 +41,7 @@
 
 			    </form:form>
 
-			    <form:form method="post" id="formIdentification" name="theIdentificationForm" action="identifie.do?source=${source}&id=${messageData.id}" commandName="identificationSelect">
+			    <form:form method="post" id="formIdentification" name="theIdentificationForm" action="identifie.do?source=${source}&id=${messageData.id}" modelAttribute="identificationSelect">
 
 				    <input type="hidden" name="contribuableIdentifie" id="contribuableIdentifie" value=""/>
 

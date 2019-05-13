@@ -12,7 +12,7 @@
 	<tiles:put name="body">
 		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'entreprise"/>
 
-		<form:form id="editCapitalForm" commandName="command" action="edit.do">
+		<form:form id="editCapitalForm" modelAttribute="command" action="edit.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.capital" /></span></legend>
 

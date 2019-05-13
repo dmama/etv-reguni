@@ -21,9 +21,9 @@
 		
 		<property name="tests">
 			<list>
-				<ref local="icTiersDAOTest"/>
-				<ref local="icGlobalIndex"/>
-				<ref local="icEvtCivilNaissanceTest"/>
+				<ref bean="icTiersDAOTest"/>
+				<ref bean="icGlobalIndex"/>
+				<ref bean="icEvtCivilNaissanceTest"/>
 			</list>
 		</property>
 	</bean>

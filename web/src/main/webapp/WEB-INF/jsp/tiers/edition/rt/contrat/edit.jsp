@@ -10,7 +10,7 @@
 </tiles:put>
 <tiles:put name="body">
 	<%--@elvariable id="rapportAddView" type="ch.vd.unireg.rt.view.RapportPrestationView"--%>
-	<form:form method="post" id="formRT" commandName="rapportAddView">
+	<form:form method="post" id="formRT" modelAttribute="rapportAddView">
 		<unireg:nextRowClass reset="1"/>
 		<form:hidden path="debiteur.numero"/>
 		<form:hidden path="sourcier.numero"/>

@@ -16,7 +16,7 @@
 
 		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 
-		<form:form id="editEtiquetteForm" commandName="editCommand" action="edit-item.do" method="post">
+		<form:form id="editEtiquetteForm" modelAttribute="editCommand" action="edit-item.do" method="post">
 			<form:hidden path="tiersId"/>
 			<form:hidden path="etiquetteTiersId"/>
 

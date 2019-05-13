@@ -25,7 +25,7 @@
 
 	<tiles:put name="body">
 
-		<form:form method="post" name="theForm" commandName="editCoords" action="edit.do">
+		<form:form method="post" name="theForm" modelAttribute="editCoords" action="edit.do">
 			<form:hidden path="id"/>
 			<form:hidden path="dateDebut"/>
 

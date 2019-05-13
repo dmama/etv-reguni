@@ -18,7 +18,7 @@
 	                         showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
 	    <!-- Formulaire -->
-	  	<form:form method="post" id="formRecapDeces"  name="formRecapDeces" commandName="recap">
+	  	<form:form method="post" id="formRecapDeces"  name="formRecapDeces" modelAttribute="recap">
 		    <form:hidden path="tiersId"/>
 		    <form:hidden path="marieSeul"/>
 

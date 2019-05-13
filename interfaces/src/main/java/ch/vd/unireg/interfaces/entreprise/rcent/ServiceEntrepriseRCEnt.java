@@ -142,13 +142,13 @@ public class ServiceEntrepriseRCEnt implements ServiceEntrepriseRaw {
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
 
 		try {
-			final Sort sort = (order == null ? null : new Sort(order));
-			final PageRequest pageable = new PageRequest(pageNumber, resultsPerPage, sort);
+			final Sort sort = (order == null ? null : Sort.by(order));
+			final PageRequest pageable = PageRequest.of(pageNumber, resultsPerPage, sort);
 
 			// on fait la requête au client
 			final Page<NoticeRequestReport> notices = client.findNotices(query.toFindNoticeQuery(), order, pageNumber + 1, resultsPerPage);
 			if (notices == null) {
-				return new PageImpl<>(Collections.<AnnonceIDE>emptyList(), pageable, 0);
+				return new PageImpl<>(Collections.emptyList(), pageable, 0);
 			}
 			else {
 				// on adapte les réponses

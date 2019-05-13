@@ -28,7 +28,7 @@
 	    </spring:bind>
 
 	    <unireg:bandeauTiers numero="${idMenage}" showValidation="true" showEvenementsCivils="true" showLinks="false"/>
-	  	<form:form method="post" id="formRecapSeparation"  name="formRecapSeparation" commandName="separationCommand" action="commit.do">
+	  	<form:form method="post" id="formRecapSeparation"  name="formRecapSeparation" modelAttribute="separationCommand" action="commit.do">
 		    <form:hidden path="idMenage"/>
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->

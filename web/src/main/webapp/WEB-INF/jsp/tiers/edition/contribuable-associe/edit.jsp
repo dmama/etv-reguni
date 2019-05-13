@@ -16,7 +16,7 @@
 
 		<%--@elvariable id="recap" type="ch.vd.unireg.contribuableAssocie.view.ContribuableAssocieEditView"--%>
 
-		<form:form method="post" id="formRecapContactIS" name="formRecapContactIS" commandName="recap">
+		<form:form method="post" id="formRecapContactIS" name="formRecapContactIS" modelAttribute="recap">
 			<!-- Caractéristiques générales du débiteur -->
 			<unireg:bandeauTiers numero="${recap.numeroDpi}" titre="caracteristiques.debiteur.is" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 

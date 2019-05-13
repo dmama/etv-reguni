@@ -13,7 +13,7 @@
 		<unireg:nextRowClass reset="1"/>
 		<fieldset>
 			<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
-		    <form:form method="post" action="rechercher-pour-consultation.do" commandName="criteria">
+		    <form:form method="post" action="rechercher-pour-consultation.do" modelAttribute="criteria">
 				<form:errors cssClass="error"/>
 				<jsp:include page="form.jsp"/>
 			</form:form>

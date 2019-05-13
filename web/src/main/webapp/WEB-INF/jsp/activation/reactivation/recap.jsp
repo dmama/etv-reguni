@@ -7,7 +7,7 @@
   		<fmt:message key="title.recapitulatif.reactivation" />
   	</tiles:put>
   	<tiles:put name="body">
-	  	<form:form method="post" id="formRecapReactivation"  name="formRecapReactivation" commandName="reactivationCommand" action="reactivate.do?population=${population}">
+	  	<form:form method="post" id="formRecapReactivation"  name="formRecapReactivation" modelAttribute="reactivationCommand" action="reactivate.do?population=${population}">
 		    <form:hidden path="tiers.numero"/>
 		    <unireg:bandeauTiers numero="${reactivationCommand.tiers.numero}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 			<jsp:include page="rapport.jsp" />

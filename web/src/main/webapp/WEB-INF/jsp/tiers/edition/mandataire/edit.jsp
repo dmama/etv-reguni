@@ -49,7 +49,7 @@
 			</tr>
 		</table>
 
-		<form:form commandName="editMandat" id="editMandatForm">
+		<form:form modelAttribute="editMandat" id="editMandatForm">
 
 			<c:set var="lengthnumcompte" value="<%=LengthConstants.TIERS_NUMCOMPTE%>" scope="request" />
 			<c:set var="lengthpersonne" value="<%=LengthConstants.TIERS_PERSONNE%>" scope="request" />

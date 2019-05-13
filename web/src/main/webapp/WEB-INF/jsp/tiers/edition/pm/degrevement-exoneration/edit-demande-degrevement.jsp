@@ -21,7 +21,7 @@
 			</tr>
 		</table>
 
-		<form:form commandName="editDemandeDegrevementCommand" action="edit-demande-degrevement.do" id="editDemandeDegrevementForm">
+		<form:form modelAttribute="editDemandeDegrevementCommand" action="edit-demande-degrevement.do" id="editDemandeDegrevementForm">
 
 			<form:hidden path="idDemandeDegrevement"/>
 

@@ -39,6 +39,14 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
 			<version>2.0</version>
+			<exclusions>
+				<!-- Spring 5 utilise sa propre implémentation de commons-logging (spring-jcl) qui entre en conflit avec commons-logging
+					 (voir https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-5.x#commons-logging-setup) -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>oracle.jdbc</groupId>
@@ -56,6 +64,14 @@
 			<groupId>org.jencks</groupId>
 			<artifactId>jencks</artifactId>
 			<version>${jencks.version}</version>
+			<exclusions>
+				<!-- Spring 5 utilise sa propre implémentation de commons-logging (spring-jcl) qui entre en conflit avec commons-logging
+					 (voir https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-5.x#commons-logging-setup) -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- spécifié explicitement la version 2.2.2 de geronimo-connector, parce que la verson 2.1.2
 		     tirée par jencks est buggée (le pool de connections ne respecte pas sa taille maximale) -->

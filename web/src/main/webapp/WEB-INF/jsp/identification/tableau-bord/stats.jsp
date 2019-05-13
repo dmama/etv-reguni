@@ -16,7 +16,7 @@
     </tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="get" id="formRechercheMessage" commandName="statsCriteria">
+	    <form:form method="get" id="formRechercheMessage" modelAttribute="statsCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche.messages"/></span></legend>
 				<form:errors cssClass="error"/>

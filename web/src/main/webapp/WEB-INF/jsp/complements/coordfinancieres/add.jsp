@@ -25,7 +25,7 @@
 
 	<tiles:put name="body">
 
-		<form:form method="post" name="theForm" commandName="addCoords">
+		<form:form method="post" name="theForm" modelAttribute="addCoords">
 			<form:hidden path="id"/>
 
 			<fieldset>

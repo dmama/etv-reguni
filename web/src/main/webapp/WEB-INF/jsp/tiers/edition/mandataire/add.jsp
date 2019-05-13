@@ -135,7 +135,7 @@
 
 			<!-- cas sans tiers identifié -->
 			<div id="sans-tiers-mandataire" <c:if test="${addLienCourrierAutorise}">style="display: none;"</c:if>>
-				<form:form method="post" id="formDonneesMandat" commandName="donneesMandat" action="add-adresse.do">
+				<form:form method="post" id="formDonneesMandat" modelAttribute="donneesMandat" action="add-adresse.do">
 
 					<!-- inclusion du tableau sur les données additionnelles d'un mandat -->
 					<jsp:include page="add-donnees-mandat.jsp"/>

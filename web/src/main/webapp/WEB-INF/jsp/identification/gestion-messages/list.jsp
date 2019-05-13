@@ -24,7 +24,7 @@
   	<tiles:put name="title"><fmt:message key="${titrePage}" /></tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheMessage" name="theForm" action="${myAction}" commandName="identificationCriteria">
+	    <form:form method="post" id="formRechercheMessage" name="theForm" action="${myAction}" modelAttribute="identificationCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche.messages"/></span></legend>
 				<form:errors cssClass="error"/>

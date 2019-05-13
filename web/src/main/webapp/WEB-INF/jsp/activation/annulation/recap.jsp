@@ -9,7 +9,7 @@
 
 	    <unireg:bandeauTiers numero="${deactivationCommand.numeroTiers}" titre="Tiers à annuler" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="true"/>
 
-	  	<form:form method="post" id="formRecapAnnulation"  name="formRecapAnnulation" commandName="deactivationCommand" action="deactivate.do?population=${population}">
+	  	<form:form method="post" id="formRecapAnnulation"  name="formRecapAnnulation" modelAttribute="deactivationCommand" action="deactivate.do?population=${population}">
 		    <form:hidden path="numeroTiers"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.annulation" /></span></legend>

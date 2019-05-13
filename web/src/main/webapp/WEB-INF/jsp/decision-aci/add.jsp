@@ -24,7 +24,7 @@
 
 		<div style="clear: right;"></div>
 
-		<form:form id="addDecisionForm" commandName="command" action="add.do">
+		<form:form id="addDecisionForm" modelAttribute="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.decision.aci" /></span></legend>
 

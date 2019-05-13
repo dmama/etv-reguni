@@ -35,7 +35,7 @@
 				    </span>
 	                <c:if test="${firstLine && histo.inscrit}">
 		                <span id="rwMail" style="display:none;">
-						    <form:form name="emailForm" id="emailForm" commandName="newmail" action="change-email.do" method="post">
+						    <form:form name="emailForm" id="emailForm" modelAttribute="newmail" action="change-email.do" method="post">
 							    <form:hidden path="noCtb"/>
 							    <form:hidden id="previousMail" path="previousEmail"/>
 							    <form:input id="email" path="email" onkeyup="EditEFactureMail.checkValue(this);"/>
@@ -147,7 +147,7 @@
                                 &nbsp;
                                 <input id="wait-signature" type="button" value="<fmt:message key='label.efacture.bouton.attente.signature'/>" onclick="EditEFacture.waitForSignature();"/>
 	                            <div style="display:none;">
-		                            <form:form id="signature-form" commandName="dataDemande" action="wait-signature.do" method="post">
+		                            <form:form id="signature-form" modelAttribute="dataDemande" action="wait-signature.do" method="post">
 			                            <form:hidden path="noAdherent"/>
 			                            <form:hidden path="ctbId"/>
 			                            <form:hidden path="idDemande"/>
@@ -160,7 +160,7 @@
                                 &nbsp;
                                 <input id="wait-contact" type="button" value="<fmt:message key='label.efacture.bouton.attente.contact'/>" onclick="EditEFacture.waitForContact();"/>
 	                            <div style="display:none;">
-		                            <form:form id="contact-form" commandName="dataDemande" action="wait-contact.do" method="post">
+		                            <form:form id="contact-form" modelAttribute="dataDemande" action="wait-contact.do" method="post">
 			                            <form:hidden path="noAdherent"/>
 			                            <form:hidden path="ctbId"/>
 			                            <form:hidden path="idDemande"/>

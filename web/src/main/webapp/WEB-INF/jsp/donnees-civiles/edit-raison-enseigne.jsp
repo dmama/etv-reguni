@@ -12,7 +12,7 @@
 	<tiles:put name="body">
 		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'établissement"/>
 
-		<form:form id="editRaisonEnseigneForm" commandName="command" action="edit.do">
+		<form:form id="editRaisonEnseigneForm" modelAttribute="command" action="edit.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.raison.enseigne" /></span></legend>
 

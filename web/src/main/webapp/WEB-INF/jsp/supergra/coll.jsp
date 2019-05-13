@@ -25,7 +25,7 @@
 				</form:form>
 			</div>
 
-			<form:form commandName="coll" method="post" action="add.do">
+			<form:form modelAttribute="coll" method="post" action="add.do">
 
 				<input type="hidden" name="id" value="${coll.key.id}"/>
 				<input type="hidden" name="class" value="${coll.key.type}"/>

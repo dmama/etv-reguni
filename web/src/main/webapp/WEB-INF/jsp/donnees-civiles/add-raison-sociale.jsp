@@ -12,7 +12,7 @@
 	<tiles:put name="body">
 		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'entreprise"/>
 
-		<form:form id="addRaisonSocialeForm" commandName="command" action="add.do">
+		<form:form id="addRaisonSocialeForm" modelAttribute="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.raison.sociale" /></span></legend>
 

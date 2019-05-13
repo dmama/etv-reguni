@@ -20,7 +20,7 @@
 			</tr>
 		</table>
 
-		<form:form commandName="addExonerationCommand" action="add-exoneration.do" id="addExonerationForm">
+		<form:form modelAttribute="addExonerationCommand" action="add-exoneration.do" id="addExonerationForm">
 
 			<form:hidden path="idContribuable"/>
 			<form:hidden path="idImmeuble"/>

@@ -7,7 +7,7 @@
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${added.entrepriseId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques de l'entreprise" />
 
-		<form:form name="theForm" method="post" action="add.do" commandName="added">
+		<form:form name="theForm" method="post" action="add.do" modelAttribute="added">
 
 			<!-- Debut Caracteristiques generales -->
 			<fieldset>

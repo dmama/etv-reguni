@@ -28,6 +28,7 @@ import ch.vd.evd0022.v3.TypeOfNoticeRequest;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.entreprise.mock.MockRcEntClient;
@@ -86,7 +87,7 @@ public class ServiceEntrepriseCivileRCEntTest {
 		final RcEntClient client = new MockRcEntClient() {
 			@Override
 			public Page<NoticeRequestReport> findNotices(@NotNull RcEntNoticeQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws RcEntClientException {
-				return new PageImpl<NoticeRequestReport>(content, new PageRequest(0, 10), 3);
+				return new PageImpl<>(content, PageRequest.of(0, 10), 3);
 			}
 		};
 
@@ -104,21 +105,27 @@ public class ServiceEntrepriseCivileRCEntTest {
 		assertEquals(Long.valueOf(1L), annonce0.getNumero());
 		assertEquals(DateHelper.getDate(2000, 1, 2), annonce0.getDateAnnonce());
 		assertEquals(TypeAnnonce.CREATION, annonce0.getType());
-		assertEquals(StatutAnnonce.A_TRANSMETTRE, annonce0.getStatut().getStatut());
+		final BaseAnnonceIDE.Statut statut0 = annonce0.getStatut();
+		assertNotNull(statut0);
+		assertEquals(StatutAnnonce.A_TRANSMETTRE, statut0.getStatut());
 
 		final AnnonceIDE annonce1 = annonces.getContent().get(1);
 		assertNotNull(annonce1);
 		assertEquals(Long.valueOf(2L), annonce1.getNumero());
 		assertEquals(DateHelper.getDate(2004, 3, 17), annonce1.getDateAnnonce());
 		assertEquals(TypeAnnonce.MUTATION, annonce1.getType());
-		assertEquals(StatutAnnonce.TRANSMIS, annonce1.getStatut().getStatut());
+		final BaseAnnonceIDE.Statut statut1 = annonce1.getStatut();
+		assertNotNull(statut1);
+		assertEquals(StatutAnnonce.TRANSMIS, statut1.getStatut());
 
 		final AnnonceIDE annonce2 = annonces.getContent().get(2);
 		assertNotNull(annonce2);
 		assertEquals(Long.valueOf(3L), annonce2.getNumero());
 		assertEquals(DateHelper.getDate(2012, 9, 7), annonce2.getDateAnnonce());
 		assertEquals(TypeAnnonce.RADIATION, annonce2.getType());
-		assertEquals(StatutAnnonce.REFUSE_IDE, annonce2.getStatut().getStatut());
+		final BaseAnnonceIDE.Statut statut2 = annonce2.getStatut();
+		assertNotNull(statut2);
+		assertEquals(StatutAnnonce.REFUSE_IDE, statut2.getStatut());
 	}
 
 	@NotNull

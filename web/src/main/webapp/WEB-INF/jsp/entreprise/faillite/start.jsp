@@ -17,7 +17,7 @@
 		<unireg:bandeauTiers numero="${actionCommand.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapFaillite" name="recapFaillite" commandName="actionCommand">
+		<form:form method="post" id="recapFaillite" name="recapFaillite" modelAttribute="actionCommand">
 			<form:hidden path="idEntreprise"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.faillite" /></span></legend>

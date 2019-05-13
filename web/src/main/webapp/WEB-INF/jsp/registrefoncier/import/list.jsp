@@ -24,7 +24,7 @@
 
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-		<form:form method="get" commandName="view" id="formSuiviImportRF" action="list.do">
+		<form:form method="get" modelAttribute="view" id="formSuiviImportRF" action="list.do">
 
 			<script type="text/javascript">
 				function submitForm(){

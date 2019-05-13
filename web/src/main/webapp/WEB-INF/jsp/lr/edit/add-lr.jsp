@@ -7,7 +7,7 @@
 	<tiles:put name="title"><fmt:message key="title.edition.lr" /></tiles:put>
 
 	<tiles:put name="body">
-	<form:form method="post" id="formEditLR" name="theForm" action="add-lr.do" commandName="addListeCommand">
+	<form:form method="post" id="formEditLR" name="theForm" action="add-lr.do" modelAttribute="addListeCommand">
 
 		<form:hidden path="idDebiteur"/>
 		<form:hidden path="dateDebut"/>

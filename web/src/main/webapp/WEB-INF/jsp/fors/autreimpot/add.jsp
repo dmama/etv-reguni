@@ -30,7 +30,7 @@
 		</div>
 		<div style="clear: right;"></div>
 
-		<form:form id="addForForm" commandName="command" action="add.do">
+		<form:form id="addForForm" modelAttribute="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 

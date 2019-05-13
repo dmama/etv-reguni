@@ -17,7 +17,7 @@
 
 			<unireg:bandeauTiers numero="${tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false"/>
 
-			<form:form method="post" action="edit.do?id=${tiersId}" name="editCivilNH" commandName="data" id="editForm">
+			<form:form method="post" action="edit.do?id=${tiersId}" name="editCivilNH" modelAttribute="data" id="editForm">
 
 				<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 				<fieldset class="information">

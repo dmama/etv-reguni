@@ -12,7 +12,7 @@
 	    <unireg:bandeauTiers numero="${searchView.tiersId}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="false"/>
 
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="get" commandName="searchView" id="formRechercheTiers">
+	    <form:form method="get" modelAttribute="searchView" id="formRechercheTiers">
 		    <form:hidden path="tiersId"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>

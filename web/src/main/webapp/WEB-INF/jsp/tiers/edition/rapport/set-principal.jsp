@@ -58,7 +58,7 @@
 			</display:table>
 		</fieldset>
 
-		<form:form name="formSetPrincipal" commandName="principalView" id="formSetPrincipal">
+		<form:form name="formSetPrincipal" modelAttribute="principalView" id="formSetPrincipal">
 			<fieldset><legend><span><fmt:message key="label.proprietes.election.principal" /></span></legend>
 				<form:hidden path="defuntId"/>
 				<form:hidden path="heritierId"/>

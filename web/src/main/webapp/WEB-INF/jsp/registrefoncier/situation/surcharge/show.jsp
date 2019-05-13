@@ -58,7 +58,7 @@
 			<%--@elvariable id="surcharge" type="ch.vd.unireg.registrefoncier.situation.surcharge.SituationSurchargeView"--%>
 			<%--@elvariable id="mapFaitieresFractions" type="java.util.Map"--%>
 			<%--@elvariable id="fraction" type="ch.vd.unireg.tiers.view.CommuneView"--%>
-			<form:form method="post" commandName="surcharge" action="show.do${retourParams}" htmlEscape="false">
+			<form:form method="post" modelAttribute="surcharge" action="show.do${retourParams}" htmlEscape="false">
 				<form:hidden path="situationId"/>
 				<table border="0">
 					<tr class="<unireg:nextRowClass/>" >

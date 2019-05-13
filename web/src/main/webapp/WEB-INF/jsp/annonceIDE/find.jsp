@@ -15,7 +15,7 @@
 
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-		<form:form method="get" commandName="view" id="formSuiviAnnonce" action="find.do">
+		<form:form method="get" modelAttribute="view" id="formSuiviAnnonce" action="find.do">
 
 			<fieldset>
 				<legend><span><fmt:message key="title.suivi.annonces"/></span></legend>

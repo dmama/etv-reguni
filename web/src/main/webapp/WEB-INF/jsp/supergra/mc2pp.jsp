@@ -19,7 +19,7 @@
 			<br/>
 
 			<%-- Affichage du formulaire de transformation de l'entité --%>
-			<form:form commandName="mc2pp" method="post" action="mc2pp.do">
+			<form:form modelAttribute="mc2pp" method="post" action="mc2pp.do">
 				<input type="hidden" name="id" value="${mc2pp.id}">
 
 				<table class="transform">

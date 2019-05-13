@@ -54,7 +54,7 @@
 	    </fieldset>
 
 	    <%--@elvariable id="addPrincipalView" type="ch.vd.unireg.registrefoncier.communaute.AddPrincipalView"--%>
-	    <form:form commandName="addPrincipalView" method="post" action="addPrincipal.do" id="addPrincipalForm">
+	    <form:form modelAttribute="addPrincipalView" method="post" action="addPrincipal.do" id="addPrincipalForm">
 
 		    <form:hidden path="modeleId"/>
 		    <form:hidden path="membreId"/>

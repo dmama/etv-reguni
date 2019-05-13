@@ -17,7 +17,7 @@
 		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseEmettrice}" titre="label.caracteristiques.transfert.patrimoine.emettrice" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" />
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapDateTransfert" name="recapDateTransfert" action="choix-date.do" commandName="actionCommand">
+		<form:form method="post" id="recapDateTransfert" name="recapDateTransfert" action="choix-date.do" modelAttribute="actionCommand">
 			<form:hidden path="idEntrepriseEmettrice"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.transfert.patrimoine" /></span></legend>

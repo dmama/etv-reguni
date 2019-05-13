@@ -19,7 +19,7 @@
 
 			<c:set var="length_ide_min" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE%>" scope="request" />
 
-			<form:form method="post" action="edit.do?id=${tiersId}" name="editCivilAutreCommunaute" commandName="data" id="editForm">
+			<form:form method="post" action="edit.do?id=${tiersId}" name="editCivilAutreCommunaute" modelAttribute="data" id="editForm">
 				<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 				<fieldset class="information">
 					<legend><span><fmt:message key="label.organisation" /></span></legend>

@@ -32,7 +32,7 @@ public abstract class PaginationHelper {
 
 		// on construit la structure de résultat
 		return new PageImpl<>(list,
-		                      new PageRequest(currentPage, pageSize, sort),
+		                      PageRequest.of(currentPage, pageSize, sort),
 		                      total);
 	}
 }

@@ -20,7 +20,7 @@
 			</tr>
 		</table>
 
-		<form:form commandName="addDemandeDegrevementCommand" action="add-demande-degrevement.do" id="addDemandeDegrevementForm">
+		<form:form modelAttribute="addDemandeDegrevementCommand" action="add-demande-degrevement.do" id="addDemandeDegrevementForm">
 
 			<form:hidden path="idContribuable"/>
 			<form:hidden path="idImmeuble"/>

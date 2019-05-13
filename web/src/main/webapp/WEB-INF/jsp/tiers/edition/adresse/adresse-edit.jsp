@@ -37,7 +37,7 @@
 	<tiles:put name="body">
 
 		<!-- Debut Adresse -->
-		<form:form name="formAddAdresse" id="formAddAdresse" commandName="editCommand">
+		<form:form name="formAddAdresse" id="formAddAdresse" modelAttribute="editCommand">
 		<form:hidden path="mode"/>
 		<form:hidden path="index"/>
 		<input name="numCTB" type="hidden" value="${editCommand.numCTB}" />

@@ -14,7 +14,7 @@
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${command.pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
 
-		<form:form id="editRegimeForm" commandName="command" action="edit.do">
+		<form:form id="editRegimeForm" modelAttribute="command" action="edit.do">
 
 			<fieldset>
 				<legend><span><fmt:message key="label.regime.fiscal"/></span></legend>

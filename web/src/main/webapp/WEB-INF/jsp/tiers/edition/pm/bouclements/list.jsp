@@ -15,7 +15,7 @@
 					<display:column titleKey="label.date.debut" style="width: 50%;">
 						<c:choose>
 							<c:when test="${ex.first}">
-								<form:form action="change-date-debut.do" commandName="command" method="post">
+								<form:form action="change-date-debut.do" modelAttribute="command" method="post">
 									<unireg:regdate regdate="${ex.dateDebut}" defaultValue="A renseigner"/>
 									&nbsp;
 									<c:set var="idbase">
@@ -45,7 +45,7 @@
 					<display:column titleKey="label.date.fin" style="width: 50%;">
 						<c:choose>
 							<c:when test="${!ex.withDI && !ex.tooOldToHaveDI}">
-								<form:form action="change-date-fin.do" commandName="command" method="post">
+								<form:form action="change-date-fin.do" modelAttribute="command" method="post">
 									<unireg:regdate regdate="${ex.dateFin}" defaultValue="A renseigner"/>
 									&nbsp;
 									<c:set var="idbase">
@@ -76,7 +76,7 @@
 			</c:if>
 
 			<c:if test="${dateDebutAjoutable}">
-				<form:form action="ajoute-nouvelle-date-debut.do" commandName="command" method="post">
+				<form:form action="ajoute-nouvelle-date-debut.do" modelAttribute="command" method="post">
 					<table border="0">
 						<tbody>
 						<tr>

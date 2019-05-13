@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -99,10 +100,10 @@ public class AnnonceIDEControllerTest {
 			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws
 					ServiceEntrepriseException {
 				if (pageNumber == 0) {
-					return new PageImpl<>(firstPage, null, 3);
+					return new PageImpl<>(firstPage, PageRequest.of(0, 2), 3);
 				}
 				else if (pageNumber == 1) {
-					return new PageImpl<>(secondPage, null, 3);
+					return new PageImpl<>(secondPage, PageRequest.of(1, 2), 3);
 				}
 				else {
 					return new PageImpl<>(Collections.<AnnonceIDE>emptyList());

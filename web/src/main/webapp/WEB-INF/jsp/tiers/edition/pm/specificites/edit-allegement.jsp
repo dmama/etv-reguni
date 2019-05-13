@@ -13,7 +13,7 @@
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${allegement.pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
 
-		<form:form id="editAllegementForm" commandName="command" action="edit.do">
+		<form:form id="editAllegementForm" modelAttribute="command" action="edit.do">
 
 			<fieldset>
 				<legend><span><fmt:message key="label.allegement.fiscal"/></span></legend>

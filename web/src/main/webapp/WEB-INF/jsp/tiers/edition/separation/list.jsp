@@ -15,7 +15,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheMenageCommun" commandName="searchCommand">
+	    <form:form method="post" id="formRechercheMenageCommun" modelAttribute="searchCommand">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<c:if test="${searchError != null}">

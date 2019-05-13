@@ -49,7 +49,7 @@
 	    </c:choose>
 
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="get" id="formRechercheEvenements" commandName="evenementOrganisationCriteria">
+	    <form:form method="get" id="formRechercheEvenements" modelAttribute="evenementOrganisationCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>

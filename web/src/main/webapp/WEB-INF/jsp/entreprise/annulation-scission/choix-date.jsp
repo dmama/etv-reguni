@@ -17,7 +17,7 @@
 		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseScindee}" titre="label.caracteristiques.scission.entreprise.scindee" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapDateScission" name="recapDateScission" action="choix-date.do" commandName="actionCommand">
+		<form:form method="post" id="recapDateScission" name="recapDateScission" action="choix-date.do" modelAttribute="actionCommand">
 			<form:hidden path="idEntrepriseScindee"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.scission.entreprise"/></span></legend>

@@ -9,7 +9,7 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 	    <%--@elvariable id="criteria" type="ch.vd.unireg.tiers.view.TiersCriteriaView"--%>
-	    <form:form method="get" id="formRecherchePP" commandName="criteria">
+	    <form:form method="get" id="formRecherchePP" modelAttribute="criteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>

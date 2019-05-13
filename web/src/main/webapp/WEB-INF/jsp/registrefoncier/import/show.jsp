@@ -61,7 +61,7 @@
 		</fieldset>
 
 
-		<form:form method="get" commandName="view" id="formDetailsImportRF" action="show.do">
+		<form:form method="get" modelAttribute="view" id="formDetailsImportRF" action="show.do">
 
 			<input type="hidden" name="importId" value="${importEvent.id}"/>
 

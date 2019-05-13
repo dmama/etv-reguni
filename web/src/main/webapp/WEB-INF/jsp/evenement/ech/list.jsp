@@ -36,7 +36,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="get" id="formRechercheEvenements" commandName="evenementEchCriteria">
+	    <form:form method="get" id="formRechercheEvenements" modelAttribute="evenementEchCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
