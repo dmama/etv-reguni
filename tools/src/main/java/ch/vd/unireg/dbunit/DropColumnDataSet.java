@@ -61,6 +61,7 @@ class DropColumnDataSet implements IDataSet {
 		return dataSet.getTableNames();
 	}
 
+	@Deprecated
 	@Override
 	public ITable[] getTables() throws DataSetException {
 		if (tables == null) {

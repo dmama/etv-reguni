@@ -32,9 +32,9 @@ public class ManagedDataSet implements IDataSet {
 		return target.getTable(tableName);
 	}
 
+	@Deprecated
 	@Override
 	public ITable[] getTables() throws DataSetException {
-		//noinspection deprecation
 		return target.getTables();
 	}
 
