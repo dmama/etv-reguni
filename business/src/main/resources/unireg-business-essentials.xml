@@ -254,7 +254,7 @@
 
 	<!-- Database service -->
 	<bean id="databaseService" class="ch.vd.unireg.database.DatabaseServiceImpl">
-		<property name="sessionFactoryBean" ref="&amp;sessionFactory" />
+		<property name="hibernateDialect" ref="hibernateDialect" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="dataEventService" ref="dataEventService" />

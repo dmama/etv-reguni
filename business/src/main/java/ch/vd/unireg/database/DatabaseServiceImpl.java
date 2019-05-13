@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,11 +41,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
@@ -65,13 +62,14 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServiceImpl.class);
 	private static final String CORE_TRUNCATE_SQL = "/sql/core_truncate_tables.sql";
 
-	private LocalSessionFactoryBean sessionFactoryBean;
+	private Dialect hibernateDialect;
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
 	private DataEventService dataEventService;
 
 	private static final int DEFAULT_BATCH_SIZE = 500;
 
+	@SuppressWarnings("UnusedReturnValue")
 	private <T> T doInNewTransaction(boolean readonly, TransactionCallback<T> action) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(readonly);
@@ -93,9 +91,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 		});
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updateCAACSequence, boolean updateDPISequence, boolean updatePMSequence, boolean updateETBSequence) {
 
@@ -145,15 +140,14 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private void updateSequence(String sequenceName, long maxId) {
 		// Incrémente artificiellement la séquence jusqu'à ce que maxId soit atteint
 
-		Dialect dialect = Dialect.getDialect(sessionFactoryBean.getConfiguration().getProperties());
-		String sql = dialect.getSequenceNextValString(sequenceName);
+		String sql = hibernateDialect.getSequenceNextValString(sequenceName);
 
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.setIgnoreWarnings(false);
 
 		long startId = template.queryForObject(sql, Long.class);
 
-		if (dialect instanceof Oracle8iDialect) {
+		if (hibernateDialect instanceof Oracle8iDialect) {
 			if (startId < maxId) {
 				long inc = maxId - startId + 1;
 
@@ -181,7 +175,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 
 		long newId = template.queryForObject(sql, Long.class);
-		if (newId <= maxId); {
+		if (newId <= maxId) {
 			throw new IllegalArgumentException();
 		}
 	}
@@ -189,7 +183,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 	/**
 	 * @return l'id max des entités hibernate actuellement présentes en base (à l'exception des entités de la table TIERS),
 	 */
-	@SuppressWarnings("unchecked")
 	private long getMaxIdOfAllHibernateEntities() {
 
 		long max = -1;
@@ -244,9 +237,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 		return max;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void truncateDatabase() throws Exception {
 		LOGGER.debug("Truncating database");
@@ -273,15 +263,11 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String[] getTableNamesFromDatabase() {
 
-		Dialect dialect = Dialect.getDialect(sessionFactoryBean.getConfiguration().getProperties());
-
-		if (dialect instanceof Oracle8iDialect) {
+		if (hibernateDialect instanceof Oracle8iDialect) {
+			//noinspection SqlResolve
 			final String sql = "SELECT table_name FROM user_tables";
 
 			final JdbcTemplate template = new JdbcTemplate(dataSource);
@@ -301,9 +287,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String[] getTableNamesFromHibernate(boolean reverse) {
 		ArrayList<String> t = new ArrayList<>();
@@ -345,9 +328,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 		return dbConnection;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void dumpToDbunitFile(OutputStream outputStream) throws Exception {
 
@@ -365,15 +345,15 @@ public class DatabaseServiceImpl implements DatabaseService {
 					 * on ne dump pas la table d'audit log, de manière à ne pas l'écraser lors du rechargement et à garder l'historique réel
 					 * des opérations sur la base
 					 */
+					continue;
 				}
 				else if ("DOC_INDEX".equals(table)) {
 					/*
 					 * on ne dump pas la table des indexes de documents car les documents eux-mêmes restent sur le disque du serveur
 					 */
+					continue;
 				}
-				else {
-					dataSet.addTable(table);
-				}
+				dataSet.addTable(table);
 			}
 
 			// XML file into which data needs to be extracted
@@ -390,9 +370,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int dumpTiersListToDbunitFile(List<Long> tiersIds, final DumpParts parts, OutputStream outputStream, StatusManager status) throws Exception {
 
@@ -431,12 +408,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			}
 
 			// Les données des tiers et autres données appartenant aux tiers
-			final List<ITable> tiersTables = queryDataSet(allTiersIds, connection, "Récupération des tiers", status, new QueryDataSetCallback() {
-				@Override
-				public QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException {
-					return queryTiersData(ids, parts, connection);
-				}
-			});
+			final List<ITable> tiersTables = queryDataSet(allTiersIds, connection, "Récupération des tiers", status, (ids, conn) -> queryTiersData(ids, parts, conn));
 
 			if (status.isInterrupted()) {
 				return -1;
@@ -525,9 +497,8 @@ public class DatabaseServiceImpl implements DatabaseService {
 	 * @param relatedTiersIds les ids de l'ensemble des tiers en relation avec les tiers d'entrée.
 	 * @param relatedRETIds   les ids des rapports-entre-tiers correspondant aux tiers trouvés.
 	 * @param parts           les parties à tenir compte
-	 * @throws SQLException en cas de problème SQL
 	 */
-	private void determineAllRelatedIds(List<Long> inputTiersIds, Set<Long> relatedTiersIds, final Set<Long> relatedRETIds, DumpParts parts) throws SQLException {
+	private void determineAllRelatedIds(List<Long> inputTiersIds, Set<Long> relatedTiersIds, final Set<Long> relatedRETIds, DumpParts parts) {
 
 		if (parts.rapportsEntreTiers) {
 
@@ -546,16 +517,13 @@ public class DatabaseServiceImpl implements DatabaseService {
 				if (newIds.size() <= DEFAULT_BATCH_SIZE) {
 
 					final List<Long> foundIds = new ArrayList<>();
-					template.query(sql, Collections.singletonMap("ids", newIds), new RowCallbackHandler() {
-						@Override
-						public void processRow(ResultSet rs) throws SQLException {
-							relatedRETIds.add(rs.getLong(1)); // ID
-							foundIds.add(rs.getLong(2)); // TIERS_OBJET_ID
-							foundIds.add(rs.getLong(3)); // TIERS_SUJET_ID
-							final long tuteurId = rs.getLong(4); // TIERS_TUTEUR_ID
-							if (tuteurId > 0) {
-								foundIds.add(tuteurId);
-							}
+					template.query(sql, Collections.singletonMap("ids", newIds), rs -> {
+						relatedRETIds.add(rs.getLong(1)); // ID
+						foundIds.add(rs.getLong(2)); // TIERS_OBJET_ID
+						foundIds.add(rs.getLong(3)); // TIERS_SUJET_ID
+						final long tuteurId = rs.getLong(4); // TIERS_TUTEUR_ID
+						if (tuteurId > 0) {
+							foundIds.add(tuteurId);
 						}
 					});
 
@@ -595,12 +563,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 			NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 			@SuppressWarnings({"unchecked"})
-			List<Long> ids = template.query(sql, new HashMap(), new RowMapper() {
-				@Override
-				public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-					return rs.getLong(1);
-				}
-			});
+			List<Long> ids = template.query(sql, new HashMap(), (RowMapper) (rs, rowNum) -> rs.getLong(1));
 
 			relatedTiersIds.addAll(ids);
 		}
@@ -682,9 +645,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 		return s.substring(0, s.length() - 1); // supprime la dernière virgule
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void loadFromDbunitFile(InputStream inputStream, StatusManager status, boolean truncateBefore) throws Exception {
 
@@ -719,21 +679,18 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setSessionFactoryBean(LocalSessionFactoryBean sessionFactoryBean) {
-		this.sessionFactoryBean = sessionFactoryBean;
+	public void setHibernateDialect(Dialect hibernateDialect) {
+		this.hibernateDialect = hibernateDialect;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
