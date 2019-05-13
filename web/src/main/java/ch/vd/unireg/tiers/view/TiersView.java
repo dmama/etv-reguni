@@ -58,11 +58,8 @@ public class TiersView {
 	private ComplementView complement;
 
 	// deprecated : car il ne s'agit pas d'une vue (risque de lazy init exception)
-	@Deprecated
 	private Tiers tiers;
-	@Deprecated
 	private PersonnePhysique tiersPrincipal;
-	@Deprecated
 	private PersonnePhysique tiersConjoint;
 
 	private String nomPrenomPrincipal;
@@ -171,7 +168,6 @@ public class TiersView {
 	/**
 	 * @return the tiers
 	 */
-	@Deprecated
 	public Tiers getTiers() {
 		return tiers;
 	}
@@ -179,7 +175,6 @@ public class TiersView {
 	/**
 	 * @param tiers the tiers to set
 	 */
-	@Deprecated
 	public void setTiers(@Nullable Tiers tiers) {
 		this.tiers = tiers;
 	}
@@ -243,12 +238,10 @@ public class TiersView {
 				.orElse(null);
 	}
 
-	@Deprecated
 	public PersonnePhysique getTiersConjoint() {
 		return tiersConjoint;
 	}
 
-	@Deprecated
 	public void setTiersConjoint(PersonnePhysique tiersConjoint) {
 		this.tiersConjoint = tiersConjoint;
 	}
@@ -289,12 +282,10 @@ public class TiersView {
 		return null;
 	}
 
-	@Deprecated
 	public PersonnePhysique getTiersPrincipal() {
 		return tiersPrincipal;
 	}
 
-	@Deprecated
 	public void setTiersPrincipal(PersonnePhysique tiersPrincipal) {
 		this.tiersPrincipal = tiersPrincipal;
 	}
