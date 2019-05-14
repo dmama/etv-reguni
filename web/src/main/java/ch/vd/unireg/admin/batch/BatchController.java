@@ -79,7 +79,7 @@ public class BatchController {
 		final Date limit = DateUtils.addMinutes(DateHelper.getCurrentDate(), -10);
 
 		final Collection<JobDefinition> jobs = batchScheduler.getJobs().values();
-		final Long offsetJVM = new Long(DateConstants.TIME_OFFSET);
+		final Long offsetJVM = DateConstants.TIME_OFFSET;
 		for (JobDefinition job : jobs) {
 			final Date lastEnd = job.getLastEnd();
 			if (job.isRunning() || (lastEnd != null && limit.before(lastEnd))) {

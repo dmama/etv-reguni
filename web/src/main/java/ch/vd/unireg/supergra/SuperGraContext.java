@@ -67,7 +67,7 @@ public class SuperGraContext {
 		// Crée la nouvelle entité
 		final HibernateEntity entity;
 		try {
-			entity = clazz.newInstance();
+			entity = clazz.getDeclaredConstructor().newInstance();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

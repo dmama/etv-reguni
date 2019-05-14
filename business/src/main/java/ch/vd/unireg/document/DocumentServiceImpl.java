@@ -111,7 +111,7 @@ public class DocumentServiceImpl implements DocumentService {
 		// on crée un nouveau document
 		Document doc;
 		try {
-			doc = clazz.newInstance();
+			doc = clazz.getDeclaredConstructor().newInstance();
 		}
 		catch (Exception e) {
 			LOGGER.error("Impossible de ramasser le fichier [" + f + "] car il est impossible d'instancier un objet de la classe " + clazz,
@@ -222,7 +222,7 @@ public class DocumentServiceImpl implements DocumentService {
 		Date date = DateHelper.getCurrentDate();
 
 		// Création du nouveau document
-		T doc = clazz.newInstance();
+		T doc = clazz.getDeclaredConstructor().newInstance();
 		doc.setNom(nom);
 		doc.setDescription(description);
 		doc.setFileName(buildFileName(nom, fileExtension, date));

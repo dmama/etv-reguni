@@ -8,6 +8,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -161,7 +162,7 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 			return CENT;
 		}
 		else {
-			return degrevement.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+			return degrevement.setScale(2, RoundingMode.HALF_EVEN);
 		}
 
 	}

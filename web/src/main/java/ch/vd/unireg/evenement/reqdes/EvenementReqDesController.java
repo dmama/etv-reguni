@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.Fuse;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.UniregLocale;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesProcessor;
@@ -130,6 +132,7 @@ public class EvenementReqDesController {
 
 		final Locale locale = request.getLocale();
 		final NumberFormat numberFormat = NumberFormat.getInstance(locale);
+		((DecimalFormat) numberFormat).setDecimalFormatSymbols(UniregLocale.SYMBOLS);
 		numberFormat.setGroupingUsed(true);
 
 		binder.registerCustomEditor(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, numberFormat, true));

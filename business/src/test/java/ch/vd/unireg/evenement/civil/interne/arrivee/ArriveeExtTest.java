@@ -800,7 +800,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-			assertEquals(new Long(noIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividu), habitant.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -812,7 +812,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 */
 			final ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, ff.getDateDebut());
 			assertNull(null, ff.getDateFin());
 			return null;
@@ -887,7 +887,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-			assertEquals(new Long(noIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividu), habitant.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -900,13 +900,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final List<ForFiscal> list = habitant.getForsFiscauxSorted();
 			final ForFiscalPrincipal lausanne = (ForFiscalPrincipal) list.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 
 			final ForFiscalPrincipal cossonay = (ForFiscalPrincipal) list.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 			return null;
@@ -979,7 +979,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-			assertEquals(new Long(noIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividu), habitant.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -1065,7 +1065,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 1, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-			assertEquals(new Long(noIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividu), habitant.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -1152,7 +1152,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-			assertEquals(new Long(noIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividu), habitant.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -1165,14 +1165,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final List<ForFiscal> list = habitant.getForsFiscauxSorted();
 			final ForFiscalPrincipalPP lausanne = (ForFiscalPrincipalPP) list.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 			assertEquals(ModeImposition.SOURCE, lausanne.getModeImposition());
 
 			final ForFiscalPrincipalPP cossonay = (ForFiscalPrincipalPP) list.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 			assertEquals(ModeImposition.SOURCE, cossonay.getModeImposition());
@@ -1270,9 +1270,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 * Vérification du couple
 			 */
 			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal);
-			assertEquals(new Long(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
 			PersonnePhysique habitantConjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint);
-			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 
 			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, dateArrivee);
 			assertNotNull(couple);
@@ -1306,7 +1306,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final ForFiscalPrincipal ff = menage.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
 
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, ff.getDateDebut());
 			assertNull(null, ff.getDateFin());
 			return null;
@@ -1416,8 +1416,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 */
 			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal);
 			final PersonnePhysique habitantConjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint);
-			assertEquals(new Long(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
-			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 
 			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantConjoint, dateArrivee);
 			assertNotNull(couple);
@@ -1442,13 +1442,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final List<ForFiscal> list = menage.getForsFiscauxSorted();
 			final ForFiscalPrincipal lausanne = (ForFiscalPrincipal) list.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArriveInitiale, lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 
 			final ForFiscalPrincipal cossonay = (ForFiscalPrincipal) list.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 			return null;
@@ -1553,9 +1553,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal);
-			assertEquals(new Long(noIndividuPrincipal), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuPrincipal), habitant.getNumeroIndividu());
 			final PersonnePhysique habitantConjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint);
-			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -1575,14 +1575,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final List<ForFiscal> listMenage = menage.getForsFiscauxSorted();
 			final ForFiscalPrincipalPP lausanne = (ForFiscalPrincipalPP) listMenage.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 			assertEquals(ModeImposition.SOURCE, lausanne.getModeImposition());
 
 			final ForFiscalPrincipalPP cossonay = (ForFiscalPrincipalPP) listMenage.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 			assertEquals(ModeImposition.SOURCE, cossonay.getModeImposition());
@@ -1663,7 +1663,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
 
 			final PersonnePhysique habitant = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-			assertEquals(new Long(noIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividu), habitant.getNumeroIndividu());
 
 			/*
 			 * Tests sur les adresses
@@ -1902,8 +1902,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
 			assertNotNull(habitant);
 			assertTrue(habitant.isHabitantVD());
-			assertEquals(new Long(numeroIndividu), habitant.getNumeroIndividu());
-			assertEquals(new Long(numeroCTB), habitant.getNumero());
+			assertEquals(Long.valueOf(numeroIndividu), habitant.getNumeroIndividu());
+			assertEquals(Long.valueOf(numeroCTB), habitant.getNumero());
 
 			/*
 			 * Tests sur les adresses
@@ -1915,7 +1915,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 */
 			final ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, ff.getDateDebut());
 			assertNull(null, ff.getDateFin());
 			return null;
@@ -2054,14 +2054,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(noIndividuPrincipal);
 			assertNotNull(habitantPrincipal);
 			assertTrue(habitantPrincipal.isHabitantVD());
-			assertEquals(new Long(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
-			assertEquals(new Long(noCTBPrincipal), habitantPrincipal.getNumero());
+			assertEquals(Long.valueOf(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
+			assertEquals(Long.valueOf(noCTBPrincipal), habitantPrincipal.getNumero());
 
 			final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(noIndividuConjoint);
 			assertNotNull(habitantConjoint);
 			assertFalse("Madame passera habitante lors de la reception de l'evenement où elle est l'habitant principale", habitantConjoint.isHabitantVD());
-			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
-			assertEquals(new Long(noCTBConjoint), habitantConjoint.getNumero());
+			assertEquals(Long.valueOf(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
+			assertEquals(Long.valueOf(noCTBConjoint), habitantConjoint.getNumero());
 
 			final AppartenanceMenage rapportMenagePrincipal = (AppartenanceMenage) habitantPrincipal.getRapportSujetValidAt(dateArrivee, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 			assertNotNull(rapportMenagePrincipal);
@@ -2092,13 +2092,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 			final ForFiscalPrincipal forVevey = (ForFiscalPrincipal) listForsMenage.get(0);
 			assertNotNull(forVevey);
-			assertEquals(new Integer(MockCommune.Vevey.getNoOFS()), forVevey.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Vevey.getNoOFS()), forVevey.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArriveInitiale, forVevey.getDateDebut());
 			assertEquals(dateDepart, forVevey.getDateFin());
 
 			final ForFiscalPrincipal forLausanne = (ForFiscalPrincipal) listForsMenage.get(1);
 			assertNotNull(forLausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), forLausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(MockCommune.Lausanne.getNoOFS()), forLausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, forLausanne.getDateDebut());
 			assertNull(null, forLausanne.getDateFin());
 			return null;

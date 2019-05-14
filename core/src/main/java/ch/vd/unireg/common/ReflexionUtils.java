@@ -210,7 +210,7 @@ public abstract class ReflexionUtils {
 							throw new NullPointerException("Setter for field [" + p + "] doesn't exists.");
 						}
 						final Method getter = descr.getReadMethod();
-						sub = getter.getReturnType().newInstance();
+						sub = getter.getReturnType().getDeclaredConstructor().newInstance();
 						setter.invoke(o, sub);
 						break;
 					default:

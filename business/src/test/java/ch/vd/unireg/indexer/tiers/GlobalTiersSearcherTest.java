@@ -970,7 +970,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	public void testRechercheTropDeResultats() throws Exception {
 
 		// Le nombre de resultats est limité dans la recherche
-		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
+		final int nbMaxParListe = Integer.valueOf(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
 		final List<Long> ids = doInNewTransactionAndSession(status -> {
@@ -1008,7 +1008,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		globalTiersIndexer.overwriteIndex();
 
 		// Le nombre de resultats est limité dans la recherche
-		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
+		final int nbMaxParListe = Integer.valueOf(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
 		final Set<Long> idsDb = doInNewTransactionAndSession(status -> {

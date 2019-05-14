@@ -111,7 +111,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 			final Declaration declaration = etat.getDeclaration();
 			assertEquals(RegDate.get(2007, 1, 1), declaration.getDateDebut());
 			assertEquals(RegDate.get(2007, 1, 31), declaration.getDateFin());
-			assertEquals(new Long(12600001), declaration.getTiers().getNumero());
+			assertEquals(Long.valueOf(12600001), declaration.getTiers().getNumero());
 			return null;
 		});
 	}

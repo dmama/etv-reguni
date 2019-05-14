@@ -92,7 +92,7 @@ public class TiersEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetView() throws Exception {
 
-		TiersEditView view = tiersEditManager.getView(new Long(6789));
+		TiersEditView view = tiersEditManager.getView(6789L);
 		assertEquals("Bolomey", view.getIndividu().getNom());
 	}
 

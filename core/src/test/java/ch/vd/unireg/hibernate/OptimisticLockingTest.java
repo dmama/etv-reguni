@@ -47,7 +47,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			Query q = session.createQuery("from PersonnePhysique");
 			List<?> list = q.list();
 			PersonnePhysique hab = (PersonnePhysique) list.get(0);
-			assertEquals(new Long(12345L), hab.getNumeroIndividu());
+			assertEquals(Long.valueOf(12345L), hab.getNumeroIndividu());
 			return null;
 		});
 
@@ -58,7 +58,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			Query q1 = session.createQuery("from PersonnePhysique");
 			List<?> list1 = q1.list();
 			PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
-			assertEquals(new Long(12345L), hab1.getNumeroIndividu());
+			assertEquals(Long.valueOf(12345L), hab1.getNumeroIndividu());
 			return null;
 		});
 
@@ -67,7 +67,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			Query q2 = session.createQuery("from PersonnePhysique");
 			List<?> list = q2.list();
 			PersonnePhysique hab = (PersonnePhysique) list.get(0);
-			assertEquals(new Long(12345L), hab.getNumeroIndividu());
+			assertEquals(Long.valueOf(12345L), hab.getNumeroIndividu());
 
 			// On modifie le numero IND
 			hab.setNumeroIndividu(12346L);
@@ -80,7 +80,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			Query q = session.createQuery("from PersonnePhysique");
 			List<?> list = q.list();
 			PersonnePhysique hab = (PersonnePhysique) list.get(0);
-			assertEquals(new Long(12346L), hab.getNumeroIndividu());
+			assertEquals(Long.valueOf(12346L), hab.getNumeroIndividu());
 			return null;
 		});
 
@@ -91,7 +91,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 				Query q1 = session.createQuery("from PersonnePhysique");
 				List<?> list1 = q1.list();
 				PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
-				assertEquals(new Long(12346L), hab1.getNumeroIndividu());
+				assertEquals(Long.valueOf(12346L), hab1.getNumeroIndividu());
 
 				try {
 					doInNewTransaction(status2 -> {
@@ -99,7 +99,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 						Query q2 = session2.createQuery("from PersonnePhysique");
 						List<?> list2 = q2.list();
 						PersonnePhysique hab2 = (PersonnePhysique) list2.get(0);
-						assertEquals(new Long(12346L), hab2.getNumeroIndividu());
+						assertEquals(Long.valueOf(12346L), hab2.getNumeroIndividu());
 						hab2.setNumeroIndividu(12347L);
 						return null;
 					});
@@ -124,7 +124,7 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			Query q = session.createQuery("from PersonnePhysique");
 			List<?> list = q.list();
 			PersonnePhysique hab = (PersonnePhysique) list.get(0);
-			assertEquals(new Long(12347L), hab.getNumeroIndividu());
+			assertEquals(Long.valueOf(12347L), hab.getNumeroIndividu());
 			return null;
 		});
 	}

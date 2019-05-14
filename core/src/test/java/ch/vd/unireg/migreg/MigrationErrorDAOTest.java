@@ -41,7 +41,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		doInNewTransaction(status -> {
 			MigrationError error = dao.getErrorForContribuable(id);
-			Assert.assertEquals(new Long(id), error.getNoContribuable());
+			Assert.assertEquals(Long.valueOf(id), error.getNoContribuable());
 			return null;
 		});
 	}

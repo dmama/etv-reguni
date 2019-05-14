@@ -21,6 +21,7 @@ import javax.persistence.Transient;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -223,7 +224,8 @@ public class MetaEntity {
 		return entity;
 	}
 
-	private static List<Property> determineProps(Class clazz, MetaEntity entity, PropertyDescriptor descriptor) throws IntrospectionException, ClassNotFoundException, InstantiationException, IllegalAccessException, MetaException {
+	private static List<Property> determineProps(Class clazz, MetaEntity entity, PropertyDescriptor descriptor) throws IntrospectionException, ClassNotFoundException, InstantiationException, IllegalAccessException, MetaException,
+			NoSuchMethodException, InvocationTargetException {
 
 		if (descriptor.getName().equals("class")) {
 			return null;
@@ -350,7 +352,7 @@ public class MetaEntity {
 					// non, alors on considère qu'il s'agit du nom de la classe du user-type
 					userTypeClass = Class.forName(userTypeClassname);
 				}
-				userType = (UserType) userTypeClass.newInstance();
+				userType = (UserType) userTypeClass.getDeclaredConstructor().newInstance();
 			}
 			else if (a instanceof Transient) {
 				estTransient = true;

@@ -297,7 +297,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		Contribuable contribuable = dao.getContribuableByNumero(10006789L);
 		assertNotNull(contribuable);
-		assertEquals(new Long(10006789L), contribuable.getNumero());
+		assertEquals(Long.valueOf(10006789L), contribuable.getNumero());
 	}
 
 	@Test
@@ -308,8 +308,8 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		PersonnePhysique tiers = dao.getHabitantByNumeroIndividu(282315L);
 		assertNotNull(tiers);
-		assertTrue(tiers.getNumero() == 10006789);
-		assertTrue(tiers.getNumeroIndividu().intValue() == 282315);
+		assertEquals(10006789, (long) tiers.getNumero());
+		assertEquals(282315, tiers.getNumeroIndividu().intValue());
 	}
 
 	@Test
@@ -439,7 +439,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		loadDatabase();
 
 		PersonnePhysique nonHab = (PersonnePhysique) dao.get(10001111L);
-		assertEquals(new Long(10001111L), nonHab.getNumero());
+		assertEquals(Long.valueOf(10001111L), nonHab.getNumero());
 		assertEquals("Conchita", nonHab.getNom());
 		assertEquals("Andrea", nonHab.getPrenomUsuel());
 		assertFalse(nonHab.isHabitantVD());
@@ -463,7 +463,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		{
 			PersonnePhysique nonHab = (PersonnePhysique) dao.get(id);
-			assertEquals(new Long(id), nonHab.getNumero());
+			assertEquals(Long.valueOf(id), nonHab.getNumero());
 			assertEquals("Bla", nonHab.getNom());
 			assertEquals("Bli", nonHab.getPrenomUsuel());
 			assertFalse(nonHab.isHabitantVD());
@@ -796,12 +796,12 @@ public class TiersDAOTest extends CoreDAOTest {
 
 			assertEquals(couple.getId(), rctb1.getObjetId());
 			if (rctb1.getSujetId().equals(10006789L)) {
-				assertEquals(new Long(10006789L), rctb1.getSujetId());
-				assertEquals(new Long(10007890L), rctb2.getSujetId());
+				assertEquals(Long.valueOf(10006789L), rctb1.getSujetId());
+				assertEquals(Long.valueOf(10007890L), rctb2.getSujetId());
 			}
 			else {
-				assertEquals(new Long(10007890L), rctb1.getSujetId());
-				assertEquals(new Long(10006789L), rctb2.getSujetId());
+				assertEquals(Long.valueOf(10007890L), rctb1.getSujetId());
+				assertEquals(Long.valueOf(10006789L), rctb2.getSujetId());
 			}
 		}
 	}

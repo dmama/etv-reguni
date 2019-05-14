@@ -42,7 +42,7 @@ public class Sequence {
 				throw new IllegalArgumentException();
 			}
 			try {
-				final IdentifierGenerator generator = generatorClass.newInstance();
+				final IdentifierGenerator generator = generatorClass.getDeclaredConstructor().newInstance();
 				((Configurable) generator).configure(StandardBasicTypes.LONG, new Properties(), serviceRegistry);
 				return hibernateTemplate.execute(session -> generator.generate((SessionImplementor) session, entity));
 			}

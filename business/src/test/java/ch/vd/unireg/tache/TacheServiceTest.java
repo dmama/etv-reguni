@@ -937,7 +937,7 @@ public class TacheServiceTest extends BusinessTest {
 		TacheCriteria criterion = new TacheCriteria();
 		verifieControleDossier(criterion, 0);
 
-		verifieAbsenceDIAnnulee(new Long("12300001"), 2007);
+		verifieAbsenceDIAnnulee(Long.valueOf("12300001"), 2007);
 
 	}
 

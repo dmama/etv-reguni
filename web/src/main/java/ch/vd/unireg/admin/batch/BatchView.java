@@ -43,7 +43,7 @@ public class BatchView {
 		this.runningMessage = batch.getRunningMessage();
 		this.lastStart = batch.getLastStart();
 		this.lastEnd = batch.getLastEnd();
-		this.offset = offsetArg == null ? new Long(0L) : offsetArg;
+		this.offset = offsetArg == null ? Long.valueOf(0L) : offsetArg;
 
 		final Map<String, Object> params = batch.getCurrentParametersDescription();
 		if (params != null) {

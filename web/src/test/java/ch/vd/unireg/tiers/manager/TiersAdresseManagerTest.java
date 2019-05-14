@@ -4,12 +4,12 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.adresse.AdresseTiersDAO;
 import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.view.AdresseView;
@@ -56,9 +56,9 @@ public class TiersAdresseManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseView() throws Exception {
-		AdresseView adview = adresseManager.getAdresseView(new Long(5));
+		AdresseView adview = adresseManager.getAdresseView(5L);
 		assertEquals("75012 PARIS", adview.getLocaliteNpa());
-		assertEquals(new Integer(8212), adview.getPaysOFS());
+		assertEquals(Integer.valueOf(8212), adview.getPaysOFS());
 	}
 
 	@Test
@@ -71,11 +71,11 @@ public class TiersAdresseManagerTest extends WebTest {
 		adresseView.setNumeroOrdrePoste("1269");
 		adresseView.setDateDebut(RegDate.get());
 		adresseView.setLocaliteSuisse("Neuchâtel 1 Cases");
-		adresseView.setNumCTB(new Long(67895));
+		adresseView.setNumCTB(67895L);
 		adresseManager.save(adresseView);
 
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(67895));
+		Tiers tiers = tiersDAO.get(67895L);
 		assertEquals(1, tiers.getAdressesTiers().size());
 
 	}
@@ -85,17 +85,17 @@ public class TiersAdresseManagerTest extends WebTest {
 	public void testModifyAdresseSuisse() throws Exception {
 
 		AdresseView adresseView = new AdresseView();
-		adresseView.setId(new Long(192));
+		adresseView.setId(192L);
 		adresseView.setUsage(TypeAdresseTiers.COURRIER);
 		adresseView.setTypeLocalite(TYPE_LOCALITE_SUISSE);
 		adresseView.setNumeroOrdrePoste("1269");
 		adresseView.setDateDebut(RegDate.get());
 		adresseView.setLocaliteSuisse("Neuchâtel 1 Cases");
-		adresseView.setNumCTB(new Long(6789));
+		adresseView.setNumCTB(6789L);
 		adresseManager.save(adresseView);
 
 		AdresseTiersDAO adresseTiersDAO = getBean(AdresseTiersDAO.class, "adresseTiersDAO");
-		AdresseTiers adresseTiers = adresseTiersDAO.get(new Long(192));
+		AdresseTiers adresseTiers = adresseTiersDAO.get(192L);
 		AdresseSuisse addSuisse = (AdresseSuisse) adresseTiers;
 		assertEquals(1269, addSuisse.getNumeroOrdrePoste().intValue());
 
@@ -106,7 +106,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	public void testSaveAdresseEtrangere() throws Exception {
 
 		AdresseView adresseView = new AdresseView();
-		adresseView.setNumCTB(new Long(56789));
+		adresseView.setNumCTB(56789L);
 		adresseView.setUsage(TypeAdresseTiers.COURRIER);
 		adresseView.setTypeLocalite(TYPE_LOCALITE_PAYS);
 		adresseView.setPaysNpa("France");
@@ -116,7 +116,7 @@ public class TiersAdresseManagerTest extends WebTest {
 		adresseManager.save(adresseView);
 
 		TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		Tiers tiers = tiersDAO.get(new Long(56789));
+		Tiers tiers = tiersDAO.get(56789L);
 		assertEquals(1, tiers.getAdressesTiers().size());
 
 	}
@@ -126,8 +126,8 @@ public class TiersAdresseManagerTest extends WebTest {
 	public void testModifyAdresseEtrangere() throws Exception {
 
 		AdresseView adresseView = new AdresseView();
-		adresseView.setId(new Long(5));
-		adresseView.setNumCTB(new Long(6789));
+		adresseView.setId(5L);
+		adresseView.setNumCTB(6789L);
 		adresseView.setUsage(TypeAdresseTiers.COURRIER);
 		adresseView.setTypeLocalite(TYPE_LOCALITE_PAYS);
 		adresseView.setPaysNpa("France");
@@ -137,7 +137,7 @@ public class TiersAdresseManagerTest extends WebTest {
 		adresseManager.save(adresseView);
 
 		AdresseTiersDAO adresseTiersDAO = getBean(AdresseTiersDAO.class, "adresseTiersDAO");
-		AdresseTiers adresseTiers = adresseTiersDAO.get(new Long(5));
+		AdresseTiers adresseTiers = adresseTiersDAO.get(5L);
 		AdresseEtrangere addEtrangere = (AdresseEtrangere) adresseTiers;
 		assertEquals("Lyon", addEtrangere.getNumeroPostalLocalite());
 

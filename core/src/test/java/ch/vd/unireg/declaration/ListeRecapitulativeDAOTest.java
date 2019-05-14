@@ -87,7 +87,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		final EtatDeclaration etat = lrDao.findDerniereLrEnvoyee(12500001L);
 		assertNotNull(etat);
 		assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
-		assertEquals(new Long(12500001), etat.getDeclaration().getTiers().getNumero());
+		assertEquals(Long.valueOf(12500001), etat.getDeclaration().getTiers().getNumero());
 	}
 
 	public ListeRecapitulativeDAO getLrDao() {

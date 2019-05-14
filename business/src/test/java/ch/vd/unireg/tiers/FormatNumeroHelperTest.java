@@ -73,37 +73,31 @@ public class FormatNumeroHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testFormatNumeroCTB() throws Exception {
-
-		assertEquals("123.456.78", FormatNumeroHelper.numeroCTBToDisplay(new Long(12345678)));
+		assertEquals("123.456.78", FormatNumeroHelper.numeroCTBToDisplay(12345678L));
 	}
 
 	@Test
 	public void testFormatNumeroCTBBis() throws Exception {
-
 		assertEquals("", FormatNumeroHelper.numeroCTBToDisplay(null));
 	}
 
 	@Test
 	public void testFormatNumeroCTBThird() throws Exception {
-
-		assertEquals("12.34", FormatNumeroHelper.numeroCTBToDisplay(new Long(1234)));
+		assertEquals("12.34", FormatNumeroHelper.numeroCTBToDisplay(1234L));
 	}
 
 	@Test
 	public void testNumeroIndividuToDisplay() throws Exception {
-
-		assertEquals("125141", FormatNumeroHelper.numeroIndividuToDisplay(new Long(125141)));
+		assertEquals("125141", FormatNumeroHelper.numeroIndividuToDisplay(125141L));
 	}
 
 	@Test
 	public void testNumeroIndividuToDisplayBis() throws Exception {
-
-		assertEquals("123", FormatNumeroHelper.numeroIndividuToDisplay(new Long(123)));
+		assertEquals("123", FormatNumeroHelper.numeroIndividuToDisplay(123L));
 	}
 
 	@Test
 	public void testNumeroIndividuToDisplayNull() throws Exception {
-
 		assertEquals("", FormatNumeroHelper.numeroIndividuToDisplay(null));
 	}
 

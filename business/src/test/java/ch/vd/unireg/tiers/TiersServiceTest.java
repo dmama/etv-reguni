@@ -635,7 +635,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(1, habitant.getForsFiscaux().size());
 
 		ForFiscalPrincipalPP ff = (ForFiscalPrincipalPP) habitant.getForsFiscaux().toArray()[0];
-		assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
+		assertEquals(Integer.valueOf(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
 		assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 		assertEquals(MotifRattachement.DOMICILE, ff.getMotifRattachement());
@@ -726,7 +726,7 @@ public class TiersServiceTest extends BusinessTest {
 			// test
 			PersonnePhysique h = tiersService.getPersonnePhysiqueByNumeroIndividu(noHabitantNonExistant);
 			assertNotNull(h);
-			assertEquals(new Long(noHabitantNonExistant), h.getNumeroIndividu());
+			assertEquals(Long.valueOf(noHabitantNonExistant), h.getNumeroIndividu());
 			assertEquals(h, habitant);
 		}
 	}
@@ -3432,7 +3432,7 @@ debut PF                                                                        
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
 		Contribuable ctb = tiersService.getContribuable(dpi);
 		assertNotNull(ctb);
-		assertEquals(new Long(6789L), ctb.getNumero());
+		assertEquals(Long.valueOf(6789L), ctb.getNumero());
 	}
 
 	@Test

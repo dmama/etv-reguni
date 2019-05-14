@@ -345,7 +345,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		target.setNumeroRue(source.getNumeroRue());
 		Integer numeroOrdrePoste = null;
 		if (!StringUtils.isEmpty(source.getNumeroOrdrePoste())) {
-			numeroOrdrePoste = new Integer(source.getNumeroOrdrePoste());
+			numeroOrdrePoste = Integer.valueOf(source.getNumeroOrdrePoste());
 		}
 		target.setNumeroOrdrePoste(numeroOrdrePoste);
 		target.setComplement(source.getComplements());

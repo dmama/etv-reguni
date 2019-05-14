@@ -3,6 +3,7 @@ package ch.vd.unireg.evenement.regpp;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.UniregLocale;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
@@ -79,6 +81,7 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 		sdf.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));
 		NumberFormat numberFormat = NumberFormat.getInstance(locale);
+		((DecimalFormat) numberFormat).setDecimalFormatSymbols(UniregLocale.SYMBOLS);
 		numberFormat.setGroupingUsed(true);
 		binder.registerCustomEditor(BigDecimal.class, new CustomNumberEditor(BigDecimal.class, numberFormat, true));
 		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, numberFormat, true));

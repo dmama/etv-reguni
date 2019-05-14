@@ -59,7 +59,7 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 		}
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
 			final Class<?> clazz = Class.forName("org.tranql.connector.postgresql.PGXAMCF"); // instanciation dynamique pour éviter des erreurs de compile lorsque le profile 'postgresql' n'est pas spécifié
-			final AbstractXADataSourceMCF<?> i = (AbstractXADataSourceMCF<?>) clazz.newInstance();
+			final AbstractXADataSourceMCF<?> i = (AbstractXADataSourceMCF<?>) clazz.getDeclaredConstructor().newInstance();
 			PropertyUtils.setProperty(i, "serverName", postgresqlServerName);
 			PropertyUtils.setProperty(i, "portNumber", postgresqlPortNumber);
 			PropertyUtils.setProperty(i, "databaseName", postgresqlDatabaseName);

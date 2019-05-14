@@ -68,7 +68,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 
 			final IAMDetails details;
 			try {
-				details = detailsClass.newInstance();
+				details = detailsClass.getDeclaredConstructor().newInstance();
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);

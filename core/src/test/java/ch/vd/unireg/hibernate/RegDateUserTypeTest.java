@@ -209,18 +209,18 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 
 			final Object[] line1 = (Object[]) list.get(0);
 			assertEquals(ids.id1, line1[0]); // id
-			assertEquals(new Integer(20120118), line1[1]); // full date
-			assertEquals(new Integer(20001130), line1[2]); // partial date
+			assertEquals(20120118, line1[1]); // full date
+			assertEquals(20001130, line1[2]); // partial date
 
 			final Object[] line2 = (Object[]) list.get(1);
 			assertEquals(ids.id2, line2[0]); // id
-			assertEquals(new Integer(19910801), line2[1]); // full date
-			assertEquals(new Integer(20001100), line2[2]); // partial date
+			assertEquals(19910801, line2[1]); // full date
+			assertEquals(20001100, line2[2]); // partial date
 
 			final Object[] line3 = (Object[]) list.get(2);
 			assertEquals(ids.id3, line3[0]); // id
-			assertEquals(new Integer(23451130), line3[1]); // full date
-			assertEquals(new Integer(20000000), line3[2]); // partial date;
+			assertEquals(23451130, line3[1]); // full date
+			assertEquals(20000000, line3[2]); // partial date;
 			return null;
 		});
 	}

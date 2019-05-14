@@ -9,6 +9,8 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -25,7 +27,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Implementation of {@link org.springframework.http.converter.HttpMessageConverter HttpMessageConverter} that can read and write XML using JAXB2.
@@ -83,9 +84,13 @@ public class JaxbElementHttpMessageConverter extends AbstractJaxb2HttpMessageCon
 			StreamSource streamSource = (StreamSource) source;
 			InputSource inputSource = new InputSource(streamSource.getInputStream());
 			try {
-				XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+				XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 				xmlReader.setEntityResolver(entityResolver);
 				return new SAXSource(xmlReader, inputSource);
+			}
+			catch (ParserConfigurationException e) {
+				logger.warn("Cannot instanciate SAX parser", e);
+				throw new RuntimeException(e);
 			}
 			catch (SAXException ex) {
 				logger.warn("Processing of external entities could not be disabled", ex);

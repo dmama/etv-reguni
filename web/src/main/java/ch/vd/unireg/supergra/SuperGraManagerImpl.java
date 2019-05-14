@@ -905,7 +905,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				}
 
 				final StandardServiceRegistry serviceRegistry = sessionFactory.getSessionFactoryOptions().getServiceRegistry();
-				final Number id = (Number) sequence.nextValue(serviceRegistry, hibernateTemplate, clazz.newInstance());
+				final Number id = (Number) sequence.nextValue(serviceRegistry, hibernateTemplate, clazz.getDeclaredConstructor().newInstance());
 				return id.longValue();
 			}
 			catch (Exception e) {

@@ -43,6 +43,9 @@ public class DecimalNumberEditorTest {
 		editor.setAsText("123.14");
 		assertEquals(BigDecimal.valueOf(12314, 2), editor.getValue());
 
+		editor.setAsText("-123.14");
+		assertEquals(BigDecimal.valueOf(-12314, 2), editor.getValue());
+
 		editor.setAsText("1'2'0'3'3'9'2'0'3.34");
 		assertEquals(BigDecimal.valueOf(12033920334L, 2), editor.getValue());
 

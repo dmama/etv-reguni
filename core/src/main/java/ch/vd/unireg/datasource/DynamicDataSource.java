@@ -52,19 +52,19 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {
 			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(oracleDataSourceClassName);
-			final XADataSource ds = clazz.newInstance();
+			final XADataSource ds = clazz.getDeclaredConstructor().newInstance();
 			setConnectionProperties(ds, "setURL", oracleUrl, "setUser", oracleUsername, "setPassword", oraclePassword);
 			instance = ds;
 		}
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
 			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(postgresqlDataSourceClassName);
-			final XADataSource ds = clazz.newInstance();
+			final XADataSource ds = clazz.getDeclaredConstructor().newInstance();
 			setConnectionProperties(ds, "setUrl", postgresqlUrl, "setUser", postgresqlUsername, "setPassword", postgresqlPassword);
 			instance = ds;
 		}
 		else if (jdbcProfile.equalsIgnoreCase("h2")) {
 			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(h2DataSourceClassName);
-			final XADataSource ds = clazz.newInstance();
+			final XADataSource ds = clazz.getDeclaredConstructor().newInstance();
 			setConnectionProperties(ds, "setUrl", h2Url, "setUser", h2Username, "setPassword", h2Password);
 			instance = ds;
 		}

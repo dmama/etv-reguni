@@ -798,7 +798,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 
 		final FamilyStatus situationFamille = situationsFamille.get(0);
 		assertNotNull(situationFamille);
-		assertEquals(new Integer(1), situationFamille.getNumberOfChildren());
+		assertEquals(Integer.valueOf(1), situationFamille.getNumberOfChildren());
 	}
 
 	@Test
@@ -840,7 +840,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 
 		final FamilyStatus situationFamille = situations.get(0);
 		assertNotNull(situationFamille);
-		assertEquals(new Integer(2), situationFamille.getNumberOfChildren());
+		assertEquals(Integer.valueOf(2), situationFamille.getNumberOfChildren());
 	}
 
 	// Récupération de la déclaration d'impôt source suite à la réception de l'événement fiscal OUVERTURE_PERIODE_DECOMPTE_LR

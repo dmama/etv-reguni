@@ -170,6 +170,32 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>2.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-core</artifactId>
+				<version>2.3.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>2.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-ri</artifactId>
+				<version>2.3.0</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-capitastra</artifactId>
 				<version>${unireg-jaxb2.version}</version>
@@ -664,6 +690,82 @@
 					<artifactId>h2</artifactId>
 					<version>${h2.version}</version>
 					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<!-- =================== Compilation profiles -->
+
+		<profile>
+			<!-- Ce profile est activé automatiquement lorsque le JDK 11 est utilisé -->
+			<id>java11</id>
+			<activation>
+				<jdk>11</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.0</version>
+						<configuration>
+							<encoding>UTF-8</encoding>
+							<release>11</release>
+							<showDeprecation>true</showDeprecation>
+						</configuration>
+						<executions>
+							<execution>
+								<id>default-compile</id>
+								<phase>compile</phase>
+								<goals>
+									<goal>compile</goal>
+								</goals>
+							</execution>
+							<execution>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>testCompile</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M1</version>
+						<configuration>
+							<argLine>--illegal-access=permit</argLine>
+							<forkMode>once</forkMode>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<dependencies>
+				<dependency>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-core</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.sun.xml.ws</groupId>
+					<artifactId>jaxws-ri</artifactId>
+					<type>pom</type>
+					<exclusions>
+						<exclusion>
+							<groupId>commonj.sdo</groupId>
+							<artifactId>commonj.sdo</artifactId>
+						</exclusion>
+					</exclusions>
 				</dependency>
 			</dependencies>
 		</profile>

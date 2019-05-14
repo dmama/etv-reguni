@@ -43,7 +43,7 @@ public class TypeAdresseCivilLegacyUserTypeTest extends CoreDAOTest {
 		// vérification de cohérence des données de base
 		final PersonnePhysique habitant = dao.getHabitantByNumeroIndividu(100L);
 		assertNotNull(habitant);
-		assertEquals(new Long(100L), habitant.getNumeroIndividu());
+		assertEquals(Long.valueOf(100L), habitant.getNumeroIndividu());
 
 		final List<AdresseTiers> adresses = habitant.getAdressesTiersSorted();
 		assertEquals(4, adresses.size());

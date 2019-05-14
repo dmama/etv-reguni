@@ -262,7 +262,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final AddressInformation courrierInfo2 = courrier2.getAddressInformation();
 		assertNotNull(courrierInfo2);
-		assertEquals(new Integer(1069193), courrierInfo2.getStreetId());
+		assertEquals(Integer.valueOf(1069193), courrierInfo2.getStreetId());
 		assertEquals("12", courrierInfo2.getHouseNumber());
 		assertEquals(Integer.valueOf(1000), courrierInfo2.getSwissZipCodeId());
 		assertEquals(Long.valueOf(1753), courrierInfo2.getSwissZipCode());
@@ -307,7 +307,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final AddressInformation represInfo2 = repres2.getAddressInformation();
 		assertNotNull(represInfo2);
-		assertEquals(new Integer(1131419), represInfo2.getStreetId());
+		assertEquals(Integer.valueOf(1131419), represInfo2.getStreetId());
 		assertEquals("1", represInfo2.getHouseNumber());
 		assertEquals(Integer.valueOf(528), represInfo2.getSwissZipCodeId());
 		assertEquals("Avenue du Funiculaire", represInfo2.getStreet());
@@ -547,7 +547,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNotNull(situation);
 		assertSameDay(newDate(1990, 2, 12), situation.getDateFrom());
 		assertNull(situation.getDateTo());
-		assertEquals(new Integer(0), situation.getNumberOfChildren());
+		assertEquals(Integer.valueOf(0), situation.getNumberOfChildren());
 		assertNull(situation.getApplicableTariff()); // seulement renseigné sur un couple
 		assertNull(situation.getMainTaxpayerNumber()); // seulement renseigné sur un couple
 	}
@@ -602,7 +602,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNotNull(situation);
 		assertSameDay(newDate(1990, 2, 12), situation.getDateFrom());
 		assertNull(situation.getDateTo());
-		assertEquals(new Integer(0), situation.getNumberOfChildren());
+		assertEquals(Integer.valueOf(0), situation.getNumberOfChildren());
 		assertEquals(WithholdingTaxTariff.NORMAL, situation.getApplicableTariff()); // seulement renseigné sur un couple
 		assertEquals(Integer.valueOf(12100002), situation.getMainTaxpayerNumber()); // seulement renseigné sur un couple
 	}

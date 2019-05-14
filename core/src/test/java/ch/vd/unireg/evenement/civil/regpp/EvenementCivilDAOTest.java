@@ -92,8 +92,8 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 
 		// Evt
 		EvenementCivilRegPP evt = list.get(0);
-		assertEquals(new Long(12345L), evt.getNumeroIndividuPrincipal());
-		assertEquals(new Long(23456L), evt.getNumeroIndividuConjoint());
+		assertEquals(Long.valueOf(12345L), evt.getNumeroIndividuPrincipal());
+		assertEquals(Long.valueOf(23456L), evt.getNumeroIndividuConjoint());
 	}
 
 	/**
@@ -112,8 +112,8 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 
 		// Evt
 		EvenementCivilRegPP evt = list.get(0);
-		assertEquals(new Long(12345L), evt.getNumeroIndividuPrincipal());
-		assertEquals(new Long(23456L), evt.getNumeroIndividuConjoint());
+		assertEquals(Long.valueOf(12345L), evt.getNumeroIndividuPrincipal());
+		assertEquals(Long.valueOf(23456L), evt.getNumeroIndividuConjoint());
 	}
 
 }

@@ -35,13 +35,13 @@ public class DynamicHibernateDialect implements FactoryBean, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {
-			instance = (Dialect) oracleDialectClass.newInstance();
+			instance = (Dialect) oracleDialectClass.getDeclaredConstructor().newInstance();
 		}
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
-			instance = (Dialect) postgresqlDialectClass.newInstance();
+			instance = (Dialect) postgresqlDialectClass.getDeclaredConstructor().newInstance();
 		}
 		else if (jdbcProfile.equalsIgnoreCase("h2")) {
-			instance = (Dialect) h2DialectClass.newInstance();
+			instance = (Dialect) h2DialectClass.getDeclaredConstructor().newInstance();
 		}
 		else {
 			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');

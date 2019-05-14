@@ -271,12 +271,12 @@ public class ContribuableTest extends WithoutSpringTest {
 		{
 			ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(RegDate.get(2006, 12, 20));
 			assertNotNull(ffp);
-			assertEquals(new Integer(1234), ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(1234), ffp.getNumeroOfsAutoriteFiscale());
 		}
 		{
 			ForFiscalPrincipal ffp = hab.getForFiscalPrincipalAt(RegDate.get(2008, 3, 1));
 			assertNotNull(ffp);
-			assertEquals(new Integer(563), ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(Integer.valueOf(563), ffp.getNumeroOfsAutoriteFiscale());
 		}
 	}
 

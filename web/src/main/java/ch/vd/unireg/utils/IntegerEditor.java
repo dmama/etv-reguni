@@ -1,20 +1,25 @@
 package ch.vd.unireg.utils;
 
 import java.beans.PropertyEditorSupport;
-import java.text.DecimalFormatSymbols;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.unireg.common.UniregLocale;
+
 public class IntegerEditor extends PropertyEditorSupport {
 
-	private static final Locale LOCALE = new Locale("fr", "CH");
-	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getIntegerInstance(LOCALE);
-	private static final char GROUPING_SEPARATOR = DecimalFormatSymbols.getInstance(LOCALE).getGroupingSeparator();
-	private static final char MINUS_PREFIX = DecimalFormatSymbols.getInstance(LOCALE).getMinusSign();
+	private static final NumberFormat NUMBER_FORMAT;
+	static {
+		NUMBER_FORMAT = NumberFormat.getIntegerInstance(UniregLocale.LOCALE);
+		((DecimalFormat) NUMBER_FORMAT).setDecimalFormatSymbols(UniregLocale.SYMBOLS);
+	}
+
+	private static final char GROUPING_SEPARATOR = UniregLocale.SYMBOLS.getGroupingSeparator();
+	private static final char MINUS_PREFIX = UniregLocale.SYMBOLS.getMinusSign();
 	private static final String GROUPING_REMOVAL_REGEX = String.format("\\Q%c\\E", GROUPING_SEPARATOR);
 
 	private final Pattern acceptedInputPattern;

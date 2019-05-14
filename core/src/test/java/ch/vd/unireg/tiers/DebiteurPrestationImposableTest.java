@@ -65,7 +65,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			for (Tiers t : l) {
 				if (t instanceof Entreprise) {
 					ent = (Entreprise) t;
-					assertEquals(new Long(1234L), ent.getNumero());
+					assertEquals(Long.valueOf(1234L), ent.getNumero());
 				}
 				else {
 					dpi = (DebiteurPrestationImposable) t;
@@ -105,7 +105,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			for (Tiers t : l) {
 				if (t instanceof Entreprise) {
 					ent = (Entreprise) t;
-					assertEquals(new Long(1235L), ent.getNumero());
+					assertEquals(Long.valueOf(1235L), ent.getNumero());
 				}
 				else {
 					dpi = (DebiteurPrestationImposable) t;
