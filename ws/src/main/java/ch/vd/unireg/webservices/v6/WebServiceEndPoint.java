@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v6;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -85,6 +86,11 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.search.party.v6.ObjectFactory searchPartyObjectFactory = new ch.vd.unireg.ws.search.party.v6.ObjectFactory();
 	private final ch.vd.unireg.ws.party.v6.ObjectFactory partyObjectFactory = new ch.vd.unireg.ws.party.v6.ObjectFactory();
 
+	/**
+	 * Vrai si le service est disponible ; faux si ce n'est pas le cas.
+	 */
+	private boolean enabled;
+
 	private BusinessWebService target;
 
 	@Override
@@ -97,8 +103,21 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return loadMeter.getLoad();
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public void setTarget(BusinessWebService target) {
 		this.target = target;
+	}
+
+	/**
+	 * [SIFISC-31001] Vérifie si le service est activé, et si ce n'est pas le cas, lève une exception <i>not found (404)</i>.
+	 */
+	private void checkServiceAvailability() {
+		if (!enabled) {
+			throw new NotFoundException();
+		}
 	}
 
 	private static class ExecutionResult {
@@ -125,6 +144,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	private Response execute(Supplier<String> callDescription, Logger accessLog, ExecutionCallback callback) {
+		checkServiceAvailability();
 		Throwable t = null;
 		Response r = null;
 		Integer nbItems = null;

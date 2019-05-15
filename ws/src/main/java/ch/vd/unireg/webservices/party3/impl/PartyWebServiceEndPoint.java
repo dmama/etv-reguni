@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotFoundException;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import java.time.Duration;
@@ -82,10 +83,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	@Resource
 	private WebServiceContext context;
 
+	/**
+	 * Vrai si le service est disponible ; faux si ce n'est pas le cas.
+	 */
+	private boolean enabled;
 	private PartyWebService service;
 	private SecurityProviderInterface securityProvider;
 
-	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public void setService(PartyWebService service) {
 		this.service = service;
 	}
@@ -104,8 +112,18 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		return loadMeter.getLoadDetails();
 	}
 
+	/**
+	 * [SIFISC-31001] Vérifie si le service est activé, et si ce n'est pas le cas, lève une exception <i>not found (404)</i>.
+	 */
+	private void checkServiceAvailability() {
+		if (!enabled) {
+			throw new NotFoundException();
+		}
+	}
+
 	@Override
 	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -144,6 +162,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 */
 	@Override
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -183,6 +202,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 */
 	@Override
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -220,6 +240,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public BatchParty getBatchParty(GetBatchPartyRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -294,6 +315,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	@Override
 	public GetTaxOfficesResponse getTaxOffices(@WebParam(partName = "getTaxOfficesRequest", name = "getTaxOfficesRequest",
 			targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3") GetTaxOfficesRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -329,6 +351,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public void setAutomaticReimbursementBlocking(SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		final Instant start = loadMeter.start(params);
 		try {
@@ -363,6 +386,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -399,6 +423,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);
@@ -436,6 +461,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		final Instant start = loadMeter.start(params);
 		try {
@@ -474,6 +500,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		final Instant start = loadMeter.start(params);
 		try {
@@ -521,12 +548,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public void ping() {
+		checkServiceAvailability();
 		// rien à faire
 		logReadAccess(PING_REQUEST, Duration.ZERO, 0, null);
 	}
 
 	@Override
 	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+		checkServiceAvailability();
 		Throwable t = null;
 		int items = 0;
 		final Instant start = loadMeter.start(params);

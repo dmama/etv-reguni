@@ -43,6 +43,7 @@
 	<jaxws:endpoint implementor="#partyService3EndPoint" address="/party3" wsdlLocation="PartyService3.wsdl" />
 
 	<bean id="partyService3EndPoint" class="ch.vd.unireg.webservices.party3.impl.PartyWebServiceEndPoint">
+		<property name="enabled" value="${extprop.webservice.party3.enabled}"/>
 		<property name="service" ref="partyService3Cache" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
@@ -132,6 +133,7 @@
 	</jaxrs:server>
 
 	<bean id="wsv5EndPoint" class="ch.vd.unireg.webservices.v5.WebServiceEndPoint">
+		<property name="enabled" value="${extprop.webservice.v5.enabled}"/>
 		<property name="target" ref="wsv5Tracing"/>
 	</bean>
 
@@ -221,6 +223,7 @@
 	</jaxrs:server>
 
 	<bean id="wsv6EndPoint" class="ch.vd.unireg.webservices.v6.WebServiceEndPoint">
+		<property name="enabled" value="${extprop.webservice.v6.enabled}"/>
 		<property name="target" ref="wsv6Tracing"/>
 	</bean>
 
