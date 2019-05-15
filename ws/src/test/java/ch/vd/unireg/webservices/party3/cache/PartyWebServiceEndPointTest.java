@@ -30,7 +30,6 @@ import ch.vd.unireg.xml.party.v1.PartyInfo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@SuppressWarnings({"JavaDoc"})
 public class PartyWebServiceEndPointTest extends WebserviceTest {
 
 	private PartyWebServiceEndPoint endpoint;
@@ -44,6 +43,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		super.onSetUp();
 		PartyWebService partyService = getBean(PartyWebService.class, "partyService3Impl");
 		endpoint = new PartyWebServiceEndPoint();
+		endpoint.setEnabled(true);
 		endpoint.setService(partyService);
 		endpoint.setSecurityProvider(getBean(SecurityProviderInterface.class, "securityProviderInterface"));
 	}
