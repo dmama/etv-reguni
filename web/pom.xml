@@ -221,15 +221,15 @@
 				<!-- Pas la peine de mettre les JSP dans le WAR si elles sont précompilées -->
 				<excluded-from-war>**/*.jsp</excluded-from-war>
 				<!-- On utilise le web.xml qui contient le mapping des JPS compilées -->
-				<webXmlForWar>${project.basedir}/target/jspweb.xml</webXmlForWar>
+				<webXmlForWar>${project.basedir}/target/web.xml</webXmlForWar>
 			</properties>
 			<build>
 				<plugins>
 					<!-- Plugin de compilation des JSP -->
 					<plugin>
-						<groupId>org.jasig.mojo.jspc</groupId>
+						<groupId>io.leonard.maven.plugins</groupId>
 						<artifactId>jspc-maven-plugin</artifactId>
-						<version>2.0.2</version>
+						<version>2.4.6</version>
 						<executions>
 							<execution>
 								<goals>
@@ -239,59 +239,27 @@
 						</executions>
 						<configuration>
 							<!-- On veut utiliser la version déjà filtrée -->
-							<inputWebXml>${project.basedir}/target/classes/WEB-INF/web.xml</inputWebXml>
-							<source>1.8</source>
-							<target>1.8</target>
-							<sources>
-								<directory>${project.basedir}/src/main/webapp</directory>
-								<includes>
-									<include>**/*.jsp</include>
-								</includes>
-							</sources>
+							<webXml>${project.basedir}/target/classes/WEB-INF/web.xml</webXml>
+							<compilerVersion>1.8</compilerVersion>
+							<webAppSourceDirectory>${project.basedir}/src/main/webapp</webAppSourceDirectory>
 							<trimSpaces>false</trimSpaces>   <!-- Autrement, certains mots se retrouvent collés ensembles -->
-							<outputWebXml>${project.basedir}/target/jspweb.xml</outputWebXml>
 						</configuration>
 						<dependencies>
-							<dependency>
-								<groupId>org.jasig.mojo.jspc</groupId>
-								<artifactId>jspc-compiler-tomcat8</artifactId>
-								<version>2.0.2</version>
-
-								<exclusions>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>jasper</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>jasper-el</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>jasper-jdt</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>servlet-api</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>jsp-api</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>el-api</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.apache.tomcat</groupId>
-										<artifactId>annotations-api</artifactId>
-									</exclusion>
-								</exclusions>
-							</dependency>
 							<dependency>
 								<groupId>org.apache.tomcat</groupId>
 								<artifactId>tomcat-jasper</artifactId>
 								<version>${tomcat.version}</version>
+								<exclusions>
+									<exclusion>
+										<groupId>org.eclipse.jdt.core.compiler</groupId>
+										<artifactId>ecj</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+							<dependency>
+								<groupId>org.eclipse.jdt.core.compiler</groupId>
+								<artifactId>ecj</artifactId>
+								<version>4.6.1</version>
 							</dependency>
 						</dependencies>
 					</plugin>
