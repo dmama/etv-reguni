@@ -7,6 +7,7 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotFoundException;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import java.time.Duration;
@@ -20,11 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.load.DetailedLoadMeter;
 import ch.vd.unireg.security.DroitAccesDAO;
 import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.stats.DetailedLoadMonitorable;
 import ch.vd.unireg.stats.LoadDetail;
 import ch.vd.unireg.type.Niveau;
@@ -42,6 +43,10 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecuriteWebServiceImpl.class);
 	private static final Logger ACCESS_LOG = LoggerFactory.getLogger("securite.read");
 
+	/**
+	 * Vrai si le service est disponible ; faux si ce n'est pas le cas.
+	 */
+	private boolean enabled;
 	private DroitAccesDAO dao;
 	private SecurityProviderInterface securityProvider;
 
@@ -63,6 +68,15 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 		return loadMeter.getLoadDetails();
 	}
 
+	/**
+	 * [SIFISC-31001] Vérifie si le service est activé, et si ce n'est pas le cas, lève une exception <i>not found (404)</i>.
+	 */
+	private void checkServiceAvailability() {
+		if (!enabled) {
+			throw new NotFoundException();
+		}
+	}
+
 	@Override
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -71,6 +85,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", partName = "params", name = "GetAutorisationSurDossier") GetAutorisationSurDossier params)
 			throws WebServiceException {
 
+		checkServiceAvailability();
 		Throwable t = null;
 		final Instant start = loadMeter.start(params);
 		try {
@@ -109,6 +124,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", partName = "params", name = "GetDossiersControles") GetDossiersControles params)
 			throws WebServiceException {
 
+		checkServiceAvailability();
 		Throwable t = null;
 		final Instant start = loadMeter.start(params);
 		try {
@@ -169,6 +185,10 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 		final MessageContext ctx = (context == null ? null : context.getMessageContext());
 		final HttpServletRequest request = (ctx == null ? null : (HttpServletRequest) ctx.get(AbstractHTTPDestination.HTTP_REQUEST));
 		return AuthenticatedUserHelper.getAuthenticatedUser(request);
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public void setDao(DroitAccesDAO dao) {

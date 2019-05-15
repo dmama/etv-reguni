@@ -93,6 +93,7 @@
 	<jaxws:endpoint implementor="#securiteServiceBean" address="/securite" />
 
 	<bean id="securiteServiceBean" class="ch.vd.unireg.webservices.securite.impl.SecuriteWebServiceImpl">
+		<property name="enabled" value="${extprop.webservice.security.enabled}"/>
 		<property name="dao" ref="droitAccesDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
