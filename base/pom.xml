@@ -196,6 +196,12 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
+				<!-- corrige un problème de nommage de la méta-factory SOAP sur Java 11 avec la version 1.4.0 tirée par CXF 3.3.1 (voir https://github.com/javaee/metro-jax-ws/issues/1237) -->
+				<groupId>com.sun.xml.messaging.saaj</groupId>
+				<artifactId>saaj-impl</artifactId>
+				<version>1.5.1</version>
+			</dependency>
+			<dependency>
 				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-capitastra</artifactId>
 				<version>${unireg-jaxb2.version}</version>
@@ -298,6 +304,12 @@
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-web</artifactId>
 				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Pour corriger une NPE lors de l'initialisation dans le FastDateParser sur Java 11 (voir https://issues.apache.org/jira/browse/LANG-1285) -->
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.8.1</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -513,7 +525,6 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
