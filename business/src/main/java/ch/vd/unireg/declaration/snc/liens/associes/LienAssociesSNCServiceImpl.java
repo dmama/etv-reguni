@@ -36,21 +36,29 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 		//FISCPROJ-920: Empêcher tout autres type de tiers de créer des liens Associé/commanditaire.
 		if (!(sujet instanceof Contribuable)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE,
-			                                     messageHelper.getMessage("error.mauvais_type_associe." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			                                     messageHelper.getMessageWithDefault("error.mauvais_type_associe." + sujet.getClass().getSimpleName(),
+			                                                                         messageHelper.getMessage("error.mauvais_type_associe.default", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())),
+			                                                                         FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
 		}
 
 		if (!(objet instanceof Contribuable)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
-			                                     messageHelper.getMessage("error.mauvais_type_snc." + objet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
+			                                     messageHelper.getMessageWithDefault("error.mauvais_type_snc." + objet.getClass().getSimpleName(),
+			                                                                         messageHelper.getMessage("error.mauvais_type_snc.default", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())),
+			                                                                         FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 
 		if (!(sujet instanceof PersonnePhysique) && !(sujet instanceof Entreprise)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE,
-			                                     messageHelper.getMessage("error.mauvais_type_associe." + sujet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			                                     messageHelper.getMessageWithDefault("error.mauvais_type_associe." + sujet.getClass().getSimpleName(),
+			                                                                         messageHelper.getMessage("error.mauvais_type_associe.default", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())),
+			                                                                         FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
 		}
 		if (!(objet instanceof Entreprise)) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
-			                                     messageHelper.getMessage("error.mauvais_type_snc." + objet.getClass().getSimpleName(), FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
+			                                     messageHelper.getMessageWithDefault("error.mauvais_type_snc." + objet.getClass().getSimpleName(),
+			                                                                         messageHelper.getMessage("error.mauvais_type_snc.default", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())),
+			                                                                         FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 
 		if (!((Entreprise) objet).isSNC()) {
