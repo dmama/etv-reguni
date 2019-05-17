@@ -47,7 +47,7 @@
 		</property>
 	</bean>
 
-	<bean id="rcPersClient" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+	<bean id="rcPersClient" class="ch.vd.unireg.wsclient.rcpers.v5.RcPersClientImpl">
 		<property name="wcPool">
 			<bean class="ch.vd.unireg.wsclient.WebClientPool">
 				<constructor-arg value="false" />

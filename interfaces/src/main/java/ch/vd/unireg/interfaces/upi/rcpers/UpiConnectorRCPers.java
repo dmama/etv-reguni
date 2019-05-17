@@ -21,7 +21,7 @@ import ch.vd.unireg.interfaces.upi.UpiConnector;
 import ch.vd.unireg.interfaces.upi.UpiConnectorException;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.unireg.wsclient.rcpers.v5.RcPersClient;
 
 public class UpiConnectorRCPers implements UpiConnector {
 

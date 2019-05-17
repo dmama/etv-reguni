@@ -1,4 +1,4 @@
-package ch.vd.unireg.wsclient.rcpers;
+package ch.vd.unireg.wsclient.rcpers.v5;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -12,7 +12,6 @@ import ch.vd.evd0001.v5.ListOfFoundPersons;
 import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 

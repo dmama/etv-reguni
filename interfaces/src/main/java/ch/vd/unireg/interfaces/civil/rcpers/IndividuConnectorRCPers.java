@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.unireg.wsclient.rcpers.v5.RcPersClient;
 
 /**
  * Implémentation du connecteur qui utilise le WS v5 de RCPers.

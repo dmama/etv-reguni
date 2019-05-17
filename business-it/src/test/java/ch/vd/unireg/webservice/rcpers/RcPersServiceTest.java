@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.utils.UniregProperties;
 import ch.vd.unireg.utils.UniregPropertiesImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
-import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
+import ch.vd.unireg.wsclient.rcpers.v5.RcPersClientImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -4,10 +4,10 @@ import ch.ech.ech0085.v1.GetInfoPersonResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.unireg.wsclient.WebClientPool;
-import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.unireg.utils.UniregProperties;
 import ch.vd.unireg.utils.UniregPropertiesImpl;
+import ch.vd.unireg.wsclient.WebClientPool;
+import ch.vd.unireg.wsclient.rcpers.v5.RcPersClientImpl;
 
 public class RcPersUpiServiceTest {
 

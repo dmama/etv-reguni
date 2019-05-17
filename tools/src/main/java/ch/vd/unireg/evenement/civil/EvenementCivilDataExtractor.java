@@ -15,7 +15,7 @@ import ch.vd.unireg.interfaces.infra.InfrastructureConnector;
 import ch.vd.unireg.interfaces.infra.fidor.InfrastructureConnectorFidor;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
-import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
+import ch.vd.unireg.wsclient.rcpers.v5.RcPersClientImpl;
 
 public class EvenementCivilDataExtractor {
 
