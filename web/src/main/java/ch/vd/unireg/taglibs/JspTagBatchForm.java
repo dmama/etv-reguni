@@ -8,13 +8,13 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.admin.GestionJob;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
-import ch.vd.unireg.admin.GestionJob;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamBoolean;
 import ch.vd.unireg.scheduler.JobParamCommune;

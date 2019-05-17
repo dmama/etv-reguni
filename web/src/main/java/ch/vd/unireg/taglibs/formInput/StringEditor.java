@@ -2,8 +2,8 @@ package ch.vd.unireg.taglibs.formInput;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
 class StringEditor implements Editor {

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
