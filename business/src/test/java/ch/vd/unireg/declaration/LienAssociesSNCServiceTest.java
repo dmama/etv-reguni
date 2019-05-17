@@ -53,6 +53,7 @@ public class LienAssociesSNCServiceTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(messageHelper.getMessage(Mockito.any(String.class), Mockito.any(String.class))).thenReturn("Test message");
+		Mockito.when(messageHelper.getMessageWithDefault(Mockito.any(String.class), Mockito.any(String.class), Mockito.any(String.class))).thenReturn("Test message");
 	}
 
 
